@@ -1,0 +1,9 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NDGINIC.ascx.vb" Inherits="vistas_ND_NDGINIC" %>
+
+<div class="portlet box blue>
+    <div class="portlet-title">
+        <h4>HOLA</h4>
+        <span 
+    </div>
+
+</div>

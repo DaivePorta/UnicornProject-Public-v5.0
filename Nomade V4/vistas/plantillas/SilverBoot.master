@@ -1,0 +1,1423 @@
+<%@ Master Language="VB" CodeFile="SilverBoot.master.vb" Inherits="vistas_plantillas_SilverBoot" %>
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- INICIO HEAD -->
+<head id="Head1" runat="server">
+    <title>Unicorn ERP | Principal</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <meta name="description" content="Unicorn ERP" />
+
+    <!-- CARGAMOS LOS ESTILOS -->
+
+    <link href="../../recursos/plugins/nprogress/css/nprogress.css" rel="Stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/data-tables/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/data-tables/css/dataTables.tableTools.css" rel="stylesheet" />
+    <link href="../../recursos/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/css/style-metro.css" rel="stylesheet" />
+    <link href="../../recursos/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/css/style-responsive.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
+    <link href="../../recursos/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/css/pages/error.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/gritter/css/jquery.gritter.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/bootstrap-datepicker/css/datepicker.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/chosen-bootstrap/chosen/chosen.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/select2/select2.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/select2/select2-bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/data-tables/css/DT_bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/valid-invalid/valid-invalid.css" rel="stylesheet" type="text/css" />
+    <link href="../../recursos/plugins/font-awesome/css1/font-awesome.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../recursos/plugins/bootstrap-treeview/bootstrap.css" type="text/css" />
+    <link href="../../recursos/plugins/tagsinput/bootstrap-tagsinput.css" rel="stylesheet" />
+    <link href="../../recursos/plugins/bootstrap-multiselect/css/bootstrap-multiselect.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../recursos/plugins/selectize/css/selectize.css" />
+    <link rel="stylesheet" href="../../recursos/plugins/selectize/css/selectize.bootstrap2.css" />
+
+    <%-- Para Chat --%>
+    <link rel="stylesheet" type="text/css" href="../../ChatJs/Styles/jquery.chatjs.css" />
+
+    <style type="text/css">
+        td.details-control {
+            background: url('../recursos/img/details_open.png') no-repeat center center;
+            cursor: pointer;
+        }
+
+        tr.shown td.details-control {
+            background: url('../recursos/img/details_close.png') no-repeat center center;
+        }
+    </style>
+
+    <style type="text/css">
+        ._divMail {
+            margin-left: 0px !important;
+        }
+
+        #ctrl_lbl_empresa {
+            top: 7px;
+            line-height: 14px;
+        }
+
+            #ctrl_lbl_empresa > strong > span {
+            }
+
+        @media (max-width:900px) {
+            #_divMail {
+                left: 5% !important;
+                width: 90% !important;
+            }
+        }
+
+        #iconosBarraMenu {
+            background-color: #1E1E1E;
+            margin-top: 4px;
+        }
+
+        #menuUsuario {
+            margin-top: 0px;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width:979px) {
+            #divClearEmpresa {
+                clear: both;
+            }
+
+            #formasUsuario {
+                float: none;
+                width: 60% !important;
+            }
+
+            #iconosBarraMenu {
+                margin-top: -7px !important;
+                background: none !important;
+            }
+
+            #ctrl_lbl_empresa {
+                position: relative !important;
+                left: 20px !important;
+                top: 0px !important;
+            }
+
+            #iconoMenuCorto {
+                padding: 0px;
+            }
+
+            .iconoMenu {
+                margin-top: -5px !important;
+            }
+        }
+
+        @media (max-width:540px) {
+            #formasUsuario {
+                float: none;
+                margin-top: 6px;
+                width: 100% !important;
+            }
+
+            #iconosBarraMenu {
+                margin-top: 0px !important;
+            }
+        }
+
+
+        .select2-container {
+            height: 40px;
+        }
+
+        .select2-arrow {
+            margin-right: 0px !important;
+        }
+
+        #s2id_cboVistaX {
+            width: 100%;
+        }
+
+
+        .portlet.portlet-fullscreen {
+            z-index: 9000;
+            margin: 0;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+        }
+
+            .portlet.portlet-fullscreen > .portlet-body {
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding: 0 10px;
+            }
+
+            .portlet.portlet-fullscreen > .portlet-title {
+                padding: 0 10px;
+            }
+
+        .page-portlet-fullscreen {
+            overflow: hidden;
+        }
+    </style>
+
+    <style type="text/css">
+        body {
+            font-family: 'Arial';
+        }
+
+        .uiContextualDialogPositioner, .uiContextualDialogPositioner .uiContextualDialog {
+            position: absolute;
+            z-index: 200;
+        }
+
+        .uiContextualDialogLeft .uiContextualDialog {
+            right: 0;
+        }
+
+        .uiOverlayArrowRight {
+            padding-right: 10px;
+        }
+
+        .uiOverlay {
+            position: relative;
+            z-index: 200;
+        }
+
+        .uiContextualDialog, .uiContextualDialog:focus {
+            outline: 0 solid transparent;
+        }
+
+        .uiOverlayContent {
+            background: white;
+            border: 1px solid #8C8C8C;
+            border: 1px solid rgba(0, 0, 0, .45);
+            border-bottom: 1px solid #666;
+            -moz-box-shadow: 0 3px 8px rgba(0, 0, 0, .3);
+            -webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, .3);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, .3);
+            position: relative;
+        }
+
+        .uiOverlayArrow {
+            position: absolute;
+            overflow: hidden;
+        }
+
+        .uiOverlayArrowRight .uiOverlayArrow {
+            background-image: url(../../recursos/img/logo.png);
+            background-repeat: no-repeat;
+            background-position: -177px -309px;
+            height: 16px;
+            right: 2px;
+            width: 9px;
+        }
+
+        #tblNotificaciones tbody tr td {
+            font-size: 12px;
+        }
+
+        #tblNotificaciones2 tbody tr td {
+            font-size: 12px;
+        }
+
+
+        .notifVisto {
+            background-color: aqua;
+        }
+
+        .notifnoVisto {
+            background-color: blue;
+        }
+    </style>
+
+    <!-- FIN ESTILOS -->
+
+    <!-- REFERENCIAMOS EL ICONO PARA LA PAGINA -->
+    <link rel="shortcut icon" href="../../recursos/img/ico/unicorn.png" />
+    <!-- FIN ICONO -->
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+
+    
+
+    <!-- CARGAMOS EL PLUGIN DEL JQUERY -->
+    <script src="../../recursos/plugins/jquery-1.8.3.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript" src="Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script type="text/javascript" src='/signalr/hubs'></script>
+    <script src="ChatJs/Scripts/jquery.activity-indicator-1.0.0.min.js" type="text/javascript"></script>
+    <script src="ChatJs/Scripts/jquery.autosize.min.js" type="text/javascript"></script>
+    <script src="ChatJs/Scripts/jquery.chatjs.signalradapter.js" type="text/javascript"></script>
+    <script src="ChatJs/Scripts/jquery.chatjs.js" type="text/javascript"></script>
+
+    <script type="text/javascript" src="../../recursos/plugins/nprogress/js/nprogress.js"></script>
+    <script src="../../recursos/plugins/jquery.blockui.js" type="text/javascript"></script>
+
+    <script type="text/javascript" src="../../recursos/plugins/selectize/js/standalone/selectize.js"></script>
+
+    <script src="../../recursos/scripts/UTILES.js" type="text/javascript"></script>
+
+    
+
+</head>
+<!-- FIN HEAD -->
+
+<!-- INICIO BODY -->
+<body class="fixed-top" onunload="bodyUnload();" onclick="clicked=true;">
+
+    <!-- INICIO HEADER -->
+    <div class="header navbar navbar-inverse navbar-fixed-top">
+        <!-- INICIO DE LA NAVEGACION -->
+        <div class="navbar-inner">
+            <div class="container-fluid" id="containerForma">
+                <!-- INICIO DEL LOGO -->
+                <a class="brand" href="../../Default.aspx" style="width: 165px">
+                    <img src="../../recursos/img/logo-white.png" alt="logo" />
+                </a>
+                <!-- FIN DEL LOGO -->
+
+                <div id="formasUsuario" style="float: left; margin-top: 6px; width: 340px"></div>
+
+                <div id="divClearEmpresa">
+                    <div id="ctrl_lbl_empresa" style="position: absolute; left: 575px; float: left;">
+                        <strong>
+                            <asp:Label ID="lbl_empresa" runat="server" ForeColor="White"></asp:Label></strong>
+                    </div>
+
+                    <!-- INICIO MENU CORTO -->
+                    <a id="iconoMenuCorto" href="javascript:;" class="btn-navbar collapsed" style="background: none !important;" data-toggle="collapse" data-target=".nav-collapse">
+                        <img src="../../recursos/img/menu-toggler.png" alt="" />
+                    </a>
+                    <!-- FIN MENU CORTO (RESPONSIVE) -->
+
+                </div>
+
+                <!-- INICIO DEL MENU SUPERIOR -->
+                <ul id="iconosBarraMenu" class="nav pull-right">
+                    <!-- INICIO DE LAS NOTIFICACIONES -->
+                    <li class="dropdown iconoMenu" id="header_notification_bar">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-warning-sign"></i>
+                            <span class="badge cntNot countNotif" id="countNotif"></span>
+                        </a>
+                        <ul id="conteNotif" class="dropdown-menu extended notification" style="max-height: 500px; overflow-y: scroll">
+                            <li class="external">
+                                <a id="notifAll" href="#">Ver todas las Notificaciones <i class="m-icon-swapright"></i></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- FIN DE LAS NOTFICACIONES -->
+                    <!-- INICIO DE LOS MENSAJES -->
+                    <li class="dropdown iconoMenu" id="header_inbox_bar">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-envelope-alt"></i>
+                            <span class="badge cntMen" id="countMensa"></span>
+                        </a>
+                        <ul id="conteMensa" class="dropdown-menu extended inbox">
+                            <li>
+                                <a href="#">
+                                    <span class="photo">
+                                        <img src="../../recursos/img/jhon.jpg" alt="" /></span>
+                                    <span class="subject">
+                                        <span class="from">Jhon Rodriguez</span>
+                                        <span class="time">Ayer.</span>
+                                    </span>
+                                    <span class="message">Todo es Posible!!!!
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="photo">
+                                        <img src="../../recursos/img/reiner.jpg" alt="" /></span>
+                                    <span class="subject">
+                                        <span class="from">Reiner Guerra</span>
+                                        <span class="time">11:12 am</span>
+                                    </span>
+                                    <span class="message">A trabajar con Scrum!!!
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="external">
+                                <a href="?f=NDDGMEN">Ver todos los mensajes <i class="m-icon-swapright"></i></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- FIN DE LOS MENSAJES -->
+                    <!-- ICONO DE AYUDA -->
+                    <li class="dropdown iconoMenu tooltips" id="ico_ayuda" data-placement="bottom" data-original-title="F2 para obtener ayuda">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-question-sign"></i>
+                        </a>
+                    </li>
+                    <!-- FIN ICONO -->
+
+                    <!-- PANTALLA COMPLETA -->
+                    <li class="dropdown tooltips" id="ico_fullscreen" data-placement="bottom" data-original-title="F11 pantalla completa">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="icon-fullscreen"></i>
+                        </a>
+                    </li>
+                    <!-- FIN PANTALLA COMPLETA -->
+
+                    <!-- INICIO DEL MENU DESPLEGABLE DEL USUARIO -->
+                    <li class="dropdown user">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <img alt="" style="max-height: 25px; max-width: 25px;" />
+                            <span class="username">
+                                <asp:Label ID="lblusuario" runat="server" Text="CMedinaS"></asp:Label></span>
+                            <i class="icon-angle-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#"><i class="icon-user"></i>&nbsp;Mi Perfil</a></li>
+                            <li><a href="#"><i class="icon-calendar"></i>&nbsp;Actividades</a></li>
+                            <li><a href="?f=ncmfavo"><i class="icon-star"></i>&nbsp;Mis Favoritos</a></li>
+                            <li><a href="?f=ncmcump"><i class="icon-gift"></i>&nbsp;Cumpleaños</a></li>
+                            <li><a href="?f=nsmpass"><i class="icon-key"></i>&nbsp;Cambiar Clave</a></li>
+                            <li class="divider"></li>
+                            <li><a data-toggle="modal" data-target="#modAcercaDe" href="#"><i class="fa fa-question-circle"></i>&nbsp;Acerca de</a></li>
+                            <li><a href="../../cerrar_sesion.aspx"><i class="icon-off"></i>&nbsp;Cerrar Sesión</a></li>
+                        </ul>
+                    </li>
+                    <!-- FIN DEL MENU DESPLEGABLE DE USUARIO -->
+                </ul>
+                <!-- FIN DEL MENU SUPERIOR -->
+            </div>
+        </div>
+        <!-- FIN DE LA NAVEGACION -->
+    </div>
+    <!-- FIN HEADER -->
+
+    <!-- INICIO DE LA BARRA LATERAL -->
+    <div class="page-container row-fluid">
+        <!-- INICIA SIDEBAR -->
+        <div class="page-sidebar nav-collapse collapse" id="menuUsuario">
+        </div>
+        <!-- FIN SIDEBAR -->
+
+        <!-- INICIO DE LA PAGINA -->
+        <div class="page-content" id="contenedorPrincipal">
+            <script type="text/javascript">BloquearGeneral('contenedorPrincipal');</script>
+            <!-- EJEMPLO DE LA VENTANA MODAL QUE SE MUESTRA AL DAR CLICK EN CONFIGURACON DE CADA PORTLET-->
+            <div id="portlet-config" class="modal hide">
+                <div class="modal-header">
+                    <button data-dismiss="modal" class="close" type="button"></button>
+                    <h3>TITULO DE LA VENTANA</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Cuerpo de la ventana modal</p>
+                </div>
+            </div>
+            <!-- FIN DE LA VENTANA MODAL-->
+
+            <!-- INICIO DE LA VENTANA MODAL PARA MOSTRAR ADVERTENCIA DE INTRUSION-->
+            <div id="ventanaW" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h3 id="myModalLabel1">Advertencia de Intrusión</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Se ha detectado que el usuario <b id="ctrlUsuario"></b>se ha logueado para la empresa:  <b id="ctrlEmpresa"></b></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn red" id="actionCM">Cerrar mi sesión</button>
+                    <button class="btn green" id="actionCS">Cerrar la otra sesión</button>
+                    <button class="btn blue" id="actionPA">Trabajar en paralelo</button>
+                </div>
+            </div>
+            <!-- FIN DE LA VENTANA MODAL DE INTRUSION-->
+
+
+            <!-- INICIO DE LA VENTANA MODAL PARA MOSTRAR TODAS LAS NOTIFICACIONES-->
+            <div id="ventanaN" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" style="width: 50%; left: 50% !important; display: block;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h3 id="H1">Todas mis Notificaciones</h3>
+                </div>
+                <div class="modal-body">
+                    <table id="tblNotificaciones" class="table table-striped table-bordered table-advance table-hover" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 65px;"><i class="icon-user-md"></i>&nbsp;Usuario</th>
+                                <th style="min-width: 73px;"><i class="icon-calendar"></i>&nbsp;Fecha</th>
+                                <th style="min-width: 65px;"><i class="icon-list-alt"></i>&nbsp;Modulo</th>
+                                <th><i class="icon-envelope-alt"></i>&nbsp;Mensaje</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contentAllNotificaciones">
+                        </tbody>
+                    </table>
+
+                    
+                    <%--<div class="row-fluid">
+                        <div class="span1"></div>
+                        <div class="span10">--%>
+                            <table class="table table-striped table-bordered table-advance table-hover" id="tblNotificaciones2">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: center;"><i class="icon-user-md"></i>&nbsp;Usuario</th>
+                                        <th><i class="icon-calendar"></i>&nbsp;Fecha</th>
+                                        <th style="text-align: center;"><i class="icon-list-alt"></i>&nbsp;Modulo</th>
+                                        <th style="text-align: center;"><i class="icon-envelope-alt"></i>&nbsp;Mensaje</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        <%--</div>
+                        <div class="span1"></div>
+                    </div>--%>
+                </div>
+            </div>
+
+
+
+            <!-- FIN DE LA VENTANA MODAL DEINTRUSION-->
+
+            <!-- INICIO DEL CENTRO DE LA PAGINA-->
+            <br />
+            <div class="container-fluid">
+                <!-- INICIA CABECERA DE PAGINA-->
+                <div class="row-fluid" id="contenedorBreadcrumb">
+                    <div class="span12">
+                        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+                        <ul class="breadcrumb">
+                            <asp:Literal ID="ruta_acceso" runat="server"></asp:Literal>
+                        </ul>
+                        <!-- END PAGE TITLE & BREADCRUMB-->
+                    </div>
+                </div>
+
+                <!--- TERMINA LA CABECERA DE LA PAGINA (CENTRO)-->
+                <div id="Principal">
+                    <div class="row-fluid">
+
+                        <form id="form1" runat="server">
+
+                            <div id="info_user_chat" class="uiContextualDialogPositioner uiContextualDialogLeft" style="display: none; right: 30%; bottom: 60%; position: fixed; z-index: 99999;">
+                                <div class="uiOverlay uiContextualDialog uiOverlayArrowRight" style="width: 347px; top: 0px;">
+                                    <div class="uiOverlayContent alert alert-info">
+                                        <div class="uiOverlayContentHolder">
+                                            <strong id="user_nombre">CARLOS JHOEL MEDINA SILVESTRE</strong>
+                                            <h6><b>Empresa: </b><span id="user_empresa">Orbitum Net S.R.L.</span></h6>
+                                            <h6><b>Establecimiento: </b><span id="user_sucursal">Trujillo</span></h6>
+                                            <h6><b>Navegador: </b><span id="user_navegador">Mozilla 4.25</span></h6>
+                                            <h6><b>IP: </b><span id="user_ip">192.168.12.124</span></h6>
+                                        </div>
+                                    </div>
+                                    <div class="uiOverlayArrow" style="top: 15px; margin-top: 0px;"></div>
+                                </div>
+                            </div>
+
+
+                            <asp:HiddenField ID="rutaImg" Value="../../recursos/img/150x200.gif" runat="server" />
+                            <asp:HiddenField ID="txtus" runat="server"></asp:HiddenField>
+                            <asp:HiddenField ID="txtforma" runat="server"></asp:HiddenField>
+                            <asp:HiddenField ID="txtclase" runat="server"></asp:HiddenField>
+                            <asp:HiddenField ID="hddctlg" Value="" runat="server" />
+                            <asp:HiddenField ID="sHddctlg" Value="" runat="server" />
+                            <asp:HiddenField ID="hdpermiso" Value="" runat="server" />
+                            <asp:HiddenField ID="hddestablecimiento" Value="" runat="server" />
+                            <asp:HiddenField ID="hd" runat="server" />
+                            <asp:HiddenField ID="hdsesion" runat="server" />
+
+                            <asp:HiddenField ID="hfnavegador" runat="server" />
+                            <asp:HiddenField ID="hfip" runat="server" />
+
+                            <asp:ScriptManager ID="ScriptManager1" runat="server" EnableScriptGlobalization="True"
+                                EnableScriptLocalization="False" />
+                            <asp:ContentPlaceHolder ID="cph" runat="server">
+                            </asp:ContentPlaceHolder>
+                            <asp:ContentPlaceHolder ID="cph1" runat="server">
+                            </asp:ContentPlaceHolder>
+                            <asp:Literal ID="mensaje" runat="server"></asp:Literal>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- FIN DEL CONTENIDO DEL CENTRO DE LA PAGINA-->
+        </div>
+        <!-- FINAL DE LA PAGINA -->
+    </div>
+    <!-- FIN DEL CONTAINER -->
+
+    <!-- INICIA EL FOOTER -->
+    <div class="footer">
+        <%=Date.Now.Year%> &copy; Orbitum.
+		<div class="span pull-right">
+            <span class="go-top"><i class="icon-angle-up"></i></span>
+        </div>
+    </div>
+    <!-- FIN DEL FOOTER -->
+
+    <!------------------- MODALES -------------------------->
+
+    <!-- modal acerca de  -->
+    <div id="modAcercaDe" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+            <h4><i class="fa fa-question-circle" style="line-height: initial;"></i>&nbsp;Acerca de Unicorn ERP</h4>
+        </div>
+        <div class="modal-body" style="text-align: center">
+            <div>
+                <img src="../../recursos/img/logo.png" alt="logo" style="width: 6vw; margin: 0 -12px;">
+                <span style="font-size: 6vh; vertical-align: -webkit-baseline-middle;">UNICORN ERP</span>
+            </div>
+            <div style="border: solid 1px; margin-bottom: 15px; width: 56%; margin-left: 23%; margin-top: -0.5%;">
+            </div>
+            <p class="version">Versión
+                <asp:Label runat="server" ID="lblVersion"></asp:Label></p>
+            <p class="copyright">© Orbitum Net. Todos los derechos reservados.</p>
+        </div>
+    </div>
+    <!-- fin modal acerca de  -->
+
+    <!-- modal correos -->
+    <div id="_divMail" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 50%; left: 25%;" aria-hidden="true">
+        <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
+            <button type="button" class="btn _close_mail red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
+                <i class="icon-remove"></i>
+            </button>
+            <h4 id="_divMail_title"><i class="icon-pencil" style="line-height: initial;"></i>&nbsp;Redactar correo electrónico</h4>
+        </div>
+        <div class="modal-body">
+            <div class="row-fluid">
+                <div class="span12" id="divMail_body">
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <div class="control-group">
+                                <label class="control-label">De:</label>
+                            </div>
+                        </div>
+                        <div class="span10">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input type="text" id="_txtRemitente" class="span12" disabled><input id="_txtNRemitente" type="hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <div class="control-group">
+                                <label class="control-label">Para:</label>
+                            </div>
+                        </div>
+                        <div class="span10">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <select multiple class="span12" id="_cboCorreos"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <div class="control-group">
+                                <label class="control-label">Asunto:</label>
+                            </div>
+                        </div>
+                        <div class="span10">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input type="text" id="_txtAsunto" class="span12">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span12" style="padding: 10px; border: thin inset">
+                            <textarea style="border: none; width: 99%; height: 80px" placeholder="Escriba aquí su mensaje" id="_txtcontenido"></textarea><hr style="margin: 8px 0px;">
+                            <div id="_datos_correo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn green" type="button" onclick="_enviarMail()" id="_btnEnviarCorreo"><i class="icon-plane"></i>&nbsp;Enviar</button>
+        </div>
+    </div>
+    <!-- fin modal correos -->
+
+    <!-- Modal centro de costos-->
+    <div id="modal-centrocosto" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                    <h4 class="modal-title">CENTROS DE COSTO</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row-fluid">
+                        <div class="span2"></div>
+                        <div class="span8">
+                            <div class="row-fluid">
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label class="control-label" for="txtFiltrarCentroCosto">Buscar</label>
+                                    </div>
+                                </div>
+                                <div class="span8">
+                                    <div class="control-group ">
+                                        <div class="controls">
+                                            <input id="txtFiltrarCentroCosto" class="span12 " type="text" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span2"></div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span1"></div>
+                        <div class="span10">
+                            <div id="treeCentroCostos" class="treeview">
+                            </div>
+                        </div>
+                        <div class="span1"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnAceptarCentroCosto" class="btn btn-secondary green"><i class="icon-ok"></i>&nbsp;Aceptar</button>
+                    <button type="button" id="btnCancelarCentroCosto" class="btn btn-primary red" data-dismiss="modal"><i class="icon-signout"></i>&nbsp;Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fin Modal centro de costos-->
+
+
+
+
+    <!-- BEGIN CORE PLUGINS -->
+    <!-- IMPORTANT! Load jquery-ui-1.10.1.custom.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
+    <script src="../../recursos/plugins/jquery-ui/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
+    <script src="../../recursos/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <!--[if lt IE 9]>
+	<script src="assets/plugins/excanvas.js"></script>
+	<script src="assets/plugins/respond.js"></script>	
+	<![endif]-->
+    <script src="../../recursos/plugins/breakpoints/breakpoints.js" type="text/javascript"></script>
+    <!-- IMPORTANT! jquery.slimscroll.min.js depends on jquery-ui-1.10.1.custom.min.js -->
+    <script src="../../recursos/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="../../recursos/plugins/jquery.blockui.js" type="text/javascript"></script>
+    <script src="../../recursos/plugins/jquery.cookie.js" type="text/javascript"></script>
+    <script src="../../recursos/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
+    <!-- END CORE PLUGINS -->
+    <!-- BEGIN PAGE LEVEL PLUGINS -->
+
+    <script type="text/javascript" src="../vistas/NC/js/NCMFAVO.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/data-tables/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/data-tables/js/dataTables.tableTools.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/data-tables/js/dataTables.rowsGroup.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/data-tables/js/DT_bootstrap.js"></script>
+    <script src="../../recursos/plugins/jquery.pulsate.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../recursos/plugins/chosen-bootstrap/chosen/chosen.jquery.min.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/select2/select2.min.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/fancybox/source/jquery.fancybox.pack.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/gritter/js/jquery.gritter.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/jquery-validation/dist/additional-methods.min.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/jquery-inputmask/jquery.inputmask.bundle.min.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/jquery.caret.1.02.min.js"></script>
+    <script src="../../recursos/plugins/portfolio//jquery.easing.1.3.min.js" type="text/javascript"></script>
+    <script src="../../recursos/plugins/portfolio//jquery.touchSwipe.min.js" type="text/javascript"></script>
+    <script src="../../recursos/plugins/portfolio//jquery.imagesloaded.min.js" type="text/javascript"></script>
+    <script src="../../recursos/plugins/portfolio//jquery.scrollTo-1.4.3.1-min.js" type="text/javascript"></script>
+    <script src="../../recursos/plugins/portfolio//spin.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../recursos/plugins/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/data-tables/js/ColVis.min.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/data-tables/js/jquery.dataTables.editable.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/data-tables/js/jquery.jeditable.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/data-tables/js/jquery.jeditable.js"></script>
+
+    <%-- JS Plugin TagsInput --%>
+    <script type="text/javascript" src="../../recursos/plugins/tagsinput/bootstrap-tagsinput.js"></script>
+    <script type="text/javascript" src="../../recursos/scripts/Impresion.js"></script>
+    <!-- END PAGE LEVEL PLUGINS -->
+    <!-- BEGIN PAGE LEVEL SCRIPTS -->
+    <script src="../../recursos/scripts/app.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../recursos/plugins/bootstrap.file-input.js"></script>
+    <script type="text/javascript" src="../../recursos/plugins/bootstrap-treeview/bootstrap-treeview.js"></script>
+
+    <script type="text/javascript">
+
+        $("#ctl00_lbl_empresa").html($("#ctl00_lbl_empresa").html().replace("##", "&"));
+        function EnviarPagina() {
+            var forma = $('#cboVistaX').val();
+            location.href = '?f=' + forma.toLowerCase();
+        }
+
+        function CargaImagenUsua(ruta) {
+            $(".user a img").attr("src", ruta);
+        }
+
+
+        NProgress.start();
+        Bloquear("aspnetForm");
+        var intervalProgress = setInterval(function () { NProgress.inc(); }, 1000);
+
+        $(document).keydown(function (e) {
+            if (e.keyCode == '113') {
+                //    ctrlPressed = true;
+
+                //if (ctrlPressed && (e.keyCode == teclaPrmt)) {
+                ObtenerDatosForma();
+            }
+        });
+
+        $(document).keyup(function (e) {
+            if (e.keyCode == '113')
+                ctrlPressed = false;
+        });
+
+        $(window).load(function () {
+            clearInterval(intervalProgress);
+            NProgress.done();
+            Desbloquear("aspnetForm");
+            $("body").click();
+            creaTablaVacia();
+        });
+
+        $(window).unload(function () {
+            NProgress.start();
+        });
+
+        CargaImagenUsua('<%=Me.rutaImg.Value%>');
+
+        //Carlos Medina 27/08/2014
+        App.init(); // initlayout and core plugins
+
+        //configuracion inputmask 
+        $.extend($.inputmask.defaults.definitions, {
+            'A': { //letras sin espacios ni tildes
+                validator: "[A-Za-zÑñ]",
+                cardinality: 1,
+                casing: "upper"
+
+            },
+            'D': { //DESCRIPCION
+                validator: "[A-Za-zñÑáéíóúÁÉÍÓÚ0-9:,;./\(\)\#--- ]",
+                cardinality: 1,
+                casing: "upper"
+
+            },
+            'F': { //FLOAT - DECIMAL
+                validator: "[0-9,]",
+                cardinality: 1,
+                casing: "upper"
+
+            },
+            'Z': { //letras con espacio sin tilde y &
+                validator: "[A-Za-zñÑáéíóúÁÉÍÓÚ\&/0-9\-. ]",
+                cardinality: 1,
+                casing: "upper"
+
+            },
+            'k': { // letras con espacio
+                validator: "[A-Za-zÑñáéíóúÁÉÍÓÚ. ]",
+                cardinality: 1,
+                casing: "upper"
+
+            },
+            'L': { // letras con espacio
+                validator: "[A-Za-zÑñáéíóúÁÉÍÓÚ/\(\). ]",
+                cardinality: 1,
+                casing: "upper"
+
+            },
+            'S': {//simbolos para moneda
+                validator: "[A-Za-zÑñ $\/.&#8364;]",
+                cardinality: 1
+
+
+            },
+            '#': {//alfanumericos sin espacio
+                validator: "[A-Za-zÑñ0-9]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            '%': { //letras con tilde numeros y espacio y guion bajo
+                validator: "[A-Za-zñÑáéíóúÁÉÍÓÚ0-9/_.\(\) ]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            'T': {
+                validator: "[0-9 #*---/]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            'E': {
+                validator: "[A-Za-zñÑ0-9@._ ]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            'M': {
+                validator: "[0-9()+- ]",
+                cardinality: 1
+            },
+            '!': {
+                validator: "[A-Za-zñÑáéíóúÁÉÍÓÚ0-9.,--- ]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            'W': {
+                validator: "[A-Za-zÑñ0-9:/.\~_\-]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            'R': {
+                validator: "[A-Za-zñÑáéíóúÁÉÍÓÚ0-9:,;.\(\)\#--- ]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            'U': {
+                validator: "[A-Za-zÑñ0-9 ]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            'C': {
+                validator: "[0-9---]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            'P': {
+                validator: "[0-9A-Za-zñÑáéíóúÁÉÍÓÚ \-]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            //USUARIO
+            'O': {
+                validator: "[A-Za-zÑñ0-9---_]",
+                cardinality: 1,
+                casing: "upper"
+            },
+            'H': { //horas personalizadas
+                validator: "0[0-9]|1[0-9]|2[0-3]",
+                cardinality: 2,
+                prevalidator: [
+                    { validator: "[012]", cardinality: 1 }
+                ]
+            },
+            '0': { //tiempo 00 al 60
+                validator: "[0-5][0-9]",
+                cardinality: 2,
+                prevalidator: [
+                    { validator: "[0-5]", cardinality: 1 }
+                ]
+            },
+
+            '&': { //basic year
+                validator: "20\\d{2}|19[5-9]\\d",
+                cardinality: 4,
+                prevalidator: [
+                    { validator: "[12]", cardinality: 1 },
+                    { validator: "(19|20)", cardinality: 2 },
+                    { validator: "(20\\d|19[5-9])", cardinality: 3 }
+                ]
+            },
+            '@': { //basic year
+                validator: "20\\d{2}|19[0-9]\\d",
+                cardinality: 4,
+                prevalidator: [
+                    { validator: "[12]", cardinality: 1 },
+                    { validator: "(19|20)", cardinality: 2 },
+                    { validator: "(20\\d|19[0-9])", cardinality: 3 }
+                ]
+            }
+            , 'l': { // letras con espacio
+                validator: "[A-Za-zÑñáéíóúÁÉÍÓÚ ]",
+                cardinality: 1
+            }
+        });
+
+        function cerrar_sesion() {
+            location.href = 'cerrar_sesion.aspx';
+        }
+
+        function EnviarPagina() {
+            var forma = $('#cboVistaX').val();
+            location.href = '?f=' + forma.toLowerCase();
+        }
+
+        function CargaImagenUsua(ruta) {
+            $(".user a img").attr("src", ruta);
+        }
+
+        window.onbeforeunload = function () {
+            if (document.cookie.split(';').some(elem => elem.indexOf("chat/session") > 0)) {
+                if ($("body").has("div.chat-window").length) {
+                    document.cookie = "chatIniciado=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+                }
+
+                document.cookie.split(';').filter(function (e, d) {
+                    if (e.indexOf("chat/session") > 0) {
+                        var valor = parseInt(e.split("=")[1]) - 1;
+                        if (valor == 0)
+                            document.cookie = "chat/session=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+                        else
+                            document.cookie = "chat/session=" + valor.toString() + ";expires=12/10/1900; path=/";
+                    }
+                });
+            }
+
+        }
+
+        window.onload = function () {
+            if (document.cookie.split(';').some(elem => elem.indexOf("chat/session") > 0)) {
+                document.cookie.split(';').filter(function (e, d) {
+                    if (e.indexOf("chat/session") > 0) {
+                        var valor = parseInt(e.split("=")[1]) + 1;
+                        document.cookie = "chat/session=" + valor.toString() + ";expires=12/10/1900; path=/";
+
+                    }
+                });
+            }
+        }
+
+
+        if (!document.cookie.split(';').some(elem => elem.indexOf("chat/session") > 0) || !document.cookie.split(';').some(elem => elem.indexOf("chatIniciado") > 0)) { // si no esta presnte chat/session o si no esta presente el chat
+            $(function () {
+
+                var ip_publico;
+
+                $("#<%=Me.hfip.Value%>").val(ip_publico);
+
+                $.chat({
+
+                    user: {
+                        Id: '<%= Me.UserId%>',
+                        Name: '<%= Me.UserName%>',
+                        Foto: '<%= Me.UserProfilePictureUrl%>'
+                    },
+                    titleText: 'Chat Interno',
+
+                    typingText: ' escribiendo...',
+
+                    emptyRoomText: "0 usuarios conectados!!!",
+
+                    adapter: new SignalRAdapter()
+                });
+
+                if (!document.cookie.split(';').some(elem => elem.indexOf("chat/session") > 0)) {
+                    document.cookie = "chat/session=" + 0 + "; path=/";
+                }
+                document.cookie = "chatIniciado=" + 1 + "; path=/";
+                
+                var hub = $.connection.nomadeHub;
+                var $actionCS = $("#actionCS");
+                var $actionCM = $("#actionCM");
+                var $actionPA = $("#actionPA");
+                var $actinoNO = $(".nomade-notif");
+                var $actionALL = $("#notifAll");
+
+                var userActual = $("#ctl00_txtus").val();
+                var sesionId = $("#ctl00_hdsesion").val();
+
+                // notificacion otro logeo con el mismo usuario
+                hub.client.verificar = function (usuario, session, empresa) {
+                    var key = localStorage.getItem("key" + usuario);
+                    if (key == null) {
+                        if (userActual == usuario) {
+                            if (sesionId == session) { } else {
+                                $("#ctrlEmpresa").html(empresa);
+                                $("#ctrlUsuario").html(usuario);
+                                document.cookie = "otraSesion=" + empresa + "|" + usuario + ";expires=12/10/1900; path=/";
+                                $("#ventanaW").modal("show");
+                            }
+                        }
+                    }
+                }
+
+                hub.client.cerrarActual = function (usuario, session) {
+                    if (userActual == usuario && sesionId == session) {
+                        cerrar_sesion();
+                    }
+                }
+
+                hub.client.cerrarOtra = function (usuario, session) {
+                    if (userActual == usuario && sesionId == session) {
+                    } else {
+                        cerrar_sesion();
+                    }
+                }
+
+                hub.client.lanzar = function () {
+                    cerrar_sesion();
+                }
+
+                hub.client.paralelo = function (key, usuario) {
+                    localStorage.setItem("key" + usuario, key);
+                }
+
+                //Notificaciones              
+
+                hub.client.notificar = function (numNotif, linkNotif, iconoNotif, textoNotif, fechaNotif, tipoNotif, usuario, titulo, codReferencia) {
+
+                    if (usuario != userActual) {
+                        $('.countNotif').text(numNotif);
+
+                        $('#header_notification_bar').pulsate({ color: "#66bce6", repeat: 2 });
+
+                        var newNotif = '';
+
+                        newNotif += '<li >'
+                        newNotif += '<a data-link="' + linkNotif + '" id="' + codReferencia + '" class="nomade-notif" href="#">'
+                        newNotif += '<span class="label label-' + tipoNotif + '" style="width:13px;height:13px;"><i class="' + iconoNotif + '" style="line-height:1;"></i></span>'
+                        newNotif += textoNotif
+                        newNotif += '<span class="time">&nbsp' + fechaNotif + '</span>'
+                        newNotif += '</a>'
+                        newNotif += '</li>'
+
+                        if ($('#conteNotif li').length == 0) {
+                            $('#conteNotif').append(newNotif);
+                        } else {
+                            $($('#conteNotif li')[0]).before(newNotif);
+                        }
+
+                        $.gritter.add({
+                            title: titulo,
+                            text: '<a data-link="' + linkNotif + '" id="' + codReferencia + '" class="nomade-notif">' + textoNotif + '</a>',
+                            sticky: false,
+                            time: '',
+                            class_name: 'gritter-light'
+                        });
+
+                        $(".nomade-notif").on("click", function (e) {
+                            e.preventDefault();
+                            var link = $(this).attr("data-link");
+                            var codReferencia = $(this).attr("id");
+                            hub.server.actualizarNotificacion(userActual, codReferencia);
+                            location.href = link;
+                        });
+                    }
+                }
+
+                hub.on("dibujarNotificacionesAll", function (notif) {
+                    $('#contentAllNotificaciones').html('');
+
+                    if (notif.length == 0) {
+                        $('#contentAllNotificaciones').append('<div class="alert alert-info"><strong>Info!</strong> Usted no tiene notificaciones.</div>');
+                        $("#ventanaN").modal('show');
+                    }
+
+                    var jsonAlertas = '';
+                    for (var i = 0; i < notif.length; i++) {
+                        if (notif[0].UserDestino == userActual) {
+                            var newNotif = '';
+
+                            var classV = notif[i].Visto == 0 ? 'important' : 'success';
+
+                            newNotif += '<tr>';
+                            newNotif += '<td style="vertical-align:middle" class="highlight"><div class="' + classV + '"></div><a data-link="' + notif[i].Link + '" id="' + notif[i].CodReferencia + '" class="nomade-notif" href="#">' + notif[i].UserOrigen + '</a></td>'
+                            newNotif += '<td class="">' + notif[i].Fecha + '</td>';
+                            newNotif += '<td style="vertical-align:middle" class="">' + notif[i].Modulo + '</td>';
+                            newNotif += '<td class="">' + notif[i].Texto + '</td>';
+                            newNotif += '</tr>';
+
+                            $('#contentAllNotificaciones').append(newNotif);
+                            $("#ventanaN").modal('show');
+
+                            jsonAlertas += '{';
+                            jsonAlertas += '"USUARIO" : "' + notif[i].UserOrigen + '",';
+                            jsonAlertas += '"FECHA" : "' + notif[i].Fecha + '",';
+                            jsonAlertas += '"MODULO" : "' + notif[i].Modulo + '",';
+                            jsonAlertas += '"MENSAJE" : "' + notif[i].Texto + '",';
+                            jsonAlertas += '"COD_REFERENCIA" : "' + notif[i].CodReferencia + '",';
+                            jsonAlertas += '"LINK" : "' + notif[i].Link + '"';
+                            jsonAlertas += '},';
+                        }
+                    }
+
+                    oTableNotificaciones2.fnClearTable();
+                    if (jsonAlertas !== "") {
+                        jsonAlertas = jsonAlertas.slice(0, -1);
+                        jsonAlertas = '[' + jsonAlertas + ']';
+
+                        oTableNotificaciones2.fnAddData(jQuery.parseJSON(jsonAlertas));
+                        setTimeout(function () {
+                            oTableNotificaciones2.fnAdjustColumnSizing();
+                        }, 300);
+                    }
+                    //else {
+                    //    jsonAlertas = '[{}]';
+                    //}
+                    
+
+                    $(".nomade-notif").on("click", function (e) {
+                        e.preventDefault();
+                        var link = $(this).attr("data-link");
+                        var codReferencia = $(this).attr("id");
+                        hub.server.actualizarNotificacion(userActual, codReferencia);
+                        location.href = link;
+                    });
+
+                });
+
+                hub.on("dibujarNotificaciones", function (notif) {
+                    for (var i = 0; i < notif.length; i++) {
+                        if (notif[0].UserDestino == userActual) {
+                            var newNotif = '';
+
+                            newNotif += '<li>';
+                            newNotif += '<a data-link="' + notif[i].Link + '" id="' + notif[i].CodReferencia + '" class="nomade-notif" href="#">';
+                            newNotif += '<span class="label label-' + notif[i].Tipo + '" style="width:13px;height:13px;"><i class="' + notif[i].Icono + '" style="line-height:1;"></i></span>';
+                            newNotif += notif[i].Texto;
+                            newNotif += '<span class="time">&nbsp' + notif[i].Fecha + '</span>';
+                            newNotif += '</a>';
+                            newNotif += '</li>';
+
+                            if ($('#conteNotif li').length == 0) {
+                                $('#conteNotif').append(newNotif);
+                            } else {
+                                $($('#conteNotif li')[0]).before(newNotif);
+                            }
+
+                            if (i + 1 == notif.length) {
+                                $($('#conteNotif li')[0]).before("<li><p>Usted tiene <span class='countNotif'></span> Notificaciones</p></li>");
+                                $('.countNotif').text(i + 1);
+                            }
+                        }
+                    }
+
+                    $(".nomade-notif").on("click", function (e) {
+                        e.preventDefault();
+                        var link = $(this).attr("data-link");
+                        var codReferencia = $(this).attr("id");
+                        hub.server.actualizarNotificacion(userActual, codReferencia);
+                        location.href = link;
+                    });
+                });
+
+                $.connection.hub.start().done(function () {
+                    hub.server.verificaSesion(sesionId, $("#<%=Me.sHddctlg.ClientID%>").val());
+
+                    hub.server.getNotificacionHistory(userActual);
+
+                    $actionCS.on("click", function () {
+                        hub.server.cerrarOtraSesion(sesionId);
+                        document.cookie = "otraSesion=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+                        $("#ventanaW").modal("hide");
+                    });
+                    $actionCM.on("click", function () {
+                        document.cookie = "otraSesion=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+                        hub.server.cerrarSesionActual(sesionId);
+                    });
+                    $actionPA.on("click", function () {
+                        hub.server.trabajarParalelo();
+                        document.cookie = "otraSesion=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+                        $("#ventanaW").modal("hide");
+                    });
+                    $actionALL.on("click", function (e) {
+                        e.preventDefault();
+                        hub.server.getNotificacionAll(userActual);
+                    });
+                });
+            });
+        } else {
+            window.onmousemove = function () {
+                if (!document.cookie.split(';').some(elem => elem.indexOf("chatIniciado") > 0)) {
+                    window.onmousemove = null;
+                    location.reload();
+
+                }
+
+                var verificaOtraSesion = document.cookie.split(';').some(elem => elem.indexOf("otraSesion") > 0);
+
+                if (verificaOtraSesion) {
+
+                    var $actionCS = $("#actionCS");
+                    var $actionCM = $("#actionCM");
+                    var $actionPA = $("#actionPA");
+
+                    document.cookie.split(';').filter(function (e, d) {
+                        if (e.indexOf("otraSesion") > 0 && !document.cookie.split(';').some(elem => elem.indexOf("opcionOtraSesion") > 0)) {
+                            var empresa = e.split("=")[1].split("|")[0];
+                            var usuario = e.split("=")[1].split("|")[1];
+                            $("#ctrlEmpresa").html(empresa);
+                            $("#ctrlUsuario").html(usuario);
+                            $("#ventanaW").modal("show");
+                        }
+                    });
+
+                    $actionCS.click(function () {
+                        document.cookie = "opcionOtraSesion=" + "CS" + ";expires=12/10/1900; path=/";
+                        $("#ventanaW").modal("hide");
+                    });
+                    $actionCM.click(function () {
+                        document.cookie = "opcionOtraSesion=" + "CM" + ";expires=12/10/1900; path=/";
+                        $("#ventanaW").modal("hide");
+                    });
+                    $actionPA.click(function () {
+                        document.cookie = "opcionOtraSesion=" + "PA" + ";expires=12/10/1900; path=/";
+                        $("#ventanaW").modal("hide");
+                    });
+
+
+                } else { $("#ventanaW").modal("hide"); }
+            };
+        }
+
+        timeoutId = setInterval(function () {
+            if ($("body").has("div.chat-window").length) {
+                var verificaOtraSesion = document.cookie.split(';').some(elem => elem.indexOf("otraSesion") > 0);
+
+                if (verificaOtraSesion) {
+
+                    var verificaOtraOpcion = document.cookie.split(';').some(elem => elem.indexOf("opcionOtraSesion") > 0);
+                    document.cookie.split(';').filter(function (e, d) {
+                        if (e.indexOf("opcionOtraSesion") > 0) {
+                            switch (e.split("=")[1]) {
+                                case "CS":
+                                    $("#actionCS").click();
+                                    document.cookie = "opcionOtraSesion=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+                                    break;
+                                case "CM":
+                                    $("#actionCM").click();
+                                    document.cookie = "opcionOtraSesion=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+                                    break;
+                                case "PA":
+                                    $("#actionPA").click();
+                                    document.cookie = "opcionOtraSesion=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+                                    break;
+                            }
+                        }
+                    });
+
+                }
+            }
+
+        }, 5000);
+        
+
+        /* window.onmousemove = function(){
+ 
+             if($("body").has("div.chat-window").length == 0){ // si no poseen al chat
+                 
+             }
+ 
+         };*/
+
+        var clicked = false;
+
+        $(document).keydown(function (e) {
+            if (e.keyCode == 116) {
+                clicked = true;
+            }
+        })
+
+        function CheckBrowser() {
+            if (clicked == false) {
+                //Browser closed
+            }
+            else {
+                //redirected 
+                clicked = false;
+            }
+        }
+
+        function bodyUnload() {
+            //if (clicked == false)//browser is closed
+            //{
+            //    var request = GetRequest();
+
+            //    request.open("GET", "cerrar_sesion.aspx", true);
+            //    request.send();
+            //}
+        }
+
+        function GetRequest() {
+            var request = null;
+            if (window.XMLHttpRequest) {
+                //incase of IE7,FF, Opera and Safari browser
+                request = new XMLHttpRequest();
+            }
+            else {
+                //for old browser like IE 6.x and IE 5.x
+                request = new ActiveXObject('MSXML2.XMLHTTP.3.0');
+            }
+            return request;
+        }
+
+        NCMFAVO.init();
+
+        var actualizarEstilos = function () {
+            $(".ColVis_Button, .TableTools_Button ColVis_MasterButton").css("margin-bottom", "10px");
+            $(".ColVis_Button, .TableTools_Button ColVis_MasterButton").addClass("btn green");
+            $("TableTools_Button").css("float", "left");
+            $(".DTTT.btn-group").addClass("pull-right");
+        }
+
+
+        var creaTablaVacia = function () {
+            var json = null;
+            order: [[1, "desc"]];
+            var parms = {
+                data: json,
+                columns: [
+                    {
+                        data: 'USUARIO',
+                        defaultContent: '',
+                        render: function (data, type, row) {
+                            return '<div class="important"></div><a data-link="' + row.LINK + '" id="' + row.COD_REFERENCIA + '" class="nomade-notif" href="#">' + row.USUARIO + '</a>';
+                        },
+                        createdCell: function (cell) {
+                            $(cell).css('vertical-align', 'middle');
+                            $(cell).addClass('highlight');
+                        }
+                    },
+                    { data: 'FECHA' },
+                    { data: 'MODULO' },
+                    { data: 'MENSAJE' }
+                ],
+                order: [[1, "asc"]],
+                "sDom": 'TC<"clear">lfrtip',
+                "oTableTools": {
+                    "sSwfPath": "recursos/plugins/swf/copy_csv_xls_pdf.swf",
+                    "aButtons": [
+                        {
+                            "sExtends": "copy",
+                            "sButtonText": "Copiar"
+                        },
+                        {
+                            "sExtends": "pdf",
+                            "sPdfOrientation": "landscape",
+                            "sButtonText": "Exportar a PDF"
+                        },
+                        {
+                            "sExtends": "xls",
+                            "sButtonText": "Exportar a Excel"
+                        }
+                    ]
+                }
+            }
+
+            oTableNotificaciones2 = iniciaTabla('tblNotificaciones2', parms);
+            $('#tblNotificaciones2').removeAttr('style');
+            $('#tblNotificaciones2 tbody').unbind('click');
+
+            actualizarEstilos();
+        };
+
+    </script>
+
+    <script type="text/javascript">setTimeout(function () { Desbloquear('contenedorPrincipal'); }, 400);</script>
+
+    <!-- END JAVASCRIPTS -->
+</body>
+<!-- END BODY -->
+</html>

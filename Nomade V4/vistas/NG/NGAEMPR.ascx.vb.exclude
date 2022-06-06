@@ -1,0 +1,89 @@
+﻿Imports System.Data
+
+Partial Class vistas_NG_NGAEMPR
+    Inherits NOMADE.N.Cub
+
+    Dim malerta As Label
+    Dim v_Empresa As String
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        malerta = Page.Master.FindControl("alerta")
+        Me.malerta.Text = ""
+        v_Empresa = Request.QueryString("p")
+        If (v_Empresa <> String.Empty) Then
+            'Response.Write("sss" & v_usuario)
+            carga_editar(v_Empresa)
+            Me.txt_codigo.Attributes.Add("readonly", "true")
+            Me.txt_codigo.CssClass = "f_inputl"
+        End If
+    End Sub
+
+    Private Sub carga_editar(ByVal v_usuario As String)
+        Dim oEmpresa As New Nomade.general.Cempresa("Bn")
+        Dim dt As DataTable
+        dt = oEmpresa.dame_empresas(v_Empresa)
+        If Not (dt Is Nothing) Then
+            For Each MiDataRow As DataRow In dt.Rows
+                Me.txt_codigo.Text = v_Empresa
+                Me.txt_descripcion.Text = MiDataRow("Descripcion").ToString
+                Me.txt_direccion.Text = MiDataRow("Direccion").ToString
+                Me.txt_ruc.Text = MiDataRow("Ruc").ToString
+                Me.chb_estado.Checked = IIf(MiDataRow("Estado").ToString = "A", True, False)
+            Next
+        End If
+        oEmpresa = Nothing
+    End Sub
+
+    Protected Sub btn_grabar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabar.Click
+        Try
+
+            Dim msg As String
+
+            If (txt_codigo.Text = String.Empty) Then
+                malerta.Text = Nomade.N.msg.alerta("Ingresar el Código", "W")
+                Exit Sub
+            End If
+            If (txt_descripcion.Text = String.Empty) Then
+                malerta.Text = Nomade.N.msg.alerta("Ingrese la Descripción", "W")
+                Exit Sub
+            End If
+            'If (txt_direccion.Text = String.Empty) Then
+            '    malerta.Text = Nomade.N.msg.alerta("Ingrese la Direccion", "W")
+            '    Exit Sub
+            'End If
+            'If (txt_ruc.Text = String.Empty) Then
+            '    malerta.Text = Nomade.N.msg.alerta("Ingrese el RUC", "W")
+            '    Exit Sub
+            'End If
+
+            Dim oEmpresa As New NOMADE.general.Cempresa("bn")
+
+            If (v_Empresa = String.Empty) Then
+                msg = oEmpresa.CREAR_EMPRESA(Me.txt_codigo.Text.ToUpper, _
+                        Me.txt_descripcion.Text, _
+                        Me.txt_direccion.Text, Me.txt_ruc.Text, _
+                        IIf(chb_estado.Checked = True, "A", "I"), _
+                        Me.usuario)
+            Else
+                msg = oEmpresa.ACTUALIZAR_EMPRESA(Me.txt_codigo.Text, _
+                        Me.txt_descripcion.Text, _
+                        Me.txt_direccion.Text, Me.txt_ruc.Text, _
+                        IIf(chb_estado.Checked = True, "A", "I"), _
+                        Me.usuario)
+            End If
+
+
+            oEmpresa = Nothing
+            If (msg = "OK") Then
+                malerta.Text = Nomade.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+            Else
+                malerta.Text = Nomade.N.msg.alerta("Error al crear el registro", "W")
+            End If
+
+        Catch ex As Exception
+            malerta.Text = Nomade.N.msg.alerta("Error: " + ex.Message, "W")
+        End Try
+
+    End Sub
+
+End Class

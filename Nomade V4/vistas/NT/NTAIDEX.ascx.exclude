@@ -1,0 +1,46 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NTAIDEX.ascx.vb" Inherits="vistas_NM_NMAIDEX" %>
+<script type="text/javascript" charset="utf-8">
+			$(document).ready(function() {
+				oTable = $('#Niveles').dataTable({
+					"bJQueryUI": true,
+					"sPaginationType": "full_numbers"
+				});
+			} );
+		</script>
+		
+<asp:Repeater ID="prueba"  runat="server">
+
+  <HeaderTemplate>
+    <table id="Niveles" cellpadding="0" cellspacing="0" border="0" class="display">
+      <thead>
+        <tr>
+            <th>CODIGO</th>
+            <th>FECHA</th>
+            <th>PERSONA</th>
+            <th>TIPO DOCUMENTO</th>
+            <th>DOCUMENTO</th>
+            <th>TIPO</th>
+            <th>MOSTRAR</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+  </HeaderTemplate>
+  <ItemTemplate>
+    <tr>
+      <td><%#Eval("CODIGO")%></td>
+      <td><%#Eval("FECHA")%></td>
+      <td><%#Eval("PERSONA")%></td>
+      <td><%#Eval("TIPO")%></td>
+      <td><%#Eval("DOC")%></td>
+      <td><%#Eval("TIPO1")%></td>
+      <td><center><a href="default.aspx?f=NMAIDET&p=<%#Eval("ID")%>"> <img src="../../recursos/ico/editar.png" /></img></a></center></td>      
+    </tr>
+  </ItemTemplate>
+  <FooterTemplate>
+    </tbody>
+    </table>
+  </FooterTemplate>
+</asp:Repeater>
+            
+            

@@ -1,0 +1,219 @@
+﻿Imports System.Data
+Partial Class vistas_partes_NM_NMTALERG
+    Inherits Nomade.N.Cub
+
+    Dim malerta As Label
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        malerta = Page.Master.FindControl("alerta")
+        Me.btn_cancelar.Visible = False
+        Me.txt_secuencia.Attributes.Add("readonly", "true")
+        Me.txt_secuencia.CssClass = "f_inputl"
+        If (Page.IsPostBack) Then
+
+            carga_TIPO_ALERGIAS()
+            llena()
+            Me.pnl_add.Visible = False
+            Me.pnl_listar.Visible = True
+            Me.lbl_listatel.Font.Bold = True
+            Me.lbl_nuevotel.Font.Bold = False
+        Else
+            carga_TIPO_ALERGIAS()
+            Me.pnl_add.Visible = True
+            Me.pnl_listar.Visible = False
+            Me.lbl_listatel.Font.Bold = False
+            Me.lbl_nuevotel.Font.Bold = True
+        End If
+    End Sub
+
+    Private Sub carga_TIPO_ALERGIAS()
+        Dim l As New ListItem
+        Dim ubi As New Nomade.Medico.Telemedicina.cAlergia("bn")
+        Me.dd_alergia.DataSource = ubi.LISTAR_ALERGIA()
+        ubi = Nothing
+        Me.dd_alergia.DataTextField = "titulo"
+        Me.dd_alergia.DataValueField = "Codigo"
+        Me.dd_alergia.DataBind()
+        dd_alergia.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+   
+
+    Private Sub llena()
+        Dim C As New Nomade.Medicina.cpaciente("Bn")
+        Me.gw.DataSource = C.DAME_ALERGIAS_PACIENTE(IIf(Me.pidm = "", 0, Me.pidm), 0)
+        Me.gw.DataBind()
+        C = Nothing
+    End Sub
+
+   
+
+    Protected Sub btn_telnuevo_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_telnuevo.Click
+        Me.hd_accion.Value = ""
+        Me.txt_secuencia.Text = ""
+        Me.txt_comentario.Text = ""
+        Me.pnl_listar.Visible = False
+        Me.pnl_add.Visible = True
+        Me.lbl_listatel.Font.Bold = False
+        Me.lbl_nuevotel.Font.Bold = True
+
+    End Sub
+
+    Protected Sub btn_listatel_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_listatel.Click
+        Me.pnl_listar.Visible = True
+        Me.pnl_add.Visible = False
+        Me.lbl_listatel.Font.Bold = True
+        Me.lbl_nuevotel.Font.Bold = False
+    End Sub
+
+    Protected Sub gw_RowCommand(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewCommandEventArgs) Handles gw.RowCommand
+        Try
+            Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim msg1 As String
+            ' Retrieve the row that contains the button 
+            ' from the Rows collection.
+            Dim row As GridViewRow = gw.Rows(index)
+            Dim v_seq As String = gw.DataKeys(index).Values("NUM_SEQ")
+            Dim v_pidm As String = gw.DataKeys(index).Values("PIDM")
+
+            'Response.Write("Hola")
+
+            If (e.CommandName = "eli") Then
+                Dim c As New NOMADE.Medicina.cpaciente("bn")
+                msg1 = c.ELIMINAR_ALERGIA_PACIENTE(v_pidm, v_seq)
+                llena()
+                c = Nothing
+                '  malerta.Text = "Transacción terminada: registros aplicados y guardados."
+            End If
+            If (e.CommandName = "edi") Then
+                Me.pnl_listar.Visible = False
+                Me.pnl_add.Visible = True
+                Me.lbl_listatel.Font.Bold = False
+                Me.lbl_nuevotel.Font.Bold = True
+                Me.btn_cancelar.Visible = True
+
+                Me.txt_secuencia.Attributes.Add("readonly", "true")
+                Me.txt_secuencia.CssClass = "f_inputl"
+                titulo.InnerHtml = "<h2>Editar Alergia</h2>"
+                Me.hd_accion.Value = "ed"
+                carga_alergia(v_pidm, v_seq)
+                '  malerta.Text = "Transacción terminada: registros aplicados y guardados."
+            End If
+        Catch ex As Exception
+            If ex.Message = "Cannot delete or update a parent row: a foreign key constraint fails (`test/pprdire`, CONSTRAINT `FK_PPRDIRE_PPRTELE_PIDM` FOREIGN KEY (`PPRDIRE_PIDM`, `PPRDIRE_TELE_NUM_SEQ`) REFERENCES `pprtele` (`PPRTELE_PIDM`, `PPRTELE_NUM_SEQ`))" Then
+                malerta.Text = "error al eliminar, El correo"
+            Else
+                malerta.Text = NOMADE.N.msg.alerta("Error: al eliminar correo, " & ex.Message, "W")
+            End If
+        End Try
+    End Sub
+
+    Private Sub carga_alergia(ByVal v_pidm As String, ByVal v_seq As String)
+        Dim c As New NOMADE.Medicina.cpaciente("Bn")
+        Dim dt As DataTable
+        dt = c.DAME_ALERGIAS_PACIENTE(v_pidm, v_seq)
+        Me.chk_actual.Checked = False
+        Me.chk_estado.Checked = False
+        Me.txt_comentario.Text = ""
+        Me.txt_fecha_inicio.Text = ""
+        Me.txt_fecha_fin.Text = ""
+        If Not (dt Is Nothing) Then
+            For Each MiDataRow As DataRow In dt.Rows
+                Me.txt_secuencia.Text = MiDataRow("NUM_SEQ").ToString
+                Me.chk_actual.Checked = IIf(MiDataRow("PRESENTA_IND_REACCION").ToString = "A", True, False)
+                ' Me.dd_tipo.SelectedValue = MiDataRow("Codigo_Comentario").ToString
+                If IsDate(MiDataRow("FECHA_INGRESO").ToString) Then
+                    '  FormatDateTime(MiDataRow("Desde").ToString, DateFormat.ShortDate)
+                    Me.txt_fecha_inicio.Text = FormatDateTime(MiDataRow("FECHA_INGRESO").ToString, DateFormat.ShortDate)
+                End If
+                If IsDate(MiDataRow("FECHA_TERMINO").ToString) Then
+                    '  FormatDateTime(MiDataRow("Desde").ToString, DateFormat.ShortDate)
+                    Me.txt_fecha_inicio.Text = FormatDateTime(MiDataRow("FECHA_TERMINO").ToString, DateFormat.ShortDate)
+                End If
+
+                Me.dd_alergia.SelectedValue = MiDataRow("aler_code").ToString
+                Me.chk_estado.Checked = IIf(MiDataRow("IND_ESTADO").ToString = "A", True, False)
+                Me.txt_comentario.Text = MiDataRow("REACCIONES").ToString
+            Next
+        End If
+    End Sub
+
+
+    Protected Sub btn_grabarc_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabarc.Click
+        Try
+
+            Dim msg As String
+            Dim f1, f2 As String
+            Me.pnl_listar.Visible = False
+            Me.pnl_add.Visible = True
+            Me.lbl_listatel.Font.Bold = False
+            Me.lbl_nuevotel.Font.Bold = True
+            If (Me.dd_alergia.SelectedValue = String.Empty) Then
+                malerta.Text = Nomade.N.msg.alerta("Ingrese comentario", "W")
+                Exit Sub
+            End If
+            If Not (Me.chk_actual.Checked) Then
+
+                If Me.txt_fecha_inicio.Text = String.Empty Then
+                    f1 = Nothing
+                Else
+                    If (IsDate(Me.txt_fecha_inicio.Text)) Then
+                        f1 = Utilities.fechaLocal(Me.txt_fecha_inicio.Text)
+                    Else
+                        malerta.Text = Nomade.N.msg.alerta("Error: Fecha Desde incorrecta", "W")
+                        Exit Sub
+                    End If
+                End If
+
+                If Me.txt_fecha_fin.Text = String.Empty Then
+                    f2 = Nothing
+                Else
+                    If (IsDate(Me.txt_fecha_fin.Text)) Then
+                        f2 = Utilities.fechaLocal(Me.txt_fecha_fin.Text)
+                    Else
+
+                        malerta.Text = Nomade.N.msg.alerta("Error: Fecha Hasta incorrecta", "W")
+                        Exit Sub
+                    End If
+                End If
+
+              
+            End If
+            'If (dd_tipo.SelectedIndex = 0) Then
+            '    malerta.Text = Nomade.N.msg.alerta("Error: Seleccione tipo", "W")
+            '    Exit Sub
+            'End If
+            Dim c As New Nomade.Medicina.cpaciente("bn")
+            If (Me.hd_accion.Value = String.Empty) Then
+                msg = c.insertar_ALERGIA_PACIENTE(Me.pidm, f1, f2, Me.dd_alergia.SelectedValue, IIf(Me.chk_actual.Checked, "A", "I"), Me.txt_comentario.Text, Me.usuario, IIf(Me.chk_estado.Checked, "A", "I"))
+            Else
+                msg = c.ACTUALIZAR_ALERGIA_PACIENTE(Me.pidm, Me.txt_secuencia.Text, f1, f2, Me.dd_alergia.SelectedValue, IIf(Me.chk_actual.Checked, "A", "I"), Me.txt_comentario.Text, Me.usuario, IIf(Me.chk_estado.Checked, "A", "I"))
+            End If
+            c = Nothing
+            If (msg = "OK") Then
+                Me.hd_accion.Value = ""
+                Me.pnl_listar.Visible = True
+                Me.pnl_add.Visible = False
+                Me.lbl_listatel.Font.Bold = True
+                Me.lbl_nuevotel.Font.Bold = False
+                llena()
+            Else
+                Me.pnl_listar.Visible = False
+                Me.pnl_add.Visible = True
+                Me.lbl_listatel.Font.Bold = False
+                Me.lbl_nuevotel.Font.Bold = True
+            End If
+            ' malerta.Text = Nomade.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+        Catch ex As Exception
+            malerta.Text = Nomade.N.msg.alerta("Error: crear Comentario, " & ex.Message, "W")
+        End Try
+    End Sub
+
+    Protected Sub btn_cancelar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_cancelar.Click
+        Me.hd_accion.Value = ""
+        Me.pnl_listar.Visible = True
+        Me.pnl_add.Visible = False
+        Me.lbl_listatel.Font.Bold = True
+        Me.lbl_nuevotel.Font.Bold = False
+    End Sub
+   
+End Class

@@ -1,0 +1,75 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGQUSUA.ascx.vb" Inherits="vistas_NG_NGQUSUA" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+   
+  <table border="0">
+  <tr>
+    <td width="20">
+        <strong>EMPRESA</strong></td>
+    <td >
+        <asp:DropDownList ID="dd_empresa" runat="server">
+        </asp:DropDownList>
+      </td>
+    <td >
+        ID</td>
+    <td>
+        <asp:TextBox ID="txt_id" runat="server"></asp:TextBox>
+      </td>
+      <td>
+          Activo<asp:CheckBox ID="chk_estado" runat="server" Checked="True" />
+&nbsp;</td>
+    <td><asp:ImageButton ID="btn_busca" runat="server" 
+            ImageUrl="~/recursos/img/btn_buscar.gif" />
+       </td>
+  </tr>
+  
+</table>
+<div class="linea"><br /></div>
+<div class="gridcontainer">
+      <asp:GridView ID="gw" runat="server" SkinID="gw1"
+          DataKeyNames="usuario" AutoGenerateColumns="False">
+      
+      
+          <Columns>
+              <asp:BoundField DataField="USUARIO" HeaderText="USUARIO" />
+              <asp:BoundField DataField="NOMBRE" HeaderText="NOMBRE" />
+              <asp:BoundField DataField="EMPRESA" HeaderText="EMPRESA" />
+              <asp:BoundField DataField="ORGN" HeaderText="ORGN" />
+              <asp:BoundField DataField="ESTADO" HeaderText="ESTADO" />
+              <asp:BoundField DataField="PIDM" HeaderText="PIDM" />
+              <asp:BoundField DataField="USUARIO_REG" HeaderText="USUARIO REG" />
+              <asp:BoundField DataField="FECHA_ACTV" HeaderText="FECHA ACTV." />
+              <asp:TemplateField HeaderText="ACCIONES">
+                  <ItemTemplate>
+                      <a href="?f=ngausua&p=<%#databinder.eval(container.dataitem,"usuario") %>"><img  src="recursos/ico/editar.png" title="Editar Usuario" width="18" border="0"/></a>
+                                            <a href="?f=NGACLUS&p=<%#databinder.eval(container.dataitem,"usuario") %>" title="Cambiar clave"><img  src="recursos/ico/llave.gif" border="0"/></a>
+                                            <a href="?f=NGAPERM&p=<%#databinder.eval(container.dataitem,"usuario") %>" title="Permisos de usuario"><img  src="recursos/img/candado31.gif" border="0"/></a>
+
+                  </ItemTemplate>
+              </asp:TemplateField>
+          </Columns>
+      
+      
+       <PagerTemplate>
+                    <asp:Label ID="Label1" runat="server" Text="Mostrar filas:" />
+                    <asp:DropDownList CssClass="letranormal" ID="RegsPag" runat="server" AutoPostBack="true" OnSelectedIndexChanged="RegsPag_SelectedIndexChanged">
+                     <asp:ListItem Value="2" />
+                        <asp:ListItem Value="15" />
+                        <asp:ListItem Value="20" />
+                        <asp:ListItem Value="30" />
+                          <asp:ListItem Value="40" />
+                    </asp:DropDownList>
+                    &nbsp;
+                    Ir a 
+                    <asp:TextBox ID="IraPag" runat="server" AutoPostBack="true" OnTextChanged="IraPag" CssClass="gopag" />
+                    de
+                    <asp:Label ID="lblTotalNumberOfPages" runat="server" />
+                    &nbsp;
+                    <asp:Button ID="Button4" runat="server" CommandName="Page" ToolTip="Prim. Pag"  CommandArgument="First" CssClass="pagfirst" />                    
+                    <asp:Button ID="Button1" runat="server" CommandName="Page" ToolTip="Pág. anterior"  CommandArgument="Prev" CssClass="pagprev" />
+                    <asp:Button ID="Button2" runat="server" CommandName="Page" ToolTip="Sig. página" CommandArgument="Next" CssClass="pagnext" />                    
+                    <asp:Button ID="Button3" runat="server" CommandName="Page" ToolTip="Últ. Pag"  CommandArgument="Last" CssClass="paglast" />                    
+                </PagerTemplate>
+                
+          <AlternatingRowStyle CssClass="altrowstyle" />
+                
+      </asp:GridView></div>

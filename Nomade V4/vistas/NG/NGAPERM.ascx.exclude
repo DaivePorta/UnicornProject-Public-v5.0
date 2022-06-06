@@ -1,0 +1,159 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGAPERM.ascx.vb" Inherits="vistas_NG_NGAPERM" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+  <%--<%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="cc2" %>--%>
+  <script type="text/javascript">
+
+function forma(){
+	p=dhtmlmodal.open('forma', 'iframe', 'validacion.aspx?f=FVIFORM&cod=<%=cod %>', 'Asignar forma a usuario', 'width=840px,height=500px,center=1,resize=1,scrolling=1')
+
+p.onclose=function(){ //Define custom code to run when window is closed
+	var theform=this.contentDoc.forms[0] //Access first form inside iframe just for your reference
+	var iframedoc=this.contentDoc
+	var pp=this.contentDoc.getElementById("ctl12_ph")
+	
+	document.getElementById('<% = txt_forma.ClientID%>').value=pp.value
+		
+		return true //allow closing of window
+}
+}
+function clase(){
+	p=dhtmlmodal.open('clase', 'iframe', 'validacion.aspx?f=FVICLAS&cod=<%=cod %>', 'Asignar clase a usuario', 'width=840px,height=500px,center=1,resize=1,scrolling=1')
+
+p.onclose=function(){ //Define custom code to run when window is closed
+	
+		var theform=this.contentDoc.forms[0] //Access first form inside iframe just for your reference
+	var iframedoc=this.contentDoc
+	var pp=this.contentDoc.getElementById("ctl12_ph")
+	
+	document.getElementById('<% = txt_forma.ClientID%>').value=pp.value
+		
+		return true //allow closing of window
+}
+} //End "opennewsletter" function
+
+
+
+</script>
+  <table border="0">
+  <tr>
+    <td width="20">
+        <strong>ID</strong></td>
+    <td >
+        <asp:TextBox ID="txt_id" runat="server"></asp:TextBox>
+      </td>
+    <td >
+        &nbsp;</td>
+    <td>
+        <asp:TextBox ID="txt_nombres" runat="server" Width="350px"></asp:TextBox>
+      </td>
+      <td>
+&nbsp;</td>
+            <asp:HiddenField ID="hf_usuario" runat="server" />
+    <td><asp:ImageButton ID="btn_busca" runat="server" 
+            ImageUrl="~/recursos/img/btn_buscar.gif" Style="left: 0px; visibility: hidden; position: absolute"/>
+       </td>
+  </tr>
+  
+</table>
+<div class="linea"><br /> </div>
+<div style="padding-bottom:6px; text-align:right">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="70%"></td>
+    <td>
+      </td>
+    <td><asp:ImageButton
+            ID="btn_add" runat="server" ImageUrl="~/recursos/ico/add.png" 
+             ToolTip="Agregar"/>&nbsp;&nbsp;<asp:ImageButton
+            ID="btn_agregar" runat="server" ImageUrl="~/recursos/ico/add.png" 
+             ToolTip="Agregar" Visible="False"/>&nbsp;&nbsp;<asp:ImageButton 
+            ID="btn_r_cuentas" ImageUrl="~/recursos/ico/refresh.png" runat="server" 
+            ToolTip="Recargar" /></td>
+    <td><asp:Label ID="Label2" runat="server" 
+        Text="Tipo Objeto:" Font-Bold="True"></asp:Label><asp:DropDownList
+        ID="dd_objeto" runat="server" AutoPostBack="True" Width="120px">
+        <asp:ListItem Value="A">Forma</asp:ListItem>
+        <asp:ListItem Value="C">Clase</asp:ListItem>
+    </asp:DropDownList></td>
+  </tr>
+</table>
+
+    </div>
+   
+<asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
+    <ContentTemplate>
+       <asp:Panel ID="pn_a" runat="server" style="padding-top:8px; padding-bottom:8px;">
+            <cc1:Lblcolor ID="lbl_mensaje" runat="server"></cc1:Lblcolor>
+            <br />
+           <asp:Label ID="lbl_forma" runat="server" Text="Label"></asp:Label>
+           :
+           <asp:TextBox ID="txt_forma" runat="server" Width="162px"></asp:TextBox>
+           <asp:ImageButton ID="btn_buscaf" runat="server" 
+               ImageUrl="~/recursos/ico/select.gif" OnClientClick="forma(); return false" />
+           &nbsp;<asp:Label ID="lbl_acceso" runat="server" Text="Nivel Acceso"></asp:Label>
+           &nbsp;<asp:DropDownList ID="dd_acceso" runat="server">
+               <asp:ListItem Value="E">Escritura</asp:ListItem>
+               <asp:ListItem Value="L">Lectura</asp:ListItem>
+           </asp:DropDownList> &nbsp;Fecha Inicio: 
+           <asp:TextBox ID="txt_fi" runat="server" Width="90px" ToolTip="Formato fecha dd/mm/yyyy"></asp:TextBox> &nbsp;Fecha Fin: 
+           <asp:TextBox ID="txt_ff" runat="server" Width="80px" ToolTip="Formato fecha dd/mm/yyyy"></asp:TextBox>&nbsp;<asp:CheckBox ID="chk_estado" runat="server" Checked="True" Text="Estado" />
+           &nbsp;
+           <asp:Button ID="btn_grabar" runat="server" Text="Grabar" />
+        </asp:Panel>
+   
+      <asp:GridView ID="gw" SkinID="gw1" runat="server" 
+          DataKeyNames="estado,USUARIO,OBJETO,SECUENCIA" AutoGenerateColumns="False">
+      
+      
+          <Columns>
+              <asp:BoundField DataField="USUARIO" HeaderText="USUARIO" />
+              <asp:BoundField DataField="OBJETO" HeaderText="OBJETO" />
+              <asp:BoundField DataField="SECUENCIA" HeaderText="SECUENCIA" />
+              <asp:BoundField DataField="NIVEL_ACCESO" HeaderText="NIVEL ACCESO" />
+              <asp:BoundField DataField="INICIO" HeaderText="INICIO" />
+              <asp:BoundField DataField="TERMINO" HeaderText="FIN" />
+              <asp:TemplateField HeaderText="ESTADO">
+                  <ItemTemplate>
+                       <asp:ImageButton ID="btn_elim" runat="server" CommandName="act" CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>"
+                    ImageUrl="~/recursos/ico/si.png" ToolTip="Desactivar Objeto"/>
+                  </ItemTemplate>
+                  <ItemStyle HorizontalAlign="Center" />
+              </asp:TemplateField>
+              <asp:BoundField DataField="USUARIO_REG" HeaderText="USUARIO REG." />
+              <asp:BoundField DataField="FECHA_ACTV" HeaderText="FECHA ACTIV." />
+          </Columns>
+      
+      
+       <PagerTemplate>
+                    <asp:Label ID="Label1" runat="server" Text="Mostrar filas:" />
+                    <asp:DropDownList CssClass="letranormal" ID="RegsPag" runat="server" AutoPostBack="true" OnSelectedIndexChanged="RegsPag_SelectedIndexChanged">
+                     <asp:ListItem Value="2" />
+                        <asp:ListItem Value="15" />
+                        <asp:ListItem Value="20" />
+                        <asp:ListItem Value="30" />
+                          <asp:ListItem Value="40" />
+                    </asp:DropDownList>
+                    &nbsp;
+                    Ir a 
+                    <asp:TextBox ID="IraPag" runat="server" AutoPostBack="true" OnTextChanged="IraPag" CssClass="gopag" />
+                    de
+                    <asp:Label ID="lblTotalNumberOfPages" runat="server" />
+                    &nbsp;
+                    <asp:Button ID="Button4" runat="server" CommandName="Page" ToolTip="Prim. Pag"  CommandArgument="First" CssClass="pagfirst" />                    
+                    <asp:Button ID="Button1" runat="server" CommandName="Page" ToolTip="Pág. anterior"  CommandArgument="Prev" CssClass="pagprev" />
+                    <asp:Button ID="Button2" runat="server" CommandName="Page" ToolTip="Sig. página" CommandArgument="Next" CssClass="pagnext" />                    
+                    <asp:Button ID="Button3" runat="server" CommandName="Page" ToolTip="Últ. Pag"  CommandArgument="Last" CssClass="paglast" />                    
+                </PagerTemplate>
+                
+          <AlternatingRowStyle CssClass="altrowstyle" />
+                
+      </asp:GridView>
+    </ContentTemplate>
+    <Triggers>
+        <asp:AsyncPostBackTrigger ControlID="btn_add" EventName="Click" />
+    </Triggers>
+</asp:UpdatePanel>   
+<div class="gridcontainer">
+      </div>
+     

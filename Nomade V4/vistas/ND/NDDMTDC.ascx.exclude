@@ -1,0 +1,51 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NDDMTDC.ascx.vb" Inherits="vistas_ND_NDDMTDC" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+
+<style type="text/css">
+    .style2
+    {
+        width: 262px;
+    }
+    .style3
+    {
+        width: 97px;
+    }
+</style>
+
+<table border="0" cellspacing="0" cellpadding="1" style="width: 648px">
+  <tr>
+    <td colspan="2">
+        <asp:Label ID="lbl_mensaje" runat="server"></asp:Label>
+        <asp:HiddenField ID="hf_accion" runat="server" />
+      </td>
+  </tr>
+  <tr>
+    <td class="style3">Código</td>
+    <td class="style2">
+        <asp:TextBox ID="txt_id" runat="server" MaxLength="4" Width="50px"></asp:TextBox>
+        <asp:CheckBox ID="chb_estado" runat="server" Checked="true" Text="Activo" />
+            </td>
+  </tr>
+  <tr>
+    <td class="style3">Descripción</td>
+    <td class="style2">
+        <asp:TextBox ID="txt_descripcion" runat="server" Width="366px"></asp:TextBox>
+            </td>
+  </tr>
+  <tr>
+    <td class="style3">&nbsp;</td>
+    <td class="style2">
+        &nbsp;</td>
+  </tr>
+  <tr>
+    <td class="style3">&nbsp;</td>
+    <td class="style2">
+        <asp:Button ID="btn_grabar" runat="server" Text="Grabar" CssClass="boton" />
+            </td>
+  </tr>
+  <tr>
+    <td class="style3">&nbsp;</td>
+    <td class="style2">
+        &nbsp;</td>
+  </tr>
+</table>

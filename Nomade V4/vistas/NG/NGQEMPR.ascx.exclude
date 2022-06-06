@@ -1,0 +1,74 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGQEMPR.ascx.vb" Inherits="vistas_NG_NGQEMPR" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+
+       <cc1:Lblcolor ID="lbl_mensaje" runat="server"></cc1:Lblcolor>
+      <br />
+  <table width="250" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="110"><strong>Empresa</strong> </td>
+    <td class="style1">
+            <asp:TextBox ID="txt_codigo" runat="server" Width="90px"></asp:TextBox>
+            &nbsp;</td>
+    <td><asp:ImageButton ID="btn_busca" runat="server" 
+            ImageUrl="~/recursos/img/btn_buscar.gif" />
+            </td>
+  </tr>
+</table>
+   <br />
+
+   <div class="gridcontainer">
+<asp:GridView ID="gw" runat="server" SkinID="gw1" 
+          AutoGenerateColumns="False" DataKeyNames="CODIGO">
+      
+      
+          <Columns>
+              <asp:BoundField DataField="CODIGO" HeaderText="CODIGO" />
+              <asp:BoundField DataField="DESCRIPCION" HeaderText="DESCRIPCION" />
+              <asp:BoundField DataField="DESC_ESTADO" HeaderText="ESTADO" />
+              <asp:BoundField DataField="DIRECCION" HeaderText="DIRECCION" />
+              <asp:BoundField DataField="RUC" HeaderText="RUC" />
+              <asp:BoundField DataField="USUARIO" HeaderText="USUARIO REG." />
+              <asp:BoundField DataField="FECHA_ACTV" HeaderText="FECHA ACTV." />
+              <asp:TemplateField HeaderText="ACCIONES">
+                  <ItemTemplate>
+                      <a href="?f=ngaempr&p=<%#databinder.eval(container.dataitem,"CODIGO") %>"><img  src="recursos/ico/editar.png" title="Editar" width="18" border="0"/></a>
+                            <cc1:btn_confirm ID="ibtnEliminar" runat="server" ImageUrl="~/recursos/ico/btn_borrar.gif"
+                             ToolTip="Eliminar" UPAO_msg='¿Desea eliminar el registro?' CommandName="Eliminar"
+                            CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>" />
+                    </ItemTemplate>    
+                <%-- </ItemTemplate>
+                                           <td align="right">
+                                                                        <cc3:ConfirmButtonExtender ID="ibtnEliminar" runat="server" ImageUrl="~/recursos/ico/btn_borrar.gif"
+                                                                            ToolTip="Eliminar" UPAO_msg='¿Desea eliminar el registro?' CommandName="Eliminar"
+                                                                            CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>" />
+                                                                    </td>
+
+                  </ItemTemplate> --%>
+              </asp:TemplateField>
+          </Columns>
+      
+      
+       <PagerTemplate>
+                    <asp:Label ID="Label1" runat="server" Text="Mostrar filas:" />
+                    <asp:DropDownList CssClass="letranormal" ID="RegsPag" runat="server" AutoPostBack="true" OnSelectedIndexChanged="RegsPag_SelectedIndexChanged">
+                     <asp:ListItem Value="2" />
+                        <asp:ListItem Value="15" />
+                        <asp:ListItem Value="20" />
+                        <asp:ListItem Value="30" />
+                          <asp:ListItem Value="40" />
+                    </asp:DropDownList>
+                    &nbsp;
+                    Ir a 
+                    <asp:TextBox ID="IraPag" runat="server" AutoPostBack="true" OnTextChanged="IraPag" CssClass="gopag" />
+                    de
+                    <asp:Label ID="lblTotalNumberOfPages" runat="server" />
+                    &nbsp;
+                    <asp:Button ID="Button4" runat="server" CommandName="Page" ToolTip="Prim. Pag"  CommandArgument="First" CssClass="pagfirst" />                    
+                    <asp:Button ID="Button1" runat="server" CommandName="Page" ToolTip="Pág. anterior"  CommandArgument="Prev" CssClass="pagprev" />
+                    <asp:Button ID="Button2" runat="server" CommandName="Page" ToolTip="Sig. página" CommandArgument="Next" CssClass="pagnext" />                    
+                    <asp:Button ID="Button3" runat="server" CommandName="Page" ToolTip="Últ. Pag"  CommandArgument="Last" CssClass="paglast" />                    
+                </PagerTemplate>
+                
+          <AlternatingRowStyle CssClass="altrowstyle" />
+                
+      </asp:GridView></div>

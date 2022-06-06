@@ -1,0 +1,97 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGASCSL.ascx.vb" Inherits="vistas_NG_NGASCSL" %>
+<%--<%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="cc11" %>--%>
+<style type="text/css">
+    .style2
+    {
+        width: 142px;
+        font-weight: bold;
+    }
+</style>
+<table width="900" border="0" cellspacing="0" cellpadding="1">
+  <tr>
+    <td width="85" colspan="2" style="width: 890px">
+        <asp:Label ID="lbl_mensaje" runat="server"></asp:Label>
+      </td>
+  </tr>
+  <tr>
+    <td width="85">&nbsp;</td>
+    <td width="805">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="style2">Código</td>
+    <td>
+        <asp:TextBox runat="server" Width="50px" ID="txt_codigo" MaxLength="4"></asp:TextBox>
+    </td>
+  </tr>
+  <tr>
+    <td class="style2">Empresa</td>
+    <td>
+        <asp:DropDownList ID="dd_empresa" runat="server" Width="300px">
+        </asp:DropDownList>
+    </td>
+  </tr>
+  <tr>
+    <td class="style2">Descripción</td>
+    <td>
+        <asp:TextBox runat="server" Width="310px" ID="txt_descripcion"></asp:TextBox>
+    </td>
+  </tr>
+  <tr>
+    <td>Dirección</td>
+    <td>
+        <asp:TextBox runat="server" Width="310px" ID="txt_direccion"></asp:TextBox>
+    </td>
+  </tr>
+  <tr>
+    <td>Ciudad</td>
+    <td>
+        <asp:TextBox runat="server" Width="150px" ID="txt_ciudad"></asp:TextBox>
+    </td>
+  </tr>
+  <tr>
+    <td class="style2">Fecha Inicio</td>
+    <td>
+        <asp:TextBox runat="server" Width="90px" ID="txt_fecha_inicio" 
+            ToolTip="Formato fecha dd/mm/yyyy"></asp:TextBox>
+            </td>
+  </tr>
+  <tr>
+    <td>Fecha Término</td>
+    <td>
+        <asp:TextBox runat="server" Width="90px" ID="txt_fecha_termino" 
+            ToolTip="Formato fecha dd/mm/yyyy"></asp:TextBox>
+            </td>
+  </tr>
+  <tr>
+    <td>Activo</td>
+    <td>
+        <asp:CheckBox ID="chb_estado" runat="server" Checked="True" />
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
+        &nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
+        <asp:Button ID="btn_grabar" runat="server" Text="Grabar" CssClass="boton" />
+            </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
+        &nbsp;</td>
+  </tr>
+</table>
+<script type="text/javascript">//<![CDATA[
+
+      var cal = Calendar.setup({
+          onSelect: function(cal) { cal.hide() },
+          showTime: true
+      });
+      cal.manageFields("f_btn1", "ctl00_ContentPlaceHolder1_ctl00_ctl00_txt_fecha_inicio", "%d/%m/%Y");
+      cal.manageFields("f_btn2", "ctl00_ContentPlaceHolder1_ctl00_ctl00_txt_fecha_termino", "%d/%m/%Y");
+     
+//]]></script>

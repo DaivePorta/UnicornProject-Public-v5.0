@@ -1,0 +1,596 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+</head>
+<body>
+    <!--modales-->
+
+    <div id="ModalListaContac" class="modal hide">
+        <div class="modal-content" id="Div1">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close" type="button" aria-hidden="true"></button>
+                <h3 id="H1">
+                    <label id="titulo" class="control-label"></label>
+                </h3>
+            </div>
+            <table id="dtContactos" class="display DTTT_selectable" border="0">
+                <thead>
+                    <tr>
+                        <th>Nombres</th>
+                        <th>Tipo</th>
+                        <!--<th>PIDM</th>-->
+                        <th style="display: none">PIDM</th>
+                        <th>Predeterminado</th>
+                        <th>Activo</th>
+                        <th style="display: none">TIPOC</th>
+                    </tr>
+                </thead>
+
+            </table>
+        </div>
+    </div>
+
+    <div id="MuestraModal" style="width: 950px; position: absolute; left: 40%;" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="myModalLabel">
+        <div class="modal-content" id="modal">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close" type="button" aria-hidden="true"></button>
+                <h3 id="H2">Datos Personales</h3>
+            </div>
+            <div class="modal-body" aria-hidden="true">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="txtModalApePaterno">
+                                Apellido Paterno</label>
+                            <div class="controls">
+                                <input type="text" class="span12" id="txtModalApePaterno" placeholder="Apellido Paterno" />
+                            </div>
+                        </div>
+                    </div>
+                    <!--/span-->
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="txtModalApeMaterno">
+                                Apellido Materno</label>
+                            <div class="controls">
+                                <input type="text" class="span12" id="txtModalApeMaterno" placeholder="Apellido Materno" />
+                            </div>
+                        </div>
+                    </div>
+                    <!--/span-->
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="row-fluid">
+                            <div class="control-group">
+                                <label class="control-label" for="txtModalNombres">
+                                    Nombres</label>
+                                <div class="controls">
+                                    <input type="text" class="span12" id="txtModalNombres" placeholder="Nombres" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="row-fluid">
+                            <div class="span6">
+                                <div class="control-group">
+                                    <label class="control-label" for="txtModaldninatural">
+                                        DNI</label>
+                                    <div class="controls">
+                                        <input type="text" class="span12" id="txtModaldninatural" disabled="disabled" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span6">
+                                <div class="control-group">
+                                    <label class="control-label" for="rbModalmasculino">
+                                        Género</label>
+                                    <div class="controls" style="height: 40px;">
+                                        <div class="span4">
+                                            <label>
+                                                <input type="radio" style="width: 15px; height: 15px; margin-top: 0px;" name="sex" value="M" checked="checked" style="opacity: 0;" id="rbModalmasculino" />
+
+                                                Masculino
+                                            </label>
+                                        </div>
+                                        <div class="span4">
+                                            <label>
+
+                                                <input type="radio" style="width: 15px; height: 15px; margin-top: 0px;" name="sex" value="F" style="opacity: 0;" id="rbModalfemenino" />
+
+                                                Femenino
+                                            </label>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="cboModalEstadoCivil">
+                                Estado Civil</label>
+                            <div class="controls">
+                                <select id="cboModalEstadoCivil" class="span12" data-placeholder="Estado Civil">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="txtModalfechanac">
+                                Fecha de Nacimiento</label>
+                            <div class="controls">
+                                <input class="span12 date-picker" type="text" id="txtModalfechanac" data-date-format="dd/mm/yyyy"
+                                    placeholder="dd/mm/yyyy" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="txtModaltelefono">
+                                Teléfono</label>
+                            <div class="controls">
+                                <input type="text" class="span12" id="txtModaltelefono" placeholder="Teléfono" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="txtModalemail">
+                                Email</label>
+                            <div class="controls">
+                                <input type="text" class="span12" id="txtModalemail" placeholder="Email" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a id="grabarModalPersonaNatural" class="btn blue" href="javascript:;"><i class="icon-save"></i>&nbsp;Grabar</a>
+                    <a id="cerrarModalPersonaNatural" class="btn" href="javascript:CerrarModalPersonaNatural();"><i class="icon-remove"></i>&nbsp;Cerrar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ModalFoto" style="width: 520px;" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="myModalLabel">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close" type="button" aria-hidden="true"></button>
+                <h3 id="H4">Cámara</h3>
+            </div>
+            <div class="modal-body" aria-hidden="true">
+
+                <div class="contenedor2">
+                    <div class="titulo">Video</div>
+                    <video id="camara" autoplay></video>
+                </div>
+                <div id='botonera' align="center">
+                    <button id="botonfoto" type="button" class="btn red ">Capturar Imagen</button>
+                </div>
+                <div class="contenedor">
+                    <div class="titulo">Foto</div>
+                    <canvas id="foto"></canvas>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:rptano();" class="btn">Cancelar</a>
+                <a href="javascript:rptasi();" class="btn blue">Insertar</a>
+            </div>
+        </div>
+    </div>
+    <!--fin modales-->
+    <div id="juridica">  
+        <div class="row-fluid">
+            <div class="span4">
+                <div class="span8">
+                    <h3 class="form-section">
+                        Datos Persona Juridica
+                    </h3>
+                </div>
+                <div class="span4">
+                    <h3 id="hidPersona" style="color:#094CB4; font-size:20px;">ID:000000000</h3>
+                </div>
+            </div>
+
+        </div>
+        <div class="row-fluid">
+            <div class="span6">
+                <div class="control-group">
+                    <label class="control-label" for="txtrazonsocial">
+                        Razón Social</label>
+                    <div class="controls">
+                        <input type="text" class="span12" id="txtrazonsocial" placeholder="Razón Social" />
+                    </div>
+                </div>
+            </div>
+            <!--/span-->
+            <div class="span6">
+                <div class="control-group">
+                    <label class="control-label" for="txtnombrecomercial">
+                        Nombre Comercial</label>
+                    <div class="controls">
+                        <input type="text" class="span12" id="txtnombrecomercial" placeholder="Nombre Comercial" />
+                    </div>
+                </div>
+            </div>
+            <!--/span-->
+        </div>
+        <div class="row-fluid">
+            <div class="span2">
+                <div class="control-group">
+                    <label class="control-label" for="txtrucjuridico">
+                        RUC</label>
+                    <div class="controls">
+                        <input type="text" class="span12" id="txtrucjuridico" />
+                    </div>
+                </div>
+            </div>
+            <!--/span-->
+            <div class="span4">
+                <div class="control-group">
+                    <label class="control-label" for="cboTipoContribuyenteJuridica">
+                        Tipo de Contribuyente</label>
+                    <div class="controls">
+                        <select id="cboTipoContribuyenteJuridica" class="span12" data-placeholder="Tipo de Contribuyente">
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!--/span-->
+            <div class="span6">
+                <div class="control-group">
+                    <label class="control-label" for="txtactividad">
+                        Actividad</label>
+                    <div class="controls">
+                        <input type="text" class="span12" id="txtactividad" placeholder="Actividad" data-provide="typeahead" />
+                    </div>
+                </div>
+            </div>
+            <!--/span-->
+        </div>
+        <!--/row-->
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="span6">
+                    <div class="control-group">
+                        <label class="control-label" for="txtdnirepresentante">
+                            Representante. Legal
+                        </label>
+                        <div class="controls">
+                            <input type="text" class="span12" id="txtdnirepresentante" placeholder="Nro. de Documento" />
+                        </div>
+                    </div>
+                </div>
+                <div class="span6">
+                    <div class="control-group">
+                        <label class="control-label">
+                            &nbsp;
+                        </label>
+                        <div class="controls">
+                            <a id="btnVerificarRepresentanteLegal" href="javascript:;" class="span4 btn blue buscar disabled"><i class="icon-search" style="line-height: initial;"></i></a>
+                            <a id="listarRepresentantes" href="javascript:;" class="span4 btn green "><i class="icon-reorder"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="span3">
+                <div class="alert alert-info" id="resrepresentante">
+                    <strong>No se ha seleccionado ninguna Persona</strong>.
+                </div>
+            </div>
+
+            <div class="span3">
+                <div class="span6">
+                    <div class="control-group">
+                        <label class="control-label" for="txtdnicontacto">
+                            Contacto
+                        </label>
+                        <div class="controls">
+                            <input id="txtdnicontacto" class="span12" type="text" placeholder="Nro. de Documento" />
+                        </div>
+                    </div>
+                </div>
+                <div class="span6">
+                    <div class="control-group">
+                        <label class="control-label">
+                            &nbsp;
+                        </label>
+                        <div class="controls">
+                            <!--icon-reorder-->
+                            <!--icon-question-sign-->
+                            <a id="btnVerificarContacto" href="javascript:;" class="span5 btn blue buscar disabled"><i class="icon-search" style="line-height: initial;"></i></a>
+                            <a id="listarContactos" href="javascript:;" class="span4 btn green "><i class="icon-reorder"></i></a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="span3">
+                <div id="rescontacto" class="alert alert-info">
+                    <strong>No se ha seleccionado ninguna Persona</strong>.
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label" for="txtdireccionweb">
+                            Dirección Web
+                        </label>
+                        <div class="controls">
+                            <input type="text" class="span12" id="txtdireccionweb" placeholder="Dirección Web" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label" for="txttelefonoj">
+                            Teléfono
+                        </label>
+                        <div class="controls">
+                            <input type="text" class="span12" id="txttelefonoj" placeholder="Teléfono" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label" for="txtemailj">
+                            Email
+                        </label>
+                        <div class="controls">
+                            <input type="text" class="span12" id="txtemailj" placeholder="Email" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span3">
+                        <div class="control-group">
+                            <label class="control-label" for="chkretencion">
+                                Agente Retención</label>
+                            <div class="controls" align="center">
+                                <label class="checkbox">
+                                    <input type="checkbox" style="width: 15px; height: 15px;" id="chkretencion" value="N" />
+                                    SI
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3">
+                        <div class="control-group">
+                            <label class="control-label" for="txtfecharetencion">
+                                Desde</label>
+                            <div class="controls">
+                                <input type="text" class="span12 date-picker" id="txtfecharetencion" data-date-format="dd/mm/yyyy" disabled="disabled" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3">
+                        <div class="control-group">
+                            <label class="control-label" for="chkpercepcion">
+                                Agen. Percepción</label>
+                            <div class="controls" align="center">
+                                <label class="checkbox">
+                                    <input type="checkbox" style="width: 15px; height: 15px;" id="chkpercepcion" value="N" />
+                                    SI
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3">
+                        <div class="control-group">
+                            <label class="control-label" for="txtfechapercepcion">
+                                Desde</label>
+                            <div class="controls">
+                                <input type="text" class="span12" id="txtfechapercepcion" data-date-format="dd/mm/yyyy" disabled="disabled" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+
+                    <div class="span3">
+                        <div class="control-group">
+                            <label class="control-label" for="chkBuenContribuyente">
+                                Buen Contrib.</label>
+                            <div class="controls" align="center">
+                                <label class="checkbox">
+                                    <input type="checkbox" style="width: 15px; height: 15px;" id="chkBuenContribuyente" value="N" />
+                                    SI
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span3">
+                        <div class="control-group">
+                            <label class="control-label" for="txtFechaBuenContribuyente">
+                                Desde</label>
+                            <div class="controls">
+                                <input type="text" class="span12" id="txtFechaBuenContribuyente" data-date-format="dd/mm/yyyy" disabled="disabled" />
+                            </div>
+                        </div>
+                    </div>
+
+                        <div class="span3">
+                            <div class="control-group">
+                                <label class="control-label" for="rbrelano">
+                                    Es Relacionada
+                                </label>
+                                <div class="controls">
+                                    <div class="span6">
+                                        <label>
+                                            <input style="width: 15px; height: 15px; margin-top: 0px;" type="radio" name="rela" value="S" id="rbrelasi" />
+                                            Si
+                                        </label>
+                                    </div>
+                                    <div class="span6">
+                                        <label>
+                                            <input style="width: 15px; height: 15px; margin-top: 0px;" type="radio" name="rela" value="N" checked="checked" id="rbrelano" />
+                                            No
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="span3">
+                            <div class="control-group">
+                                <label class="control-label" for="cboEmpresa">
+                                    &nbsp;
+                                </label>
+                                <div class="controls">
+                                    <select class="span12" id="cboEmpresa" multiple="multiple" style="height: 100%;" disabled="disabled"></select>
+                                </div>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+
+            <div class="span6">
+                <div class="span6">
+
+                    <div class="row-fluid">
+                        <div class="control-group">
+                            <label class="control-label" for="txtinicioactividad">
+                                Inicio de Actividad
+                            </label>
+                            <div class="controls">
+                                <input type="text" class="span5 date-picker" placeholder="dd/mm/yyyy" id="txtinicioactividad" data-date-format="dd/mm/yyyy" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid">
+                        <div class="control-group">
+                            <label class="control-label" for="txtCondSunat">
+                                Condicion Sunat
+                            </label>
+                            <div class="controls">
+                                <input type="text" class="span12" id="txtCondSunat" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid">
+                        <div class="control-group">
+                            <label class="control-label" for="txtEstaSunat">
+                                Estado Sunat
+                            </label>
+                            <div class="controls">
+                                <input type="text" class="span12" id="txtEstaSunat" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid">
+                        <a id="btnHabido" class="btn orange span6 tooltips" data-toggle="modal" data-original-title="Consultar Sunat" style="display:none"><i class="icon-refresh"></i>&nbsp;¿Habido?</a>
+                    </div>
+
+                    
+
+                </div>
+
+                <div class="span6">
+                    <div class="row-fluid">
+                        <ul class="thumbnails">
+                            <li class="span7" style="margin-bottom: 0px;">
+                                <img id="imgRUC" style="height: 180px; width: 150px;" class="thumbnail" src="../../recursos/img/150x200.gif" />
+                                <div class="span12">
+                                    <input type="file" style="display: none;" class="btn lightblue" id="fileRUC" value="../../recursos/img/150x200.gif" />
+                                    <div class="span12" style="margin-top: 5px; margin-left: 0px;">
+                                        <button type="button" id="Button1" onclick="javascript:TomaFoto();" class="span10 btn purple"><i class="icon-camera"></i>Tomar Foto</button>
+                                    </div>
+                                </div>
+
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-actions" id="acciones">
+            <a id="grabarPersona" class="btn blue" href="javascript:GrabarPersona();"><i class="icon-save"></i>&nbsp;Grabar</a>
+            <a href="javascript:CancelarOperacion();" class="btn"><i class="icon-remove"></i>&nbsp;Cancelar</a>
+        </div>
+
+
+    </div>
+</body>
+
+<div id="modal-habido" class="modal hide">
+    <div class="modal-header">
+        <button data-dismiss="modal" class="close" type="button"></button>
+        <h4>Condición Cliente</h4>
+    </div>
+    <div class="modal-body" id="divConsultaHabido">
+        <div >
+            <div class="row-fluid">
+                <div class="span2 offset1">
+                    <p>
+                        ESTADO:
+                    </p>
+                </div>
+                <div class="span3">
+                    <b>
+                        <p id="lblEstadoSunat">
+                            Verificando...
+                        </p>
+                    </b>
+
+                </div>
+
+                <div class="span2">
+                    <p>
+                        CONDICIÓN:
+                    </p>
+                </div>
+                <div class="span4 ">
+                    <b>
+                        <p id="spanVerificando">
+                            Verificando...
+                        </p>
+                    </b>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span10 offset1" id="no_existe" style="display: none; text-align: center;">
+                    <p>El número de RUC <span id="mnro"></span>consultado no es válido.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row-fluid" style="margin-top: 10px;">
+            <div class="span3">
+            </div>
+            <div class="span6">
+                <div class="span12">
+                    <a class="btn blue" id="btnActualizarDS" ><i class="icon-refresh"></i>&nbsp;Cambiar datos Contribuyente</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

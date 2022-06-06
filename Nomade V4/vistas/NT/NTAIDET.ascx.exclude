@@ -1,0 +1,336 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NTAIDET.ascx.vb" Inherits="vistas_NT_NTAIDET" %>
+<style type="text/css">
+
+
+    .style1
+    {
+        width: 321px;
+    }
+    </style>
+  <script type="text/javascript">  
+    function telefonos() {
+    p = dhtmlmodal.open('Telefonos', 'iframe', 'validacion.aspx?f=FVPTELE&cod=<%=cod %>&per=<%=per %>&usu=<%=Me.Usuario %>', 'Mas Telefonos', 'width=670px,height=420px,center=1,resize=1,scrolling=1')
+
+    p.onclose = function() { //Define custom code to run when window is closed
+
+        return true //allow closing of window
+    }
+} //End "opennewsletter" function
+
+function direcciones() {
+    p = dhtmlmodal.open('Direcciones', 'iframe', 'validacion.aspx?f=FVPDIRE&cod=<%=cod %>&per=<%=per %>&usu=<%=Me.Usuario %>', 'Mas Direcciones', 'width=670px,height=420px,center=1,resize=1,scrolling=1')
+
+    p.onclose = function() { //Define custom code to run when window is closed
+
+        return true //allow closing of window
+    }
+} //End "opennewsletter" function
+
+function cuentas() {
+    p = dhtmlmodal.open('Cuentas', 'iframe', 'validacion.aspx?f=FVPCUEN&cod=<%=cod %>&per=<%=per %>&usu=<%=Me.Usuario %>', 'Mas Cuentas', 'width=670px,height=420px,center=1,resize=1,scrolling=1')
+
+    p.onclose = function() { //Define custom code to run when window is closed
+
+        return true //allow closing of window
+    }
+} //End "opennewsletter" function
+
+
+function correos() {
+    p = dhtmlmodal.open('Correos', 'iframe', 'validacion.aspx?f=FVPCORR&cod=<%=cod %>&per=<%=per %>&usu=<%=Me.Usuario %>', 'Mas Correos', 'width=670px,height=420px,center=1,resize=1,scrolling=1')
+
+    p.onclose = function() { //Define custom code to run when window is closed
+
+        return true //allow closing of window
+    }
+} //End "opennewsletter" function
+
+function comentarios() {
+    p = dhtmlmodal.open('Comentarios', 'iframe', 'validacion.aspx?f=FVPCMNT&cod=<%=cod %>&per=<%=per %>&usu=<%=Me.Usuario %>', 'Mas Comentarios', 'width=670px,height=420px,center=1,resize=1,scrolling=1')
+
+    p.onclose = function() { //Define custom code to run when window is closed
+
+        return true //allow closing of window
+    }
+} //End "opennewsletter" function
+
+</script>
+
+<table border="0" cellpadding="4" cellspacing="0" width="900">
+    <tr>
+        <td colspan="2">
+            <asp:Label ID="lbl_mensaje" runat="server"></asp:Label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Codigo</td>
+        <td class="style1">
+            <asp:TextBox ID="txt_id" runat="server" Width="94px"></asp:TextBox>
+            &nbsp;Autogenerado<asp:HiddenField ID="hf_pidm" runat="server" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Persona</td>
+        <td class="style1">
+            <asp:TextBox ID="txt_persona" runat="server" Width="300px"></asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td width="110">
+            Tipo Persona</td>
+        <td width="786">
+            <asp:RadioButtonList ID="rdb_tipo_persona" runat="server" AutoPostBack="True" 
+                RepeatDirection="Horizontal" Width="191px">
+                <asp:ListItem Selected="True" Value="N">Natural</asp:ListItem>
+                <asp:ListItem Value="J">Juridica</asp:ListItem>
+            </asp:RadioButtonList>
+        </td>
+    </tr>
+    
+    <tr>
+        <td colspan="2">
+            <asp:Panel ID="pnl_natural" runat="server">
+                <table>
+                    <tr>
+                        <td width="110">
+                            <strong>Natural</strong></td>
+                        <td width="786">
+                            &nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Apellido paterno
+                        </td>
+                        <td>
+                            <asp:TextBox ID="txt_apellido_paterno" runat="server" Width="340px"></asp:TextBox>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Apellido materno
+                        </td>
+                        <td>
+                            <asp:TextBox ID="txt_apellido_materno" runat="server" Width="340px"></asp:TextBox>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Nombres</td>
+                        <td>
+                            <asp:TextBox ID="txt_nombre" runat="server" Width="270px"></asp:TextBox>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            DNI</td>
+                        <td>
+                            <asp:TextBox ID="txt_dni" runat="server" MaxLength="8" Width="120px"></asp:TextBox>
+                            </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Banco:</td>
+                        <td>
+                            <asp:DropDownList ID="ddl_banco_nat" runat="server">
+                            </asp:DropDownList>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            N° Cuenta</td>
+                        <td>
+                            <asp:TextBox ID="txt_cuenta_nat" runat="server" Width="340px"></asp:TextBox>
+                            <asp:ImageButton ID="btn_mas_telefonos_nat0" runat="server" 
+                                ImageUrl="~/recursos/ico/m_formacion.gif" 
+                                OnClientClick="cuentas(); return false" ToolTip="Mas Telefonos" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Fecha Nac.</td>
+                        <td>
+                            <asp:TextBox ID="txt_fecha_nac" runat="server" Width="110px"></asp:TextBox>
+                            <img ID="f_btn1" 
+                                src="../../../../../../../../../../../recursos/ico/calendario.jpg" />&nbsp;&nbsp;&nbsp; 
+                            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Telefono&nbsp;
+                            <asp:TextBox ID="txt_telefono_nat" runat="server" Width="106px"></asp:TextBox>
+                            <asp:ImageButton ID="btn_mas_telefonos_nat" runat="server" 
+                                ImageUrl="~/recursos/ico/n_tel.png" 
+                                OnClientClick="telefonos(); return false" ToolTip="Mas Telefonos" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Direccion</td>
+                        <td>
+                            <asp:TextBox ID="txt_direccion_nat" runat="server" Width="340px"></asp:TextBox>
+                            &nbsp;<asp:ImageButton ID="btn_mas_direcciones_nat" runat="server" 
+                                ImageUrl="~/recursos/ico/biblio.png" 
+                                OnClientClick="direcciones(); return false" ToolTip="Mas Direcciones" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Email</td>
+                        <td>
+                            <asp:TextBox ID="txt_email_nat" runat="server" Width="340px"></asp:TextBox>
+                            &nbsp;<asp:ImageButton ID="btn_mas_correos_nat" runat="server" 
+                                ImageUrl="~/recursos/ico/n_correo.png" 
+                                OnClientClick="correos(); return false" ToolTip="Mas Correos" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Comentarios</td>
+                        <td>
+                            <asp:TextBox ID="txt_comentarios_nat" runat="server" Height="72px" 
+                                TextMode="MultiLine" Width="340px"></asp:TextBox>
+                            &nbsp;<asp:ImageButton ID="btn_mas_comentarios_nat" runat="server" 
+                                ImageUrl="~/recursos/ico/n_com.png" 
+                                OnClientClick="comentarios(); return false" ToolTip="Mas Comentarios" 
+                                style="width: 16px" />
+                        </td>
+                    </tr>
+                </table>
+            </asp:Panel>
+            <asp:Panel ID="pnl_juridico" runat="server">
+                <table>
+                    <tr>
+                        <td width="110">
+                            <strong>Juridica</strong></td>
+                        <td>
+                            &nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Razón social
+                        </td>
+                        <td>
+                            <asp:TextBox ID="txt_razon_social" runat="server" Width="340px"></asp:TextBox>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Contacto</td>
+                        <td>
+                            <asp:TextBox ID="txt_contacto" runat="server" Width="340px"></asp:TextBox>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Repre. Legal
+                        </td>
+                        <td>
+                            <asp:TextBox ID="txt_rep_legal" runat="server" Width="340px"></asp:TextBox>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            RUC</td>
+                        <td>
+                            <asp:TextBox ID="txt_ruc_jur" runat="server" Width="120px" 
+                            MaxLength="11"></asp:TextBox>
+                        </td>
+                    </tr>    
+                    <tr>
+                        <td>
+                            Banco:</td>
+                        <td>
+                            <asp:DropDownList ID="ddl_banco_jud" runat="server">
+                            </asp:DropDownList>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            N° Cuenta</td>
+                        <td>
+                            <asp:TextBox ID="txt_cuenta_jur" runat="server" Width="340px"></asp:TextBox>
+                            <asp:ImageButton ID="btn_mas_telefonos_nat1" runat="server" 
+                                ImageUrl="~/recursos/ico/m_formacion.gif" 
+                                OnClientClick="cuentas(); return false" ToolTip="Mas Telefonos" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Fecha Nac</td>
+                        <td>
+                                            <asp:TextBox ID="txt_fecha_ini_act" runat="server" 
+                                Width="110px"></asp:TextBox>
+                                            <img ID="f_btn2" 
+                                                src="../../../../../../../../../../../recursos/ico/calendario.jpg" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 
+                                            &nbsp;&nbsp;&nbsp;&nbsp; Telefono&nbsp;&nbsp;
+                                            <asp:TextBox ID="txt_telefono_jur" runat="server" Width="105px"></asp:TextBox>
+                                            &nbsp;<asp:ImageButton ID="btn_mas_telefonos_jur" runat="server" 
+                                                ImageUrl="~/recursos/ico/n_tel.png" 
+                                                OnClientClick="telefonos(); return false" ToolTip="Mas Telefonos" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Direccion</td>
+                        <td>
+                            <asp:TextBox ID="txt_direccion_jur" runat="server" Width="340px"></asp:TextBox>
+                            &nbsp;<asp:ImageButton ID="btn_mas_direcciones_jur" runat="server" 
+                                ImageUrl="~/recursos/ico/biblio.png" 
+                                OnClientClick="direcciones(); return false" ToolTip="Mas Direcciones" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Email</td>
+                        <td>
+                            <asp:TextBox ID="txt_email_jur" runat="server" Width="340px"></asp:TextBox>
+                            &nbsp;<asp:ImageButton ID="btn_mas_correos_jur" runat="server" 
+                                ImageUrl="~/recursos/ico/n_correo.png" OnClientClick="correos(); return false" 
+                                ToolTip="Mas Correos" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Web</td>
+                        <td>
+                            <asp:TextBox ID="txt_web" runat="server" Width="340px"></asp:TextBox>
+                            &nbsp;</td>
+                    </tr>
+                </table>
+            </asp:Panel>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            &nbsp;</td>
+        <td>
+            <asp:CheckBoxList ID="chb_tipo" runat="server" RepeatDirection="Horizontal" 
+                Width="400px" AutoPostBack="True">
+                <asp:ListItem Value="C">Es Cliente</asp:ListItem>
+                <asp:ListItem Value="P">Es Negocio</asp:ListItem>
+                <asp:ListItem Value="A">Es Persona Aider</asp:ListItem>
+            </asp:CheckBoxList>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            &nbsp;</td>
+        <td>
+            <asp:CheckBoxList ID="CheckBoxList1" runat="server" Visible="False">
+                <asp:ListItem Value="1">Fundador</asp:ListItem>
+                <asp:ListItem Value="1">Club Fundador</asp:ListItem>
+                <asp:ListItem Value="1">Club del Software</asp:ListItem>
+                <asp:ListItem Value="1">Equipo de Apoyo</asp:ListItem>
+                <asp:ListItem Value="1">Equipo de Estrategia</asp:ListItem>
+            </asp:CheckBoxList>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            &nbsp;</td>
+        <td>
+            <asp:Button ID="btn_grabar" runat="server" CssClass="boton" Text="Grabar" />
+        </td>
+    </tr>
+    </table>
+
+
+    

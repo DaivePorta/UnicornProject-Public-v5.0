@@ -1,0 +1,40 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NDDGINI.ascx.vb" Inherits="vistas_ND_NDDGINI" %>
+<div style="text-align:right;">
+    
+<table  border="0" width="100%">
+  <tr>
+    <td><b>Codigo:</b> <asp:TextBox ID="txt_codigo" runat="server" Width="80px" SkinID="xxx"></asp:TextBox>&nbsp;&nbsp;<asp:TextBox ID="txt_titulo" runat="server" ToolTip="Filtrar por titulo"  SkinID="xxx"></asp:TextBox></td>
+    <td width="30"><asp:ImageButton ID="btn_busca" runat="server" ImageUrl="~/recursos/ico/btn_buscar.gif" /></td>
+  </tr>
+</table>
+</div>
+<asp:GridView ID="gw" runat="server" AutoGenerateColumns="False" 
+            SkinID="gw1">
+            <Columns>
+                <asp:BoundField DataField="CODE" HeaderText="CODIGO" />
+                <asp:BoundField DataField="SEQ" HeaderText="SEC." />
+                <asp:BoundField DataField="CTLG" HeaderText="CATALOGO" />
+                <asp:BoundField DataField="ORGN" HeaderText="ORGAN." />
+                <asp:BoundField DataField="TITULO" HeaderText="TITULO" />
+                
+                <asp:BoundField DataField="COMPL" HeaderText="COMPL." />
+                <asp:BoundField DataField="APROB" HeaderText="APROB" />
+                <asp:BoundField DataField="PUBL" HeaderText="PUBL" />
+                <asp:BoundField DataField="ESTA" HeaderText="ESTADO" />
+                <asp:BoundField DataField="USUA" HeaderText="USUARIO" />
+                <asp:BoundField DataField="FECHA_ACTV" HeaderText="FECHA ACTV" />
+                <asp:TemplateField HeaderText="Acciones">
+                    <ItemTemplate>
+                        
+                    
+                        <img src="recursos/ico/icoRojo.gif" border="0" onclick="javascript: fn_mostrar_doc(getValue());"/></a>
+                    &nbsp;&nbsp;<img src="recursos/ico/word.gif"/>
+                    &nbsp;&nbsp;<img src="recursos/ico/pdf.gif"/>
+                    &nbsp;&nbsp;
+                    <a href="?f=nddadoc&d=<%#eval("CODE") %>"><img src="recursos/ico/m_temario.gif" border="0"/></a>
+                     &nbsp;&nbsp;<img src="recursos/ico/btn_editar.gif" border="0"/>
+                    &nbsp;&nbsp;<img src="recursos/ico/btn_borrar.gif"/>
+                    </ItemTemplate>
+                </asp:TemplateField>
+            </Columns>
+        </asp:GridView>

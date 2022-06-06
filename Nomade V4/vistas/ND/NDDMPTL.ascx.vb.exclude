@@ -1,0 +1,85 @@
+﻿Imports System.Data
+
+Partial Class vistas_ND_NDDMPTL
+    Inherits Nomade.N.Cub
+
+    Dim malerta As Label
+    Dim v_p As String
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        malerta = Page.Master.FindControl("alerta")
+        Me.malerta.Text = ""
+        v_p = Request.QueryString("p")
+        Listar_Tipo_Dcto()
+        If (v_p <> String.Empty) Then
+            Me.hf_accion.Value = "E"
+            carga()
+        End If
+    End Sub
+
+    Private Sub carga()
+        Dim c As New NOMADE.Documentos.docu.plantilla("Bn")
+        Dim dt As DataTable = c.dame_plantilla(v_p)
+        c = Nothing
+        Me.txt_id.Enabled = False
+        If Not (dt Is Nothing) Then
+            For Each MiDataRow As DataRow In dt.Rows
+                Me.txt_id.Text = MiDataRow("CODE").ToString
+                Me.txt_descripcion.Text = MiDataRow("DESC").ToString
+                Me.txt_texto_base.Text = MiDataRow("FORMATOBASE").ToString
+                Me.dd_tipo_dcto.SelectedValue = MiDataRow("TIPO_DCTO").ToString
+                Me.chb_estado.Checked = IIf(MiDataRow("ESTADO").ToString = "A", True, False)
+                Me.hf_accion.Value = "E"
+                malerta.Text = "Editar: " & Me.txt_id.Text
+
+            Next
+        End If
+    End Sub
+
+    Protected Sub btn_grabar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabar.Click
+        Try
+
+            Dim msg As String
+
+            If (Me.txt_id.Text = String.Empty) Then
+                lbl_mensaje.Text = NOMADE.N.msg.alerta("Ingrese un código de plantilla", "W")
+                Exit Sub
+            End If
+
+            If (Me.dd_tipo_dcto.SelectedValue = String.Empty) Then
+                lbl_mensaje.Text = Nomade.N.msg.alerta("Seleccione un tipo de documento", "W")
+                Exit Sub
+            End If
+
+            Dim c As New NOMADE.Documentos.docu.plantilla("bn")
+            If (v_p = String.Empty) Then
+                msg = c.CREAR_PLANTILLA(Me.txt_id.Text, Me.txt_descripcion.Text, Me.txt_texto_base.Text, _
+                            IIf(Me.chb_estado.Checked = True, "A", "I"), _
+                            Me.usuario, Me.dd_tipo_dcto.SelectedValue)
+            Else
+                msg = c.ACTUALIZAR_PLANTILLA(Me.txt_id.Text, Me.txt_descripcion.Text, Me.txt_texto_base.Text, _
+                                    IIf(Me.chb_estado.Checked = True, "A", "I"), _
+                                    Me.usuario, Me.dd_tipo_dcto.SelectedValue)
+            End If
+            c = Nothing
+            If (msg = "OK") Then
+                lbl_mensaje.Text = NOMADE.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+            Else
+                lbl_mensaje.Text = NOMADE.N.msg.alerta("Error al crear una plantilla de documento", "W")
+            End If
+        Catch ex As Exception
+            Me.lbl_mensaje.Text = NOMADE.N.msg.alerta("Error: " + ex.Message, "W")
+        End Try
+    End Sub
+
+    Private Sub Listar_Tipo_Dcto()
+        Dim l As New ListItem
+        Dim oTipoDcto As New Nomade.Documentos.docu.Tipo_Dcto("bn")
+        Me.dd_tipo_dcto.DataSource = oTipoDcto.Listar_Tipo_Dcto
+        oTipoDcto = Nothing
+        Me.dd_tipo_dcto.DataTextField = "desc"
+        Me.dd_tipo_dcto.DataValueField = "code"
+        Me.dd_tipo_dcto.DataBind()
+        dd_tipo_dcto.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+End Class

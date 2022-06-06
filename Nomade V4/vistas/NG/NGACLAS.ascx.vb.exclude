@@ -1,0 +1,98 @@
+﻿Imports System.Data
+
+Partial Class vistas_NG_NGACLAS
+    Inherits Nomade.N.Cub
+    Dim malerta As Label
+    Dim v_Clase As String
+
+    Private Sub carga_sistema(ByVal v_sistema As String)
+        Dim l As New ListItem
+        Dim c As New Nomade.seguridad.csistema("bn")
+        Me.dd_sistema.DataSource = c.dame_sistema(v_sistema)
+        c = Nothing
+        Me.dd_sistema.DataTextField = "desc"
+        Me.dd_sistema.DataValueField = "code"
+        Me.dd_sistema.DataBind()
+        dd_sistema.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        malerta = Page.Master.FindControl("alerta")
+        Me.malerta.Text = ""
+        v_Clase = Request.QueryString("p")
+        'Response.Write(forma)
+        If Not Page.IsPostBack Then
+            carga_sistema("")
+            If (v_Clase <> String.Empty) Then
+                carga_editar(v_Clase)
+                Me.txt_codigo.Attributes.Add("readonly", "true")
+                Me.txt_codigo.CssClass = "f_inputl"
+            End If
+        End If
+
+
+    End Sub
+
+    Private Sub carga_editar(ByVal p_CODIGO As String)
+        Dim oClase As New Nomade.seguridad.cobjeto("Bn")
+        Dim dt As DataTable
+        dt = oClase.BUSCAR_CLASE(p_CODIGO, "", "")
+        If Not (dt Is Nothing) Then
+            For Each MiDataRow As DataRow In dt.Rows
+                Me.txt_codigo.Text = p_CODIGO
+                Me.txt_descripcion.Text = MiDataRow("DESCRIPCION").ToString
+                Me.dd_sistema.SelectedValue = MiDataRow("SISTEMA").ToString
+            Next
+        End If
+        oClase = Nothing
+    End Sub
+
+    Protected Sub btn_grabar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabar.Click
+        Try
+
+            Dim msg As String
+            ' v_tipoper = dd_tipo_persona.SelectedValue
+
+            If (txt_codigo.Text = String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Ingrese el Código de la clase", "W")
+                'malerta.Text = "Error: Ingrese nombre"
+                Exit Sub
+            End If
+            If (dd_sistema.SelectedValue = String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Seleccione el sistema", "W")
+                'malerta.Text = "Error: Ingrese nombre"
+                Exit Sub
+            End If
+
+            If (txt_descripcion.Text = String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Ingrese la descripción", "W")
+                'malerta.Text = "Error: Ingrese nombre"
+                Exit Sub
+            End If
+
+            Dim c As New Nomade.seguridad.cobjeto("bn")
+            'Dim v_menu As String
+            If (v_Clase = String.Empty) Then
+                msg = c.CREAR_CLASE(Me.txt_codigo.Text.ToUpper, Me.txt_descripcion.Text, _
+                                    dd_sistema.SelectedValue, Me.usuario)
+            Else
+                'Response.Write("actualizar")
+                msg = c.ACTUALIZAR_CLASE(v_Clase, Me.txt_descripcion.Text, _
+                                            dd_sistema.SelectedValue, Me.usuario)
+            End If
+
+            c = Nothing
+            If (msg <> String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+
+            Else
+                malerta.Text = NOMADE.N.msg.alerta("Error al crear el registro", "W")
+                'malerta.Text = "warning:"
+
+            End If
+        Catch ex As Exception
+            Me.malerta.Text = NOMADE.N.msg.alerta("Error: " + ex.Message, "W")
+            'malerta.Text = "Error:"
+        End Try
+    End Sub
+End Class

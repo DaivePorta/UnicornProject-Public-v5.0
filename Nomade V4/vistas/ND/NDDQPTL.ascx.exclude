@@ -1,0 +1,58 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NDDQPTL.ascx.vb" Inherits="vistas_ND_NDDQPTL" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+  
+  <style type="text/css">
+      .style3
+      {
+          font-weight: bold;
+      }
+  </style>
+  
+  <table border="0">
+  <tr>
+    <td >
+        Código</td>
+    <td >
+        <asp:TextBox ID="txt_id" runat="server" Width="70px"></asp:TextBox>
+    </td>
+    <td >
+        &nbsp;</td>
+    <td>
+        Descripción
+        <asp:TextBox ID="txt_desc" runat="server" Width="316px"></asp:TextBox>
+      </td>
+    <td><asp:ImageButton ID="btn_busca" runat="server" 
+            ImageUrl="~/recursos/img/btn_buscar.gif" />
+       </td>
+  </tr>
+  
+</table>
+<div class="linea"><br /></div>
+<div class="gridcontainer">
+
+<asp:GridView ID="gw" runat="server" AutoGenerateColumns="False" 
+            SkinID="gw1" DataKeyNames="CODIGO">
+            <Columns>
+              <asp:BoundField DataField="CODIGO" HeaderText="CODIGO" />
+              <asp:BoundField DataField="DESCRIPCION" HeaderText="DESCRIPCION" />
+              <asp:BoundField DataField="ESTADO" HeaderText="ESTADO" />              
+              <asp:BoundField DataField="TIPO_DCTO" HeaderText="TIPO DCTO"/>
+              <asp:BoundField DataField="USUARIO" HeaderText="USUARIO"/>
+              <asp:BoundField DataField="FECHA_ACTV" HeaderText="FECHA ACTV." />
+                <asp:TemplateField HeaderText="Acciones">
+                    <ItemTemplate>
+
+                    
+                    <a href="?f=nddmptl&p=<%#eval("CODIGO") %>" title="Editar Plantilla"><img src="recursos/ico/btn_editar.gif" border="0"/></a>
+                                        
+                    <asp:ImageButton ID="btn_elim" runat="server" CommandName="eli" CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>"
+                    ImageUrl="~/recursos/ico/btn_borrar.gif" ToolTip="Eliminar Plantilla"/>
+                    
+                    </ItemTemplate>
+                </asp:TemplateField>
+            </Columns>
+        </asp:GridView>
+
+ 
+                
+      </asp:GridView></div>

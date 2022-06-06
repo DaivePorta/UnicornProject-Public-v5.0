@@ -1,0 +1,140 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGAOCLA.ascx.vb" Inherits="vistas_NG_NGAOCLA" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+<%--  <%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="cc2" %>--%>
+  <script type="text/javascript">
+
+function forma(){
+	p=dhtmlmodal.open('forma', 'iframe', 'validacion.aspx?f=FVIFORM&cod=<%=cod %>', 'Asignar forma a usuario', 'width=840px,height=500px,center=1,resize=1,scrolling=1')
+
+p.onclose=function(){ //Define custom code to run when window is closed
+	var theform=this.contentDoc.forms[0] //Access first form inside iframe just for your reference
+	var iframedoc=this.contentDoc
+	var pp=this.contentDoc.getElementById("ctl13_ph")
+	
+	document.getElementById('<% = txt_forma.ClientID%>').value=pp.value
+		
+		return true //allow closing of window
+}
+}
+
+
+
+</script>
+  <table border="0">
+  <tr>
+    <td width="20">
+        <strong>CLASE</strong></td>
+    <td >
+        <asp:TextBox ID="txt_id" runat="server" Width="248px"></asp:TextBox>
+      </td>
+    <td >
+        &nbsp;</td>
+    <td>
+        &nbsp;</td>
+      <td>
+&nbsp;</td>
+            <asp:HiddenField ID="hf_usuario" runat="server" />
+    <td><asp:ImageButton ID="btn_busca" runat="server" 
+            ImageUrl="~/recursos/img/btn_buscar.gif" Style="left: 0px; visibility: hidden; position: absolute"/>
+       </td>
+  </tr>
+  
+</table>
+<div class="linea"><br /> </div>
+<div style="padding-bottom:6px; text-align:right">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="70%"></td>
+    <td>
+      </td>
+    <td><asp:ImageButton
+            ID="btn_add" runat="server" ImageUrl="~/recursos/ico/add.png" 
+             ToolTip="Agregar"/>&nbsp;&nbsp;<asp:ImageButton
+            ID="btn_agregar" runat="server" ImageUrl="~/recursos/ico/add.png" 
+             ToolTip="Agregar" Visible="False"/>&nbsp;&nbsp;<asp:ImageButton 
+            ID="btn_r_cuentas" ImageUrl="~/recursos/ico/refresh.png" runat="server" 
+            ToolTip="Recargar" /></td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+
+    </div>
+   
+<%--<asp:UpdatePanel ID="UpdatePanel1" runat="server">
+    <ContentTemplate>
+       <asp:Panel ID="pn_a" runat="server" style="padding-top:8px; padding-bottom:8px;">
+            <cc1:Lblcolor ID="lbl_mensaje" runat="server"></cc1:Lblcolor>
+            <br />
+           <asp:Label ID="lbl_forma" runat="server" Text="Objeto"></asp:Label>
+           :
+           <asp:TextBox ID="txt_forma" runat="server" Width="120px"></asp:TextBox>
+           <asp:ImageButton ID="btn_buscaf" runat="server" 
+               ImageUrl="~/recursos/ico/select.gif" OnClientClick="forma(); return false" />
+           &nbsp;<asp:Label ID="lbl_acceso" runat="server" Text="Nivel Acceso"></asp:Label>
+           &nbsp;<asp:DropDownList ID="dd_acceso" runat="server">
+               <asp:ListItem Value="E">Escritura</asp:ListItem>
+               <asp:ListItem Value="L">Lectura</asp:ListItem>
+           </asp:DropDownList> &nbsp;&nbsp;&nbsp;&nbsp;<asp:Button ID="btn_grabar" runat="server" Text="Grabar" />
+        </asp:Panel>
+   <cc1:Lblcolor ID="lbl_msg1" runat="server"></cc1:Lblcolor>
+      <asp:GridView ID="gw" SkinID="gw1" runat="server" 
+          DataKeyNames="CLASE,OBJETO" AutoGenerateColumns="False">
+      
+      
+          <Columns>
+              <asp:BoundField DataField="CLASE" HeaderText="CLASE" />
+              <asp:BoundField DataField="OBJETO" HeaderText="OBJETO" />
+              <asp:BoundField DataField="DESC_OBJETO" HeaderText="DESC_OBJETO" />
+              <asp:BoundField DataField="NIVEL_ACCESO" HeaderText="NIVEL ACCESO" />
+              <asp:BoundField DataField="USUARIO" HeaderText="USUARIO REG." />
+              <asp:BoundField DataField="FECHA_ACTV" HeaderText="FECHA ACTV." />
+              <asp:TemplateField HeaderText="ACCIONES">
+                <ItemTemplate>
+                    <%--<asp:ImageButton ID="btn_elim" runat="server" CommandName="eli" CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>"
+                    ImageUrl="~/recursos/ico/btn_borrar.gif" ToolTip="Eliminar Objeto"/>--%>
+                    <%--<td align="right">
+                         <cc2:btn_confirm ID="ibtnEliminar" runat="server" ImageUrl="~/recursos/ico/btn_borrar.gif"
+                             ToolTip="Eliminar" UPAO_msg='¿Desea eliminar el registro?' CommandName="Eliminar"
+                            CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>" />
+                    </td>--%>
+                    <cc1:btn_confirm ID="ibtnEliminar" runat="server" ImageUrl="~/recursos/ico/btn_borrar.gif"
+                             ToolTip="Eliminar" UPAO_msg='¿Desea eliminar el registro?' CommandName="Eliminar"
+                            CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>" />
+                </ItemTemplate>
+              </asp:TemplateField>   
+          </Columns>
+      
+      
+       <PagerTemplate>
+                    <asp:Label ID="Label1" runat="server" Text="Mostrar filas:" />
+                    <asp:DropDownList CssClass="letranormal" ID="RegsPag" runat="server" AutoPostBack="true" OnSelectedIndexChanged="RegsPag_SelectedIndexChanged">
+                     <asp:ListItem Value="2" />
+                        <asp:ListItem Value="15" />
+                        <asp:ListItem Value="20" />
+                        <asp:ListItem Value="30" />
+                          <asp:ListItem Value="40" />
+                    </asp:DropDownList>
+                    &nbsp;
+                    Ir a 
+                    <asp:TextBox ID="IraPag" runat="server" AutoPostBack="true" OnTextChanged="IraPag" CssClass="gopag" />
+                    de
+                    <asp:Label ID="lblTotalNumberOfPages" runat="server" />
+                    &nbsp;
+                    <asp:Button ID="Button4" runat="server" CommandName="Page" ToolTip="Prim. Pag"  CommandArgument="First" CssClass="pagfirst" />                    
+                    <asp:Button ID="Button1" runat="server" CommandName="Page" ToolTip="Pág. anterior"  CommandArgument="Prev" CssClass="pagprev" />
+                    <asp:Button ID="Button2" runat="server" CommandName="Page" ToolTip="Sig. página" CommandArgument="Next" CssClass="pagnext" />                    
+                    <asp:Button ID="Button3" runat="server" CommandName="Page" ToolTip="Últ. Pag"  CommandArgument="Last" CssClass="paglast" />                    
+                </PagerTemplate>
+                
+          <AlternatingRowStyle CssClass="altrowstyle" />
+                
+      </asp:GridView>
+    </ContentTemplate>
+    <Triggers>
+        <asp:AsyncPostBackTrigger ControlID="btn_add" EventName="Click" />
+    </Triggers>
+</asp:UpdatePanel>--%>
+<div class="gridcontainer">
+      </div>
+     

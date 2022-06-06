@@ -1,0 +1,83 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGQCLAS.ascx.vb" Inherits="vistas_NG_NGQCLAS" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+  
+  <style type="text/css">
+      .style1 {
+          width: 49px;
+      }
+  </style>
+  
+  <table border="0">
+              <tr>
+                <td colspan="2">
+                    <asp:Label ID="lbl_mensaje" runat="server"></asp:Label>
+                </td>
+            </tr>
+  <tr>
+    <td class="style1">
+                Código
+    </td>
+    <td>
+        <asp:TextBox ID="txt_id" runat="server" Width="189px"></asp:TextBox>
+    </td>
+    <td >
+                Descripción</td>
+    <td>
+        <asp:TextBox ID="txt_ds" runat="server" Width="262px"></asp:TextBox>
+    </td>
+    <td><asp:ImageButton ID="btn_busca" runat="server" 
+            ImageUrl="~/recursos/img/btn_buscar.gif" />
+       </td>
+  </tr>
+
+  </table>
+    
+
+<div class="linea"><br /></div>
+<div class="gridcontainer">
+      <asp:GridView ID="gw" runat="server" SkinID="gw1"   
+      AutoGenerateColumns="False" DataKeyNames="OBJETO,Descripcion,Sistema">
+      
+      <Columns>
+              <asp:BoundField DataField="OBJETO" HeaderText="CODIGO" />
+              <asp:BoundField DataField="Descripcion" HeaderText="DESCRIPCION" />
+              <asp:BoundField DataField="Sistema" HeaderText="SISTEMA" />
+              <asp:TemplateField HeaderText="ACCIONES">
+              <ItemTemplate>
+                    <a href="?f=ngaclas&p=<%#databinder.eval(container.dataitem,"OBJETO") %>"><img  src="recursos/ico/editar.png" title="Editar Clase" width="18" border="0"/></a>
+                    <a href="?f=NGAOCLA&p=<%#databinder.eval(container.dataitem,"OBJETO") %>" title="Objetos de Clase"><img  src="recursos/img/candado31.gif" border="0"/></a>
+<%--                    <asp:ImageButton ID="btn_elim" runat="server" CommandName="eli" CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>"
+                    ImageUrl="~/recursos/ico/btn_borrar.gif" ToolTip="Eliminar Clase"/>
+--%>                    <cc1:btn_confirm ID="ibtnEliminar" runat="server" ImageUrl="~/recursos/ico/btn_borrar.gif"
+                             ToolTip="Eliminar" UPAO_msg='¿Desea eliminar el registro?' CommandName="Eliminar"
+                            CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>" />
+                </ItemTemplate>
+                <ItemStyle HorizontalAlign="Center" />
+            </asp:TemplateField>        
+      </Columns>
+      
+      
+       <PagerTemplate>
+                    <asp:Label ID="Label1" runat="server" Text="Mostrar filas:" />
+                    <asp:DropDownList CssClass="letranormal" ID="RegsPag" runat="server" AutoPostBack="true" OnSelectedIndexChanged="RegsPag_SelectedIndexChanged">
+                     <asp:ListItem Value="2" />
+                        <asp:ListItem Value="15" />
+                        <asp:ListItem Value="20" />
+                        <asp:ListItem Value="30" />
+                          <asp:ListItem Value="40" />
+                    </asp:DropDownList>
+                    &nbsp;
+                    Ir a 
+                    <asp:TextBox ID="IraPag" runat="server" AutoPostBack="true" OnTextChanged="IraPag" CssClass="gopag" />
+                    de
+                    <asp:Label ID="lblTotalNumberOfPages" runat="server" />
+                    &nbsp;
+                    <asp:Button ID="Button4" runat="server" CommandName="Page" ToolTip="Prim. Pag"  CommandArgument="First" CssClass="pagfirst" />                    
+                    <asp:Button ID="Button1" runat="server" CommandName="Page" ToolTip="Pág. anterior"  CommandArgument="Prev" CssClass="pagprev" />
+                    <asp:Button ID="Button2" runat="server" CommandName="Page" ToolTip="Sig. página" CommandArgument="Next" CssClass="pagnext" />                    
+                    <asp:Button ID="Button3" runat="server" CommandName="Page" ToolTip="Últ. Pag"  CommandArgument="Last" CssClass="paglast" />                    
+                </PagerTemplate>
+                
+          <AlternatingRowStyle CssClass="altrowstyle" />
+                
+      </asp:GridView></div>

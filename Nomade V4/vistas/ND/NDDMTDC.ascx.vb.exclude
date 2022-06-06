@@ -1,0 +1,64 @@
+﻿Imports System.Data
+
+Partial Class vistas_ND_NDDMTDC
+    Inherits NOMADE.N.Cub
+
+    Dim malerta As Label
+    Dim v_p As String
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        malerta = Page.Master.FindControl("alerta")
+        Me.malerta.Text = ""
+        v_p = Request.QueryString("p")
+        If (v_p <> String.Empty) Then
+            Me.hf_accion.Value = "E"
+            carga()
+        End If
+    End Sub
+
+    Private Sub carga()
+        Dim c As New NOMADE.Documentos.docu.Tipo_Dcto("Bn")
+        Dim dt As DataTable = c.Listar_Tipo_Dcto(v_p, "")
+        c = Nothing
+        Me.txt_id.Enabled = False
+        If Not (dt Is Nothing) Then
+            For Each MiDataRow As DataRow In dt.Rows
+                Me.txt_id.Text = MiDataRow("CODE").ToString
+                Me.txt_descripcion.Text = MiDataRow("DESC").ToString
+                Me.chb_estado.Checked = IIf(MiDataRow("ESTADO_IND").ToString = "A", True, False)
+                Me.hf_accion.Value = "E"
+                malerta.Text = "Editar: " & Me.txt_id.Text
+
+            Next
+        End If
+    End Sub
+
+    Protected Sub btn_grabar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabar.Click
+        Try
+
+            Dim msg As String
+
+            If (Me.txt_id.Text = String.Empty) Then
+                lbl_mensaje.Text = NOMADE.N.msg.alerta("Ingrese un código de tipo de documento", "W")
+                Exit Sub
+            End If
+
+            Dim c As New NOMADE.Documentos.docu.Tipo_Dcto("bn")
+            If (v_p = String.Empty) Then
+                msg = c.CREAR_TIPO_DCTO(Me.txt_id.Text, Me.txt_descripcion.Text, _
+                            IIf(Me.chb_estado.Checked = True, "A", "I"), Me.usuario)
+            Else
+                msg = c.ACTUALIZAR_TIPO_DCTO(Me.txt_id.Text, Me.txt_descripcion.Text, _
+                                    IIf(Me.chb_estado.Checked = True, "A", "I"), Me.usuario)
+            End If
+            c = Nothing
+            If (msg = "OK") Then
+                lbl_mensaje.Text = NOMADE.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+            Else
+                lbl_mensaje.Text = NOMADE.N.msg.alerta("Error al crear un tipo de documento", "W")
+            End If
+        Catch ex As Exception
+            Me.lbl_mensaje.Text = NOMADE.N.msg.alerta("Error: " + ex.Message, "W")
+        End Try
+    End Sub
+End Class

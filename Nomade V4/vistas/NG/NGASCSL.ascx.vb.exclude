@@ -1,0 +1,118 @@
+﻿Imports System.Data
+
+Partial Class vistas_NG_NGASCSL
+    Inherits Nomade.N.Cub
+
+    Dim malerta As Label
+    Dim v_Empresa As String
+    Dim v_Sucursal As String
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        malerta = Page.Master.FindControl("alerta")
+        Me.malerta.Text = ""
+        v_Empresa = Request.QueryString("p")
+        v_Sucursal = Request.QueryString("s")
+        If Not Page.IsPostBack Then
+            carga_empresas("")
+        End If
+        If (v_Sucursal <> String.Empty) Then
+            'Response.Write("sss" & v_usuario)
+            carga_editar(v_Empresa, v_Sucursal)
+            Me.txt_codigo.Attributes.Add("readonly", "true")
+            Me.txt_codigo.CssClass = "f_inputl"
+        End If
+    End Sub
+
+    Private Sub carga_empresas(ByVal v_empresa As String)
+        Dim l As New ListItem
+        Dim cempresa As New Nomade.general.Cempresa("bn")
+        Me.dd_empresa.DataSource = cempresa.dame_empresas(v_empresa)
+        cempresa = Nothing
+        Me.dd_empresa.DataTextField = "descripcion"
+        Me.dd_empresa.DataValueField = "codigo"
+        Me.dd_empresa.DataBind()
+        dd_empresa.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Private Sub carga_editar(ByVal v_Empresa As String, ByVal v_Sucursal As String)
+        Dim oSucursal As New Nomade.general.Csucursal("Bn")
+        Dim dt As DataTable
+        dt = oSucursal.dame_sucursal(v_Empresa, v_Sucursal, "")
+        If Not (dt Is Nothing) Then
+            For Each MiDataRow As DataRow In dt.Rows
+                Me.txt_codigo.Text = v_Sucursal
+                Me.dd_empresa.SelectedValue = MiDataRow("Empresa").ToString
+                Me.txt_descripcion.Text = MiDataRow("Descripcion").ToString
+                Me.txt_direccion.Text = MiDataRow("Direccion").ToString
+                Me.txt_ciudad.Text = MiDataRow("Ciudad").ToString
+                Me.txt_fecha_inicio.Text = Nomade.nomade.cutilidades.fechaMostrar(MiDataRow("Fecha_Inicio").ToString)
+                Me.txt_fecha_termino.Text = Nomade.nomade.cutilidades.fechaMostrar(MiDataRow("Fecha_Termino").ToString)
+                Me.chb_estado.Checked = IIf(MiDataRow("Estado").ToString = "A", True, False)
+            Next
+        End If
+        oSucursal = Nothing
+    End Sub
+
+    Protected Sub btn_grabar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabar.Click
+        Try
+            Dim msg, f1, f2 As String
+
+            If (txt_codigo.Text = String.Empty) Then
+                malerta.Text = Nomade.N.msg.alerta("Ingresar el Código", "W")
+                Exit Sub
+            End If
+            If (dd_empresa.SelectedIndex = 0) Then
+                malerta.Text = Nomade.N.msg.alerta("Seleccione una Empresa", "W")
+                Exit Sub
+            End If
+            If (txt_fecha_inicio.Text = String.Empty) Then
+                malerta.Text = Nomade.N.msg.alerta("Ingrese la Fecha de Inicio", "W")
+                Exit Sub
+            End If
+            If (IsDate(Me.txt_fecha_inicio.Text)) Then
+                f1 = Utilities.fechaLocal(Me.txt_fecha_inicio.Text)
+            Else
+                Me.malerta.Text = Nomade.N.msg.alerta("Fecha de Inicio incorrecta", "W")
+                Exit Sub
+            End If
+            If (txt_fecha_termino.Text.Length > 0) Then
+                If (IsDate(Me.txt_fecha_termino.Text)) Then
+                    f2 = Utilities.fechaLocal(Me.txt_fecha_termino.Text)
+                Else
+                    Me.malerta.Text = Nomade.N.msg.alerta("Fecha de Término incorrecta", "W")
+                    Exit Sub
+                End If
+            Else
+                f2 = Nothing
+            End If
+
+            Dim oSucursal As New Nomade.general.Csucursal("bn")
+            If (v_Empresa = String.Empty) Then
+                msg = oSucursal.crear_sucursal(Me.dd_empresa.SelectedValue, _
+                        Me.txt_codigo.Text.ToUpper, Me.txt_descripcion.Text, _
+                        Me.txt_direccion.Text, txt_ciudad.Text, _
+                        f1, f2, IIf(chb_estado.Checked = True, "A", "I"), _
+                        Me.usuario)
+            Else
+                msg = oSucursal.actualizar_sucursal(Me.dd_empresa.SelectedValue, _
+                        Me.txt_codigo.Text.ToUpper, Me.txt_descripcion.Text, _
+                        Me.txt_direccion.Text, txt_ciudad.Text, _
+                        f1, f2, IIf(chb_estado.Checked = True, "A", "I"), _
+                        Me.usuario)
+            End If
+
+
+            oSucursal = Nothing
+            If (msg = "OK") Then
+                malerta.Text = Nomade.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+            Else
+                malerta.Text = Nomade.N.msg.alerta("Error al crear el registro", "W")
+            End If
+
+        Catch ex As Exception
+            malerta.Text = Nomade.N.msg.alerta("Error: " + ex.Message, "W")
+        End Try
+
+    End Sub
+
+End Class

@@ -1,0 +1,25 @@
+﻿Imports System.Data
+Partial Class vistas_ND_NDDGINI
+    Inherits Nomade.N.Cub
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not Page.IsPostBack Then
+            data()
+        End If
+    End Sub
+    Private Sub data()
+        Dim c As New Nomade.Documentos.docu.documento("no")
+        Dim dt As DataTable
+        dt = c.dame_DOCUMENTOS("", Me.usuario)
+        Me.gw.DataSource = dt
+        Me.gw.DataBind()
+        'If Not (dt Is Nothing) Then
+        '    Me.lbl_partes.Text = "Partes de modelo"
+        '    botones.Visible = True
+
+        'Else
+        '    Me.lbl_partes.Text = ""
+        '    botones.Visible = False
+        'End If
+    End Sub
+End Class

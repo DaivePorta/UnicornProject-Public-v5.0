@@ -1,0 +1,14 @@
+﻿Imports System.Data
+Partial Class vistas_NM_NMAIDEX
+    Inherits Nomade.N.Cub
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        Dim DT As DataTable
+        Dim filtro As String
+        filtro = Request.QueryString("tipo")
+        Dim cpersona As New Nomade.RHH.persona.cpersona("Bn")
+        DT = cpersona.MOSTRAR_PERSONAS(filtro)
+        Me.prueba.DataSource = DT
+        Me.prueba.DataBind()
+    End Sub
+End Class

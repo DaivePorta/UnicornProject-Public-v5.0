@@ -1,0 +1,192 @@
+﻿Imports System.Data
+
+Partial Class vistas_NG_NGAGRPR
+    Inherits Nomade.N.Cub
+
+    Public cod As String
+    Public cods As String
+    Public codr As String
+    Public texto As String
+    Public textos As String
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not Page.IsPostBack Then
+            'carga_grupo()
+            carga_afiliados()
+            Me.btn_agregar.Visible = False
+            Me.btn_r_cuentas.Visible = False
+            Me.btn_editar.Visible = False
+            Me.btn_elimina.Visible = False
+            cod = "0"
+            codr = "0"
+            Me.btn_sgrupo.Visible = False
+            Me.btn_rsubgrupo.Visible = False
+            Me.btn_seditar.Visible = False
+            Me.btn_selimina.Visible = False
+        End If
+        cod = Me.dd_grupo.SelectedValue
+        codr = Me.dd_grupo.SelectedValue
+        If (codr <> String.Empty) Then texto = Me.dd_grupo.SelectedItem.Text.ToString
+    End Sub
+
+    Protected Sub ddl_proveedor_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ddl_proveedor.SelectedIndexChanged
+        dd_grupo.Items.Clear()
+        carga_grupo(Me.ddl_proveedor.SelectedValue)
+        Me.btn_agregar.Visible = True
+        Me.btn_r_cuentas.Visible = True
+    End Sub
+
+    Private Sub carga_afiliados()
+        Dim l As New ListItem
+        Dim cafil As New Nomade.Multinivel.CAfiliado("bn")
+        Me.ddl_proveedor.DataSource = cafil.DAME_AFILIADOS()
+        cafil = Nothing
+        Me.ddl_proveedor.DataTextField = "PROVEEDOR"
+        Me.ddl_proveedor.DataValueField = "PIDM"
+        Me.ddl_proveedor.DataBind()
+        ddl_proveedor.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Private Sub carga_grupo(ByVal v_afil_code As String)
+        Dim l As New ListItem
+        Dim cgrupo As New Nomade.Finanzas.Almacen.Cgrupo("bn")
+        Me.dd_grupo.DataSource = cgrupo.dame_grupos(v_afil_code, Nothing)
+        cgrupo = Nothing
+        Me.dd_grupo.DataTextField = "descripcion"
+        Me.dd_grupo.DataValueField = "codigo"
+        Me.dd_grupo.DataBind()
+    End Sub
+
+    'Private Sub carga_grupo()
+    '    Dim l As New ListItem
+    '    Dim cgrupo As New Nomade.Finanzas.Almacen.Cgrupo("bn")
+    '    Me.dd_grupo.DataSource = cgrupo.dame_grupos()
+    '    cgrupo = Nothing
+    '    Me.dd_grupo.DataTextField = "descripcion"
+    '    Me.dd_grupo.DataValueField = "codigo"
+    '    Me.dd_grupo.DataBind()
+    'End Sub
+
+    Protected Sub dd_grupo_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles dd_grupo.SelectedIndexChanged
+        carga_sgrupo(Me.dd_grupo.SelectedValue)
+        Me.btn_elimina.Visible = True
+        Me.btn_editar.Visible = True
+        Me.btn_editar.ToolTip = Me.dd_grupo.SelectedItem.Text
+        Me.gw_subgrupo.Visible = True
+        cod = Me.dd_grupo.SelectedValue
+        Me.btn_sgrupo.Visible = True
+        Me.btn_rsubgrupo.Visible = True
+        texto = Me.dd_grupo.SelectedItem.Text.ToString
+        'Me.Label1.Text = "vvvvv"
+    End Sub
+
+    Private Sub carga_sgrupo(ByVal v_subgrupo As String)
+        Dim cgrupo As New Nomade.Finanzas.Almacen.Cgrupo("bn")
+        Dim dt As DataTable
+        dt = cgrupo.dame_Sgrupos(v_subgrupo)
+        Me.gw_subgrupo.DataSource = dt
+        'Response.Write(dt.Rows.Count)
+        If Not (dt Is Nothing) Then
+            Me.btn_elimina.Visible = False
+        End If
+        cgrupo = Nothing
+        Me.gw_subgrupo.DataBind()
+    End Sub
+
+    Protected Sub lb_grupos_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles lb_grupos.Click
+        'carga_grupo()
+        carga_sgrupo("xxx")
+        Me.gw_subgrupo.Visible = False
+        Me.btn_editar.Visible = False
+        cod = "0"
+        codr = "0"
+    End Sub
+
+    Protected Sub btn_r_cuentas_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_r_cuentas.Click
+        'carga_grupo()
+        Me.btn_sgrupo.Visible = False
+        Me.btn_rsubgrupo.Visible = False
+        Me.gw_subgrupo.Visible = False
+        Me.btn_seditar.Visible = False
+        Me.btn_selimina.Visible = False
+    End Sub
+
+    Protected Sub btn_rsubgrupo_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_rsubgrupo.Click
+        carga_sgrupo(Me.dd_grupo.SelectedValue)
+        If Me.gw_subgrupo.Rows.Count = 0 Then
+            Me.btn_rsubgrupo.Visible = True
+            Me.btn_sgrupo.Visible = True
+            Me.btn_seditar.Visible = False
+            Me.btn_selimina.Visible = False
+        Else
+            Me.btn_rsubgrupo.Visible = True
+            Me.btn_sgrupo.Visible = True
+            Me.btn_seditar.Visible = True
+            Me.btn_selimina.Visible = True
+        End If
+    End Sub
+
+    Protected Sub btn_elimina_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_elimina.Click
+        Try
+            elimina(Me.dd_grupo.SelectedValue)
+        Catch ex As Exception
+
+        End Try
+    End Sub
+
+    Private Sub elimina(ByVal v_grup As String)
+        Dim cgrupo As New Nomade.Finanzas.Almacen.Cgrupo("bn")
+        Dim msg(2) As String
+        msg = cgrupo.eliminar_grupo(v_grup)
+        'carga_grupo()
+        Me.btn_sgrupo.Visible = False
+        Me.btn_rsubgrupo.Visible = False
+        Me.gw_subgrupo.Visible = False
+        Me.btn_elimina.Visible = False
+    End Sub
+
+    Protected Sub gw_subgrupo_RowCommand(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewCommandEventArgs) Handles gw_subgrupo.RowCommand
+        Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+        Dim msg1(2) As String
+        ' Retrieve the row that contains the button 
+        ' from the Rows collection.
+        Dim row As GridViewRow = gw_subgrupo.Rows(index)
+        Dim code_grupo As String = gw_subgrupo.DataKeys(index).Values("codigo")
+        Dim desc As String = gw_subgrupo.DataKeys(index).Values("descripcion")
+        cods = code_grupo
+        textos = desc
+        Me.btn_seditar.Visible = True
+        Me.btn_selimina.Visible = True
+
+        'Try
+        '    If (e.CommandName = "eli") Then
+        '        ' Retrieve the row index stored in the CommandArgument property.
+        '        'Response.Write(code_grupo)
+        '        eliminas(code_grupo)
+        '        If Me.gw_subgrupo.Rows.Count = 0 Then
+        '            Me.btn_rsubgrupo.Visible = False
+        '            Me.btn_sgrupo.Visible = False
+        '        Else
+        '            Me.btn_rsubgrupo.Visible = True
+        '            Me.btn_sgrupo.Visible = True
+        '        End If
+
+        '        'Dim cproducto As New Nomade.Finanzas.Almacen.Cproducto("bn")
+        '        'msg1 = cproducto.insertar_cuenta_producto(Me.lbl_codprod.Text, Me.dd_empresa.SelectedValue, code_cuenta, Utilities.fechaLocal(Date.Today), Request.Cookies("usernomade")("id"))
+        '        'carga_cuenta_prod(Me.lbl_codprod.Text)
+
+        '        ' Add code here to add the item to the shopping cart.
+        '    End If
+
+        'Catch ex As Exception
+        '    'Me.lbl_mensaje.coloca("R", 12, ex.Message)
+        'End Try
+    End Sub
+
+    Protected Sub gw_subgrupo_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles gw_subgrupo.RowDataBound
+        e.Row.Attributes.Add("OnMouseOut", "this.className = this.orignalclassName;")
+        e.Row.Attributes.Add("OnMouseOver", "this.orignalclassName = this.className;this.className = 'altoverow';")
+        e.Row.Attributes("OnClick") = Page.ClientScript.GetPostBackEventReference(Me.gw_subgrupo, "Select$" + e.Row.RowIndex.ToString)
+    End Sub
+
+End Class

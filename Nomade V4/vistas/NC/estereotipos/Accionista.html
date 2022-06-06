@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="principal">
+
+        <div class="portlet-body">
+             <div class="row-fluid">
+               
+                <div class="span2" >
+                    <div class="control-group">
+                        <label class="control-label" for="slcEmpresa">Persona</label>
+
+                    </div>
+                </div>
+
+                <div class="span8" >
+                    <div class="control-group">
+                        <div class="controls" >
+                            <input type="text" id="slcPidmPersacci" class="span12 personas obligatorio"/>
+                               
+             
+                        </div>
+                    </div>
+                </div>
+                 
+                 
+             </div>
+
+            <div class="row-fluid">
+
+
+                <div class="span2">
+                    <div class="control-group ">
+                        <label class="control-label" for="txtfechaiacci">Fecha Inicio</label>
+                    </div>
+                </div>
+
+                <div class="span2">
+                    <div class="control-group ">
+                        <div class="controls">
+                            <input type="text" data-date-format="dd/mm/yyyy" class="span12 obligatorio" id="txtfechaiacci" placeholder="dd/mm/yyyy" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="span2">
+                    <div class="control-group ">
+                        <label class="control-label" for="txtfechafacci">Fecha Fin</label>
+                    </div>
+                </div>
+
+                <div class="span2">
+                    <div class="control-group ">
+                        <div class="controls">
+                            <input type="text"  data-date-format="dd/mm/yyyy" class="span12" id="txtfechafacci" placeholder="dd/mm/yyyy" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="span1">
+                    <div class="control-group ">
+                        <label class="control-label" for="chkactivoacci">
+                            Activo</label>
+                    </div>
+                </div>
+
+                <div class="span1">
+                    <div class="control-group ">
+                        <div class="controls">
+                            <input id="chkactivoacci" type="checkbox" checked="checked" />
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="span1" style="display: none;">
+                    <div class="control-group">
+                        <label class="control-label" for="slcEmpresa">Empresa</label>
+
+                    </div>
+                </div>
+
+                <div class="span4" style="display: none;">
+                    <div class="control-group">
+                        <div class="controls" id="controlempresaacci">
+                            <select id="slcEmpresaacci" class="span12 poner">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="row-fluid">
+
+                <div class="span5">
+                    <label class="control-label" for="txtporc">Porcentaje de Participaciones Actuales</label>
+                </div>
+                <div class="span2">
+                    <div class="control-group ">
+                        <div class="controls">
+                            <input type="text" class="span6" id="txtporc" maxlength="3" />
+                            %
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+
+            <div class="form-actions">
+                <a id="grabaracci" class="btn blue" href="javascript:CrearAccionista();"><i class="icon-ok"></i>Grabar </a>
+                <a class="btn" data-dismiss="modal"aria-hidden="true"><i class="icon-remove"></i>Cancelar </a>
+                <!-- <a class="btn green"><i class="icon-print"></i> Imprimir</a>-->
+            </div>
+
+        </div>
+    </div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,358 @@
+﻿Imports System.Data
+
+Partial Class vistas_NM_NMAIDET
+    Inherits Nomade.N.Cub
+    Dim malerta As Label
+    Dim v_id As String = Nothing
+    Public cod As String
+    Public per As String
+    Dim msg1 As String
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        v_id = Request.QueryString("p")
+        malerta = Page.Master.FindControl("alerta")
+        Me.malerta.Text = ""
+        bancos()
+        If v_id <> Nothing Then
+            carga_persona(v_id)
+        Else
+            Habilita(False)
+        End If
+        If Not Page.IsPostBack Then
+            Me.txt_id.Attributes.Add("readonly", "true")
+            Me.txt_id.CssClass = "f_inputl"
+            Me.txt_persona.Attributes.Add("readonly", "true")
+            Me.txt_persona.CssClass = "f_inputl"
+            rdb_tipo_persona_SelectedIndexChanged(sender, e)
+        End If
+    End Sub
+
+    Private Sub carga_persona(ByVal v_id As String)
+        Dim c As New Noamde.RRH.Persona.cpersona("Bn")
+        Dim dt As DataTable
+        Dim sender As Object
+        Dim e As System.EventArgs
+        dt = c.busca_persona(v_id, "")
+        c = Nothing
+        If Not (dt Is Nothing) Then
+            For Each MiDataRow As DataRow In dt.Rows
+                Me.txt_id.Text = v_id
+                Me.cod = v_id
+                Me.txt_persona.Text = MiDataRow("PERSONA").ToString
+                Me.per = MiDataRow("PERSONA").ToString
+                rdb_tipo_persona.Enabled = False
+
+                If MiDataRow("TIPO").ToString = "NATURAL" Then
+
+                    rdb_tipo_persona.SelectedValue = "N"
+                    rdb_tipo_persona_SelectedIndexChanged(sender, e)
+                    Me.txt_apellido_paterno.Text = MiDataRow("APELL_PATE").ToString
+                    Me.txt_apellido_materno.Text = MiDataRow("APELL_MATE").ToString
+                    Me.txt_nombre.Text = MiDataRow("NOMBRE").ToString
+                    Me.txt_dni.Text = MiDataRow("DNI").ToString
+                    Me.txt_telefono_nat.Text = MiDataRow("TELEFONO").ToString
+                    Me.txt_direccion_nat.Text = MiDataRow("DIRECCION").ToString
+                    Me.txt_email_nat.Text = MiDataRow("EMAIL").ToString
+                    Me.txt_comentarios_nat.Text = MiDataRow("COMENTARIO").ToString
+                    Me.txt_cuenta_nat.Text = MiDataRow("CUENTA").ToString
+                    Me.txt_fecha_nac.Text = MiDataRow("FECHA").ToString
+
+                    Me.hf_pidm.Value = MiDataRow("PIDM").ToString
+
+                ElseIf MiDataRow("TIPO").ToString = "JURIDICA" Then
+
+                    rdb_tipo_persona.SelectedValue = "J"
+                    rdb_tipo_persona_SelectedIndexChanged(sender, e)
+                    Me.txt_razon_social.Text = MiDataRow("PERSONA").ToString
+                    Me.txt_contacto.Text = MiDataRow("CONTACTO").ToString
+                    Me.txt_rep_legal.Text = MiDataRow("REP_LEGAL").ToString
+                    Me.txt_ruc_jur.Text = MiDataRow("DNI").ToString
+                    Me.txt_fecha_ini_act.Text = Nomade.nomade.cutilidades.fechaMostrar(MiDataRow("FECHA").ToString)
+                    Me.txt_telefono_jur.Text = MiDataRow("TELEFONO").ToString
+                    Me.txt_direccion_jur.Text = MiDataRow("DIRECCION").ToString
+                    Me.txt_email_jur.Text = MiDataRow("EMAIL").ToString
+                    Me.txt_web.Text = MiDataRow("WEB").ToString
+                    Me.txt_cuenta_jur.Text = MiDataRow("CUENTA").ToString
+                    Me.txt_fecha_ini_act.Text = MiDataRow("FECHA").ToString
+                    Me.hf_pidm.Value = MiDataRow("PIDM").ToString
+                End If
+
+                Me.chb_tipo.Items(0).Selected = IIf(MiDataRow("ES_CLIENTE").ToString = "S", True, False)
+                Me.chb_tipo.Items(1).Selected = IIf(MiDataRow("ES_PROVEEDOR").ToString = "S", True, False)
+
+                If (MiDataRow("ES_FUNDADOR").ToString = "S" Or MiDataRow("ES_CFUNDADOR").ToString = "S" Or MiDataRow("ES_ESOFT").ToString = "S" Or MiDataRow("ES_EAPOYO").ToString = "S" Or MiDataRow("ES_EESTRA").ToString = "S") Then
+                    Me.chb_tipo.Items(2).Selected = True
+                    Me.CheckBoxList1.Visible = True
+                End If
+                Me.CheckBoxList1.Items(0).Selected = IIf(MiDataRow("ES_FUNDADOR").ToString = "S", True, False)
+                Me.CheckBoxList1.Items(1).Selected = IIf(MiDataRow("ES_CFUNDADOR").ToString = "S", True, False)
+                Me.CheckBoxList1.Items(2).Selected = IIf(MiDataRow("ES_ESOFT").ToString = "S", True, False)
+                Me.CheckBoxList1.Items(3).Selected = IIf(MiDataRow("ES_EAPOYO").ToString = "S", True, False)
+                Me.CheckBoxList1.Items(4).Selected = IIf(MiDataRow("ES_EESTRA").ToString = "S", True, False)
+
+            Next
+            Habilita(True)
+        End If
+
+    End Sub
+
+    Public Sub bancos()
+        Dim dt As DataTable
+        Dim cbanco As New Nomade.RHH.persona.cpersona("Bn")
+        dt = cbanco.LISTAR_BANCOS()
+        Me.ddl_banco_nat.DataSource = dt
+        Me.ddl_banco_jud.DataSource = dt
+        Me.ddl_banco_jud.DataTextField = "descripcion"
+        Me.ddl_banco_nat.DataTextField = "descripcion"
+        Me.ddl_banco_nat.DataValueField = "id"
+        Me.ddl_banco_jud.DataValueField = "id"
+        Me.ddl_banco_jud.DataBind()
+        Me.ddl_banco_nat.DataBind()
+        ddl_banco_jud.Items.Insert(0, New ListItem(" Seleccionar Banco asociado a la Cuenta Bancaria ", ""))
+        ddl_banco_nat.Items.Insert(0, New ListItem(" Seleccionar Banco asociado a la Cuenta Bancaria ", ""))
+    End Sub
+    Protected Sub rdb_tipo_persona_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles rdb_tipo_persona.SelectedIndexChanged
+        If rdb_tipo_persona.SelectedValue = "N" Then
+            pnl_natural.Visible = True
+            pnl_juridico.Visible = False
+        ElseIf rdb_tipo_persona.SelectedValue = "J" Then
+            pnl_natural.Visible = False
+            pnl_juridico.Visible = True
+        End If
+    End Sub
+
+    Public Sub Habilita(ByVal p_ban As Boolean)
+        Me.btn_mas_telefonos_nat.Enabled = p_ban
+        Me.btn_mas_telefonos_jur.Enabled = p_ban
+        Me.btn_mas_direcciones_nat.Enabled = p_ban
+        Me.btn_mas_direcciones_jur.Enabled = p_ban
+        Me.btn_mas_correos_nat.Enabled = p_ban
+        Me.btn_mas_correos_jur.Enabled = p_ban
+        Me.btn_mas_comentarios_nat.Enabled = p_ban
+        Me.btn_mas_telefonos_nat0.Enabled = p_ban
+        Me.btn_mas_telefonos_nat1.Enabled = p_ban
+
+    End Sub
+
+    Protected Sub btn_grabar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabar.Click
+        Try
+            Dim msg(2), msg2(2), msgi As String
+            Dim f, f11, f2, f3, f4 As Integer
+            Dim fec As String
+            Dim f1 As String = Utilities.fechaLocal(Now.ToString)
+            Dim oCliente As New Nomade.Multinivel.CCliente("bn")
+            Dim oAfiliado As New Nomade.Multinivel.CAfiliado("bn")
+
+            If Me.CheckBoxList1.Items(0).Selected Then
+                f = 1
+            Else
+                f = 0
+            End If
+
+            If Me.CheckBoxList1.Items(1).Selected Then
+                f11 = 1
+            Else
+                f11 = 0
+            End If
+
+            If Me.CheckBoxList1.Items(2).Selected Then
+                f2 = 1
+            Else
+                f2 = 0
+            End If
+
+            If Me.CheckBoxList1.Items(3).Selected Then
+                f3 = 1
+            Else
+                f3 = 0
+            End If
+            If Me.CheckBoxList1.Items(4).Selected Then
+                f4 = 1
+            Else
+                f4 = 0
+            End If
+
+
+            If rdb_tipo_persona.SelectedValue = "N" Then
+                If (Me.txt_apellido_paterno.Text = String.Empty) Then
+                    Me.lbl_mensaje.Text = Nomade.nomade.mensajes.merror("Error: Ingrese apellido paterno")
+                    Exit Sub
+                End If
+                If (Me.txt_nombre.Text = String.Empty) Then
+                    Me.lbl_mensaje.Text = Nomade.nomade.mensajes.merror("Error: Ingrese nombre")
+                    Exit Sub
+                End If
+                If (Me.txt_dni.Text = String.Empty) Then
+                    Me.lbl_mensaje.Text = Nomade.nomade.mensajes.merror("Error: Ingrese DNI")
+                    Exit Sub
+                End If
+                If Not IsNumeric(Me.txt_dni.Text) Then
+                    Me.lbl_mensaje.Text = Nomade.nomade.mensajes.merror("Error: Ingrese solo numeros en DNI")
+                    Exit Sub
+                End If
+
+                If Me.txt_fecha_nac.Text = String.Empty Then
+                    fec = Nothing
+                Else
+                    If (IsDate(Me.txt_fecha_nac.Text)) Then
+                        fec = Utilities.fechaLocal(Me.txt_fecha_nac.Text)
+                    Else
+                        malerta.Text = "Error: Fecha de Nacimiento incorrecta"
+                        Exit Sub
+                    End If
+                End If
+
+                Dim cpersona As New Nomade.RHH.persona.cpersona("bn")
+                Dim ctele As New Nomade.RHH.persona.cpersona("bn")
+                Dim cdire As New Nomade.RHH.persona.cpersona("bn")
+                Dim ccorr As New Nomade.RHH.persona.cpersona("bn")
+                Dim ccome As New Nomade.RHH.persona.cpersona("bn")
+                Dim ccuen As New Nomade.RHH.persona.cpersona("bn")
+
+                Dim cclie As New Nomade.Finanzas.Ventas.ccliente("Bn")
+
+
+                If v_id = Nothing Then
+                    msg = cpersona.insertar_persona(Me.txt_apellido_paterno.Text.ToUpper, IIf(Me.txt_apellido_materno.Text <> String.Empty, Me.txt_apellido_materno.Text.ToUpper, Me.txt_apellido_materno.Text), _
+                                                Me.txt_nombre.Text.ToUpper, "DNI", Me.txt_dni.Text, "", "N", "PNAT", "", "", Me.txt_fecha_nac.Text, Me.usuario)
+
+                    If (Me.txt_telefono_nat.Text <> String.Empty) Then ctele.insertar_telefono(msg(0), "TLFJ", "", Me.txt_telefono_nat.Text, "", "", "", "A", Me.usuario)
+
+                    If (Me.txt_direccion_nat.Text <> String.Empty) Then cdire.insertar_direccion(msg(0), "DIPR", Me.txt_direccion_nat.Text, CDate(Now.Date).ToString("yyyy/MM/dd"), Nothing, Nothing, "A", Nothing, Me.usuario)
+                    If (Me.txt_email_nat.Text <> String.Empty) Then ccorr.insertar_correo(msg(0), "COPR", Me.txt_email_nat.Text, "", "S", "S", "A", Me.usuario)
+                    If (Me.txt_comentarios_nat.Text <> String.Empty) Then ccome.insertar_comentario(msg(0), Nothing, Me.txt_comentarios_nat.Text, Me.usuario)
+                    If (Me.txt_cuenta_nat.Text <> String.Empty) Then ccuen.insertar_cuentas(msg(0), "CTPR", "", Me.txt_cuenta_nat.Text, Me.ddl_banco_nat.SelectedValue, "", "A", Me.usuario)
+
+
+                    If (Me.chb_tipo.Items(0).Selected) Then
+                        msgi = oCliente.CREAR_CLIENTES(msg(0), "", f1, Nothing, "A", _
+                                               Me.usuario)
+                    End If
+
+                    If (Me.chb_tipo.Items(1).Selected) Then
+                        msgi = oAfiliado.CREAR_AFILIADO(msg(0), f1, Nothing, "A", _
+                                                                        Me.usuario)
+                    End If
+
+                    If (Me.chb_tipo.Items(2).Selected) Then
+                        msg2 = cpersona.crear_persona_multinivel(f, f11, f4, f2, f3, 0, 0, msg(0), Me.usuario)
+                    End If
+
+
+                    cpersona = Nothing
+                    ctele = Nothing
+                    cdire = Nothing
+                    ccorr = Nothing
+                    ccome = Nothing
+                    cclie = Nothing
+                    ccuen = Nothing
+                    oCliente = Nothing
+                    oAfiliado = Nothing
+
+                    If (msg(1) <> String.Empty) Then
+                        Response.Redirect("?f=NMAIDET&p=" & msg(1))
+                    Else
+                        Me.lbl_mensaje.Text = Nomade.nomade.mensajes.mcorrecto("warning:")
+                    End If
+
+
+                Else
+                    msg1 = cpersona.actualizar_persona1(v_id, Me.txt_id.Text, Me.txt_apellido_paterno.Text.ToUpper, Me.txt_apellido_materno.Text.ToUpper, Me.txt_nombre.Text, _
+                                                Me.txt_dni.Text, "PNAT", Me.usuario)
+                    cpersona = Nothing
+                    If (msg1 = "OK") Then
+                        Response.Redirect("?f=NMAIDET&p=" & v_id)
+                    Else
+                        Me.lbl_mensaje.Text = Nomade.nomade.mensajes.mcorrecto("warning:")
+                    End If
+                End If
+            ElseIf rdb_tipo_persona.SelectedValue = "J" Then
+                If (Me.txt_razon_social.Text = String.Empty) Then
+                    Me.lbl_mensaje.Text = Nomade.nomade.mensajes.merror("Error: Ingrese Razón social")
+                    Exit Sub
+                End If
+                If (Me.txt_ruc_jur.Text = String.Empty) Then
+                    Me.lbl_mensaje.Text = Nomade.nomade.mensajes.merror("Error: Ingrese RUC")
+                    Exit Sub
+                End If
+                If Not IsNumeric(Me.txt_ruc_jur.Text) Then
+                    Me.lbl_mensaje.Text = Nomade.nomade.mensajes.merror("Error: Ingrese solo numeros en RUC")
+                    Exit Sub
+                End If
+                If Me.txt_fecha_ini_act.Text = String.Empty Then
+                    fec = Nothing
+                Else
+                    If (IsDate(Me.txt_fecha_ini_act.Text)) Then
+                        fec = Utilities.fechaLocal(Me.txt_fecha_ini_act.Text)
+                    Else
+                        malerta.Text = "Error: Fecha de Inicio de Actividades incorrecta"
+                        Exit Sub
+                    End If
+                End If
+
+                Dim cpersona As New Nomade.RHH.persona.cpersona("bn")
+                Dim ctele As New Nomade.RHH.persona.cpersona("bn")
+                Dim cdire As New Nomade.RHH.persona.cpersona("bn")
+                Dim ccorr As New Nomade.RHH.persona.cpersona("bn")
+                Dim cclie As New Nomade.Finanzas.Ventas.ccliente("Bn")
+                Dim ccuen As New Nomade.RHH.persona.cpersona("bn")
+
+                If v_id = Nothing Then
+                    msg = cpersona.insertar_persona(Me.txt_razon_social.Text.ToUpper, "", "", "RUC", Me.txt_ruc_jur.Text, _
+                                                    Me.txt_web.Text, "J", "PJUR", Me.txt_contacto.Text, txt_rep_legal.Text, Me.txt_fecha_ini_act.Text, Me.usuario)
+
+                    If (Me.txt_telefono_jur.Text <> String.Empty) Then ctele.insertar_telefono(msg(0), "TLFJ", "", Me.txt_telefono_jur.Text, "", "", "", "A", Me.usuario)
+                    If (Me.txt_direccion_jur.Text <> String.Empty) Then cdire.insertar_direccion(msg(0), "DIPR", Me.txt_direccion_jur.Text, CDate(Now.Date).ToString("yyyy/MM/dd"), Nothing, Nothing, "A", Nothing, Me.usuario)
+                    If (Me.txt_email_jur.Text <> String.Empty) Then ccorr.insertar_correo(msg(0), "COPR", Me.txt_email_jur.Text, "", "S", "S", "A", Me.usuario)
+                    If (Me.txt_direccion_jur.Text <> String.Empty) Then ccuen.insertar_cuentas(msg(0), "CTPR", "", Me.txt_cuenta_jur.Text, Me.ddl_banco_jud.SelectedValue, "", "A", Me.usuario)
+
+                    If (Me.chb_tipo.Items(0).Selected) Then
+                        msgi = oCliente.CREAR_CLIENTES(msg(0), "", f1, Nothing, "A", _
+                                               Me.usuario)
+                    End If
+
+                    If (Me.chb_tipo.Items(1).Selected) Then
+                        msgi = oAfiliado.CREAR_AFILIADO(msg(0), f1, Nothing, "A", _
+                                                                        Me.usuario)
+                    End If
+
+                    If (Me.chb_tipo.Items(2).Selected) Then
+                        msg2 = cpersona.crear_persona_multinivel(f, f11, f4, f2, f3, 0, 0, msg(0), Me.usuario)
+                    End If
+
+
+                    cpersona = Nothing
+                    ctele = Nothing
+                    cdire = Nothing
+                    ccorr = Nothing
+                    cclie = Nothing
+                    oCliente = Nothing
+                    oAfiliado = Nothing
+                    If (msg(1) <> String.Empty) Then
+                        Response.Redirect("?f=NMAIDET&p=" & msg(1))
+                    Else
+                        Me.lbl_mensaje.Text = Nomade.nomade.mensajes.mcorrecto("warning:")
+                    End If
+                Else
+                    msg1 = cpersona.actualizar_persona(Me.txt_id.Text, Me.txt_razon_social.Text.ToUpper, "", "", Me.txt_ruc_jur.Text, Me.txt_web.Text, Me.usuario)
+                    cpersona = Nothing
+                    If (msg1 = "OK") Then
+                        Response.Redirect("?f=NMAIDET&p=" & v_id)
+                    Else
+                        Me.lbl_mensaje.Text = Nomade.nomade.mensajes.mcorrecto("warning:")
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            Me.lbl_mensaje.Text = Nomade.nomade.mensajes.mcorrecto("Error: " & ex.ToString)
+        End Try
+    End Sub
+
+    Protected Sub chb_tipo_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles chb_tipo.SelectedIndexChanged
+        If chb_tipo.Items.Item(2).Selected Then
+            CheckBoxList1.Visible = True
+        Else
+            CheckBoxList1.Visible = False
+        End If
+    End Sub
+End Class

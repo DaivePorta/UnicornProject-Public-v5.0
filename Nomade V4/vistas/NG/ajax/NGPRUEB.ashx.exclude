@@ -1,0 +1,61 @@
+﻿<%@ WebHandler Language="VB" Class="Handler" %>
+
+Imports System
+Imports System.Web
+Imports System.Data
+
+Public Class Handler : Implements IHttpHandler
+    'Declaramos variables para usarlas en el proceso
+    Dim codigo, tipo, estado, nombre, marca, barras, fecha, desc As String
+   
+    Dim dt As DataTable
+    
+    'Instanciamos las clases de Persona
+    Dim P As New Nomade.NP.NGPrueba("Bn")
+    Dim res As String
+    Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
+        'Capturamos los valores que nos envia el formulario
+        '======================================
+        codigo = context.Request("codigo")
+        fecha = Utilities.fechaLocal(context.Request("fecha"))
+        tipo = context.Request("tipo")
+        estado = context.Request("estado")
+        nombre = context.Request("nombre")
+        marca = context.Request("marca")
+        barras = context.Request("barras")
+        desc = context.Request("desc")
+        
+        context.Response.ContentType = "text/html"
+        Try
+            If (codigo = "1") Then
+                res = GrabarProducto(tipo, estado, nombre, marca, barras, fecha, desc)
+            Else
+                res = ActualizarProducto(codigo, tipo, estado, nombre, marca, barras, fecha, desc)
+            End If
+            
+            context.Response.Write(res)
+        Catch ex As Exception
+            context.Response.Write("error" & ex.ToString)
+        End Try
+        
+    End Sub
+    
+    Public Function GrabarProducto(ByVal tipo As String, ByVal estado As String, ByVal nombre As String, ByVal marca As String, ByVal barras As String, ByVal fecha As String, ByVal desc As String) As String
+        Dim datos(1) As String
+        datos = P.Crear_Producto(estado, tipo, nombre, marca, barras, fecha, desc)
+        Return datos(0)
+    End Function
+    
+    Public Function ActualizarProducto(ByVal codigo As String, ByVal tipo As String, ByVal estado As String, ByVal nombre As String, ByVal marca As String, ByVal barras As String, ByVal fecha As String, ByVal desc As String) As String
+        Dim datos(1) As String
+        datos = P.Actualizar_Producto(codigo, estado, tipo, nombre, marca, barras, fecha, desc)
+        Return datos(0)
+    End Function
+    
+    Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
+        Get
+            Return False
+        End Get
+    End Property
+
+End Class

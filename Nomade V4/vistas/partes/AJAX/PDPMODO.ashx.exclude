@@ -1,0 +1,141 @@
+﻿<%@ WebHandler Language="VB" Class="PDPMODO" %>
+
+Imports System
+Imports System.Web
+Imports System.Data
+
+Public Class PDPMODO : Implements IHttpHandler
+    
+    Dim subformato As String = ""
+    Dim V_PLANTILLA As String = "PCV2"
+    Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
+        Dim html As New StringBuilder
+       
+        
+        Dim dt As DataTable
+        Try
+            V_PLANTILLA = context.Request("plantilla")
+            Dim c As New NOMADE.Documentos.docu.plantilla("no")
+            dt = c.dame_plantilla(V_PLANTILLA)
+            html.Append("<div style='text-align:right'><img src='recursos/ico/cerrar.png' onclick='fn_cerrar();'/></div>")
+           
+            html.Append("<b>PREVISUALIZACIÓN DE DOCUMENTO</b>")
+            html.Append("<DIV ID='scroll'>")
+            html.Append("<br><br>")
+            If Not (dt Is Nothing) Then
+                'html.Append(V_PLANTILLA)
+                'html.Append(dt.Rows(0)("FORMATOBASE"))
+                html.Append(genera_partes(dt.Rows(0)("FORMATOBASE")))
+            End If
+            html.Append("</DIV>")
+            context.Response.ContentType = "text/html"
+            context.Response.Write(html.ToString)
+        Catch ex As Exception
+            html.Append("<div style='text-align:right'><img src='recursos/ico/cerrar.png' onclick='fn_cerrar();'/></div>")
+            html.Append(ex.Message)
+            context.Response.ContentType = "text/html"
+            context.Response.Write(html.ToString)
+        End Try
+    End Sub
+ 
+    Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
+        Get
+            Return False
+        End Get
+    End Property
+    
+    Private Function genera_partes(ByVal p_parte As String) As String
+        Try
+            
+            Dim xx
+            'Dim matches As MatchCollection
+            'matches = Regex.Matches(Me.txt_base.Text, "\[v\]([^\]]+)\[\/v\]", RegexOptions.IgnoreCase)
+            'Dim r As Regex
+            'r = New Regex("\[v\]([^\]]+)\[\/v\]")
+
+            '' r.Replace(s, "")
+            'Me.Label1.Text = matches.Count
+            'Me.Label1.Text = matches.Count.ToString()
+            'Dim res
+            'For Each xx In matches
+            '    res = res & r.Replace(xx.Value, "$1") & ","
+            'Next
+            'Me.txt_res.Text = res
+            
+            Dim l(10) As String
+            'Dim resultado As String = ""
+            'Dim separador As String = "*"
+            'l = p_parte.Split(separador)
+            Dim txt As String = ""
+            Dim tagi = "[v]"
+            Dim tagc = "[/v]"
+            txt = p_parte
+            
+            Dim matches As MatchCollection
+            matches = Regex.Matches(p_parte, "\[v\]([^\]]+)\[\/v\]", RegexOptions.IgnoreCase)
+            Dim r As Regex
+            r = New Regex("\[v\]([^\]]+)\[\/v\]")
+            Dim valor As String
+            ' r.Replace(s, "")
+            'Me.Label1.Text = matches.Count
+            'Me.Label1.Text = matches.Count.ToString()
+            'Dim res
+            For Each xx In matches
+                valor = r.Replace(xx.Value, "$1")
+                If (valor <> String.Empty) Then
+                    sub_formato(V_PLANTILLA & "-" & valor)
+                    txt = Replace(txt, tagi & valor & tagc, "<span style='color:red;font-weight:bold;'>" & subformato & "</span>")
+                Else
+                    subformato = ""
+                End If
+            Next
+            Return txt
+Catch ex As Exception
+Return ex.Message
+End Try
+End Function
+    
+'Private Function genera_partes(ByVal p_parte As String) As String
+'    Try
+
+
+'        Dim l() As String
+'        Dim resultado As String = ""
+'        Dim separador As String = "*"
+'        l = p_parte.Split(separador)
+'        Dim txt As String = ""
+'        Dim I As Integer
+'        txt = p_parte
+
+'        For Each valor In l
+'            If (Mid(valor, 1, "1") = "{") Then
+'                sub_formato(V_PLANTILLA & "-" & Trim(Replace(Replace(valor, "{", ""), "}", "")))
+'                ' txt = Replace(txt, separador & valor & separador, subformato)
+'                txt = Replace(txt, separador & valor & separador, "<span style='color:red;font-weight:bold;'>" & subformato & "</span>")
+'                'txt = Replace(txt, separador & valor & separador, "<span style='color:red;font-weight:bold;'>" & valor & "</span>")
+'                'Response.Write(valor & "<BR>")
+'            Else
+'                subformato = ""
+'            End If
+'            I = I + 1
+'        Next
+'        'If (txt.Length) Then
+
+'        'End If
+'        Return txt
+'    Catch ex As Exception
+'        Return ex.Message
+'    End Try
+'End Function
+    
+Private Sub sub_formato(ByVal p_grupo As String)
+Dim c As New Nomade.Documentos.docu.subformato("no")
+Dim dt As DataTable = c.dame_subformato(p_grupo)
+      
+If Not (dt Is Nothing) Then
+subformato = dt.Rows(0)("subformato")
+End If
+c = Nothing
+End Sub
+
+End Class

@@ -1,0 +1,154 @@
+﻿
+Partial Class vistas_ND_NDDQTDC
+    Inherits Nomade.N.Cub
+
+    Dim malerta As Label
+    Dim btn_filtro As String = "0"
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        malerta = Page.Master.FindControl("alerta")
+        Me.malerta.Text = ""
+    End Sub
+
+    Protected Sub btn_busca_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_busca.Click
+        Listar_Tipo_Dcto()
+    End Sub
+
+    Private Sub Listar_Tipo_Dcto()
+        Dim oTipoDcto As New Nomade.Documentos.docu.Tipo_Dcto("Bn")
+        Me.gw.DataSource = oTipoDcto.Listar_Tipo_Dcto(Me.txt_id.Text, Me.txt_desc.Text)
+        Me.gw.DataBind()
+        oTipoDcto = Nothing
+    End Sub
+
+    'Protected Sub RegsPag_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    ' CAMBIAR NUMERO DE FILAS A MOSTRAR
+    '    ' OBTIENE EL NUMERO ELEGIDO
+    '    Dim _DropDownList As DropDownList = DirectCast(sender, DropDownList)
+    '    ' CAMBIA EL PAGESIZE DEL GRID ASIGNANDO EL ELEGIDO
+    '    Me.gw.PageSize = Integer.Parse(_DropDownList.SelectedValue)
+    '    Listar_Plantillas()
+    'End Sub
+
+    'Protected Sub IraPag(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    Dim _IraPag As TextBox = DirectCast(sender, TextBox)
+    '    Dim _NumPag As Integer
+
+    '    If Integer.TryParse(_IraPag.Text.Trim, _NumPag) AndAlso _NumPag > 0 AndAlso _NumPag <= Me.gw.PageCount Then
+    '        If Integer.TryParse(_IraPag.Text.Trim, _NumPag) AndAlso _NumPag > 0 AndAlso _NumPag <= Me.gw.PageCount Then
+    '            Me.gw.PageIndex = _NumPag - 1
+    '        Else
+    '            Me.gw.PageIndex = 0
+    '        End If
+    '    End If
+    '    Me.gw.SelectedIndex = -1
+    '    Listar_Plantillas()
+    'End Sub
+    ''gw_SelectedIndexChanged
+    'Protected Sub gw_PageIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles gw.PageIndexChanged
+    '    '  AL CAMBIAR DE PAGINA LIMPIAMOS LA ROW SELECCIONADA
+    '    Me.gw.SelectedIndex = -1
+    'End Sub
+
+    'Protected Sub gw_PageIndexChanging(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewPageEventArgs) Handles gw.PageIndexChanging
+    '    If (e.NewPageIndex >= 0) Then
+    '        gw.PageIndex = e.NewPageIndex
+    '        Listar_Plantillas()
+    '    End If
+    'End Sub
+
+    'Protected Sub gw_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles gw.RowDataBound
+    '    ' FORMATEA ROWS
+
+    '    If e.Row.RowType = DataControlRowType.Pager Then
+    '        If (btn_filtro = "1") Then
+    '            '    Dim _IraPag1 As TextBox = e.Row.FindControl("IraPag")
+    '            '   _IraPag1.Text = 1
+    '            Me.gw.PageIndex = 0
+    '        End If
+    '        ' PAGINADO
+    '        ' TOTAL PAGINAS
+    '        Dim _TotalPags As Label = e.Row.FindControl("lblTotalNumberOfPages")
+    '        _TotalPags.Text = gw.PageCount.ToString
+    '        ' IR A PAGINA
+    '        Dim _IraPag As TextBox = e.Row.FindControl("IraPag")
+    '        _IraPag.Text = (Me.gw.PageIndex + 1).ToString
+
+    '        ' ASIGNA AL DROPDOWNLIST COMO VALOR SELECCIONADO EL PAGESIZE ACTUAL
+    '        Dim _DropDownList As DropDownList = e.Row.FindControl("RegsPag")
+    '        _DropDownList.SelectedValue = Me.gw.PageSize.ToString
+    '    ElseIf e.Row.RowType = DataControlRowType.DataRow Then
+    '        ' APLICA ESTILOS A EVENTOS ON MOUSE OVER Y OUT
+    '        e.Row.Attributes.Add("OnMouseOut", "this.className = this.orignalclassName;")
+    '        e.Row.Attributes.Add("OnMouseOver", "this.orignalclassName = this.className;this.className = 'altoverow';")
+
+    '        e.Row.Attributes("OnClick") = Page.ClientScript.GetPostBackClientHyperlink(Me.gw, "Select$" + e.Row.RowIndex.ToString)
+    '    End If
+    'End Sub
+    'Protected Sub btn_filtrar_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    '   Me.Up1.Update()
+    '    btn_filtro = "1"
+    '    Listar_Plantillas()
+    'End Sub
+
+    'Protected Sub gw_SelectedIndexChanging(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewSelectEventArgs) Handles gw.SelectedIndexChanging
+    '    Dim index As String = e.NewSelectedIndex
+    '    'Dim valor As String = Me.gw.Rows(index).Cells(1).Text
+    '    Dim valor As String = Me.gw.DataKeys(index).Values("CODIGO")
+    '    'Response.Redirect("?f=NDDMPTL&p=" & valor)
+    'End Sub
+
+    Protected Sub gw_RowCommand(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewCommandEventArgs) Handles gw.RowCommand
+        Try
+            Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim msg1(2) As String
+            ' Retrieve the row that contains the button 
+            ' from the Rows collection.
+            Dim row As GridViewRow = gw.Rows(index)
+            Dim v_id As String = gw.DataKeys(index).Values("CODE")
+
+            Response.Write("Hola" & v_id)
+
+            'If (e.CommandName = "eli") Then
+            '    Dim oPlantilla As New Nomade.Documentos.docu.plantilla("bn")
+            '    msg1 = oPlantilla.ELIMINAR_PLANTILLA(v_id)
+            '    Listar_Plantillas()
+            '    oPlantilla = Nothing
+            '    malerta.Text = "Transacción terminada: registros aplicados y guardados."
+
+            'End If
+        Catch ex As Exception
+            malerta.Text = "error al eliminar" & ex.Message
+        End Try
+    End Sub
+
+    'Protected Sub gw_RowCommand(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewCommandEventArgs) Handles gw.RowCommand
+    '    Try
+    '        Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+    '        Dim msg1(2) As String
+    '        ' Retrieve the row that contains the button 
+    '        ' from the Rows collection.
+    '        Dim row As GridViewRow = gw.Rows(index)
+    '        Dim v_f As String = gw.DataKeys(index).Values("VTAC_CODE")
+    '        Dim v_s As String = gw.DataKeys(index).Values("VTAC_NUM_SEQ_DOC")
+    '        Dim v_i As String = gw.DataKeys(index).Values("item")
+    '        Dim v_t As String = gw.DataKeys(index).Values("tipo")
+
+
+
+    '        If (e.CommandName = "eli") Then
+    '            ' Retrieve the row index stored in the CommandArgument property.
+    '            '  Me.lbl_mensaje.coloca("R", 12, code_cuenta)
+    '            Dim c As New Nomade.Finanzas.Ventas.Cventa("bn")
+    '            msg1 = c.ELIMINAR_DETALLE_DCTO_VENTA(v_f, v_s, v_i, v_t, Request.Cookies("usernomade")("id"))
+    '            llena_prod(Me.txt_codigo.Text, txt_secuencia.Text, "")
+    '            c = Nothing
+    '            ' Add code here to add the item to the shopping cart.
+    '        End If
+
+    '    Catch ex As Exception
+    '        malerta.Text = "error al eliminar" & ex.Message
+    '    End Try
+    'End Sub
+
+End Class

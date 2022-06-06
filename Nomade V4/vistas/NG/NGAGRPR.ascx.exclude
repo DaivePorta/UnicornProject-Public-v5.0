@@ -1,0 +1,129 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGAGRPR.ascx.vb" Inherits="vistas_NG_NGAGRPR" %>
+<style type="text/css">
+    .style1 {
+        width: 280px;
+    }
+</style>
+<%--<asp:UpdatePanel ID="UpdatePanel1" runat="server">
+     <ContentTemplate>--%>
+<script type="text/javascript">
+
+    function grupos() {
+        p = dhtmlmodal.open('grupo', 'iframe', 'validacion.aspx?f=FVIGRUP&cod=0&afi=<%=ddl_proveedor.SelectedValue %>', 'Agregar al grupo raiz', 'width=640px,height=300px,center=1,resize=1,scrolling=1')
+
+    p.onclose = function () { //Define custom code to run when window is closed
+
+        return true //allow closing of window
+    }
+}
+function egrupos() {
+    p = dhtmlmodal.open('grupo', 'iframe', 'validacion.aspx?f=FVIGRUP&a=eg&cod=<%=cod %>&t=<%=texto %>&afi=<%=ddl_proveedor.SelectedValue %>', 'Modificar grupo raiz', 'width=640px,height=300px,center=1,resize=1,scrolling=1')
+
+    p.onclose = function () { //Define custom code to run when window is closed
+
+        return true //allow closing of window
+    }
+} //End "opennewsletter" function
+
+function sgrupos() {
+    p = dhtmlmodal.open('grupo', 'iframe', 'validacion.aspx?f=FVIGRUP&cod=<%=cod %>&t=<%=texto %>', 'Agregar subgrupo', 'width=640px,height=300px,center=1,resize=1,scrolling=1')
+
+    p.onclose = function () { //Define custom code to run when window is closed
+
+        return true //allow closing of window
+    }
+} //End "opennewsletter" function
+
+function esgrupos() {
+    p = dhtmlmodal.open('grupo', 'iframe', 'validacion.aspx?f=FVIGRUP&a=es&cod=<%=cod %>&cods=<%=cods %>&t=<%=textos %>&afi=<%=ddl_proveedor.SelectedValue %>', 'Modificar subgrupo', 'width=640px,height=300px,center=1,resize=1,scrolling=1')
+
+    p.onclose = function () { //Define custom code to run when window is closed
+
+        return true //allow closing of window
+    }
+} //End "opennewsletter" function
+
+function elsgrupos() {
+    p = dhtmlmodal.open('grupo', 'iframe', 'validacion.aspx?f=FVIGRUP&a=el&cod=<%=cod %>&cods=<%=cods %>&t=<%=textos %>', 'Eliminar subgrupo', 'width=640px,height=300px,center=1,resize=1,scrolling=1')
+
+    p.onclose = function () { //Define custom code to run when window is closed
+
+        return true //allow closing of window
+    }
+} //End "opennewsletter" function
+
+</script>
+
+<p>
+    <b>PROVEEDOR</b>
+    &nbsp;
+             <asp:DropDownList ID="ddl_proveedor" runat="server" Height="22px" Width="250px"
+                 AutoPostBack="True">
+             </asp:DropDownList>
+</p>
+<p>
+    &nbsp;
+</p>
+
+<table width="99%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td class="style1">
+            <asp:LinkButton ID="lb_grupos" runat="server" Font-Bold="True"
+                ToolTip="Clic para reiniciar">GRUPOS</asp:LinkButton>&nbsp;&nbsp;<asp:ImageButton
+                    ID="btn_agregar" runat="server" ImageUrl="~/recursos/ico/add.png"
+                    OnClientClick="grupos(); return false" ToolTip="Agregar/Quitar" />&nbsp;&nbsp;<asp:ImageButton
+                        ID="btn_r_cuentas" ImageUrl="~/recursos/ico/refresh.png" runat="server"
+                        ToolTip="Recargar" /></span>&nbsp;&nbsp;<asp:ImageButton
+                            ID="btn_editar" runat="server" ImageUrl="~/recursos/ico/editar1.png"
+                            OnClientClick="egrupos(); return false"
+                            ToolTip="Seleccione de la lista para editar" Width="20px" />&nbsp;&nbsp;<asp:ImageButton
+                                ID="btn_elimina" runat="server" ImageUrl="~/recursos/ico/minus.png"
+                                ToolTip="Eliminar Grupo" /><br />
+            <br />
+            <asp:ListBox ID="dd_grupo" runat="server" Height="357px" Width="270px"
+                AutoPostBack="True"></asp:ListBox>
+        </td>
+        <td valign="top" rowspan="2">
+            <b>SUBGRUPOS</b>&nbsp;&nbsp;<asp:ImageButton
+                ID="btn_sgrupo" runat="server" ImageUrl="~/recursos/ico/add.png"
+                OnClientClick="sgrupos(); return false" ToolTip="Agregar subgrupo" />&nbsp;&nbsp;<asp:ImageButton
+                    ID="btn_rsubgrupo" ImageUrl="~/recursos/ico/refresh.png" runat="server"
+                    ToolTip="Recargar" /></span>&nbsp;
+        <asp:ImageButton
+            ID="btn_seditar" runat="server" ImageUrl="~/recursos/ico/editar1.png"
+            OnClientClick="esgrupos(); return false"
+            ToolTip="Seleccione de la tabla para editar" />&nbsp;
+        <asp:ImageButton
+            ID="btn_selimina" runat="server" ImageUrl="~/recursos/ico/minus.png"
+            OnClientClick="elsgrupos(); return false"
+            ToolTip="Eliminar Sub Grupo" /><br />
+            &nbsp;<asp:GridView ID="gw_subgrupo" runat="server" AutoGenerateColumns="False"
+                DataKeyNames="codigo">
+                <Columns>
+                    <asp:BoundField DataField="codigo" HeaderText="Código"
+                        ItemStyle-HorizontalAlign="Center">
+                        <ItemStyle HorizontalAlign="Center"></ItemStyle>
+                    </asp:BoundField>
+                    <asp:BoundField DataField="descripcion" HeaderText="Descripción" />
+                    <asp:BoundField DataField="TIPO_EXISTENCIA" HeaderText="Tipo Existencia"
+                        ItemStyle-HorizontalAlign="Center">
+                        <ItemStyle HorizontalAlign="Center"></ItemStyle>
+                    </asp:BoundField>
+                    <asp:BoundField DataField="FECHA_ACTV" HeaderText="Fecha"
+                        DataFormatString="{0:dd/MM/yyyy}" ItemStyle-HorizontalAlign="Center">
+                        <ItemStyle HorizontalAlign="Center"></ItemStyle>
+                    </asp:BoundField>
+                    <asp:BoundField DataField="estado" HeaderText="Estado"
+                        ItemStyle-HorizontalAlign="Center">
+                        <ItemStyle HorizontalAlign="Center"></ItemStyle>
+                    </asp:BoundField>
+                </Columns>
+            </asp:GridView>
+        </td>
+    </tr>
+    <tr>
+        <td class="style1">&nbsp;</td>
+    </tr>
+</table>
+<%-- </ContentTemplate>
+        </asp:UpdatePanel>--%>

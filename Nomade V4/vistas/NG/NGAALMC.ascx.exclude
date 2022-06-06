@@ -1,0 +1,129 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGAALMC.ascx.vb" Inherits="vistas_NG_NGAALMC" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+<table width="900" border="0" cellspacing="0" cellpadding="1">
+  <tr>
+    <td width="85" colspan="2" style="width: 890px">
+        <asp:Label ID="lbl_mensaje" runat="server"></asp:Label>
+      </td>
+  </tr>
+  <tr>
+    <td><b>Código</b></td>
+    <td>
+        <asp:TextBox runat="server" Width="50px" ID="txt_codigo" MaxLength="4"></asp:TextBox>
+        <asp:CheckBox ID="chb_estado" runat="server" Text="Activo" Checked="true"/>
+    &nbsp;</td>
+  </tr>
+  <tr>
+    <td><b>Empresa</b></td>
+    <td>
+        <asp:DropDownList ID="dd_empresa" runat="server" Width="350px" 
+            AutoPostBack="True">
+        </asp:DropDownList>
+            </td>
+  </tr>
+  <tr>
+    <td><b>Sucursal</b></td>
+    <td>
+        <asp:DropDownList ID="dd_sucursal" runat="server" Width="350px">
+        </asp:DropDownList>
+            </td>
+  </tr>
+  <tr>
+    <td><b>Descripción</b></td>
+    <td>
+        <asp:TextBox ID="txt_descripcion" runat="server" Width="366px"></asp:TextBox>
+            </td>
+  </tr>
+  <tr>
+    <td>Dirección</td>
+    <td>
+        <asp:TextBox runat="server" Width="362px" ID="txt_direccion"></asp:TextBox>
+    </td>
+  </tr>
+  <tr>
+    <td>Ciudad</td>
+    <td>
+        <asp:TextBox runat="server" Width="100px" ID="txt_ciudad"></asp:TextBox>
+    </td>
+  </tr>
+  <tr>
+    <td>Pais</td>
+    <td>
+        <asp:DropDownList ID="dd_pais" runat="server" Width="176px" 
+            AutoPostBack="True">
+        </asp:DropDownList>
+            </td>
+  </tr>
+  <tr>
+    <td>Teléfono</td>
+    <td>
+        <asp:TextBox runat="server" Width="59px" ID="txt_area" MaxLength="5"></asp:TextBox>
+        -<asp:TextBox runat="server" Width="142px" ID="txt_telefono" MaxLength="20"></asp:TextBox>
+        -<asp:TextBox runat="server" Width="59px" ID="txt_anexo"></asp:TextBox>
+    </td>
+  </tr>
+  <tr>
+    <td>Contacto</td>
+    <td>
+        <asp:TextBox runat="server" Width="271px" ID="txt_contacto"></asp:TextBox>
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
+        &nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
+        <asp:Button ID="btn_grabar" runat="server" Text="Grabar" CssClass="boton" />
+            </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
+        &nbsp;</td>
+  </tr>
+</table>
+
+
+
+<div class="row-fluid">
+    <div class="span12">
+        <!-- SE INICIA EL CUADRO DE LA FORMA-->
+        <div class="portlet box blue">
+            <!-- TITULO DE LA FORMA-->
+            <div class="portlet-title">
+                <h4>
+                    <i class="icon-user"></i>NPMGPER</h4>
+                <div class="tools">
+                    <a href="javascript:;" class="collapse"></a><a href="#portlet-config" data-toggle="modal"
+                        class="config"></a><a href="javascript:;" class="reload"></a><a href="javascript:;"
+                            class="remove"></a>
+                </div>
+            </div>
+            <!-- FN DEL TITULO-->
+            <!-- INICIA EL CUERPO DE LA FORMA-->
+            <div class="portlet-body form">
+                <div class="span6">
+                    <div class="control-group">
+                        <div class="controls">
+                            <input type="text" class="span12" />
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- FIN DEL CUERPO DE LA FORMA-->
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+

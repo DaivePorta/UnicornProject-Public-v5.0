@@ -1,0 +1,101 @@
+﻿Imports System.Data
+Partial Class vistas_ND_NDDAGRE
+    Inherits Nomade.N.Cub
+
+    Public v_plantilla As String
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not Page.IsPostBack Then
+            plantillas()
+            Me.pnl_regdatos.Visible = False
+           
+        End If
+        Me.txt_coddoc.Enabled = False
+        Me.txt_coddoc.CssClass = "f_inputl"
+        Me.txt_documento.Enabled = False
+        Me.txt_documento.CssClass = "f_inputl"
+    End Sub
+
+    Private Sub plantillas()
+        Dim c As New NOMADE.Documentos.docu.plantilla("v")
+        Me.lb_tipodoc.DataSource = c.dame_plantillas
+        Me.lb_tipodoc.DataTextField = "DESC"
+        Me.lb_tipodoc.DataValueField = "CODE"
+        lb_tipodoc.DataBind()
+        c = Nothing
+    End Sub
+
+    Protected Sub btn_siguiente_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_siguiente.Click
+        Dim formato As String
+        formato = lb_tipodoc.SelectedValue
+        Me.pnl_regdatos.Visible = True
+        Me.pnl_plantilla.Visible = False
+        If (Me.pnl_regdatos.Visible) Then
+            subplantillas(formato)
+        End If
+    End Sub
+    Private Sub subplantillas(ByVal p_plantilla As String)
+        Dim dt As DataTable
+        Dim c As New Nomade.Documentos.docu.plantilla("bn")
+        dt = c.dame_plantillas_N2(p_plantilla)
+        Me.txt_documento.Text = ""
+        Me.txt_coddoc.Text = ""
+        If Not (dt Is Nothing) Then
+            Me.txt_documento.Text = dt.Rows(0)("PLA_PADRE").ToString
+            Me.txt_coddoc.Text = dt.Rows(0)("CODE_PADRE").ToString
+        End If
+        Me.dd_partes.DataSource = dt
+        c = Nothing
+        Me.dd_partes.Items.Clear()
+        Me.dt_grupos.DataSource = Nothing
+        dt_grupos.DataBind()
+        Me.botones.Visible = False
+        Me.dd_partes.DataTextField = "DESC"
+        Me.dd_partes.DataValueField = "CODE"
+        Me.dd_partes.DataBind()
+        dd_partes.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Private Sub carga_controles(ByVal p_tipo As String)
+
+
+        Static txt As TextBox()
+        Static dd As DropDownList()
+        Static contador As Integer
+
+    End Sub
+
+    Protected Sub dd_partes_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles dd_partes.SelectedIndexChanged
+        Dim c As New Nomade.Documentos.docu.FORMATO("no")
+        Dim dt As DataTable
+        dt = c.dame_FORMATOS(Me.dd_partes.SelectedValue)
+        Me.dt_grupos.DataSource = dt
+        Me.dt_grupos.DataBind()
+        If Not (dt Is Nothing) Then
+            Me.lbl_partes.Text = "Partes de modelo"
+            botones.Visible = True
+           
+        Else
+            Me.lbl_partes.Text = ""
+            botones.Visible = False
+        End If
+    End Sub
+
+    Protected Sub btn_crear_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_crear.Click
+        Dim NUEVO(1) As String
+        Dim c As New Nomade.Documentos.docu.documento("BN")
+        NUEVO = c.CREAR_DOCUMENTO(Me.dd_partes.SelectedValue, Me.usuario)
+        If (NUEVO(0).Length = 10) Then
+            Response.Redirect("?f=nddadoc&d=" & NUEVO(0))
+        End If
+        'Response.Write(NUEVO(0))
+    End Sub
+
+    Protected Sub btn_regresa_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_regresa.Click
+        Me.pnl_plantilla.Visible = True
+        Me.pnl_regdatos.Visible = False
+        Me.botones.Visible = False
+        plantillas()
+    End Sub
+
+    
+End Class

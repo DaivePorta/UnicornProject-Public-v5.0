@@ -1,0 +1,207 @@
+﻿<%@ WebHandler Language="VB" Class="CAAPREN" %>
+
+Imports System
+Imports System.Web
+Imports System.Data
+
+Public Class CAAPREN : Implements IHttpHandler
+
+    Dim res, opcion, code, ctlg_code, scsl_code, monto, usua_id, seq As String
+    Dim dt As DataTable
+    Dim c As New Nomade.CA.AsignacionCuenta("Bn")
+    
+    Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
+        
+        opcion = context.Request("opcion")
+        code = context.Request("code")
+        ctlg_code = context.Request("ctlg_code")
+        scsl_code = context.Request("scsl_code")
+        monto = context.Request("monto")
+        usua_id = context.Request("usua_id")
+        seq = context.Request("seq")
+        
+        Try
+            Select Case opcion
+                Case "1"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = c.ListarAsignacion(code, String.Empty, String.Empty, String.Empty)
+                    Dim resb As New StringBuilder
+                    If Not dt Is Nothing Then
+                        resb.Append("[")
+                        resb.Append("{")
+                        resb.Append("""CODIGO"" :" & """" & dt.Rows(0)("CODE") & """,")
+                        resb.Append("""CTLG_CODE"" :" & """" & dt.Rows(0)("CTLG_CODE") & """,")
+                        resb.Append("""SCSL_CODE"" :" & """" & dt.Rows(0)("SCSL_CODE") & """,")
+                        resb.Append("""PIDM"" :" & """" & dt.Rows(0)("PIDM") & """,")
+                        resb.Append("""EMPLEADO"" :" & """" & dt.Rows(0)("EMPLEADO") & """,")
+                        resb.Append("""ACTIVO"" :" & """" & dt.Rows(0)("ACTIVO") & """,")
+                        resb.Append("""GLOSA"" :" & """" & dt.Rows(0)("GLOSA") & """,")
+                        resb.Append("""MONE_CODE"" :" & """" & dt.Rows(0)("MONE_CODE") & """,")
+                        resb.Append("""MONTO"" :" & """" & dt.Rows(0)("MONTO") & """,")
+                        resb.Append("""FECHA_REGISTRO"" :" & """" & dt.Rows(0)("FECHA_REGISTRO") & """,")
+                        resb.Append("""FECHA_LIMITE"" :" & """" & dt.Rows(0)("FECHA_LIMITE") & """,")
+                        resb.Append("""CENTRO_COSTO"" :" & """" & dt.Rows(0)("CENTRO_COSTO") & """,")
+                        resb.Append("""CENTRO_COSTO_CODE"" :" & """" & dt.Rows(0)("CENTRO_COSTO_CODE") & """,")
+                        resb.Append("""ESTADO"" :" & """" & dt.Rows(0)("ESTADO") & """")
+                        resb.Append("}")
+                        resb.Append("]")
+                        res = resb.ToString()
+                    Else
+                        res = "[{}]"
+                    End If
+                    c = Nothing
+                    dt = Nothing
+                Case "2"
+                    dt = c.ListarRendicionTipo(code, "C")
+                    ListaComprobantes(dt)
+                    c = Nothing
+                    dt = Nothing
+                Case "3"
+                    dt = c.ListarRendicionTipo(code, "G")
+                    ListaGastos(dt)
+                    c = Nothing
+                    dt = Nothing
+                Case "4"
+                    res = c.AprobarRendicionCuenta(ctlg_code, scsl_code, monto, code, seq, usua_id)
+            End Select
+                    
+            context.Response.Write(res)
+            
+        Catch ex As Exception
+            context.Response.Write("error" & ex.Message)
+        End Try
+    End Sub
+    
+    Public Function ListaComprobantes(ByVal dt As DataTable) As String
+        If Not dt Is Nothing Then
+            res = "<table id='tblDocumentos' class='table table-bordered'>" &
+                            "<thead>" &
+                                "<tr>" &
+                                    "<th></th>" &
+                                    "<th>Fecha</th>" &
+                                    "<th>Comprobante</th>" &
+                                    "<th>Serie</th>" &
+                                    "<th>Número</th>" &
+                                    "<th>Razon Social</th>" &
+                                    "<th>Gravada</th>" &
+                                    "<th>Total</th>" &
+                                    "<th>Cuenta</th>" &
+                                "</tr>" &
+                            "</thead>" &
+                            "<tbody>"
+            For i As Integer = 0 To dt.Rows.Count - 1
+                
+                If (dt.Rows(i)("APR_IND").ToString() = "S") Then
+                    res += "<tr id='" & dt.Rows(i)("CODE").ToString() & "' class='sia'>"
+                    res += "<td style='text-align:center;'><b>" & dt.Rows(i)("USUA_APR").ToString() & "</b></td>"
+                Else
+                    res += "<tr id='" & dt.Rows(i)("CODE").ToString() & "' class='noa'>"
+                    res += "<td style='text-align:center;'><input type='checkbox' value='" & dt.Rows(i)("SEQ").ToString() & "' class='chapr' /></td>"
+                End If
+                res += "<td>" & dt.Rows(i)("FECHA").ToString().Substring(0, 10) & "</td>"
+                res += "<td>" & dt.Rows(i)("DCTO_CODE").ToString() & "</td>"
+                res += "<td>" & dt.Rows(i)("NUM_SERIE").ToString() & "</td>"
+                res += "<td>" & dt.Rows(i)("NUM_DCTO").ToString() & "</td>"
+                res += "<td>" & dt.Rows(i)("EMPLEADO").ToString() & "</td>"
+                res += "<td>" & dt.Rows(i)("TIPO_OPERACION").ToString() & "</td>"
+                If (dt.Rows(i)("APR_IND").ToString() = "S") Then
+                    res += "<td>" & dt.Rows(i)("TOTAL").ToString() & "</td>"
+                Else
+                    res += "<td><input type='text' id='datamonto" & dt.Rows(i)("SEQ").ToString() & "' onkeypress='return ValidaDecimales(event,this)' type='text' class='m-wrap small sum' value='" & dt.Rows(i)("TOTAL").ToString() & "'/></td>"
+                End If
+                res += "<td>" & dt.Rows(i)("CUENTA").ToString() & "</td>"
+                res += "</tr>"
+            Next
+            res += "</tbody>"
+            res += "</table>"
+        Else
+            res = "<table id='tblDocumentos' class='table table-bordered'>" &
+                            "<thead>" &
+                                "<tr>" &
+                                    "<th></th>" &
+                                    "<th>Fecha</th>" &
+                                    "<th>Comprobante</th>" &
+                                    "<th>Serie</th>" &
+                                    "<th>Número</th>" &
+                                    "<th>Razon Social</th>" &
+                                    "<th>Gravada</th>" &
+                                    "<th>Total</th>" &
+                                    "<th>Cuenta</th>" &
+                                "</tr>" &
+                            "</thead>" &
+                            "<tbody>" &
+                            "</tbody>" &
+                        "</table>"
+        End If
+        Return res
+    End Function
+
+    Public Function ListaGastos(ByVal dt As DataTable) As String
+        If Not dt Is Nothing Then
+            res = "<table id='tblDocumentos' class='table table-bordered'>" &
+                            "<thead>" &
+                                "<tr>" &
+                                    "<th></th>" &
+                                    "<th>Fecha</th>" &
+                                    "<th>Concepto</th>" &
+                                    "<th>Glosa</th>" &
+                                    "<th>Total</th>" &
+                                    "<th>Cuenta</th>" &
+                                "</tr>" &
+                            "</thead>" &
+                            "<tbody>"
+            For i As Integer = 0 To dt.Rows.Count - 1
+                If (dt.Rows(i)("APR_IND").ToString() = "S") Then
+                    res += "<tr id='" & dt.Rows(i)("CODE").ToString() & "' class='sia'>"
+                    res += "<td style='text-align:center;'><b>" & dt.Rows(i)("USUA_APR").ToString() & "</b></td>"
+                Else
+                    res += "<tr id='" & dt.Rows(i)("CODE").ToString() & "' class='noa'>"
+                    res += "<td style='text-align:center;'><input type='checkbox' value='" & dt.Rows(i)("SEQ").ToString() & "' class='chapr' /></td>"
+                End If
+                res += "<td>" & dt.Rows(i)("FECHA").ToString().Substring(0, 10) & "</td>"
+                res += "<td>" & dt.Rows(i)("CONCEPTO").ToString() & "</td>"
+                res += "<td>" & dt.Rows(i)("GLOSA").ToString() & "</td>"
+                If (dt.Rows(i)("APR_IND").ToString() = "S") Then
+                    res += "<td>" & dt.Rows(i)("TOTAL").ToString() & "</td>"
+                Else
+                    res += "<td><input type='text' id='datamonto" & dt.Rows(i)("SEQ").ToString() & "' onkeypress='return ValidaDecimales(event,this)' type='text' class='m-wrap small sum' value='" & dt.Rows(i)("TOTAL").ToString() & "'/></td>"
+                End If
+                res += "<td>" & dt.Rows(i)("CUENTA").ToString() & "</td>"
+                res += "</tr>"
+            Next
+            res += "</tbody>"
+            res += "</table>"
+        Else
+            res = "<table id='tblDocumentos' class='table table-bordered'>" &
+                            "<thead>" &
+                                "<tr>" &
+                                    "<th></th>" &
+                                    "<th>Fecha</th>" &
+                                    "<th>Concepto</th>" &
+                                    "<th>Glosa</th>" &
+                                    "<th>Total</th>" &
+                                    "<th>Cuenta</th>" &
+                                "</tr>" &
+                            "</thead>" &
+                            "<tbody>" &
+                            "</tbody>" &
+                        "</table>"
+        End If
+        Return res
+    End Function
+ 
+    Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
+        Get
+            Return False
+        End Get
+    End Property
+
+End Class
+
+
+
+
+
+
+
+

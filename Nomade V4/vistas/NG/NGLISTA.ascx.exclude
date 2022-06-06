@@ -1,0 +1,72 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGLISTA.ascx.vb" Inherits="vistas_NG_NGLISTA" %>
+
+
+<div class="row-fluid">
+    <div class="span12 ">
+        <!-- INICIA CUADRO PARA LA FORMA -->
+        <div class="portlet box blue" id="ventana">
+            <div class="portlet-title">
+                <h4>
+                    <i class="icon-reorder"></i>Lista los Datos de Prueba</h4>
+                <div class="actions">
+                    <a href="?f=ngprueb" class="btn green"><i class="icon-pencil"></i>Nuevo</a> <a href="?f=nglista" class="btn red">
+                        <i class="icon-plus"></i>Listar</a>
+                </div>
+                <div class="tools">
+                    <a href="javascript:;" class="collapse"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+
+                <asp:Repeater ID="BandejaPrueba" runat="server">
+                    <HeaderTemplate>
+                        <table id="tblBandeja" class="table table-striped table-bordered table-hover" border="0" cellpadding="0" cellspacing="0"
+                            class="display">
+                            <thead>
+                                <tr align="center">
+                                    <th>CODIGO
+                                    </th>
+                                    <th>NOMBRE
+                                    </th>
+                                    <th>MARCA
+                                    </th>
+                                    <th>DESCRIPCION
+                                    </th>
+                                    <th>LISTAR
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    </HeaderTemplate>
+                    <ItemTemplate>
+                        <tr>
+                            <td><%# Eval("CODIGO")%></td>
+                            <td><%# Eval("NOMBRE")%></td>
+                            <td><%# Eval("MARCA")%></td>
+                            <td><%# Eval("DESCRIPCION")%></td>
+                            <td></td>
+
+                        </tr>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                        </tbody> </table>
+                    </FooterTemplate>
+                </asp:Repeater>
+            </div>
+        </div>
+    </div>
+    <!-- FIN CUADRO PARA LA FORMA-->
+</div>
+
+<!-- IMPORTAMOS LOS PLUGINS QUE SE USARAN-->
+<script type="text/javascript" src="../vistas/NG/js/NGPRUEB.js"></script>
+<script>
+
+    jQuery(document).ready(function () {
+        // Se Inicializa el modulo de javascript para esta forma.
+        NGPRUEB.init();
+    });
+</script>
+
+
+

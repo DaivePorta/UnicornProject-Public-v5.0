@@ -1,0 +1,79 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGQALMC.ascx.vb" Inherits="vistas_NG_NGQALMC" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+   
+      <br />
+  <table border="0" cellspacing="0" cellpadding="0" style="width: 349px">
+  <tr>
+    <td class="style2">Empresa </td>
+    <td class="style1">
+            <asp:TextBox ID="txt_empresa" runat="server" Width="35px" MaxLength="1"></asp:TextBox>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+            Sucursal
+            <asp:TextBox ID="txt_sucursal" runat="server" Width="69px" MaxLength="4"></asp:TextBox>
+            </td>
+    <td><asp:ImageButton ID="btn_busca" runat="server" 
+            ImageUrl="~/recursos/img/btn_buscar.gif" />
+            </td>
+  </tr>
+</table>
+   <br />
+<div class="linea"><br /></div>
+   <div class="gridcontainer">
+<asp:GridView ID="gw" runat="server" SkinID="gw1" 
+          AutoGenerateColumns="False" DataKeyNames="ALMACEN">
+      
+      
+          <Columns>
+              <asp:BoundField DataField="EMPRESA" HeaderText="EMPRESA" /> 
+              <asp:BoundField DataField="DESC_EMPRESA" HeaderText="DESCRIPCION" /> 
+              <asp:BoundField DataField="SUCURSAL" HeaderText="SUCURSAL" />
+              <asp:BoundField DataField="DESC_SUCURSAL" HeaderText="DESCRIPCION" />
+              <asp:BoundField DataField="ALMACEN" HeaderText="ALMACEN" />
+              <asp:BoundField DataField="DESCRIPCION" HeaderText="DESCRIPCION" />
+              <asp:BoundField DataField="ESTADO" HeaderText="ESTADO" />
+              <asp:BoundField DataField="DIRECCION" HeaderText="DIRECCION" />
+              <asp:BoundField DataField="CIUDAD" HeaderText="CIUDAD" />
+              <asp:BoundField DataField="CONTACTO" HeaderText="CONTACTO" />
+              <asp:TemplateField HeaderText="ACCIONES">
+                  <ItemTemplate>
+                      <a href="?f=ngaalmc&p=<%#databinder.eval(container.dataitem,"ALMACEN") %>"> <img  src="recursos/ico/editar.png" title="Editar" width="18" border="0"/></a>
+                            <%--<cc1:btn_confirm ID="ibtnEliminar" runat="server" ImageUrl="~/recursos/ico/btn_borrar.gif"
+                             ToolTip="Eliminar" UPAO_msg='¿Desea eliminar el registro?' CommandName="Eliminar"
+                            CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>" />--%>
+                    </ItemTemplate>    
+                <%-- </ItemTemplate>
+                                           <td align="right">
+                                                                        <cc3:ConfirmButtonExtender ID="ibtnEliminar" runat="server" ImageUrl="~/recursos/ico/btn_borrar.gif"
+                                                                            ToolTip="Eliminar" UPAO_msg='¿Desea eliminar el registro?' CommandName="Eliminar"
+                                                                            CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>" />
+                                                                    </td>
+
+                  </ItemTemplate> --%>
+              </asp:TemplateField>
+          </Columns>
+      
+      
+       <PagerTemplate>
+                    <asp:Label ID="Label1" runat="server" Text="Mostrar filas:" />
+                    <asp:DropDownList CssClass="letranormal" ID="RegsPag" runat="server" AutoPostBack="true" OnSelectedIndexChanged="RegsPag_SelectedIndexChanged">
+                     <asp:ListItem Value="2" />
+                        <asp:ListItem Value="15" />
+                        <asp:ListItem Value="20" />
+                        <asp:ListItem Value="30" />
+                          <asp:ListItem Value="40" />
+                    </asp:DropDownList>
+                    &nbsp;
+                    Ir a 
+                    <asp:TextBox ID="IraPag" runat="server" AutoPostBack="true" OnTextChanged="IraPag" CssClass="gopag" />
+                    de
+                    <asp:Label ID="lblTotalNumberOfPages" runat="server" />
+                    &nbsp;
+                    <asp:Button ID="Button4" runat="server" CommandName="Page" ToolTip="Prim. Pag"  CommandArgument="First" CssClass="pagfirst" />                    
+                    <asp:Button ID="Button1" runat="server" CommandName="Page" ToolTip="Pág. anterior"  CommandArgument="Prev" CssClass="pagprev" />
+                    <asp:Button ID="Button2" runat="server" CommandName="Page" ToolTip="Sig. página" CommandArgument="Next" CssClass="pagnext" />                    
+                    <asp:Button ID="Button3" runat="server" CommandName="Page" ToolTip="Últ. Pag"  CommandArgument="Last" CssClass="paglast" />                    
+                </PagerTemplate>
+                
+          <AlternatingRowStyle CssClass="altrowstyle" />
+                
+      </asp:GridView></div>

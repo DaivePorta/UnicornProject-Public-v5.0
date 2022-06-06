@@ -1,0 +1,143 @@
+﻿Imports System.Data
+
+Partial Class vistas_NG_NGAALMC
+    Inherits Nomade.N.Cub
+
+    Dim malerta As Label
+    Dim v_Almacen As String
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        ''malerta = Page.Master.FindControl("alerta")
+        ''Me.malerta.Text = ""
+        'v_Almacen = Request.QueryString("p")
+        'If Not Page.IsPostBack Then
+        '    carga_empresas("")
+
+        '    If (v_Almacen <> String.Empty) Then
+        '        carga_editar(v_Almacen)
+        '        Me.txt_codigo.Attributes.Add("readonly", "true")
+        '        Me.txt_codigo.CssClass = "f_inputl"
+        '    End If
+        'End If
+    End Sub
+
+    Private Sub carga_empresas(ByVal v_empresa As String)
+        Dim l As New ListItem
+        Dim cempresa As New Nomade.general.Cempresa("bn")
+        Me.dd_empresa.DataSource = cempresa.dame_empresas(v_empresa)
+        cempresa = Nothing
+        Me.dd_empresa.DataTextField = "descripcion"
+        Me.dd_empresa.DataValueField = "codigo"
+        Me.dd_empresa.DataBind()
+        dd_empresa.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Private Sub carga_sucursal(ByVal v_empresa As String)
+        Dim l As New ListItem
+        If Not (v_empresa = String.Empty) Then
+            Me.dd_sucursal.Focus()
+        End If
+        Dim oSucursal As New Nomade.general.Csucursal("bn")
+        Me.dd_sucursal.DataSource = oSucursal.dame_sucursal(v_empresa, "", "")
+        oSucursal = Nothing
+        Me.dd_sucursal.Items.Clear()
+        Me.dd_sucursal.DataTextField = "descripcion"
+        Me.dd_sucursal.DataValueField = "codigo"
+        Me.dd_sucursal.DataBind()
+        dd_sucursal.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Private Sub carga_editar(ByVal v_Almacen As String)
+        'Dim oAlmacen As New Nomade.Finanzas.Almacen.Calamcen("Bn")
+        'Dim dt As DataTable
+        'dt = oAlmacen.dame_almacen_especifico(v_Almacen)
+        'If Not (dt Is Nothing) Then
+        '    For Each MiDataRow As DataRow In dt.Rows
+        '        'Response.Write("N° Registros:" & dt.Rows.ToString)
+        '        'Response.Write("Empresa:" & MiDataRow("EMPRESA").ToString & " Sucursal:" & MiDataRow("SUCURSAL").ToString & " Almacen:" & MiDataRow("ALMACEN").ToString)
+        '        Me.txt_codigo.Text = v_Almacen
+        '        carga_sucursal(MiDataRow("EMPRESA").ToString)
+        '        Me.dd_empresa.SelectedValue = MiDataRow("EMPRESA").ToString
+        '        Me.dd_sucursal.SelectedValue = MiDataRow("SUCURSAL").ToString
+        '        Me.txt_descripcion.Text = MiDataRow("Descripcion").ToString
+        '        Me.txt_direccion.Text = MiDataRow("Direccion").ToString
+        '        Me.txt_ciudad.Text = MiDataRow("Ciudad").ToString
+        '        Me.dd_pais.SelectedValue = IIf(MiDataRow("CODIGO_PAIS").ToString = Nothing, Nothing, MiDataRow("CODIGO_PAIS").ToString)
+        '        Me.txt_area.Text = MiDataRow("Area_Tele").ToString
+        '        Me.txt_telefono.Text = MiDataRow("Numero_Tele").ToString
+        '        Me.txt_anexo.Text = MiDataRow("Anexo_Tele").ToString
+        '        Me.txt_contacto.Text = MiDataRow("Contacto").ToString
+        '        Me.chb_estado.Checked = IIf(MiDataRow("Estado").ToString = "A", True, False)
+        '    Next
+        'End If
+        'oAlmacen = Nothing
+    End Sub
+
+    Protected Sub btn_grabar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabar.Click
+        Try
+            Dim msg As String
+
+            If (txt_codigo.Text = String.Empty) Then
+                malerta.Text = Nomade.N.msg.alerta("Ingresar el Código", "W")
+                Exit Sub
+            End If
+            If (dd_empresa.SelectedIndex = 0) Then
+                malerta.Text = Nomade.N.msg.alerta("Seleccione una Empresa", "W")
+                Exit Sub
+            End If
+            If (dd_sucursal.SelectedIndex = 0) Then
+                malerta.Text = Nomade.N.msg.alerta("Seleccione una Sucursal", "W")
+                Exit Sub
+            End If
+            If (txt_descripcion.Text = String.Empty) Then
+                malerta.Text = Nomade.N.msg.alerta("Ingresar la Descripción", "W")
+                Exit Sub
+            End If
+
+            'Dim oAlmacen As New Nomade.Finanzas.Almacen.Calamcen("bn")
+            'If (v_Almacen = String.Empty) Then
+            '    msg = oAlmacen.CREAR_ALMACEN(txt_codigo.Text, Me.dd_empresa.SelectedValue, _
+            '            Me.dd_sucursal.SelectedValue, Me.txt_descripcion.Text, _
+            '            Me.txt_direccion.Text, Me.txt_ciudad.Text, _
+            '            IIf(dd_pais.SelectedValue = "", Nothing, dd_pais.SelectedValue), Me.txt_area.Text, Me.txt_telefono.Text, _
+            '            Me.txt_anexo.Text, Me.txt_contacto.Text, _
+            '            IIf(chb_estado.Checked = True, "A", "I"), Me.usuario)
+            'Else
+            '    msg = oAlmacen.ACTUALIZAR_ALMACEN(txt_codigo.Text, Me.dd_empresa.SelectedValue, _
+            '            Me.dd_sucursal.SelectedValue, Me.txt_descripcion.Text, _
+            '            Me.txt_direccion.Text, Me.txt_ciudad.Text, _
+            '            IIf(dd_pais.SelectedValue = "", Nothing, dd_pais.SelectedValue), _
+            '            Me.txt_area.Text, Me.txt_telefono.Text, _
+            '            Me.txt_anexo.Text, Me.txt_contacto.Text, _
+            '            IIf(chb_estado.Checked = True, "A", "I"), Me.usuario)
+            'End If
+
+            'oAlmacen = Nothing
+            'If (msg = "OK") Then
+            '    malerta.Text = Nomade.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+            'Else
+            '    malerta.Text = Nomade.N.msg.alerta("Error al crear el registro", "W")
+            'End If
+
+        Catch ex As Exception
+            malerta.Text = Nomade.N.msg.alerta("Error: " + ex.Message, "W")
+        End Try
+
+    End Sub
+
+    Protected Sub dd_empresa_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles dd_empresa.SelectedIndexChanged
+        If (Me.dd_empresa.SelectedValue <> String.Empty) Then
+            carga_sucursal(dd_empresa.SelectedValue)
+        End If
+    End Sub
+
+    'Private Sub carga_pais()
+    '    Dim oPais As New NOMADE.RHH.("bn")
+    '    Me.dd_pais.DataSource = oPais.LISTAR_PAIS("", "")
+    '    oPais = Nothing
+    '    Me.dd_pais.DataTextField = "descripcion"
+    '    Me.dd_pais.DataValueField = "codigo"
+    '    Me.dd_pais.DataBind()
+    '    dd_pais.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    'End Sub
+End Class

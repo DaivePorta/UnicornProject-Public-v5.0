@@ -1,0 +1,164 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGPRUEB.ascx.vb" Inherits="vistas_NG_NGPRUEB" %>
+
+
+<div class="row-fluid">
+    <div class="span12">
+        <!-- INICIA CUADRO PARA LA FORMA -->
+        <div class="portlet box blue" id="ventana">
+            <div class="portlet-title">
+                <h4>
+                    <i class="icon-reorder"></i>Mantenimiento de Prueba</h4>
+                <div class="actions">
+                    <a href="?f=ngprueb" class="btn green"><i class="icon-pencil"></i>Nuevo</a> <a href="?f=nglista" class="btn red">
+                        <i class="icon-plus"></i>Listar</a>
+                </div>
+                <div class="tools">
+                    <a href="javascript:;" class="collapse"></a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                
+                <!-- PRIMERA LINEA -->
+                <div class="row-fluid">
+
+                     <!-- INICIO ACTIVO -->
+                    <div class="span3">
+                        <div class="control-group success">
+                            <label class="control-label">Código</label>
+                            <div class="controls">
+                                <input type="text" class="span12" disabled="disabled" id="txtcode" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FIN ACTIVO -->
+
+
+                    <!-- TIPO -->
+                    <div class="span6">
+                        <div class="control-group success">
+                            <label class="control-label">
+                                Seleccione Tipo</label>
+                            <label class="radio">
+                                <div class="radio">
+                                    <span class="checked">
+                                        <input type="radio" name="tipo" checked="checked" value="S" style="opacity: 0;"></span></div>
+                                Seriado
+                            </label>
+                            <label class="radio">
+                                <div class="radio">
+                                    <span>
+                                        <input type="radio" name="tipo" value="N" style="opacity: 0;"></span></div>
+                                No Seriado
+                            </label>
+                        </div>
+                       
+                    </div>
+                     <!-- FIN TIPO -->
+
+                     <!-- INICIO ACTIVO -->
+                    <div class="span3">
+                        <div class="control-group success">
+                            <label class="control-label">Producto Activo</label>
+                            <div class="controls">
+                                <input id="chkactivo" type="checkbox" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FIN ACTIVO -->
+
+                </div>
+                <!-- FIN PRIMERA LINEA -->
+
+                <!-- INICIO SEGUNDA LINEA -->
+                <div class="row-fluid">
+                    <!-- INICIO NOMBRE -->
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="txtnombre">Nombre</label>
+                            <div class="controls">
+                                <input type="text" required id="txtnombre" class="m-wrap span12" placeholder="Nombre Producto"/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FIN NOMBRE -->
+                    <!-- INICIO FECHA -->
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="txtfecha">Fecha Registro</label>
+                            <div class="controls">
+                                <input type="text" required data-date-format="dd/mm/yyyy" class="m-wrap span12" id="txtfecha" placeholder="dd/mm/yyyy"/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FIN FECHA -->
+                </div>
+                <!-- FIN SEGUNDA LINEA -->
+
+                <!-- INICIO TERCERA LINEA -->
+                <div class="row-fluid">
+                    <!-- INICIO CODIGO -->
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="txtcodigo">Codigo de Barras</label>
+                            <div class="controls">
+                                <input type="text" required id="txtcodigo" class="m-wrap span12" placeholder="############"/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FIN CODIGO -->
+                    <!-- INICIO MARCA -->
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="cbomarca">Seleccione Marca</label>
+                            <div class="controls">
+                                <select id="cbomarca" class="span12">
+                                    <option>--- Seleccionar ---</option>
+                                    <option value="EPSON">EPSON</option>
+                                    <option value="DELL">DELL</option>
+                                    <option value="IBM">IBM</option>
+                                    <option value="MICROSOFT">MICROSOFT</option>
+                                    <option value="MAC">MAC</option>
+                                    <option value="LENOVO">LENOVO</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FIN MARCA -->
+                </div>
+                <!-- FIN TERCERA LINEA -->
+
+                <!-- INICIO CUARTA LINEA -->
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="control-group">
+                            <label class="control-label" for="txtdescripcion">Descripción</label>
+                            <div class="controls">
+                                <textarea id="txtdescripcion" class="m-wrap span12" cols="20" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- FIN CUARTA LINEA -->
+
+                <div class="form-actions">
+                    <a id="grabar" class="btn blue" href="javascript:Grabar();"><i class="icon-ok">
+                    </i>Grabar Datos</a> <a href="?f=nclpais" class="btn"><i class="icon-remove">
+                    </i>Cancelar Operacion</a>
+                </div>
+                
+
+            </div>
+        </div>
+    </div>
+    <!-- FIN CUADRO PARA LA FORMA-->
+</div> 
+
+<!-- IMPORTAMOS LOS PLUGINS QUE SE USARAN-->
+<script type="text/javascript" src="../../vistas/NG/JS/NGPRUEB.js"></script>
+<script>
+
+    jQuery(document).ready(function () {
+        // Se Inicializa el modulo de javascript para esta forma.
+        NGPRUEB.init();
+    });
+</script>

@@ -1,0 +1,78 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NGALOGI.ascx.vb" Inherits="vistas_NG_NGALOGI" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+<div style="margin-bottom:39px;"></div>
+ <%--<div class="e_linea"></div>--%>
+<div style="margin-bottom:19px;"></div>
+<div>
+<table width="100%" border="0" cellpadding="0" cellspacing="0" align="left">
+  <tr>
+    <td width="50%" >
+   
+<div style="padding-right:30px;">
+<img src="recursos/img/erp.jpg"/><br />
+<span class="e_titular">El Nomade</span><br />
+Bienvenido al sistema Integrado <b>EL NOMADE</b> producto 
+    Peruano<br />
+        <br />
+       &nbsp;</div>
+</td>
+    <td valign="top">
+     <table width="80%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td><table width="100%" border="0" cellspacing="0" cellpadding="4">
+      <tr>
+        <td width="16%">
+            
+          </td>
+        <td width="42%" style="font-size:20px;"><b>Iniciar sesi&oacute;n</b> </td>
+        <td width="42%"><div align="right"><%--<a href="sl.aspx?f=ygirepa">&iquest;Olvide mi NIP?</a>--%> </div></td>
+      </tr>
+      <tr>
+        <td align="right">&nbsp;</td>
+        <td colspan="2">
+            
+            <cc1:Lblcolor ID="lbl_error" runat="server">
+            </cc1:Lblcolor>
+          </td>
+      </tr>
+      <tr>
+        <td align="right">&nbsp;</td>
+        <td colspan="2">
+            USUARIO&nbsp;
+          </td>
+      </tr>
+      <tr>
+        <td align="right">&nbsp;</td>
+        <td colspan="2">
+            <asp:TextBox ID="txt_usuario" runat="server" Width="99%" Height="30px" 
+                Font-Bold="True" Font-Size="12pt" ForeColor="#333333" MaxLength="30"></asp:TextBox>
+          </td>
+      </tr>
+      <tr>
+        <td align="right">&nbsp;</td>
+        <td colspan="2">
+            CONTRASEÑA&nbsp;</td>
+      </tr>
+      <tr>
+        <td align="right"><b>&nbsp;</b> </td>
+        <td colspan="2">
+            <asp:TextBox ID="txt_clave" runat="server" Width="99%" Height="30px" 
+                Font-Size="12pt" ForeColor="#333333" TextMode="Password" MaxLength="15"></asp:TextBox>
+          </td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td colspan="2">
+            <asp:Button ID="btn_valida" runat="server" Text="Conectarme" Width="100px" 
+                Font-Bold="True" ToolTip="Clic para conectar" />
+          </td>
+      </tr>
+    </table></td>
+    <td></td>
+  </tr>
+</table>
+        </td>
+  </tr>
+</table>
+</div>
+<div style="margin-top:50px;"><p>&nbsp;</p></div>

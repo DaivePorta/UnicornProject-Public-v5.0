@@ -1,0 +1,123 @@
+﻿Imports System.Data
+
+Partial Class vistas_NG_NGQUSUA
+    Inherits NOMADE.N.Cub
+
+    Dim btn_filtro As String = "0"
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not Page.IsPostBack Then
+            carga_empresas("")
+            llena()
+
+        End If
+
+    End Sub
+    Private Sub carga_empresas(ByVal v_empresa As String)
+        Dim l As New ListItem
+        Dim cempresa As New Nomade.general.Cempresa("bn")
+        Me.dd_empresa.DataSource = cempresa.dame_empresas(v_empresa)
+        cempresa = Nothing
+        Me.dd_empresa.DataTextField = "descripcion"
+        Me.dd_empresa.DataValueField = "codigo"
+        Me.dd_empresa.DataBind()
+        dd_empresa.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Protected Sub btn_busca_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_busca.Click
+        llena()
+    End Sub
+
+    Private Sub llena()
+        Dim empresa As String
+        Dim c As New Nomade.general.Cusuario("Bn")
+        If (Me.dd_empresa.SelectedValue = String.Empty) Then
+            empresa = "A"
+            Me.dd_empresa.SelectedValue = "A"
+        Else
+            empresa = Me.dd_empresa.SelectedValue
+        End If
+        Me.gw.DataSource = c.dame_usuario(empresa, Me.txt_id.Text, IIf(Me.chk_estado.Checked, "A", "I"))
+        Me.gw.DataBind()
+        c = Nothing
+    End Sub
+
+    Protected Sub RegsPag_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs)
+        ' CAMBIAR NUMERO DE FILAS A MOSTRAR
+        ' OBTIENE EL NUMERO ELEGIDO
+        Dim _DropDownList As DropDownList = DirectCast(sender, DropDownList)
+        ' CAMBIA EL PAGESIZE DEL GRID ASIGNANDO EL ELEGIDO
+        Me.gw.PageSize = Integer.Parse(_DropDownList.SelectedValue)
+        llena()
+    End Sub
+
+    Protected Sub IraPag(ByVal sender As Object, ByVal e As System.EventArgs)
+        Dim _IraPag As TextBox = DirectCast(sender, TextBox)
+        Dim _NumPag As Integer
+
+        If Integer.TryParse(_IraPag.Text.Trim, _NumPag) AndAlso _NumPag > 0 AndAlso _NumPag <= Me.gw.PageCount Then
+            If Integer.TryParse(_IraPag.Text.Trim, _NumPag) AndAlso _NumPag > 0 AndAlso _NumPag <= Me.gw.PageCount Then
+                Me.gw.PageIndex = _NumPag - 1
+            Else
+                Me.gw.PageIndex = 0
+            End If
+        End If
+        Me.gw.SelectedIndex = -1
+        llena()
+    End Sub
+    'gw_SelectedIndexChanged
+    Protected Sub gw_PageIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles gw.PageIndexChanged
+        '  AL CAMBIAR DE PAGINA LIMPIAMOS LA ROW SELECCIONADA
+        Me.gw.SelectedIndex = -1
+    End Sub
+
+    Protected Sub gw_PageIndexChanging(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewPageEventArgs) Handles gw.PageIndexChanging
+        If (e.NewPageIndex >= 0) Then
+            gw.PageIndex = e.NewPageIndex
+            llena()
+        End If
+    End Sub
+
+    Protected Sub gw_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles gw.RowDataBound
+        ' FORMATEA ROWS
+
+        If e.Row.RowType = DataControlRowType.Pager Then
+            If (btn_filtro = "1") Then
+                '    Dim _IraPag1 As TextBox = e.Row.FindControl("IraPag")
+                '   _IraPag1.Text = 1
+                Me.gw.PageIndex = 0
+            End If
+            ' PAGINADO
+            ' TOTAL PAGINAS
+            Dim _TotalPags As Label = e.Row.FindControl("lblTotalNumberOfPages")
+            _TotalPags.Text = gw.PageCount.ToString
+            ' IR A PAGINA
+            Dim _IraPag As TextBox = e.Row.FindControl("IraPag")
+            _IraPag.Text = (Me.gw.PageIndex + 1).ToString
+
+            ' ASIGNA AL DROPDOWNLIST COMO VALOR SELECCIONADO EL PAGESIZE ACTUAL
+            Dim _DropDownList As DropDownList = e.Row.FindControl("RegsPag")
+            _DropDownList.SelectedValue = Me.gw.PageSize.ToString
+        ElseIf e.Row.RowType = DataControlRowType.DataRow Then
+            ' APLICA ESTILOS A EVENTOS ON MOUSE OVER Y OUT
+            e.Row.Attributes.Add("OnMouseOut", "this.className = this.orignalclassName;")
+            e.Row.Attributes.Add("OnMouseOver", "this.orignalclassName = this.className;this.className = 'altoverow';")
+
+            e.Row.Attributes("OnClick") = Page.ClientScript.GetPostBackClientHyperlink(Me.gw, "Select$" + e.Row.RowIndex.ToString)
+        End If
+    End Sub
+    Protected Sub btn_filtrar_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+        '   Me.Up1.Update()
+        btn_filtro = "1"
+        llena()
+    End Sub
+
+    'Protected Sub gw_SelectedIndexChanging(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewSelectEventArgs) Handles gw.SelectedIndexChanging
+    '    Dim index As String = e.NewSelectedIndex
+    '    'Dim valor As String = Me.gw.Rows(index).Cells(1).Text
+    '    Dim valor As String = Me.gw.DataKeys(index).Values("usuario")
+    '    Response.Redirect("?f=ngaperm&p=" & valor)
+    'End Sub
+
+
+End Class

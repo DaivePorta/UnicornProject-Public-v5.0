@@ -1,0 +1,166 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NTMEPSE.ascx.vb" Inherits="vistas_partes_NM_NTMEPSE" %>
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+<style type="text/css">
+    .style1
+    {
+        height: 23px;
+    }
+</style>
+<div >
+<div style="text-align:right;"> <asp:ImageButton ID="btn_telnuevo" runat="server" 
+        ImageUrl="~/recursos/ico/n_nuevo.png" />
+    <asp:Label
+            ID="lbl_nuevotel" runat="server" Text="Nuevo"></asp:Label>
+        <asp:ImageButton ID="btn_listatel" runat="server" 
+        ImageUrl="~/recursos/ico/n_lista.jpg" style="height: 15px" />
+    <asp:Label
+            ID="lbl_listatel" runat="server" Text="Listar"></asp:Label></div>
+    <asp:Panel ID="pnl_listar" runat="server">
+    
+      <asp:GridView ID="gw" runat="server" SkinID="gw1" 
+      AutoGenerateColumns="False" DataKeyNames="PIDM,NUM_SEQ">
+            <Columns>
+              <asp:BoundField DataField="NUM_SEQ" HeaderText="NUM_SEQ" Visible="false"/>
+           
+            
+            <%--  <asp:BoundField DataField="Nombres" HeaderText="PERSONA" />--%>
+              <asp:BoundField DataField="NUM_SEQ" HeaderText="SEQ" 
+                    ItemStyle-HorizontalAlign="Center">
+                  <ItemStyle HorizontalAlign="Center" />
+                </asp:BoundField>
+       
+              <%--<asp:BoundField DataField="ALERGIA" HeaderText="ALERGIA" />--%>
+             
+               <asp:BoundField DataField="PEPS_CODE" HeaderText="PLAN" />
+               <%-- <asp:BoundField DataField="PRESENTA_IND_REACCION" HeaderText="PRESENTA REACCION" />--%>
+               <asp:BoundField DataField="FECHA_INGRESO" HeaderText="FECHA INICIO" />
+               <asp:BoundField DataField="FECHA_TERMINO" HeaderText="FECHA TERMINO" />
+                <asp:BoundField DataField="IND_ESTADO" HeaderText="ESTADO" />
+               
+              <asp:BoundField DataField="USUA_ID" HeaderText="USUARIO" />
+             <%-- <asp:BoundField DataField="FECHA_ACTV" HeaderText="FECHA ACTIVIDAD" />--%>
+              <asp:TemplateField HeaderText="ACCIONES">
+              <ItemTemplate>
+              <asp:ImageButton ID="btn_editar" runat="server" CommandName="edi" CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>"
+                    ImageUrl="~/recursos/ico/btn_editar.gif" ToolTip="Editar especialidad"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <%--<asp:ImageButton ID="btn_elim" runat="server" CommandName="eli" CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>"
+                    ImageUrl="~/recursos/ico/btn_borrar.gif" ToolTip="Eliminar Comentario"/>--%>
+                 
+                   <cc1:btn_confirm ID="btn_eliminar" runat="server" ImageUrl="~/recursos/ico/btn_borrar.gif" 
+                                CommandName="eli" 
+                                CommandArgument='<%# Container.DataItemIndex %>' ToolTip="Eliminar"  
+                                UPAO_msg='Desea eliminar alergia' />
+                </ItemTemplate>
+                <ItemStyle HorizontalAlign="Center" />
+            </asp:TemplateField>        
+      </Columns>
+      
+      
+      
+                
+          <AlternatingRowStyle CssClass="altrowstyle" />
+                
+      </asp:GridView>
+    </asp:Panel> 
+    <asp:Panel ID="pnl_add" runat="server">
+    <div class="forma">
+    <div class="contenido">
+    <div id="titulo" runat="server"><h2>Nueva EPS</h2></div>
+    <table width="700" border="0" cellspacing="0" cellpadding="4" id="Table1" 
+    runat="server">
+        
+            <tr>
+                <td class="style1">
+                    Secuencia</td>
+                <td>
+                    <asp:TextBox ID="txt_secuencia" runat="server" Width="31px"></asp:TextBox>
+                </td>
+            </tr>
+        
+            <tr>
+                <td class="style1">
+                    Empresa:</td>
+                <td>
+                    <asp:DropDownList ID="dd_empresa" runat="server">
+                    </asp:DropDownList>
+                    &nbsp;<asp:HiddenField ID="hd_accion" runat="server" />
+                    <asp:HiddenField ID="HD_CODE" runat="server" />
+                    </td>
+            </tr>
+           <%-- <tr>
+                <td class="style1">
+                    Puesto</td>
+                <td width="786">
+                    <asp:DropDownList ID="dd_puesto" runat="server">
+                    </asp:DropDownList>
+                </td>
+            </tr>--%>
+            <tr>
+                <td class="style1">
+                    Periodos</td>
+                <td width="786">
+                    <asp:CheckBox ID="chk_actual" runat="server" 
+                        Text="Actual Empresa Prestadora Servicios" />
+                </td>
+            </tr>
+            <tr>
+                <td class="style1">
+                    De</td>
+                <td width="786">
+                    <asp:TextBox ID="txt_fecha_inicio" runat="server" Width="100px"></asp:TextBox>
+                    <img ID="Img3" src="recursos/ico/calendario.jpg" /></td>
+            </tr>
+            <%--<tr>
+                <td class="style1">
+                    Especialidad:</td>
+                <td colspan="3" width="786">
+                    <asp:TextBox ID="txt_especialidadrne" runat="server" Width="220px"></asp:TextBox>
+                </td>
+            </tr>--%>
+            <tr>
+                <td class="style1">
+                    A</td>
+                <td width="786">
+                    <asp:TextBox ID="txt_fecha_fin" runat="server" Width="100px"></asp:TextBox>
+                    <img ID="Img4" src="recursos/ico/calendario.jpg" /></td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;</td>
+                <td width="786">
+                    <asp:CheckBox ID="chk_estado" runat="server" Checked="True" Text="Activo" />
+                </td>
+            </tr>
+          
+           <%-- <tr>
+                <td>
+                    Comentario</td>
+                <td width="786">
+                    <asp:TextBox ID="txt_comentario" runat="server" TextMode="MultiLine" 
+                        Width="527px"></asp:TextBox>
+                </td>
+            </tr>--%>
+          
+            <tr>
+                <td>
+                </td>
+                <td width="786">
+                    <asp:Button ID="btn_grabarc" runat="server" CssClass="boton" Text="Grabar" />
+                    &nbsp;&nbsp;
+                    <asp:Button ID="btn_cancelar" runat="server" CssClass="boton" Text="Cancelar" 
+                        Visible="False" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;</td>
+                <td width="786">
+                    &nbsp;</td>
+            </tr>
+          
+        </table>
+</div>
+</div>
+    </asp:Panel>         
+
+</div>

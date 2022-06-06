@@ -1,0 +1,94 @@
+﻿Public Class NCZona
+
+    Private cn As Nomade.Connection
+    Dim dt As DataTable
+    Public Sub New(ByVal str As String)
+        cn = New Nomade.Connection(str)
+    End Sub
+
+    Public Function Listar_Zonas(ByVal p_CODE As String, ByVal p_CODE_SUNAT As String, ByVal p_ESTADO As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("PFC_LISTAR_ZONA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_SUNAT", p_CODE_SUNAT, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", p_ESTADO, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function Crear_Zonas(ByVal p_CODE_SUNAT As String, ByVal p_DESC As String, ByVal p_DESC_CORTA As String, ByVal p_ESTADO As String, p_USUA_ID As String) As Array
+
+        Try
+            Dim msg(1) As String
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("PFC_CREAR_ZONA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_SUNAT", p_CODE_SUNAT, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DESC", p_DESC, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DESC_CORTA", p_DESC_CORTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", p_ESTADO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_USUA_ID", p_USUA_ID, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_GENERADO", String.Empty, ParameterDirection.Output, 253))
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg(0) = cmd1.Parameters("@p_CODE_GENERADO").Value
+            Return msg
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function Actualizar_Zona(ByVal p_CODE As String, ByVal p_CODE_SUNAT As String, ByVal p_NOMBRE As String, ByVal p_NOM_CORT As String, ByVal p_ESTADO_ID As String, p_USUA_ID As String) As Array
+
+        Try
+            Dim msg(1) As String
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("PFC_ACTUALIZAR_ZONA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_SUNAT", p_CODE_SUNAT, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NOMBRE", p_NOMBRE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NOM_CORT", p_NOM_CORT, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_ID", p_ESTADO_ID, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_USUA_ID", p_USUA_ID, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SALIDA", String.Empty, ParameterDirection.Output, 253))
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg(0) = cmd1.Parameters("@p_SALIDA").Value
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+
+    End Function
+
+    Public Function CambiarEstadoZona(ByVal p_CODE As String) As Array
+        Try
+
+            Dim msg(1) As String
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("PFC_CAMBIAR_ESTADO_ZONA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", String.Empty, ParameterDirection.Output, 253))
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg(0) = cmd1.Parameters("@p_ESTADO").Value
+
+            Return msg
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+End Class

@@ -1,0 +1,5 @@
+﻿
+Partial Class vistas_partes_NM_NMTLABO
+    Inherits Nomade.N.Cub
+
+End Class

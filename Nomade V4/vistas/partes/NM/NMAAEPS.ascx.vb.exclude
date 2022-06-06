@@ -1,0 +1,195 @@
+﻿Imports System.Data
+
+Partial Class vistas_partes_NM_NMAAEPS
+    Inherits Nomade.N.Cub
+    Dim malerta As Label
+    Public v_ID_Navegacion As String
+    Public v_PIDM_Navegacion As Integer
+    Public v_Usuario As String
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        malerta = Page.Master.FindControl("alerta")
+        Me.btn_cancelar.Visible = False
+
+        If (Page.IsPostBack) Then
+            carga_PLANES()
+            llena()
+            Me.pnl_add.Visible = False
+            Me.pnl_listar.Visible = True
+            Me.lbl_nuevotel.Font.Bold = True
+            Me.lbl_nuevotel.Font.Bold = False
+        Else
+            carga_PLANES()
+            Me.pnl_add.Visible = True
+            Me.pnl_listar.Visible = False
+            Me.lbl_nuevotel.Font.Bold = False
+            Me.lbl_nuevotel.Font.Bold = True
+        End If
+    End Sub
+
+    Private Sub llena()
+        'Response.Write(Me.pidm & " ID:" & Me.usuario)
+        Dim oEPS As New NOMADE.Medico.Telemedicina.cEPS("Bn")
+        Me.gw.DataSource = oEPS.LISTAR_PLAN_EPS(v_ID_Navegacion)
+        Me.gw.DataBind()
+        oEPS = Nothing
+    End Sub
+
+    Private Sub carga_PLANES()
+        Dim l As New ListItem
+        Dim oPlan As New NOMADE.Medico.Telemedicina.cPlanes("bn")
+        Me.dd_especialidad.DataSource = oPlan.LISTAR_PLANES("", "")
+        oPlan = Nothing
+        Me.dd_especialidad.DataTextField = "TITULO"
+        Me.dd_especialidad.DataValueField = "Codigo"
+        Me.dd_especialidad.DataBind()
+        dd_especialidad.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Protected Sub btn_telnuevo_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_telnuevo.Click
+        Me.hd_accion.Value = ""
+        Me.hd_CODIGO_PLAN.Value = ""
+
+        Me.pnl_listar.Visible = False
+        Me.pnl_add.Visible = True
+        Me.lbl_nuevotel.Font.Bold = False
+        Me.lbl_nuevotel.Font.Bold = True
+        Me.txt_fecha_inicio.Text = ""
+        Me.txt_fecha_termino.Text = ""
+        Me.dd_especialidad.Enabled = True
+    End Sub
+
+    Protected Sub btn_listatel_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_listatel.Click
+        Me.pnl_listar.Visible = True
+        Me.pnl_add.Visible = False
+        Me.lbl_nuevotel.Font.Bold = True
+        Me.lbl_nuevotel.Font.Bold = False
+    End Sub
+
+    Protected Sub gw_RowCommand(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewCommandEventArgs) Handles gw.RowCommand
+        Try
+            Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+            Dim msg As String
+            ' Retrieve the row that contains the button 
+            ' from the Rows collection.
+            Dim row As GridViewRow = gw.Rows(index)
+            Dim v_P As String = gw.DataKeys(index).Values("PIDM")
+            Dim v_C As String = gw.DataKeys(index).Values("PEPS_CODE")
+            Dim v_I As String = gw.DataKeys(index).Values("ID")
+
+
+            'Response.Write("Hola: " & e.CommandName)
+
+            If (e.CommandName = "eli") Then
+                Dim oPlan As New Nomade.Medico.Telemedicina.cEPS("bn")
+                msg = oPlan.eliminar_plan_eps(v_P, v_C)
+                llena()
+                oPlan = Nothing
+                If (msg <> String.Empty) Then
+                    malerta.Text = Nomade.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+
+                Else
+                    malerta.Text = Nomade.N.msg.alerta("Error al crear el registro", "W")
+                End If
+            End If
+
+            If (e.CommandName = "edi") Then
+                Me.pnl_listar.Visible = False
+                Me.pnl_add.Visible = True
+                Me.lbl_nuevotel.Font.Bold = False
+                Me.lbl_nuevotel.Font.Bold = True
+                Me.btn_cancelar.Visible = True
+
+                titulo.InnerHtml = "<h2>Editar Plan</h2>"
+                Me.hd_accion.Value = "ed"
+                Me.dd_especialidad.Enabled = False
+                carga_plan(v_I, v_C)
+            End If
+
+        Catch ex As Exception
+            malerta.Text = Nomade.N.msg.alerta("Error: al eliminar plan, " & ex.Message, "W")
+        End Try
+    End Sub
+
+    Private Sub carga_plan(ByVal p_ID As String, ByVal p_CODIGO As String)
+        Dim oPlan As New Nomade.Medico.Telemedicina.cEPS("Bn")
+        Dim dt As DataTable
+        dt = oPlan.DAME_PLAN_EPS(p_ID, p_CODIGO)
+        If Not (dt Is Nothing) Then
+            For Each MiDataRow As DataRow In dt.Rows
+                Me.dd_especialidad.SelectedValue = MiDataRow("PEPS_CODE").ToString
+                Me.txt_fecha_inicio.Text = Nomade.nomade.cutilidades.fechaMostrar(MiDataRow("Fecha_Inicio").ToString)
+                Me.txt_fecha_termino.Text = Nomade.nomade.cutilidades.fechaMostrar(MiDataRow("Fecha_Termino").ToString)
+                Me.chkEstado.Checked = IIf(MiDataRow("Estado").ToString = "A", True, False)
+                Me.hd_CODIGO_PLAN.Value = MiDataRow("PEPS_CODE").ToString
+                'Response.Write("p_ID: " & p_ID & " Plan: " & Me.hd_CODIGO_PLAN.Value)
+            Next
+        End If
+        'Response.Write("p_ID: " & p_ID & " p_CODIGO: " & MiDataRow("PEPS_CODE").ToString)
+    End Sub
+
+    Protected Sub btn_grabarc_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabarc.Click
+        Try
+
+            Dim msg As String
+
+            Me.pnl_listar.Visible = False
+            Me.pnl_add.Visible = True
+            Me.lbl_nuevotel.Font.Bold = False
+            Me.lbl_nuevotel.Font.Bold = True
+            Dim F1, F2 As String
+            If (IsDate(Me.txt_fecha_inicio.Text)) Or (Me.txt_fecha_inicio.Text = String.Empty) Then
+                F1 = Utilities.fechaLocal(Me.txt_fecha_inicio.Text)
+            Else
+                malerta.Text = Nomade.N.msg.alerta("Ingrese Fecha de Inicio", "W")
+                Exit Sub
+            End If
+
+            If (IsDate(Me.txt_fecha_termino.Text)) Then
+                F2 = Utilities.fechaLocal(Me.txt_fecha_termino.Text)
+            Else
+                F2 = Nothing
+            End If
+            'Response.Write("Acción: " & Me.hd_accion.Value & " PLAN:" & Me.hd_CODIGO_PLAN.Value)
+            Dim oEPS As New Nomade.Medico.Telemedicina.cEPS("bn")
+            If (Me.hd_accion.Value = String.Empty) Then
+                msg = oEPS.crear_plan_eps(Me.v_PIDM_Navegacion, F1, F2, _
+                                       Me.dd_especialidad.SelectedValue, _
+                                       IIf(Me.chkEstado.Checked, "A", "I"), Me.v_Usuario)
+            ElseIf (Me.hd_accion.Value = "ed") Then
+                msg = oEPS.actualizar_plan_eps(Me.v_PIDM_Navegacion, F1, F2, Me.hd_CODIGO_PLAN.Value, _
+                                       IIf(Me.chkEstado.Checked, "A", "I"), Me.v_Usuario)
+            End If
+            oEPS = Nothing
+
+            If (msg = "OK") Then
+                Me.hd_accion.Value = ""
+                Me.pnl_listar.Visible = True
+                Me.pnl_add.Visible = False
+                Me.lbl_nuevotel.Font.Bold = True
+                Me.lbl_nuevotel.Font.Bold = False
+                llena()
+                malerta.Text = Nomade.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+
+            Else
+                Me.pnl_listar.Visible = False
+                Me.pnl_add.Visible = True
+                Me.lbl_nuevotel.Font.Bold = False
+                Me.lbl_nuevotel.Font.Bold = True
+            End If
+
+        Catch ex As Exception
+            malerta.Text = NOMADE.N.msg.alerta("Error: Crear Plan EPS, " & ex.Message, "W")
+        End Try
+    End Sub
+
+    Protected Sub btn_cancelar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_cancelar.Click
+        Me.hd_accion.Value = ""
+        Me.pnl_listar.Visible = True
+        Me.pnl_add.Visible = False
+        Me.lbl_nuevotel.Font.Bold = True
+        Me.lbl_nuevotel.Font.Bold = False
+    End Sub
+
+
+End Class

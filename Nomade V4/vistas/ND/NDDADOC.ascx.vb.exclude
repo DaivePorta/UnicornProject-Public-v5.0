@@ -1,0 +1,192 @@
+﻿Imports System.Data
+Partial Class vistas_ND_NDDADOC
+    Inherits NOMADE.N.Cub
+
+    Dim C As New Nomade.Documentos.docu.VARIABLE("BN")
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        Dim v_doc As String
+        v_doc = Request.QueryString("d")
+        If (v_doc = String.Empty) Then
+            Response.Redirect("?f=nddgini")
+        End If
+        '  If Not Page.IsPostBack Then
+        documento(v_doc)
+        '  End If
+    End Sub
+    Private Sub documento(ByVal v_code As String)
+        Dim c As New NOMADE.Documentos.docu.documento("no")
+        Dim dt As DataTable
+        dt = c.dame_DOCUMENTO(v_code, Me.usuario)
+        Me.gw.DataSource = dt
+        Me.gw.DataBind()
+        DETALLE(v_code)
+
+        'If Not (dt Is Nothing) Then
+        '    Me.lbl_partes.Text = "Partes de modelo"
+        '    botones.Visible = True
+
+        'Else
+        '    Me.lbl_partes.Text = ""
+        '    botones.Visible = False
+        'End If
+    End Sub
+
+    Private Sub DETALLE(ByVal V_CODE As String)
+        Dim c As New Nomade.Documentos.docu.GRUPOSDOC("no")
+        Dim dt As DataTable
+        dt = c.dame_GRUPOS_DOCUMENTO(V_CODE & "1")
+        Me.gw_partes.DataSource = dt
+        Me.gw_partes.DataBind()
+    End Sub
+
+    Private Sub DETALLE_variables(ByVal V_CODE As String)
+        Dim c As New Nomade.Documentos.docu.variables("no")
+        Dim dt As DataTable
+        dt = c.dame_variables_GRUPOS(V_CODE)
+        If Not (dt Is Nothing) Then
+            Me.lbl_objeto.Text = "<IMG SRC='recursos/ico/ico_ven.jpg'></IMG>&nbsp;&nbsp;" & "DATOS DE " & dt.Rows(0)("grupo").ToString.ToUpper
+        End If
+
+        Me.gw_variables.DataSource = dt
+        Me.gw_variables.DataBind()
+    End Sub
+
+    Protected Sub gw_partes_RowCommand(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewCommandEventArgs) Handles gw_partes.RowCommand
+        Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+        Dim msg1(2) As String
+        ' Retrieve the row that contains the button 
+        ' from the Rows collection.
+        'Dim row As GridViewRow = gw_partes.Rows(index)
+        ' Response.Write(index)
+        Dim code_grupo As String = gw_partes.DataKeys(index).Values("DARPDCT_DCTO_CODE") & "-" & gw_partes.DataKeys(index).Values("DARPDCT_DCTO_NUM_SEQ") & gw_partes.DataKeys(index).Values("darpdct_num_seq")
+        'Dim code_grup As String = gw_partes.DataKeys(index).Values("DARPDCT_DCTO_CODE")
+        '   , DARPDCT_DCTO_NUM_SEQ, darpdct_num_seq
+        hd_docparte.Value = code_grupo
+        Try
+            If (e.CommandName = "det") Then
+                ' Retrieve the row index stored in the CommandArgument property.
+                'Response.Write(code_grupo)
+                DETALLE_variables(code_grupo)
+            End If
+
+        Catch ex As Exception
+            'Me.lbl_mensaje.coloca("R", 12, ex.Message)
+        End Try
+    End Sub
+
+    Public Function getvalor(ByVal d As Object) As String
+        Dim row As Data.DataRowView = DirectCast(d, Data.DataRowView)
+
+        Dim desc As String = row("desc").ToString()
+        Dim txt As New TextBox
+      
+        'Dim pos As Integer = InStr(cadena, "[]")
+        'If (pos = 0) Then
+        '    pos = 500
+        'End If
+        Dim tr As String = "<tr>"
+        Dim td As String = "<td width='200' align=right>"
+        Dim td1 As String = "<td>"
+        Dim tdc As String = "</td>"
+        Dim trc As String = "</tr>"
+        Dim html As String
+        html = td & desc & tdc
+        html = html & td1 & "xxx" & tdc
+        html = tr & html & trc
+        Return html
+    End Function
+
+    Protected Sub gw_variables_ItemCommand(ByVal source As Object, ByVal e As System.Web.UI.WebControls.RepeaterCommandEventArgs) Handles gw_variables.ItemCommand
+        'Response.Write(Me.hd_docparte.Value)
+        ' Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+        Dim rpT As Repeater = CType(source, Repeater)
+        Dim item As RepeaterItem
+        Dim msg(3) As String
+        Dim hf_seq As HiddenField
+        Dim hf_id As HiddenField
+        Dim txt_dato As TextBox
+        Dim dd_dato As DropDownList
+        Dim valor As String = ""
+  
+        ' Response.Write()
+        If e.CommandName = "guardar_valores" Then
+            '     Response.Write(index)
+            For Each dgi As RepeaterItem In rpT.Items
+                'If e.Item.ItemType = ListItemType.Item Or e.Item.ItemType = ListItemType.AlternatingItem Then
+                hf_seq = dgi.FindControl("hd_seq")
+                txt_dato = dgi.FindControl("txt_dato")
+                dd_dato = dgi.FindControl("dd_dato")
+                If Not (txt_dato.Text = String.Empty) Then
+                    valor = txt_dato.Text
+                Else
+                    valor = dd_dato.SelectedValue
+                End If
+                ' Response.Write(valor & "<br>")
+
+                msg = C.ACTUALIZAR_VARIABLE(Me.hd_docparte.Value, hf_seq.Value, valor, Me.usuario)
+               
+            Next
+
+        End If
+    End Sub
+
+    '    <tr>
+    '  <td width="200" align=right><%#DataBinder.Eval(Container.DataItem, "desc")%></td>
+    '  <td> <asp:TextBox ID="txt_dato" runat="server" Width="400px"></asp:TextBox></td>
+    '</tr>
+
+    Protected Sub gw_variables_ItemDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.RepeaterItemEventArgs) Handles gw_variables.ItemDataBound
+        Dim hd_tc As HiddenField
+        Dim hd_lv As HiddenField
+        Dim hd_vptl_code As HiddenField
+        Dim hd_code As HiddenField
+        Dim hd_max As HiddenField
+        Dim hd_valor As HiddenField
+        Dim HD_CODE_VALORES As HiddenField
+        'Dim hd_seq As HiddenField
+        Dim txt As TextBox
+        Dim cbo As DropDownList
+        'Response.Write(hd_docparte.Value)
+        If e.Item.ItemType = ListItemType.Item _
+               OrElse e.Item.ItemType = ListItemType.AlternatingItem Then
+            hd_tc = e.Item.FindControl("hd_tc")
+            hd_lv = e.Item.FindControl("hd_lv")
+            txt = e.Item.FindControl("txt_dato")
+            cbo = e.Item.FindControl("dd_dato")
+            hd_code = e.Item.FindControl("hd_code")
+            hd_valor = e.Item.FindControl("hd_valor")
+            hd_max = e.Item.FindControl("hd_max")
+            HD_CODE_VALORES = e.Item.FindControl("HD_CODE_VALORES")
+
+            hd_vptl_code = e.Item.FindControl("hd_vptl_code")
+            If (hd_tc.Value = "TB") Then
+                txt.Visible = True
+                cbo.Visible = False
+                txt.Width = hd_lv.Value
+                txt.MaxLength = hd_max.Value
+                txt.Text = hd_valor.Value
+
+            Else ' si combobox
+                txt.Visible = False
+                cbo.Visible = True
+                cbo.DataSource = valores(HD_CODE_VALORES.Value)
+                cbo.DataTextField = "desc"
+                cbo.DataValueField = "code"
+                cbo.DataBind()
+                If (hd_valor.Value <> String.Empty) Then
+                    cbo.SelectedValue = hd_valor.Value
+                End If
+                'Response.Write(hd_vptl_code.Value & "<br>")
+            End If
+
+        End If
+    End Sub
+
+    Private Function valores(ByVal v_code As String) As DataTable
+        Dim dt As DataTable
+        Dim c As New NOMADE.Documentos.docu.restriccion("bn")
+        dt = c.dame_valores_restriccion(v_code)
+        Return dt
+    End Function
+
+End Class

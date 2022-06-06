@@ -1,0 +1,91 @@
+﻿Imports System.Data
+Imports System.Security
+Partial Class vistas_NG_NGALOGI
+    Inherits System.Web.UI.UserControl
+
+    Dim v_plantilla As String = System.Configuration.ConfigurationSettings.AppSettings("plantilla")
+
+    Dim v_server As String = System.Configuration.ConfigurationSettings.AppSettings("c_server")
+    Dim v_correo As String = System.Configuration.ConfigurationSettings.AppSettings("c_cuenta")
+
+    Private Function genera_cod() As String
+        Dim n As String
+        Dim r As Random = New Random(DateTime.Now.Millisecond)
+        n = r.Next(100000000, 999999999)
+        n = n
+        '  n = Int(Rnd() * v_max)
+        Return n
+    End Function
+
+    Protected Sub btn_valida_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_valida.Click
+        'Response.Cookies("comupao")("id") = "Richard Jhon Varas R."
+        'FormsAuthentication.SetAuthCookie(Response.Cookies("usernomade")("id"), False)
+        ''If (v_url <> String.Empty) Then Response.Redirect("?a=" & v_url, True)
+        'Response.Redirect("default.aspx?f=owtlist", True)
+        Try
+
+            Dim IP As String = Request.UserHostAddress
+            If (Me.txt_usuario.Text.Length < 2) Then
+                Me.lbl_error.coloca("R", 10, "ID debe tener 9 Digitos")
+                Exit Sub
+            End If
+            If (Me.txt_clave.Text.Length < 6) Then
+                Me.lbl_error.coloca("R", 10, "Clave debe tener mínimo 6 Digitos")
+                Exit Sub
+            End If
+            'Dim cusuario As New UPAO.YG.General.Seguridad("BN")
+            'Dim dt As DataTable
+            'dt = cusuario.valida_usuario_CV(Me.txt_id.Text, Me.txt_nip.Text, genera_cod, IP)
+            Dim cusuario As New NOMADE.seguridad.cusuario("BN")
+            Dim dt As DataTable
+            dt = cusuario.valida_usuario(Me.txt_usuario.Text, Me.txt_clave.Text)
+
+            If Not (dt Is Nothing) Then
+
+                ''If (dt.Rows(0)("activo").ToString <> "S") Then
+                ''    Me.lbl_error.Visible = False
+                ''    'Me.lbl_error.coloca("R", 10, "Falta activar cuenta revise correo")
+                ''    CType(Page.Master.FindControl("alerta"), Label).Text = UPAO.Y.msg.alerta("Falta activar cuenta revise su correo y haga clic en el enlace que se le envió de lo contrario envie un correo a <b>rvarasr@upao.edu.pe</b> para enviarle el enlace", "W")
+                ''    Exit Sub
+                ''End If
+                
+                ''Dim c As New UPAO.YG.General.Seguridad("bn")
+                ''Dim msg As String
+                ''msg = c.actualiza_loguin(dt.Rows(0)("AUTOGEN").ToString, dt.Rows(0)("NOMBRE").ToString, "", "")
+                ''c = Nothing
+                ''FormsAuthentication.SetAuthCookie(dt.Rows(0)("AUTOGEN").ToString, True)
+                FormsAuthentication.SetAuthCookie(dt.Rows(0)("gtvusua_id").ToString, True)
+                Response.Redirect("default.aspx", False)
+           
+            Else
+            Me.lbl_error.Visible = True
+                Me.lbl_error.coloca("R", 10, "Credenciales incorrectas intente otra vez")
+                ''Dim c As New UPAO.Y.logs.c_log("Credenciales incorrectas intente otra vez " & Me.txt_nip.Text, "SC", "YGALOGI", Me.txt_id.Text, "L")
+                ''c = Nothing
+            End If
+
+        Catch ex As Exception
+            Me.lbl_error.Visible = True
+            Me.lbl_error.coloca("R", 10, "ERROR:" & ex.Message)
+            ''Dim c As New UPAO.Y.logs.c_log(ex.Message, ex.Source, Me.upao_nom_forma, "SL")
+            ''c = Nothing
+
+        End Try
+    End Sub
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        'Response.Write("xxxxxxxxxxxxx")
+        '   Try
+
+
+        'If (v_plantilla = "inicio") Then
+        '    Me.mensaje.Src = "~/recursos/img/INICIO_1.jpg"
+        'Else
+        '    Me.mensaje.Src = "~/recursos/img/inicio.jpg"
+        'End If
+        'Catch ex As Exception
+        '    Response.Write("Error")
+        'End Try
+        ' Response.Write(v_plantilla)
+    End Sub
+End Class

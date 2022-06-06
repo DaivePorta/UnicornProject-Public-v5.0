@@ -1,0 +1,205 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="CCLCBCL.ascx.vb" Inherits="vistas_CP_CCLCBCL" %>
+
+<style>
+    .bloc {
+    }
+
+        .bloc select {
+            height: 0px;
+        }
+
+    .select2-container.select2-container-multi {
+        max-height: 60px;
+        overflow-y: scroll;
+    }
+
+    #divVerImagen {
+        margin-left: 0px !important;
+    }
+
+    @media (max-width:900px) {
+        #divVerImagen {
+            left: 5% !important;
+            width: 90% !important;
+        }
+    }
+
+    #imgProtesto {
+        height: 400px;
+        width: 400px;
+    }
+</style>
+
+<div class="row-fluid">
+    <div class="span12 ">
+        <!-- INICIA CUADRO PARA LA FORMA -->
+        <div class="portlet box blue" id="ventana">
+            <div class="portlet-title">
+                <h4>
+                    <i class="icon-reorder"></i>LISTA COBROS CLIENTES</h4>
+                <div class="actions">
+                    <a class="btn black printlist "><i class="icon-print"></i>Imprimir</a>
+                    <a href="?f=ccmcbcl" class="btn green"><i class="icon-plus"></i>Nuevo</a>
+                    <a href="?f=cclcbcl" class="btn red"><i class="icon-list"></i>Listar</a>
+                </div>
+
+            </div>
+            <div class="portlet-body">
+                <div class="row-fluid">
+                    <div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="cboempresa">Empresa</label>
+                        </div>
+                    </div>
+
+                    <div class="span3">
+                        <div class="control-group">
+                            <div class="controls">
+                                <select id="cboempresa" class="span12 empresa" data-placeholder="Empresa">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="slcEstablec">Establec.</label>
+                        </div>
+                    </div>
+
+                    <div class="span3">
+                        <div class="control-group">
+                            <div class="controls bloc">
+                                <select id="slcEstablec" class="span12 estable" data-placeholder="TODOS LOS ESTABLECIMIENTOS" multiple="multiple"></select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="span4">
+                        <div class="row-fluid">
+                            <div class="span2">
+                                <div class="control-group">
+                                    <label class="control-label" for="txtFeIn">F. Inicio</label>
+                                </div>
+                            </div>
+
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtFeIn" data-date-format="dd/mm/yyyy" style="text-align: center;" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="span2">
+                                <div class="control-group">
+                                    <label class="control-label" for="txtFeFi">F. Fin</label>
+                                </div>
+                            </div>
+
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtFeFi" data-date-format="dd/mm/yyyy" style="text-align: center;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <div class="row-fluid">
+
+                    <div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="slcCliente">Cliente</label>
+                        </div>
+                    </div>
+
+                    <div class="span7">
+                        <div class="control-group">
+                            <div class="controls bloc">
+                                <select id="slcCliente" class="span12" placeholder="TODOS LOS CLIENTES" multiple="multiple"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="span2">
+                        <button type="button" id="btnFiltrar" class="btn blue span10"><i class="icon-filter"></i>&nbsp;Filtrar</button></div>
+                </div>
+
+                <div class="row-fluid" style="margin-top: 20px">
+                    <div class="span12">
+                        <table id="tblCobroCl" border="0" class="display">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>CLIENTE 
+                                    </th>
+                                    <th>FECHA PAGO
+                                    </th>
+                                    <th>MONEDA
+                                    </th>
+                                    <th>MONTO
+                                    </th>
+                                    <th>DESTINO
+                                    </th>
+                                    <th>CAJA/BCO
+                                    </th>
+                                    <th>FORMA DE PAGO
+                                    </th>
+                                    <th>NRO DE OP
+                                    </th>
+                                    <th>RECEPCIONADO POR
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        </table>
+                        <asp:HiddenField ID="hfObjEPSS" runat="server" />
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div id="divVerImagen" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1"  style="width: auto;left:50em;" aria-hidden="true">
+        <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
+            <button type="button" class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
+                <i class="icon-remove"></i>
+            </button>
+            <h4 id="divBuscarDoc_title"><i class="icon-picture" style="line-height: initial;"></i>&nbsp;IMAGEN SUSTENTO</h4>
+        </div>
+        <div class="modal-body" style="max-height: fit-content;">  
+            <div class="row-fluid">
+                <img id="imgProtesto">
+            </div>
+        </div>
+        <div class="modal-footer">
+        </div>
+    </div>
+
+    <!-- FIN CUADRO PARA LA FORMA-->
+</div>
+
+<!-- IMPORTAMOS LOS PLUGINS QUE SE USARAN-->
+<script type="text/javascript" src="../vistas/CC/js/CCMCBCL.js"></script>
+
+<script>
+
+                       jQuery(document).ready(function () {
+                           // Se Inicializa el modulo de javascript para esta forma.
+                           CCLCBCL.init();
+
+                       });
+</script>
+
+

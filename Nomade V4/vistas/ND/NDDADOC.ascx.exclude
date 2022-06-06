@@ -1,0 +1,133 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NDDADOC.ascx.vb" Inherits="vistas_ND_NDDADOC" %>
+<script type="text/javascript">
+
+function getValue()
+        {
+           /* var SelectedVal = $('#<%=request.querystring("d") %>').val();*/
+           var SelectedVal='PCV2';
+            return SelectedVal;
+        }
+        
+function fn_cerrar(){
+	$.unblockUI({ 
+		onUnblock: function(){
+			$("#div_oculto").html("");
+		}
+	}); 
+};
+
+function fn_mostrar_doc(code){
+ 	$("#div_oculto").load("vistas/partes/ajax/PDPDOCU.ASHX", {doc: code}, function(){
+		$.blockUI({
+			message: $('#div_oculto'),
+			css: { 
+        padding:        8, 
+        margin:         0, 
+        width:          '795px', 
+        top:            '4%', 
+        left:           '10%', 
+        color:          '#000', 
+        border:         '3px solid #999', 
+        backgroundColor:'#fff' 
+    }
+		}); 
+	});
+};
+</script>
+<div style="text-align:right">
+    <asp:HiddenField ID="hd_docparte" runat="server" />
+<a href="?f=nddgini"><img src="recursos/ico/regresar.jpg"/>Regresar</a></div>
+<asp:GridView ID="gw" runat="server" AutoGenerateColumns="False" 
+            SkinID="gw1">
+            <Columns>
+                <asp:BoundField DataField="CODE" HeaderText="CODIGO" />
+                <asp:BoundField DataField="SEQ" HeaderText="SEC." />
+                <asp:BoundField DataField="CTLG" HeaderText="CATALOGO" />
+                <asp:BoundField DataField="ORGN" HeaderText="ORGAN." />
+                <asp:BoundField DataField="TITULO" HeaderText="TITULO" />
+                
+                <asp:BoundField DataField="COMPL" HeaderText="COMPL." />
+                <asp:BoundField DataField="APROB" HeaderText="APROB" />
+                <asp:BoundField DataField="PUBL" HeaderText="PUBL" />
+                <asp:BoundField DataField="ESTA" HeaderText="ESTADO" />
+                <asp:BoundField DataField="USUA" HeaderText="USUARIO" />
+                <asp:BoundField DataField="FECHA_ACTV" HeaderText="FECHA ACTV" />
+                <asp:TemplateField HeaderText="Acciones">
+                    <ItemTemplate>
+                     
+                        <img src="recursos/ico/icoRojo.gif" border="0" onclick="javascript: fn_mostrar_doc('<%#eval("CODE") %><%#eval("SEQ") %>');"/></a>
+                    &nbsp;&nbsp;<img src="recursos/ico/word.gif"/>
+                    &nbsp;&nbsp;<img src="recursos/ico/pdf.gif"/>
+                    &nbsp;&nbsp;<img src="recursos/ico/btn_editar.gif"/>
+                    &nbsp;&nbsp;<img src="recursos/ico/btn_borrar.gif"/>
+                    
+                    </ItemTemplate>
+                </asp:TemplateField>
+            </Columns>
+        </asp:GridView>
+        
+        <div style="padding:10px; padding-left:10px; background-color:#fff; border:1px solid #ccc;">
+        <div><b>Partes de documento</b></div>
+        <div class="izquierda_d">
+        <asp:GridView ID="gw_partes" runat="server" AutoGenerateColumns="False" 
+            SkinID="gw1" DataKeyNames="DARPDCT_DCTO_CODE,DARPDCT_DCTO_NUM_SEQ,darpdct_num_seq" 
+            ShowHeader="False">
+            <Columns>
+               <%-- <asp:BoundField DataField="darpdct_tifo_code" HeaderText="CODIGO" />--%>
+                <asp:BoundField DataField="darpdct_desc" HeaderText="DESC." />             
+                <asp:TemplateField HeaderText="Acciones">
+                    <ItemTemplate><img src="recursos/ico/icorojo.gif"/>&nbsp;&nbsp;
+                        <asp:ImageButton ID="btn_detalles" runat="server"  ToolTip="Ver datos de grupo"
+                            ImageUrl="~/recursos/ico/Fecha_derecha.gif" Alt="Detalle" CommandName="det" 
+                            CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>"/>
+                           
+                    </ItemTemplate>
+                </asp:TemplateField>
+            </Columns>
+        </asp:GridView>
+          </div>
+        <div class="derecha_d">
+        <div style="padding:5px; background-color:#fff;">
+        <div><B>
+            <asp:Label ID="lbl_objeto" runat="server"></asp:Label></B></div>
+            <div style="padding-top:5px; padding-bottom:6px;">
+            <div class="e_linea"></div>
+            </div>
+            <asp:Repeater ID="gw_variables" runat="server">
+            <HeaderTemplate><table width="100%" border="0" cellpadding="4" cellspacing="4"></HeaderTemplate>
+            <ItemTemplate>
+                <asp:HiddenField ID="hd_tc" runat="server" Value='<%#DataBinder.Eval(Container.DataItem, "tc")%>' />
+                <asp:HiddenField ID="hd_max" runat="server" Value='<%#DataBinder.Eval(Container.DataItem, "lv")%>' />
+                <asp:HiddenField ID="hd_lv" runat="server" Value='<%#DataBinder.Eval(Container.DataItem, "TAC")%>' />
+                <asp:HiddenField ID="hd_code" runat="server" Value='<%#DataBinder.Eval(Container.DataItem, "CODE")%>' />
+                <asp:HiddenField ID="hd_seq" runat="server" Value='<%#DataBinder.Eval(Container.DataItem, "SEQ")%>' />
+                <asp:HiddenField ID="hd_vptl_code" runat="server" Value='<%#DataBinder.Eval(Container.DataItem, "VPTL_CODE")%>' />
+                 <asp:HiddenField ID="hd_valor" runat="server" Value='<%#DataBinder.Eval(Container.DataItem, "VALOR")%>' />
+                 <asp:HiddenField ID="HD_CODE_VALORES" runat="server" Value='<%#DataBinder.Eval(Container.DataItem, "CODE_VALORES")%>' />
+                 
+                
+                
+           <%-- <%#getvalor(Container.DataItem)%>--%>
+             <tr>
+    <td width="200" align=right><%#DataBinder.Eval(Container.DataItem, "desc")%></td>
+    <td> <asp:TextBox ID="txt_dato" runat="server" Width="400px"></asp:TextBox>
+    <asp:DropDownList ID="dd_dato" runat="server">
+    </asp:DropDownList>
+    </td>
+  </tr>
+            </ItemTemplate>
+            <FooterTemplate>
+            <tr><td></td><td>
+            <asp:Button ID="btn_grabar" runat="server" Text="Grabar Datos" 
+            CommandName="guardar_valores" CommandArgument="<%# CType(Container,RepeaterItem).ItemIndex %>"/></td></tr>
+              
+              </table>
+            </FooterTemplate>
+            </asp:Repeater>
+            <%-- <asp:BoundField DataField="darpdct_tifo_code" HeaderText="CODIGO" />--%>
+        </div>
+        </div><div class="e_limpia"></div>
+        </div>
+         <div id="div_oculto" style="display: none;"></div>
+        
+      

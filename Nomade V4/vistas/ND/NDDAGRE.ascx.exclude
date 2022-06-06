@@ -1,0 +1,103 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NDDAGRE.ascx.vb" Inherits="vistas_ND_NDDAGRE" %>
+
+<script type="text/javascript">
+
+function getValue()
+        {
+            var SelectedVal = $('#<%=dd_partes.ClientID %>').val();
+            return SelectedVal;
+        }
+        
+function fn_cerrar(){
+	$.unblockUI({ 
+		onUnblock: function(){
+			$("#div_oculto").html("");
+		}
+	}); 
+};
+
+function fn_mostrar_doc(code){
+  // code=$('#'+<%#dd_partes %>).val();
+	$("#div_oculto").load("vistas/partes/ajax/PDPMODO.ASHX", {plantilla: code}, function(){
+		$.blockUI({
+			message: $('#div_oculto'),
+			css: { 
+        padding:        8, 
+        margin:         0, 
+        width:          '795px', 
+        top:            '4%', 
+        left:           '10%', 
+        color:          '#000', 
+        border:         '3px solid #999', 
+        backgroundColor:'#fff' 
+    }
+		}); 
+	});
+};
+</script>
+
+<asp:Panel ID="pnl_plantilla" runat="server">
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="400"><div style="padding-bottom:6px;"><img src="recursos/ico/sarchivo.jpg"/>&nbsp;&nbsp;<b>Tipo Documento:</b></div>
+    <asp:ListBox ID="lb_tipodoc" runat="server" Height="286px" Width="292px">
+    </asp:ListBox>
+                <br />
+                <br />
+                <asp:Button ID="btn_siguiente" runat="server" Text="Siguiente" />
+            </td>
+    <td valign="top">
+    
+        <br />
+    
+    </td>
+  </tr>
+</table>
+</asp:Panel>
+<asp:Panel ID="pnl_regdatos" runat="server">
+<b>Documento: </b>
+ <asp:TextBox ID="txt_coddoc" runat="server" Width="94px" Text="000000234"></asp:TextBox>
+  <asp:TextBox ID="txt_documento" runat="server" Width="325px"></asp:TextBox>    <asp:ImageButton ID="btn_regresa" ImageUrl="~/recursos/ico/regresar.jpg" runat="server" />
+    <b>Regresar</b>
+
+  <div style="padding-top:5px;"></div>
+ <div class="e_linea"></div>
+ <div style="padding-top:6px;"></div>
+ <%--<table width="100%" border="0">
+  <tr>
+    <td width="32%">--%>
+    
+    <b>Plantilla:</b> 
+    <asp:DropDownList ID="dd_partes" runat="server" Width="350px" 
+        AutoPostBack="True">
+    </asp:DropDownList><br />
+        <div style="padding-top:10px; padding-left:7px;"><asp:Label ID="lbl_partes" runat="server"></asp:Label>
+        <asp:GridView ID="dt_grupos" runat="server" AutoGenerateColumns="False" 
+            SkinID="gw1">
+            <Columns>
+                <asp:BoundField DataField="NUM" HeaderText="NUM" />
+                <asp:BoundField DataField="GRUPO_VAR" HeaderText="Grupo" />
+                <asp:BoundField DataField="DESC_FORMATO" HeaderText="Formato" />
+               
+            </Columns>
+        </asp:GridView>
+        <br /><br />
+        <div id="botones" runat="server" visible="false">
+            <asp:Button ID="btn_crear" runat="server"  Text="Crear docuemento" />
+            &nbsp;<input id="btn_visualizar" type="button" value="Visualizar documento" onclick="javascript: fn_mostrar_doc(getValue());" />
+            
+         </div>       
+        </div>
+     <%-- </td>
+    <td width="68%">
+        &nbsp;
+        
+        </td>
+  </tr>
+</table>--%>
+ 
+ </asp:Panel>
+ <asp:Panel ID="datos" runat="server">
+ </asp:Panel>
+ <div id="div_oculto" style="display: none;"></div>

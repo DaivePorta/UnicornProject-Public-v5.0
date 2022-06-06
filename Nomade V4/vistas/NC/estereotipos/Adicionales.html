@@ -1,0 +1,414 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <div id="direccion">
+            <h3 class="form-section" id="titulodir">Dirección Principal
+            <button type="button" id="masdirecciones" class="btn green">
+                <i class="icon-plus"></i>
+            </button>
+            </h3>
+            <div class="row-fluid">
+                <div class="span3">
+                    <div class="control-group">
+                        <label class="control-label" for="slcvia">
+                            Tipo de Vía</label>
+                        <div class="controls">
+                            <select class="span12" id="slcvia" data-placeholder="Tipo de Vía">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="span4">
+                    <div class="control-group">
+                        <label class="control-label" for="txtnombrevia">
+                            Nombre de Vía</label>
+                        <div class="controls">
+                            <input type="text" id="txtnombrevia" class="span12" placeholder="Nombre de Vía" />
+                        </div>
+                    </div>
+                </div>
+                <div class="span1">
+                    <div class="control-group">
+                        <label class="control-label" for="slcmznr">
+                            &nbsp;</label>
+                        <div class="controls">
+                            <select class="span12" id="slcmznr">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label" for="txtnumerovia">
+                            Número</label>
+                        <div class="controls">
+                            <input type="text" id="txtnumerovia" class="span12" placeholder="Número" />
+                        </div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label" for="txtinteriorvia">
+                            Interior</label>
+                        <div class="controls">
+                            <input type="text" id="txtinteriorvia" class="span12" placeholder="Interior" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span3">
+                    <div class="control-group">
+                        <label class="control-label" for="slczona">
+                            Tipo de Zona</label>
+                        <div class="controls">
+                            <select class="span12" id="slczona" data-placeholder="Tipo de Zona">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="span3">
+                    <div class="control-group">
+                        <label class="control-label" for="txtnombrezona">
+                            Nombre de Zona</label>
+                        <div class="controls">
+                            <input type="text" id="txtnombrezona" class="span12" placeholder="Nombre de Zona" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="span2" style="display:none;">
+                     <div class="control-group">
+                        <label class="control-label" for="txtLocalidad">
+                            Localidad</label>
+                        <div class="controls">
+                            <input type="text" id="txtLocalidad" class="span12" placeholder="Localidad" maxlength="200" />
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="span2">
+                     <div class="control-group">
+                        <label class="control-label" for="cboEstablecimiento">
+                            Sucursal Atención</label>
+                        <div class="controls">
+                            <select id="slcaten" class="span12" data-placeholder="Establecimiento">
+                                <option></option> 
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="span2">
+                     <div class="control-group">
+                        <label class="control-label" for="txtCodigoUbicacion">
+                            Código Ubicación</label>
+                        <div class="controls">
+                            <input type="text" id="txtCodigoUbicacion" class="span12" placeholder="Código Ubicación" maxlength="25" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="span2">
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="txtLatitud">
+                                Latitud</label>
+                            <div class="controls">
+                                <input type="text" id="txtLatitud" class="span12" placeholder="Latitud" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label" for="txtLongitud">
+                                Longitud</label>
+                            <div class="controls">
+                                <input type="text" id="txtLongitud" class="span12" placeholder="Longitud" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--   ********************      -->
+
+
+            </div>
+            <div class="row-fluid">
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label" for="slcpais">
+                            País</label>
+                        <div class="controls">
+                            <select class="span12" id="slcpais" data-placeholder="País">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label" for="slcdepa">
+                            Departamento</label>
+                        <div class="controls">
+                            <select class="span12" id="slcdepa" data-placeholder="Departamento" disabled="disabled">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label" for="slcprov">
+                            Provincia</label>
+                        <div class="controls">
+                            <select class="span12" id="slcprov" data-placeholder="Provincia" disabled="disabled">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label" for="Distrito">
+                            Distrito</label>
+                        <div class="controls">
+                            <select class="span12" id="slcdist" data-placeholder="Distrito" disabled="disabled">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="span1">
+                    <div class="control-group">
+                        <label class="control-label" for="txtubigeo">
+                            Código</label>
+                        <div class="controls">
+                            <input type="text" class="span12" disabled="disabled" id="txtubigeo" />
+                        </div>
+                    </div>
+                </div>     
+
+                <div class="span3">
+                    <div class="control-group">
+                        <label class="control-label" for="">
+                            &nbsp;
+                        </label>
+                        <div class="controls">
+                             <button type="button" onclick="javascript:MostrarMapa($($(this).parents('[id*=direccion]')[0]).attr('id'));" style="height: 34px" data-dismiss="modal" class="btn red">
+                                <i class="icon-map-marker"></i>
+                            </button>
+                            <button type="button" onclick="javascript:MuestraDireccion($($(this).parents('[id*=direccion]')[0]));" data-dismiss="modal" class="btn green">
+                                <i class="icon-plus"></i>
+                                Sunat
+                            </button>
+                            <button type="button" onclick="javascript:generarDireccion($($(this).parents('[id*=direccion]')[0]).attr('id'));" class="btn purple">
+                                <i class="icon-plus"></i>
+                                Componer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="control-group">
+                        <label class="control-label" for="txtdir">
+                            Dirección</label>
+                        <div class="controls">
+                            <input type="text" id="txtdir" class="span12 indicador" placeholder="Dirección" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="control-group">
+                        <label class="control-label" for="txtref">
+                            Referencia</label>
+                        <div class="controls">
+                            <input type="text" id="txtref" class="span12" placeholder="Referencia" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div id="datosbanco">
+            <h3 class="form-section">Datos Bancarios
+                <button type="button" id="masbancos" class="btn green">
+                    <i class="icon-plus"></i>
+                </button>
+            </h3>
+            <div class="row-fluid">
+                <div class="span3">
+                    <div class="control-group">
+                        <label class="control-label" for="slcbanc">
+                            Banco</label>
+                        <div class="controls">
+                            <select class="span12" id="slcbanc" data-placeholder="Banco">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="span3">
+                    <div class="control-group">
+                        <label class="control-label" for="slcticu">
+                            Tipo de Cuenta</label>
+                        <div class="controls">
+                            <select class="span12" id="slcticu" data-placeholder="Tipo de Cuenta">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label" for="txtNumeroCuenta">
+                            Número de Cuenta</label>
+                        <div class="controls">
+                            <input type="text" id="txtNumeroCuenta" class="span12 indicador" placeholder="Número de Cuenta" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label" for="txtCuentaInterbancaria">
+                            Cuenta Interbancaria</label>
+                        <div class="controls">
+                            <input type="text" id="txtCuentaInterbancaria" class="span12 indicador" placeholder="Cuenta Interbancaria" />
+                        </div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label" for="slcmone">
+                            Tipo de Moneda</label>
+                        <div class="controls">
+                            <select class="span12" id="slcmone" data-placeholder="Tipo de Moneda" disabled="disabled">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="form-section">Otros Datos</h3>
+    <div class="row-fluid">
+        <div class="span6">
+            <div id="telefonos" class="row-fluid">
+                <div class="span10">
+                    <div class="control-group">
+                        <label class="control-label">
+                            Telefono Adicional</label>
+                        <div class="controls">
+                            <input id="txtTelefonoA" type="text" class="span12 indicador" placeholder="Teléfono" />
+                        </div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label">
+                            &nbsp;</label>
+                        <div class="controls">
+                            <button type="button" id="mastelefonos" class="btn green">
+                                <i class="icon-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="span6">
+            <div id="emails" class="row-fluid">
+                <div class="span10">
+                    <div class="control-group">
+                        <label class="control-label">
+                            E-mail Adicional</label>
+                        <div class="controls">
+                            <input id="txtEmailA" type="text" class="span12 indicador" placeholder="E-mail" />
+                        </div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <div class="control-group">
+                        <label class="control-label">
+                            &nbsp;</label>
+                        <div class="controls">
+                            <button type="button" id="masemails" class="btn green">
+                                <i class="icon-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="button" class="btn blue" onclick="GrabarAdicionales();">
+            <i class="icon-ok"></i>&nbsp;Guardar 
+        </button>
+        <button type="button" class="btn" onclick="recargaAdicionales();">
+            <i class="icon-remove"></i>&nbsp;Cancelar
+        </button>
+    </div>
+
+    <input id="hfJsonVias" type="hidden" />
+    <input id="hfJsonZona" type="hidden" />
+    <input id="hfJsonDirecciones" type="hidden" />
+    <input id="hfJsonDatosBancos" type="hidden" />
+    <input id="hfJsonTelefonos" type="hidden" />
+    <input id="hfJsonEmails" type="hidden" />
+    <input id="hfJsonScslAten" type="hidden" />
+
+
+    <div id="mapaModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 45%;" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+            </button>
+            <h3 id="H2">Localización</h3>
+        </div>
+        <div class="modal-body" style="text-align: center">
+
+            <div id="map" style="height: 300px"></div>
+
+        </div>
+        <div class="modal-footer">
+        </div>
+    </div>
+
+    <div id="modalGConfirmacion" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" style="top: 20%; left: 58%;">
+        <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
+            <button type="button" class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true"><i class="icon-remove"></i></button>
+            <h4 id="modalGConfirmacion_title">Confirmación</h4>
+        </div>
+        <div class="modal-body">
+            <div class="row-fluid">
+                <div class="span12" id="modalGConfirmacion_body">¿Desea cambiar la localización actual?</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn blue" type="button" id="modGSi"><i class="icon-ok"></i>&nbsp;Si</button>
+            <button class="btn red" type="button" id="modGNo"><i class="icon-remove"></i>&nbsp;No</button>
+        </div>
+    </div>
+</body>
+</html>

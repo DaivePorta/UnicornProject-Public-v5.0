@@ -1,0 +1,92 @@
+﻿Imports System.Data
+
+Partial Class vistas_NG_NGACLUS
+    Inherits NOMADE.N.Cub
+    Dim malerta As Label
+    Dim v_usuario As String
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        malerta = Page.Master.FindControl("alerta")
+        Me.malerta.Text = ""
+        v_usuario = Request.QueryString("p")
+        If Not Page.IsPostBack Then
+
+        End If
+        If (v_usuario <> String.Empty) Then
+            carga_editar(v_usuario)
+
+            Me.txt_id.Attributes.Add("readonly", "true")
+            Me.txt_id.CssClass = "f_inputl"
+            Me.txt_nombre.Attributes.Add("readonly", "true")
+            Me.txt_nombre.CssClass = "f_inputl"
+            Me.chk_estado.Enabled = False
+            Me.chk_estado.CssClass = "f_inputl"
+        End If
+    End Sub
+
+
+    Private Sub carga_editar(ByVal v_usuario As String)
+        Dim c As New Nomade.general.Cusuario("bn")
+        Dim dt As DataTable
+        dt = c.dame_usuario_unico(v_usuario)
+
+        If Not (dt Is Nothing) Then
+            For Each MiDataRow As DataRow In dt.Rows
+                'Response.Write("sss" & "<br>")
+                Me.txt_id.Text = MiDataRow("usuario").ToString
+                Me.txt_nombre.Text = MiDataRow("nombre").ToString
+                'Me.dd_empresa.SelectedValue = MiDataRow("empresa").ToString
+                'Me.dd_orgn.SelectedValue = MiDataRow("orgn").ToString
+                Me.chk_estado.Checked = IIf(MiDataRow("estado").ToString = "A", True, False)
+            Next
+        End If
+    End Sub
+
+    Protected Sub btn_grabar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabar.Click
+        Try
+
+
+            Dim v_tipoper As String
+            Dim msg(2) As String
+            Dim apepat As String
+            ' v_tipoper = dd_tipo_persona.SelectedValue
+
+
+
+
+            If (txt_id.Text = String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Ingrese identificador", "W")
+                'malerta.Text = "Error: Ingrese nombre"
+                Exit Sub
+            End If
+
+            If (txt_clave.Text = String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Ingrese clave", "W")
+                'malerta.Text = "Error: Ingrese nombre"
+                Exit Sub
+            End If
+
+            Dim c As New Nomade.general.Cusuario("bn")
+
+            If (txt_id.Text <> String.Empty) Then
+
+                'Response.Write("actualizar")
+                msg(1) = c.CAMBIAR_CLAVE_USUARIO(Me.txt_id.Text, Me.txt_clave.Text, Me.usuario)
+            End If
+
+
+            c = Nothing
+            If (msg(1) <> String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+
+            Else
+                malerta.Text = NOMADE.N.msg.alerta("Error al actualizar el registro", "W")
+                'malerta.Text = "warning:"
+
+            End If
+        Catch ex As Exception
+            malerta.Text = NOMADE.N.msg.alerta("Error: " + ex.Message, "W")
+            'malerta.Text = "Error:"
+        End Try
+    End Sub
+End Class

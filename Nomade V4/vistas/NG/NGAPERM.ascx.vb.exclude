@@ -1,0 +1,279 @@
+﻿Imports System.Data
+
+Partial Class vistas_NG_NGAPERM
+    Inherits Nomade.N.Cub
+
+    Dim btn_filtro As String = "0"
+    Dim v_usuario As String
+    Public cod As String
+    Dim malerta As Label
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        'v_usuario = Request.QueryString("p")
+        'Me.hf_usuario.Value = v_usuario
+        ''malerta = Page.Master.FindControl("alerta")
+        ''Me.malerta.Text = ""
+        'Me.txt_id.Attributes.Add("readonly", "true")
+        'Me.txt_id.CssClass = "f_inputl"
+        'If (v_usuario = String.Empty) Then
+        '    Response.Redirect("?f=ngqusua")
+        'End If
+        'cod = Me.hf_usuario.Value
+        'Me.txt_id.Text = Me.hf_usuario.Value
+        'If Not Page.IsPostBack Then
+        '    Me.pn_a.Visible = False
+        '    llena("A")
+        'End If
+    End Sub
+
+    'Protected Sub btn_busca_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_busca.Click
+    '    llena("A")
+    'End Sub
+
+    'Private Sub llena(ByVal V_OBJETO As String)
+    '    Dim c As New Nomade.seguridad.cobjeto("Bn")
+    '    Me.txt_forma.Text = ""
+    '    If (V_OBJETO = "A") Then
+    '        Me.gw.Columns.Item(3).Visible = True
+    '        'Me.gw.Caption = "Formas de usuario"
+    '        Me.gw.DataSource = c.dame_objetos_usuario(Me.hf_usuario.Value, "")
+    '        Me.btn_agregar.OnClientClick = "forma(); return false"
+    '        Me.lbl_acceso.Visible = True
+    '        Me.dd_acceso.Visible = True
+    '        Me.btn_agregar.ToolTip = "Agregar Forma"
+    '        Me.btn_add.ToolTip = "Agregar Forma"
+    '        btn_buscaf.OnClientClick = "forma(); return false"
+    '    Else
+    '        Me.gw.Columns.Item(3).Visible = False
+    '        'Me.gw.Caption = "Clases de usuario"
+    '        Me.gw.DataSource = c.dame_clases_usuario(Me.hf_usuario.Value, "")
+    '        Me.btn_agregar.OnClientClick = "clase(); return false"
+    '        Me.btn_agregar.ToolTip = "Agregar Clase"
+    '        Me.btn_add.ToolTip = "Agregar Clase"
+    '        Me.lbl_acceso.Visible = False
+    '        Me.dd_acceso.Visible = False
+    '        btn_buscaf.OnClientClick = "clase(); return false"
+    '    End If
+    '    Me.gw.DataBind()
+    '    c = Nothing
+    '    Me.pn_a.Visible = False
+    'End Sub
+
+    'Protected Sub RegsPag_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    ' CAMBIAR NUMERO DE FILAS A MOSTRAR
+    '    ' OBTIENE EL NUMERO ELEGIDO
+    '    Dim _DropDownList As DropDownList = DirectCast(sender, DropDownList)
+    '    ' CAMBIA EL PAGESIZE DEL GRID ASIGNANDO EL ELEGIDO
+    '    Me.gw.PageSize = Integer.Parse(_DropDownList.SelectedValue)
+    '    llena(Me.dd_objeto.SelectedValue)
+    'End Sub
+
+    'Protected Sub IraPag(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    Dim _IraPag As TextBox = DirectCast(sender, TextBox)
+    '    Dim _NumPag As Integer
+
+    '    If Integer.TryParse(_IraPag.Text.Trim, _NumPag) AndAlso _NumPag > 0 AndAlso _NumPag <= Me.gw.PageCount Then
+    '        If Integer.TryParse(_IraPag.Text.Trim, _NumPag) AndAlso _NumPag > 0 AndAlso _NumPag <= Me.gw.PageCount Then
+    '            Me.gw.PageIndex = _NumPag - 1
+    '        Else
+    '            Me.gw.PageIndex = 0
+    '        End If
+    '    End If
+    '    Me.gw.SelectedIndex = -1
+    '    llena(Me.dd_objeto.SelectedValue)
+    'End Sub
+    ''gw_SelectedIndexChanged
+    'Protected Sub gw_PageIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles gw.PageIndexChanged
+    '    '  AL CAMBIAR DE PAGINA LIMPIAMOS LA ROW SELECCIONADA
+    '    Me.gw.SelectedIndex = -1
+    'End Sub
+
+    'Protected Sub gw_PageIndexChanging(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewPageEventArgs) Handles gw.PageIndexChanging
+    '    If (e.NewPageIndex >= 0) Then
+    '        gw.PageIndex = e.NewPageIndex
+    '        llena(Me.dd_objeto.SelectedValue)
+    '    End If
+    'End Sub
+
+    'Protected Sub gw_RowCommand(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewCommandEventArgs) Handles gw.RowCommand
+    '    Try
+    '        Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+    '        Dim msg1(2) As String
+    '        Me.pn_a.Visible = True
+    '        ' Retrieve the row that contains the button 
+    '        ' from the Rows collection.
+    '        Dim row As GridViewRow = gw.Rows(index)
+    '        Dim v_u As String = gw.DataKeys(index).Values("USUARIO")
+    '        Dim v_o As String = gw.DataKeys(index).Values("OBJETO")
+    '        Dim v_s As String = gw.DataKeys(index).Values("SECUENCIA")
+
+    '        ''Response.Write(v_f)
+    '        If (e.CommandName = "act") Then
+    '            ' Retrieve the row index stored in the CommandArgument property.
+    '            '  Me.lbl_mensaje.coloca("R", 12, code_cuenta)
+    '            Dim c As New Nomade.seguridad.cusuario("bn")
+    '            If (Me.dd_objeto.SelectedValue = "A") Then
+    '                msg1 = c.desactivar_objeto(v_u, v_o, v_s, "I", Me.usuario)
+    '            Else
+    '                msg1 = c.desactivar_clase(v_u, v_o, v_s, "I", Me.usuario)
+    '            End If
+
+
+    '            llena(Me.dd_objeto.SelectedValue)
+    '            c = Nothing
+    '            lbl_mensaje.Text = Nomade.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+    '            ' Add code here to add the item to the shopping cart.
+
+    '        End If
+    '    Catch ex As Exception
+    '        lbl_mensaje.Text = Nomade.N.msg.alerta("Error: " + ex.Message, "W")
+    '        'Response.Write("vamos a eliminar")
+    '        'malerta.Text = "error al eliminar" & ex.Message
+    '    End Try
+    'End Sub
+
+    'Protected Sub gw_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles gw.RowDataBound
+    '    ' FORMATEA ROWS
+    '    Dim row As GridViewRow = e.Row
+    '    Dim i As Integer
+    '    Dim x As String
+    '    Dim btn As ImageButton = e.Row.FindControl("btn_elim")
+
+    '    If e.Row.RowType = DataControlRowType.Pager Then
+    '        If (btn_filtro = "1") Then
+    '            '    Dim _IraPag1 As TextBox = e.Row.FindControl("IraPag")
+    '            '   _IraPag1.Text = 1
+    '            Me.gw.PageIndex = 0
+    '        End If
+    '        ' PAGINADO
+    '        ' TOTAL PAGINAS
+
+
+    '        Dim _TotalPags As Label = e.Row.FindControl("lblTotalNumberOfPages")
+    '        _TotalPags.Text = gw.PageCount.ToString
+    '        ' IR A PAGINA
+    '        Dim _IraPag As TextBox = e.Row.FindControl("IraPag")
+    '        _IraPag.Text = (Me.gw.PageIndex + 1).ToString
+
+    '        ' ASIGNA AL DROPDOWNLIST COMO VALOR SELECCIONADO EL PAGESIZE ACTUAL
+    '        Dim _DropDownList As DropDownList = e.Row.FindControl("RegsPag")
+    '        _DropDownList.SelectedValue = Me.gw.PageSize.ToString
+    '    ElseIf e.Row.RowType = DataControlRowType.DataRow Then
+    '        ' APLICA ESTILOS A EVENTOS ON MOUSE OVER Y OUT
+
+    '        x = gw.DataKeys(e.Row.RowIndex).Values("estado").ToString.Trim
+    '        If (x = "I") Then
+    '            btn.Enabled = False
+    '            btn.ImageUrl = "~/recursos/ico/no.png"
+    '            btn.ToolTip = "Clase desactivada"
+    '        Else
+
+    '        End If
+
+    '        ' e.Row.Attributes.Add("OnMouseOut", "this.className = this.orignalclassName;")
+    '        ' e.Row.Attributes.Add("OnMouseOver", "this.orignalclassName = this.className;this.className = 'altoverow';")
+
+    '        '  e.Row.Attributes("OnClick") = Page.ClientScript.GetPostBackClientHyperlink(Me.gw, "Select$" + e.Row.RowIndex.ToString)
+    '    End If
+    'End Sub
+
+    'Protected Sub btn_filtrar_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    '   Me.Up1.Update()
+    '    btn_filtro = "1"
+    '    llena(Me.dd_objeto.SelectedValue)
+    'End Sub
+
+    'Protected Sub gw_SelectedIndexChanging(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewSelectEventArgs) Handles gw.SelectedIndexChanging
+    '    Dim index As String = e.NewSelectedIndex
+    '    'Dim valor As String = Me.gw.Rows(index).Cells(1).Text
+    '    Dim valor As String = Me.gw.DataKeys(index).Values("OBJETO")
+    '    ' Response.Redirect("?c=gef&v=gsaperm&p=" & valor)
+    'End Sub
+
+    'Protected Sub dd_objeto_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles dd_objeto.SelectedIndexChanged
+    '    llena(Me.dd_objeto.SelectedValue)
+
+    'End Sub
+
+    'Protected Sub btn_r_cuentas_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_r_cuentas.Click
+    '    llena(Me.dd_objeto.SelectedValue)
+    '    Me.pn_a.Visible = False
+    'End Sub
+
+    'Protected Sub btn_add_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles btn_add.Click
+    '    Me.lbl_mensaje.Text = ""
+    '    If (Me.dd_objeto.SelectedValue = "A") Then
+    '        Me.pn_a.GroupingText = "Agregar forma"
+    '        Me.lbl_forma.Text = "Forma"
+    '    Else
+    '        Me.pn_a.GroupingText = "Agregar Clase"
+    '        Me.lbl_forma.Text = "Clase"
+    '    End If
+    '    If (Me.pn_a.Visible) Then
+    '        Me.pn_a.Visible = False
+
+    '    Else
+    '        Me.pn_a.Visible = True
+
+    '    End If
+    'End Sub
+
+    'Protected Sub btn_grabar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabar.Click
+    '    Try
+    '        Dim msg(2) As String
+    '        If (txt_forma.Text = String.Empty) Then
+    '            'Me.lbl_mensaje.coloca("R", 11, "Seleccione Forma<br>")
+    '            lbl_mensaje.Text = Nomade.N.msg.alerta("Seleccione Forma<br>", "W")
+    '            Exit Sub
+    '        End If
+    '        If (txt_fi.Text = String.Empty) Then
+    '            'Me.lbl_mensaje.coloca("R", 11, "Ingrese fecha inicio<br>")
+    '            lbl_mensaje.Text = Nomade.N.msg.alerta("Ingrese fecha de inicio<br>", "W")
+    '            Exit Sub
+    '        End If
+    '        If (txt_ff.Text = String.Empty) Then
+    '            'Me.lbl_mensaje.coloca("R", 11, "Fecha de termino<br>")
+    '            lbl_mensaje.Text = Nomade.N.msg.alerta("Ingrese fecha de termino<br>", "W")
+    '            Exit Sub
+    '        End If
+
+    '        If Not IsDate(txt_fi.Text) Then
+    '            'Me.lbl_mensaje.coloca("R", 11, "Fecha incorrecta fi<br>")
+    '            lbl_mensaje.Text = Nomade.N.msg.alerta("Fecha de inicio incorrecta<br>", "W")
+    '            Exit Sub
+    '        End If
+    '        If Not IsDate(txt_ff.Text) Then
+    '            'Me.lbl_mensaje.coloca("R", 11, "Fecha incorrecta ff<br>")
+    '            lbl_mensaje.Text = Nomade.N.msg.alerta("Fecha de fin incorrecta<br>", "W")
+    '            Exit Sub
+    '        End If
+    '        Dim c As New Nomade.seguridad.cusuario("bn")
+
+    '        If (Me.dd_objeto.SelectedValue = "A") Then
+    '            msg = c.asignar_forma(Me.hf_usuario.Value, Me.txt_forma.Text, Me.dd_acceso.SelectedValue, _
+    '                              Utilities.fechaLocal(Me.txt_fi.Text), Utilities.fechaLocal(Me.txt_ff.Text) _
+    '                              , IIf(Me.chk_estado.Checked, "A", "I"), Me.usuario)
+    '        Else
+    '            msg = c.asignar_clase(Me.hf_usuario.Value, Me.txt_forma.Text, _
+    '                             Utilities.fechaLocal(Me.txt_fi.Text), Utilities.fechaLocal(Me.txt_ff.Text) _
+    '                             , IIf(Me.chk_estado.Checked, "A", "I"), Me.usuario)
+
+    '        End If
+
+    '        If (msg(0) > 0) Then
+    '            'Response.Redirect()
+    '            llena(Me.dd_objeto.SelectedValue)
+    '            Me.txt_forma.Text = ""
+    '            lbl_mensaje.Text = Nomade.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+    '        Else
+    '            'Me.lbl_mensaje.coloca("R", 11, "Ya tiene permiso a esta forma")
+    '            lbl_mensaje.Text = Nomade.N.msg.alerta("Ya tiene permiso a esta forma", "W")
+    '        End If
+
+    '        c = Nothing
+
+    '    Catch ex As Exception
+    '        lbl_mensaje.Text = Nomade.N.msg.alerta("Error: " + ex.Message, "W")
+    '    End Try
+    'End Sub
+End Class

@@ -1,0 +1,158 @@
+﻿Imports System.Data
+
+Partial Class vistas_NG_NGAFORM
+    Inherits Nomade.N.Cub
+    Dim malerta As Label
+    Dim v_Objeto As String
+
+    Private Sub carga_sistema(ByVal v_sistema As String)
+        Dim l As New ListItem
+        Dim c As New Nomade.seguridad.csistema("bn")
+        Me.dd_sistema.DataSource = c.dame_sistema(v_sistema)
+        c = Nothing
+        Me.dd_sistema.DataTextField = "desc"
+        Me.dd_sistema.DataValueField = "code"
+        Me.dd_sistema.DataBind()
+        dd_sistema.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Private Sub carga_tipo_objeto(ByVal v_tipo As String)
+        Dim l As New ListItem
+        Dim c As New Nomade.seguridad.ctipoObjeto("bn")
+        Me.dd_tipo.DataSource = c.dame_tipo_objeto(v_tipo)
+        c = Nothing
+        Me.dd_tipo.DataTextField = "desc"
+        Me.dd_tipo.DataValueField = "code"
+        Me.dd_tipo.DataBind()
+        dd_tipo.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Private Sub carga_modulo(ByVal v_sistema As String)
+        Dim l As New ListItem
+        Dim c As New Nomade.seguridad.cmodulo("bn")
+        Me.dd_modulo.DataSource = c.dame_modulo_segun_sistema(v_sistema)
+        c = Nothing
+        Me.dd_modulo.Items.Clear()
+        'lbl_mensaje.Text = NOMADE.N.msg.alerta(v_sistema, "W")
+        Me.dd_modulo.DataTextField = "desc"
+        Me.dd_modulo.DataValueField = "code"
+        Me.dd_modulo.DataBind()
+        dd_modulo.Items.Insert(0, New ListItem("-- Seleccionar --", ""))
+    End Sub
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        malerta = Page.Master.FindControl("alerta")
+        Me.malerta.Text = ""
+        v_Objeto = Request.QueryString("p")
+        'Response.Write(forma)
+        If Not Page.IsPostBack Then
+            carga_sistema("")
+            carga_tipo_objeto("")
+
+
+            If (v_Objeto <> String.Empty) Then
+                carga_editar(v_Objeto)
+                Me.txt_forma.Attributes.Add("readonly", "true")
+                Me.txt_forma.CssClass = "f_inputl"
+            End If
+        End If
+
+
+    End Sub
+
+    Private Sub carga_editar(ByVal v_objeto As String)
+        Dim c As New NOMADE.seguridad.cobjeto("bn")
+        Dim dt As datatable
+        dt = c.BUSCAR_OBJETO(v_objeto)
+        If Not (dt Is Nothing) Then
+            For Each MiDataRow As DataRow In dt.Rows
+                'Response.Write("sss" & "<br>")
+                Me.txt_forma.Text = MiDataRow("objeto").ToString
+                Me.txt_desc.Text = MiDataRow("descripcion").ToString
+                'Me.txt_menu.Text = MiDataRow("menu").ToString
+                Me.dd_ind_menu.Text = MiDataRow("ind_menu").ToString
+                carga_modulo(MiDataRow("sistema").ToString)
+                Me.dd_sistema.SelectedValue = MiDataRow("sistema").ToString
+                Me.dd_modulo.SelectedValue = MiDataRow("modulo").ToString
+                Me.dd_tipo.SelectedValue = MiDataRow("TIPO_OBJETO").ToString
+                Me.chk_estado.Checked = IIf(MiDataRow("estado").ToString = "A", True, False)
+
+            Next
+        End If
+    End Sub
+
+    Protected Sub btn_grabar_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_grabar.Click
+        Try
+
+            Dim msg(2) As String
+            ' v_tipoper = dd_tipo_persona.SelectedValue
+
+            If (txt_forma.Text = String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Ingrese el nombre de objeto", "W")
+                'malerta.Text = "Error: Ingrese nombre"
+                Exit Sub
+            End If
+            If (dd_sistema.SelectedValue = String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Seleccione el sistema", "W")
+                'malerta.Text = "Error: Ingrese nombre"
+                Exit Sub
+            End If
+
+            If (dd_tipo.SelectedValue = String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Seleccione el tipo de objeto", "W")
+                'malerta.Text = "Error: Ingrese nombre"
+                Exit Sub
+            End If
+            If (dd_modulo.SelectedValue = String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Seleccione el módulo", "W")
+                'malerta.Text = "Error: Ingrese nombre"
+                Exit Sub
+            End If
+            If (txt_desc.Text = String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Ingrese la descripción", "W")
+                'malerta.Text = "Error: Ingrese nombre"
+                Exit Sub
+            End If
+            'If (txt_menu.Text = String.Empty) Then
+            'lbl_mensaje.Text = Nomade.N.msg.alerta("Ingrese el menú", "W")
+            'malerta.Text = "Error: Ingrese nombre"
+            'Exit Sub
+            'End If
+            Dim c As New Nomade.seguridad.cobjeto("bn")
+            'Dim v_menu As String
+            If (v_Objeto = String.Empty) Then
+                msg(1) = c.insertar_objeto(Me.txt_forma.Text.ToUpper, Me.txt_desc.Text, IIf(Me.chk_estado.Checked, "A", "I"), _
+                                           dd_sistema.SelectedValue, dd_tipo.SelectedValue, _
+                                        Me.usuario, "", dd_modulo.SelectedValue, Me.dd_ind_menu.Text)
+            Else
+                'Response.Write("actualizar")
+                msg(1) = c.ACTUALIZA_objeto(v_Objeto, Me.txt_desc.Text, IIf(Me.chk_estado.Checked, "A", "I"), _
+                                           dd_sistema.SelectedValue, dd_tipo.SelectedValue, _
+                                        Me.usuario, "", dd_modulo.SelectedValue, Me.dd_ind_menu.Text)
+            End If
+
+            '            msg(1) = c.insertar_objeto("aaaaa", "desc", "A", _
+            '                                       "S", "F", _
+            '"RV", "T", "A", "N")
+            c = Nothing
+            If (msg(1) <> String.Empty) Then
+                malerta.Text = NOMADE.N.msg.alerta("Transacción terminada: registros aplicados y guardados.", "O")
+
+            Else
+                malerta.Text = NOMADE.N.msg.alerta("Error al crear el registro", "W")
+                'malerta.Text = "warning:"
+
+            End If
+        Catch ex As Exception
+            malerta.Text = NOMADE.N.msg.alerta("Error: " + ex.Message, "W")
+            'malerta.Text = "Error:"
+        End Try
+    End Sub
+
+    Protected Sub dd_sistema_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles dd_sistema.SelectedIndexChanged
+        If (Me.dd_sistema.SelectedValue <> String.Empty) Then
+            carga_modulo(Me.dd_sistema.Text)
+        End If
+    End Sub
+
+End Class

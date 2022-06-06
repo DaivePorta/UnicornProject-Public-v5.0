@@ -1,0 +1,112 @@
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NMAAEPS.ascx.vb" Inherits="vistas_partes_NM_NMAAEPS" %>
+
+<%@ Register assembly="ControlesWeb" namespace="ControlesWeb" tagprefix="cc1" %>
+<div >
+<div style="text-align:right;"> <asp:ImageButton ID="btn_telnuevo" runat="server" 
+        ImageUrl="~/recursos/ico/n_nuevo.png" />
+    <asp:Label
+            ID="lbl_nuevotel" runat="server" Text="Nuevo"></asp:Label>
+        <asp:ImageButton ID="btn_listatel" runat="server" 
+        ImageUrl="~/recursos/ico/n_lista.jpg" style="height: 15px" />
+    <asp:Label
+            ID="lbl_listatel" runat="server" Text="Listar"></asp:Label></div>
+    <asp:Panel ID="pnl_listar" runat="server">
+    
+      <asp:GridView ID="gw" runat="server" SkinID="gw1" 
+      AutoGenerateColumns="False" DataKeyNames="PIDM,PEPS_CODE,ID">
+            <Columns>
+              <asp:BoundField DataField="PEPS_CODE" HeaderText="PLAN"/>       
+              <asp:BoundField DataField="TITULO" HeaderText="TITULO"/> 
+              <asp:BoundField DataField="FECHA_INICIO" HeaderText="INICIO" DataFormatString="{0:dd/MM/yyyy}"/>
+              <asp:BoundField DataField="FECHA_TERMINO" HeaderText="TERMINO" DataFormatString="{0:dd/MM/yyyy}"/>
+              <asp:BoundField DataField="ESTADO" HeaderText="ESTADO" Visible="true"/>
+              <asp:TemplateField HeaderText="ACCIONES">
+              <ItemTemplate>
+              <asp:ImageButton ID="btn_editar" runat="server" CommandName="edi" CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>"
+                    ImageUrl="~/recursos/ico/btn_editar.gif" ToolTip="Editar"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <%--<asp:ImageButton ID="btn_elim" runat="server" CommandName="eli" CommandArgument="<%# CType(Container,GridViewRow).RowIndex %>"
+                    ImageUrl="~/recursos/ico/btn_borrar.gif" ToolTip="Eliminar Comentario"/>--%>
+                 
+                   <cc1:btn_confirm ID="btn_eliminar" runat="server" ImageUrl="~/recursos/ico/btn_borrar.gif" 
+                                CommandName="eli" 
+                                CommandArgument='<%# Container.DataItemIndex %>' ToolTip="Eliminar"  
+                                UPAO_msg='Desea eliminar el Plan' />
+                </ItemTemplate>
+                <ItemStyle HorizontalAlign="Center" />
+            </asp:TemplateField>        
+      </Columns>
+      
+      
+      
+                
+          <AlternatingRowStyle CssClass="altrowstyle" />
+                
+      </asp:GridView>
+    </asp:Panel> 
+    <asp:Panel ID="pnl_add" runat="server">
+    <div class="forma">
+    <div class="contenido">
+    <div id="titulo" runat="server"><h2>Nuevo Plan</h2></div>
+    <table width="700" border="0" cellspacing="0" cellpadding="4" id="Table1" 
+    runat="server">
+        
+            <tr>
+                <td class="style1">
+                    Plan:</td>
+                <td>
+                    <asp:DropDownList ID="dd_especialidad" runat="server">
+                    </asp:DropDownList>
+                    <asp:HiddenField ID="hd_accion" runat="server" />
+                    &nbsp;&nbsp;
+                    <asp:CheckBox ID="chkEstado" runat="server" Checked="True" Text="Activo" />
+                    <asp:HiddenField ID="hd_CODIGO_PLAN" runat="server" />
+                </td>
+            </tr>
+        
+            <tr>
+                <td class="style1" colspan="2">
+                    Fecha de Inicio:<asp:TextBox ID="txt_fecha_inicio" runat="server" Width="100px"></asp:TextBox>
+                    <img ID="Img3" src="recursos/ico/calendario.jpg" />&nbsp; Fecha de Término:<asp:TextBox 
+                        ID="txt_fecha_termino" runat="server" Width="100px"></asp:TextBox>
+                    <img ID="Img4" src="recursos/ico/calendario.jpg" /></td>
+            </tr>
+            <%--<tr>
+                <td class="style1">
+                    Especialidad:</td>
+                <td colspan="3" width="786">
+                    <asp:TextBox ID="txt_especialidadrne" runat="server" Width="220px"></asp:TextBox>
+                </td>
+            </tr>--%>
+            <tr>
+                <td class="style1">
+                    &nbsp;</td>
+                <td width="786">
+                    &nbsp;</td>
+            </tr>
+            <tr>
+                <td class="style1">
+                    &nbsp;</td>
+                <td width="786">
+                    <asp:Button ID="btn_grabarc" runat="server" CssClass="boton" Text="Grabar" />
+                    &nbsp;&nbsp;
+                    <asp:Button ID="btn_cancelar" runat="server" CssClass="boton" Text="Cancelar" 
+                        Visible="False" />
+                </td>
+            </tr>
+          
+        </table>
+</div>
+</div>
+    </asp:Panel>         
+
+</div>
+
+   <script type="text/javascript">//<![CDATA[
+
+      var cal = Calendar.setup({
+          onSelect: function(cal) { cal.hide() },
+          showTime: true
+      });
+      cal.manageFields("Img3", '<% = txt_fecha_inicio.ClientID%>', "%d/%m/%Y");
+     
+    //]]></script>
