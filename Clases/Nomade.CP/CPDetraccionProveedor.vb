@@ -79,9 +79,10 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_LOTE", "", ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_MONTO_TOTAL", p_MONTO_TOTAL, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MENSAJE", String.Empty, ParameterDirection.Output, 253))
             cn.Ejecuta_parms(cmd)
-            msg = "OK"
 
+            msg = cmd.Parameters("@p_MENSAJE").Value
 
             Return msg
         Catch ex As Exception
@@ -125,12 +126,11 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_ADICIONAL", p_adicional, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_MONTO_TOTAL", p_MONTO_TOTAL, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_LOTE", "", ParameterDirection.Input, 253))
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MENSAJE", String.Empty, ParameterDirection.Output, 253))
 
             cmd1 = cn.Ejecuta_parms(cmd)
 
-            msg = "OK"
-
+            msg = cmd.Parameters("@p_MENSAJE").Value
 
             Return msg
 

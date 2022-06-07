@@ -96,7 +96,7 @@ Public Class CCLRFVA : Implements IHttpHandler
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = ncCliente.ListarClienteAuto("", "", "", "", p_CTLG_CODE)
                     If Not (dt Is Nothing) Then
-                        dt = SortDataTableColumn(dt, "RAZON_SOCIAL", "ASC")
+                        'dt = SortDataTableColumn(dt, "RAZON_SOCIAL", "ASC")
                         resb.Append("[")
                         For Each MiDataRow As DataRow In dt.Rows
                             resb.Append("{")
@@ -109,6 +109,25 @@ Public Class CCLRFVA : Implements IHttpHandler
                             resb.Append("""CODIGO_CATEGORIA"" :" & """" & MiDataRow("CODIGO_CATEGORIA").ToString & """,")
                             resb.Append("""CATE_DESC"" :" & """" & MiDataRow("CATE_DESC").ToString & """,")
                             resb.Append("""RUC"" :" & """" & MiDataRow("RUC").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
+                Case "2.5" 'lista clientes más rápido
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = ncCliente.ListarClienteAuto("", "", "", "Z", p_CTLG_CODE)
+                    If Not (dt Is Nothing) Then
+                        'dt = SortDataTableColumn(dt, "RAZON_SOCIAL", "ASC")
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            'resb.Append("""ID"" :" & """" & MiDataRow("ID").ToString & """,")
+                            resb.Append("""RAZON_SOCIAL"" :" & """" & MiDataRow("RAZON_SOCIAL").ToString & """")
                             resb.Append("}")
                             resb.Append(",")
                         Next

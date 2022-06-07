@@ -920,33 +920,43 @@ var CPMPGDI = function () {
                         break;
                     case "0020"://OTROS: YAPE, PLIN, TUNKI, ETC BILLETERA DIG.
 
-                        $("#lbl_detalle3").html("Destino de Pago");
-                        //$("#lbl_detalle4").html("Nro. Op.");
-                        $("#lbl_detalle4").html("App - Nro. Celular");
-                        $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
-                        $("#cbDestino").html("<option>BILLETERA DIGITAL</option>").attr("disabled", true).select2();
+                        //let billetera_dig = $("#cbo_Det_Origen :selected").attr("billetera_dig");
 
-                        $(".mPersona").css("display", "none");
-                        offObjectEvents("txtNroOpe");
-                        $("#txtNroOpe").removeClass("personas").attr("disabled", false);
-                        $("#txtMonto").attr("disabled", false);
-                        $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
+                        //if (billetera_dig == 'S') {
+                            $("#lbl_detalle3").html("Destino de Pago");
+                            //$("#lbl_detalle4").html("Nro. Op.");
+                            $("#lbl_detalle4").html("App - Nro. Celular");
+                            $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
+                            $("#cbDestino").html("<option>BILLETERA DIGITAL</option>").attr("disabled", true).select2();
 
-                        $("#p_DatVuelto").hide();
-                        $("#txtEfectivo").val("");
-                        $("#txtVuelto").val("");
+                            $(".mPersona").css("display", "none");
+                            offObjectEvents("txtNroOpe");
+                            $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                            $("#txtMonto").attr("disabled", false);
+                            $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
 
-                        let nombre_cuenta = $("#cbo_Det_Origen :selected").html(); //DPORTA 09/12/2021
+                            $("#p_DatVuelto").hide();
+                            $("#txtEfectivo").val("");
+                            $("#txtVuelto").val("");
 
-                        if (nombre_cuenta.indexOf('BCP') > 0) {
-                            $("#txtNroOpe").val("YAPE-");
-                        } else if (nombre_cuenta.indexOf('BBVA') > 0) {
-                            $("#txtNroOpe").val("LUKITA-");
-                        } else if (nombre_cuenta.indexOf('IBK') > 0) {
-                            $("#txtNroOpe").val("TUNKI-");
-                        } else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
-                            $("#txtNroOpe").val("PLIN-");
-                        }
+                            let nombre_cuenta = $("#cbo_Det_Origen :selected").html(); //DPORTA 09/12/2021
+
+                            if (nombre_cuenta.indexOf('BCP') > 0) {
+                                //$("#txtNroOpe").val("YAPE  -");
+                                mascespecial("txtNroOpe", "YAPE  -", 16);
+                            } else if (nombre_cuenta.indexOf('BBVA') > 0) {
+                                //$("#txtNroOpe").val("LUKITA-");
+                                mascespecial("txtNroOpe", "LUKITA-", 16);
+                            } else if (nombre_cuenta.indexOf('IBK') > 0) {
+                                //$("#txtNroOpe").val("TUNKI -");
+                                mascespecial("txtNroOpe", "TUNKI -", 16);
+                            } else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
+                                //$("#txtNroOpe").val("PLIN  -");
+                                mascespecial("txtNroOpe", "PLIN  -", 16);
+                            }
+                        //} else {
+                        //    infoCustom2("La cuenta origen seleccionada no tiene asociada una Billetera digital");
+                        //}                        
 
                         break;
 
@@ -1105,6 +1115,18 @@ function confIniciales(base) {
 }
 
 function pagar() {
+
+    if ($("#cboMedioPago").val() == "0020" && $("#txtNroOpe").val() != "" && $("#txtNroOpe").val().length < 16) { //DPORTA 09/12/2021 BILLETERA DIG.
+        infoCustom2("Debe colocar el número de celular correctamente!");
+        $("#txtNroOpe").pulsate({
+            color: "#FF0000",
+            reach: 20,
+            repeat: 3,
+            glow: true
+        });
+        return 0;
+    }
+
     if (!vErrorBodyAnyElement(".obligatorio")) {
         var cade_pagar = "";
         cade_pagar += ("|" + objData.CODIGO + "," + objData.DOCUMENTO + "," + objData.MONTO_MONE_BASE + "," + objData.MONTO_MONE_ALTER + ",S");
@@ -1174,7 +1196,13 @@ function pagar() {
 
         }
 
-        var descripcion = ind_tipo == "C" ? "PAGO A BENEFICIARIO" : det_desc;
+        if ($("#PgDvDesc").html() == 'Devolucion Dinero Venta') {
+            var descripcion = ind_tipo == "C" ? "DEVOLUCION A CLIENTE" : det_desc;
+        } else {
+            var descripcion = ind_tipo == "C" ? "PAGO A BENEFICIARIO" : det_desc;
+        }
+
+        
 
 
         $.ajax({ 

@@ -1,5 +1,4 @@
-﻿Imports Microsoft.Office.Interop.Excel
-
+﻿
 Partial Class vistas_CO_COLRECO
     Inherits Nomade.N.Cub
 

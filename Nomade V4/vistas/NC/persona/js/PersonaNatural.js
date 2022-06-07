@@ -536,6 +536,12 @@ function cargaDatosPersonaNatural(v_Datos) {
     //09-02-2015-sroncal
     $("#grabarPersona").html("<i class='icon-pencil'></i> Modificar");
     $("#grabarPersona").attr("href", "javascript:ModificarNatural();");
+    $("#grabarPersona").pulsate({
+        color: "#0000FF",
+        reach: 20,
+        repeat: 3,
+        glow: true
+    });
     /***/
 
     if ((ide.length == 11 && parseInt(ide.substring(0, 1)) == 1 && tipo_doc != '0')||v_Datos[0].NRO_RUC!='') { //DPORTA

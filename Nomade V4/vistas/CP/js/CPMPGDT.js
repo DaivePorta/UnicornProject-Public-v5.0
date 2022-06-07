@@ -440,9 +440,9 @@ var CPMPGDT = function () {
                     $("#cbDestino").attr("disabled", true).change().select2();
                     $("#cbo_moneda").attr("disabled", true);
                     $("#txtMonto").attr("disabled", false);
-                    $("#txtNroOpe").attr("disabled", false);
+                    //$("#txtNroOpe").attr("disabled", false);
                     depositos_Masivos = true;
-                    $("#txtNroOpe").attr("disabled", true).removeClass("obligatorio");
+                    $("#txtNroOpe").attr("disabled", false).removeClass("obligatorio");
                     break;
 
                 case "0013": //cheques bancarios
@@ -1316,10 +1316,10 @@ function pagar() {
 
     } else {
 
-        if (parseFloat($("#txtMonto").attr("monto")) >
-       ($(".moneda.activo :selected").attr("tipo") == "MOBA" ?
-       parseFloat($("#txt_monto_base").attr("monto")) :
-       parseFloat($("#txt_monto_alt").attr("monto")))) {
+        var nTotalDeuda = parseFloat(($(".moneda.activo :selected").attr("tipo") == "MOBA" ? $("#txt_monto_base").attr("monto") : $("#txt_monto_alt").attr("monto")).split(",").join(""));
+        var nTotalAmortizacion = parseFloat($("#txtMonto").attr("monto").split(",").join(""));
+
+        if (nTotalAmortizacion > nTotalDeuda) {
 
             alertCustom("El monto ingresado es mayor al que se ha seleccionado a pagar!");
 
@@ -1327,7 +1327,7 @@ function pagar() {
 
 
             var json_ordenado = json_selec.sort(function (a, b) {
-                return a.FECHA_EMISION_DCTO.order - b.FECHA_EMISION_DCTO.order
+                return a.CODIGO.order - b.CODIGO.order
             });
 
             var monto = parseFloat($("#txtMonto").val().split(",").join(""));
@@ -1439,7 +1439,7 @@ function pagar() {
 
             var descripcion = ind_tipo == "C" ? "PAGO DETRACCIONES" : det_desc;
 
-
+            /*
             if (depositos_Masivos) {
 
                 $.ajaxSetup({ async: false });
@@ -1496,7 +1496,7 @@ function pagar() {
 
 
             } else {
-
+                */
 
                 $.ajaxSetup({ async: false });
 
@@ -1545,7 +1545,7 @@ function pagar() {
                   });
                 $.ajaxSetup({ async: true });
 
-            }
+            //}
         }
 
     }

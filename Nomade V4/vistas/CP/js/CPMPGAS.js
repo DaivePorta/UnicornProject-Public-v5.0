@@ -1422,7 +1422,7 @@ var CPMPGAS = function () {
     var fillCbo_Gasto = function () {
         $.ajax({
             type: "post",
-            url: "vistas/nc/ajax/ncmcnga.ashx?OPCION=1&p_TIPO=PADRES&p_ESTADO_IND=A",
+            url: "vistas/nc/ajax/ncmcnga.ashx?OPCION=1&p_TIPO=PADRES&p_ESTADO_IND=A&p_CTLG_CODE=" + $("#slcEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -1647,11 +1647,11 @@ var CPMPGAS = function () {
             }
         });
     };
-
+    
     var ListarSubGasto = function (depend_code) {
         $.ajax({
             type: "post",
-            url: "vistas/nc/ajax/ncmcnga.ashx?OPCION=1&p_TIPO=HIJOS&p_ESTADO_IND=A&p_CODE=" + depend_code,
+            url: "vistas/nc/ajax/ncmcnga.ashx?OPCION=1&p_TIPO=HIJOS&p_ESTADO_IND=A&p_CODE=" + depend_code + "&p_CTLG_CODE=" + $("#slcEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -2680,7 +2680,7 @@ var CPMPGAS = function () {
                                 $('#uniform-rbUnico span').removeClass().addClass("checked");
                                 $('#rbUnico').attr('checked', true);
                                 if (datos[0].ESTADO_A_I != 'A') {
-                                $('#rbUnico').click();
+                                    $('#rbUnico').click();
                                 }
                                 $("#rbProgramado").attr("disabled", true)
                             }

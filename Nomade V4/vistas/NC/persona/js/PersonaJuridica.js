@@ -806,6 +806,12 @@ function cargaDatosPersonaJuridica(v_Datos) {
     //09/02/15 - sroncal
     $("#grabarPersona").html("<i class='icon-pencil'></i> Modificar");
     $("#grabarPersona").attr("href", "javascript:ModificarJuridica();");
+    $("#grabarPersona").pulsate({
+        color: "#0000FF",
+        reach: 20,
+        repeat: 3,
+        glow: true
+    });
     /**/
 
     p = 1;
