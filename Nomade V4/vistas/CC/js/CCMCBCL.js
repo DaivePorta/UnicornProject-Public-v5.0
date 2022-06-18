@@ -877,6 +877,7 @@ var CCMCBCL = function () {
             $("#txtDestino").attr("disabled", false).off("change").attr("placeholder","");
 
             $("#txtNroOpe").val("");
+            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
          //   offObjectEvents("txtDestino");
             $("#pos,#tarjeta,#bco").remove();
 
@@ -889,13 +890,14 @@ var CCMCBCL = function () {
                     case "0001"://DEPOSITO BANCARIO
 
                         $("#lbl_detalle3").html("Origen de Pago");
-                        $("#lbl_detalle4").html("Nro. Op.");
+                        $("#lbl_detalle4").html("Nro. Operación");
                         $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
                         $("#cbDestino").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
 
                         $(".mPersona").css("display", "none");
                         offObjectEvents("txtNroOpe");
                         $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                         $("#txtMonto").attr("disabled", false);
                         $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
 
@@ -916,7 +918,7 @@ var CCMCBCL = function () {
                         $(".mPersona").css("display", "block");
 
                       
-
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
                         $("#txtNroOpe").addClass("personas").attr("disabled", false);
                         cargarInputsPersona();
 
@@ -934,7 +936,7 @@ var CCMCBCL = function () {
                     case "0003": //transferencia
 
                         $("#lbl_detalle3").html("Origen");
-                        $("#lbl_detalle4").html("Nro. Op.");
+                        $("#lbl_detalle4").html("Nro. Operación");
                       
                         
 
@@ -972,8 +974,8 @@ var CCMCBCL = function () {
                         $("#cbDestino").attr("disabled", false).change();
                         $("#cbo_moneda").attr("disabled", true).val($("#cbo_Det_Origen :selected").attr("moneda")).change();
                         $("#txtMonto").attr("disabled", false);
-                        $("#txtNroOpe").attr("disabled", false);
-
+                        //$("#txtNroOpe").attr("disabled", false);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                         $("#p_DatVuelto").hide();
                         $("#txtEfectivo").val("");
                         $("#txtVuelto").val("");
@@ -986,8 +988,8 @@ var CCMCBCL = function () {
                         $("#lbl_detalle4").html("Girado a");
 
                         $("#txtDestino").attr("disabled", false);
-                        $("#txtNroOpe").attr("disabled", false);
-
+                        //$("#txtNroOpe").attr("disabled", false);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
                      
                         $("#txtMonto").attr("disabled", false);
 
@@ -1000,12 +1002,13 @@ var CCMCBCL = function () {
              
                         $("#cbo_moneda").attr("disabled", false);
                         $("#lbl_detalle3").html("N° Tarjeta");
-                        $("#lbl_detalle4").html("Cod. Aut.");
+                        $("#lbl_detalle4").html("Cod. Autorización");
 
                         $("#txtNroOpe").attr("disabled", false);
                         $("#txtMonto").attr("disabled", false);
 
                         $("#txtDestino").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
                         mascespecial("txtDestino", "************", 16);
 
 
@@ -1106,12 +1109,13 @@ var CCMCBCL = function () {
                     case "0005": // tarjeta de debito
                         $("#cbo_moneda").attr("disabled", false);
                         $("#lbl_detalle3").html("N° Tarjeta");
-                        $("#lbl_detalle4").html("Cod. Aut.");
+                        $("#lbl_detalle4").html("Cod. Autorización");
 
                         $("#txtNroOpe").attr("disabled", false);
                         $("#txtMonto").attr("disabled", false);
 
                         $("#txtDestino").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
                         mascespecial("txtDestino", "************", 16);
 
                         $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos"><div class="span3">POS</div><div class="span7"><select data-placeholder="POS" id="slcPos" class="span12"><option></option></select></div></div>');
@@ -1220,6 +1224,7 @@ var CCMCBCL = function () {
                             $(".mPersona").css("display", "none");
                             offObjectEvents("txtNroOpe");
                             $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de billetera digital");
                             $("#txtMonto").attr("disabled", false);
                             $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
 
@@ -1910,7 +1915,8 @@ function consultaDeudas() {
                     llenarTablaDeudas(json);
                     $('#chkAll').prop('disabled', false).parent().removeClass('checked');
                 } else {
-                    llenarTablaDeudas(null);
+                    ActualizarUltimoIndicador();
+                    //llenarTablaDeudas(null);
                 }
             },
             complete: function () { Desbloquear("div_body"); }
@@ -1927,7 +1933,73 @@ function consultaDeudas() {
         });
     }
     json_selec = new Array();
+}
+
+function ActualizarUltimoIndicador() {
+    $.ajax({
+        type: "POST",
+        url: "vistas/NC/ajax/NCMTCAM.ASHX?opcion=8.5",
+        success: function (datos) {
+
+            if (datos == "OK") {
+                consultaDeudas2();
+            }
+        },
+
+        error: function (msg) {
+            alert(msg);
+        }
+    });
+}
+
+function consultaDeudas2() {
+    $("#txt_monto_base").val("").attr("monto", 0.00);
+    $("#txt_monto_alt").val("").attr("monto", 0.00);
+    if ($("#cboClientes").val() != null && $("#cboClientes").val() != "") {
+
+        var cod = "";
+        var oData = {
+            flag: 4,
+            empresa: $("#slcEmpresa").val(),
+            clientepidm: $('#cboClientes').val(),
+            establec: $("#slcEstablec").val() == null ? "" : $('#slcEstablec').val().toString(),
+            fini: $("#txtFeIn").val(),
+            ffin: $("#txtFeFi").val()
+        };
+        $.ajax({
+            type: "post",
+            url: "vistas/CC/ajax/CCMCBCL.ASHX",
+            data: oData,
+            async: true,
+            beforeSend: function () { Bloquear("div_body", "Obteniendo Deudas..."); },
+            success: function (datos) {
+                if (datos != "" && datos != null) {
+                    var json = $.parseJSON(datos);
+                    if ($("#auxiliar").val() == "") {
+                        $("#auxiliar").val(json[0].VALOR_TIPO_CAMBIO);
+                        $("#txt_TC").val(json[0].VALOR_TIPO_CAMBIO);
+                    }
+                    llenarTablaDeudas(json);
+                    $('#chkAll').prop('disabled', false).parent().removeClass('checked');
+                } else {                    
+                    llenarTablaDeudas(null);
+                }
+            },
+            complete: function () { Desbloquear("div_body"); }
+        });
+
+    } else {
+        llenarTablaDeudas(null);
+        infoCustom2("No se ha seleccionado un proveedor!");
+        $("#s2id_cboClientes").pulsate({
+            color: "#33AECD",
+            reach: 20,
+            repeat: 3,
+            glow: true
+        });
     }
+    json_selec = new Array();
+}
 
 function cargatablavacia() {
 
@@ -3114,13 +3186,14 @@ function pagar() {
         data.append('vuelto', vuelto);
         data.append('vuelto_alterno', vuelto_alterno);
 
-       Bloquear("ventana");
+       //Bloquear("ventana");
        var jqxhr = $.ajax({
            type: "POST",
            url: "vistas/CC/ajax/CCMCBCL.ASHX",
            contentType: false,
            data: data,
            processData: false,
+           beforeSend: function () { Bloquear($("#ventana"), "Procesando cobro ..."); },
            cache: false
        })
            .success(function (res) {

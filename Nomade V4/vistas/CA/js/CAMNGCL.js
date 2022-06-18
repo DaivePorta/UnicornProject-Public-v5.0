@@ -22,13 +22,12 @@ var bCargaIgv = false;
 var bCargaTC = false;
 
 //CODIGO DE LA NOTA DE CREDITO DE MANERA GLOBAL
-var codigodctoglobal;
+//var codigodctoglobal;
 // PARA OBTENER LOS 
 var FNC = "";
 var BNC = "";
 //------
 function fillTblDocumentos() {
-    Bloquear("ventana")
     $.ajax({
         type: "post",
         url: "vistas/ca/ajax/CAMNGCL.ashx?OPCION=1" +
@@ -38,39 +37,20 @@ function fillTblDocumentos() {
             "&p_DCTO_REF_TIPO_CODE=" + $("#cboTipoDocumento").val() +
             "&p_FECHA_EMISION=" + $("#txtFechaEmision").val() +
             "&p_MONE_CODE=" + $("#cboMoneda").val() +
-            "&p_MOTIVO_CODE=" + $("#cboMotivo").val() ,
-        async: true,
+            "&p_MOTIVO_CODE=" + $("#cboMotivo").val(),
+        async: false,
         success: function (datos) {
-            Desbloquear("ventana");
             if (datos != null) {
                 $('#divTblDocumentos').html(datos)
+                $("#tblDocumentos").DataTable({
+                    "oLanguage": {
+                        "sEmptyTable": "No hay datos disponibles en la tabla.",
+                        "sZeroRecords": "No hay datos disponibles en la tabla."
+                    }
+                });
             }
-
-            $("#tblBuscarDocumento").DataTable({
-                "oLanguage": {
-                    "sEmptyTable": "No hay datos disponibles en la tabla.",
-                    "sZeroRecords": "No hay datos disponibles en la tabla."
-                }
-            });
-
-            var oTable = $('#tblBuscarDocumento').dataTable();
-            oTable.fnSort([[0, "desc"]]);
-            $("#_buscarDocumento").modal('show');
-
         },
         error: function (msg) {
-            Desbloquear("ventana");
-
-            $("#tblBuscarDocumento").DataTable({
-                "oLanguage": {
-                    "sEmptyTable": "No hay datos disponibles en la tabla.",
-                    "sZeroRecords": "No hay datos disponibles en la tabla."
-                }
-            });
-            var oTable = $('#tblBuscarDocumento').dataTable();
-            oTable.fnSort([[0, "desc"]]);
-            $("#_buscarDocumento").modal('show');
-
             alert(msg);
         }
     });
@@ -123,7 +103,7 @@ var CAMNGCL = function () {
         $('#cboMoneda').select2();
         $('#cboTipoDocumento').select2();
         $("#txtFechaTransaccion").datepicker("setDate", "now");
-        $("#txtFechaEmision").datepicker("setEndDate", "now");
+        $("#txtFechaEmision").datepicker("setDate", "now");
 
         $("#cboMoneda").select2();
         $("#cboMotivo").select2();
@@ -481,36 +461,36 @@ var CAMNGCL = function () {
         }
     }
 
-    var cargarCorrelativo = function () {
-        if (ObtenerQueryString("codigo") == undefined) {
-            $.ajax({
-                type: "post",
-                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CORR&CTLG=" + $('#cboEmpresa').val() + "&SCSL=" + $('#cboEstablecimiento').val() + "&TIPO_DCTO=0007",
-                contenttype: "application/json;",
-                async: false,
-                datatype: "json",
-                success: function (datos) {
-                    limpiarCorrelativo();
-                    if (datos != null && datos != "" && typeof datos[0].SERIE != "undefined") {
-                        $("#txtSerieNota").val(datos[0].SERIE);
-                        $("#txtNroNota").val(datos[0].VALOR_ACTUAL);
-                        $("#hfCodigoCorrelativo").val(datos[0].CODIGO);
-                    }
-                    else {
-                        var code = ObtenerQueryString("codigo");
-                        if ($("#rbCliente").is(":checked") && typeof (code) == "undefined") {
-                            if ($("#txtSerieNota").val() == "" || $("#txtNroNota").val() == "") {
-                                alertCustom("Verifique la numeración de Nota de Crédito. Haga clic <a style='color:#35aa47;' href='?f=NCLAUTD'>aquí</a>.")
-                            }
-                        }
-                    }
-                },
-                error: function (msg) {
-                    alertCustom("La Serie y Número correlativos de la Nota de Crédito no se obtuvieron correctamente.");
-                }
-            });
-        }
-    }
+    //var cargarCorrelativo = function () {
+    //    if (ObtenerQueryString("codigo") == undefined) {
+    //        $.ajax({
+    //            type: "post",
+    //            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CORR&CTLG=" + $('#cboEmpresa').val() + "&SCSL=" + $('#cboEstablecimiento').val() + "&TIPO_DCTO=0007",
+    //            contenttype: "application/json;",
+    //            async: false,
+    //            datatype: "json",
+    //            success: function (datos) {
+    //                limpiarCorrelativo();
+    //                if (datos != null && datos != "" && typeof datos[0].SERIE != "undefined") {
+    //                    $("#txtSerieNota").val(datos[0].SERIE);
+    //                    $("#txtNroNota").val(datos[0].VALOR_ACTUAL);
+    //                    $("#hfCodigoCorrelativo").val(datos[0].CODIGO);
+    //                }
+    //                else {
+    //                    var code = ObtenerQueryString("codigo");
+    //                    if ($("#rbCliente").is(":checked") && typeof (code) == "undefined") {
+    //                        if ($("#txtSerieNota").val() == "" || $("#txtNroNota").val() == "") {
+    //                            alertCustom("Verifique la numeración de Nota de Crédito. Haga clic <a style='color:#35aa47;' href='?f=NCLAUTD'>aquí</a>.")
+    //                        }
+    //                    }
+    //                }
+    //            },
+    //            error: function (msg) {
+    //                alertCustom("La Serie y Número correlativos de la Nota de Crédito no se obtuvieron correctamente.");
+    //            }
+    //        });
+    //    }
+    //}
 
     var limpiarCorrelativo = function () {
         $("#txtSerieNota").select2("val", "");        
@@ -715,6 +695,13 @@ var CAMNGCL = function () {
             }
         });
         //---
+        $('#btnMail').click(function (e) {
+            $('#txtcontenido').attr('disabled', false);
+            $('#txtAsunto').val("NOTA DE CRÉDITO");
+            $('#txtcontenido').val("");
+            cargarCorreos();
+            $('#divMail').modal('show');
+        });
     }
 
     var cargaInicial = function () {
@@ -733,7 +720,7 @@ var CAMNGCL = function () {
                 success: function (datos) {
                     Desbloquear("ventana");
                     gDatos = datos;
-
+                    $('#btnMail').removeClass('hidden');
                     $("#btnImprimirDcto").removeAttr("style");
                     $("#hfCodigoNotaCredito").val(datos[0].CODIGO);
                     //F1
@@ -741,7 +728,7 @@ var CAMNGCL = function () {
                     //F2
                     $("#txtrazsocial").val(datos[0].RAZON_SOCIAL);
                     //$("#txtSerieNota").select2("val", datos[0].SERIE).change();
-                    $("#txtSerieNota").val(datos[0].SERIE).change();
+                    //$("#txtSerieNota").val(datos[0].SERIE).change();
                     $("#txtNroNota").val(datos[0].NUMERO);
                     $("#hfPIDM").val(datos[0].PIDM);
                     //agregado
@@ -816,7 +803,7 @@ var CAMNGCL = function () {
                     $("#grabar").html("<i class='icon-plus'></i> Nuevo");
                     $("#grabar").attr("href", "?f=CAMNGCL");
                     $("#cancelar").attr("style", "display:none;");
-
+                    $("#imprimir").attr("style", "display:inline-block;");
                 },
                 error: function (msg) {
                     Desbloquear("ventana");
@@ -863,6 +850,8 @@ var CAMNGCL = function () {
         $("#cboTipoDocumento").select2("val", "");
         if (gDatos != null) {
             $("#cboTipoDocumento").select2("val", gDatos[0].DCTO_REF_TIPO_CODE);
+            $("#txtSerieNota").val(gDatos[0].SERIE).change();
+            $("#txtDireccionOrigen").val(gDatos[0].DIRECCION_CLIENTE);
         }
     };
     var Fin2_CargaPeriodo = function () {
@@ -1092,50 +1081,67 @@ function LimpiarCamposDetalle() {
 
 //---------------------
 function mostrarModalBuscarDocumento() {
-    Bloquear("ventana")
+    //Bloquear("ventana")
     var html =
-    '<div id="_buscarDocumento" style="display: block; width: 750px; left: 45%;"  class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="false" style="display: none;">' +
-    '<div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color:#ffffff;">' +
-    ' <button type="button"  class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">' +
-    '  <i class="icon-remove"></i>' +
-    ' </button>' +
-    '        <h4 id="myModalLabel">BUSCAR DOCUMENTO</h4>' +
-    '    </div>' +
-    '    <div class="modal-body" id="ventanaBuscarDocumento">' +
-    '       <div class="row-fluid" >' +
-    '         <div class="span12" id="divTblDocumentos" >' +
-    '            <table id="tblBuscarDocumento" class="display DTTT_selectable" style="width: 100%;">' +
-    '                 <thead>' +
-    '                    <tr>' +
-    '                         <th>CODIGO</th>' +
-    '                         <th>SERIE</th>' +
-    '                         <th>NRO</th>' +
-    '                         <th>EMISION</th>' +
-    '                     </tr>' +
-    '                 </thead>' +
-    '                 <tbody>' +
-    '                    <tr>' +
-    '                       <td></td>' +
-    '                       <td></td>' +
-    '                       <td></td>' +
-    '                       <td></td>' +
-    '                   </tr>' +
-    '               </tbody>' +
-    '            </table>    ' +
-    '           </div>' +
-    '       </div>' +
-    '       <div class="row-fluid" >' +
-    '              <div class="form-actions">' +
-    '                     <p>*Haga clic en una fila para seleccionar.</p>' +
-    '              </div>' +
-    '       </div>' +
-    '    </div>' +
-    '</div>'
-    ;
+        '<div id="_buscarDocumento" style="display: block; width: 850px; left: 45%;"  class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="false" style="display: none;">' +
+        '<div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color:#ffffff;">' +
+        ' <button type="button"  class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">' +
+        '  <i class="icon-remove"></i>' +
+        ' </button>' +
+        '        <h4 id="myModalLabel">BUSCAR DOCUMENTO</h4>' +
+        '    </div>' +
+        '    <div class="modal-body" id="ventanaBuscarDocumento">' +
+        '       <div class="row-fluid" >' +
+        '         <div class="span12" id="divTblDocumentos" >' +
+        '            <table id="tblBuscarDocumento" class="display DTTT_selectable" style="width: 100%;">' +
+        '                 <thead>' +
+        '                    <tr>' +
+        '                         <th>CODIGO</th>' +
+        '                         <th>SERIE</th>' +
+        '                         <th>NRO</th>' +
+        '                         <th>EMISIÓN</th>' +
+        '                     </tr>' +
+        '                 </thead>' +
+        '                 <tbody>' +
+        '                    <tr>' +
+        '                       <td></td>' +
+        '                       <td></td>' +
+        '                       <td></td>' +
+        '                       <td></td>' +
+        '                   </tr>' +
+        '               </tbody>' +
+        '            </table>    ' +
+        '           </div>' +
+        '       </div>' +
+        '       <div class="row-fluid" >' +
+        '              <div class="form-actions">' +
+        '                     <p>*Haga clic en una fila para seleccionar.</p>' +
+        '              </div>' +
+        '       </div>' +
+        '    </div>' +
+        '</div>'
+        ;
     if ($("#_buscarDocumento").html() == undefined) {
         $("body").append(html);
     }
-    fillTblDocumentos();
+    fillTblDocumentos()
+    Desbloquear("ventana")
+    $("#tblBuscarDocumento").DataTable({
+        "oLanguage": {
+            "sEmptyTable": "No hay datos disponibles en la tabla.",
+            "sZeroRecords": "No hay datos disponibles en la tabla."
+        }
+    });
+    var oTable = $('#tblBuscarDocumento').dataTable();
+    oTable.fnSort([[0, "desc"]]);
+    $("#_buscarDocumento").modal('show');
+
+    if ($("#_buscarDocumento").hasClass('in') == true) {
+        $('#tblBuscarDocumento_filter.dataTables_filter input[type=search]').focus();
+    }
+    $('#_buscarDocumento').on('shown.bs.modal', function () {
+        $('#tblBuscarDocumento_filter.dataTables_filter input[type=search]').focus();
+    });
 }
 
 function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, moneda, simboloMoneda, scslExonerada, emision) {
@@ -1318,13 +1324,15 @@ function GrabarNotaCredito() {
                if (datos != null && datos.length > 0) {
                    if (datos[0].RESPUESTA == "OK") {
                        exito();
+                       $('#btnMail').removeClass('hidden');
                        $("#hfCodigoNota").val(datos[0].CODIGO);
                        //BloquearCampos
                        $("#btnBuscarDocumento").attr("style", "display:none");
                        $("#divAgregarDetalles").attr("style", "display:none");
                        $("#grabar").html("<i class='icon-plus'></i> Nuevo");
                        $("#grabar").attr("href", "?f=CAMNGCL");
-                       
+                       $("#grabar,#cancelar").attr("style", "display:none");
+                       $("#imprimir").attr("style", "display:inline-block;");
                        $(".btnEliminarDetalle").remove();
                        $("#txtSerieNota,#txtNroNota").attr("disabled", "disabled");
                        $("#txtMotivoAdicional").attr("disabled", "disabled");
@@ -1339,10 +1347,13 @@ function GrabarNotaCredito() {
                        $("#cboEmpresa").attr("disabled", "disabled");
                        $("#cboEstablecimiento").attr("disabled", "disabled");
                        $("#txtrazsocial").attr("disabled", "disabled");
-
+                       $("#cboTipoDcto").attr("disabled", "disabled");
                        $("#hfCodigoNotaCredito").val(datos[0].CODIGO);
                        //EL CODIGO GLOBAL OBTIENE EL CODIGO DE LA NOTA DE CREDITO GENERICA
-                       codigodctoglobal = datos[0].CODIGO;
+                       //codigodctoglobal = datos[0].CODIGO;
+                       var miCodigoQR = new QRCode("codigoQR");
+                       miCodigoQR.makeCode(datos[0].DATOS_QR);
+                       setTimeout(guardarQR, 0.0000000000000001);
                        $("#btnImprimirDcto").removeAttr("style");
                    } else if (datos[0].CODIGO == "LIMITE") {
                        alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> Se ha excedido el límite de documentos autorizados!");
@@ -1367,39 +1378,7 @@ function GrabarNotaCredito() {
             alertCustom("La Fecha de Emisión NO debe exceder al Periodo seleccionado");
             $("#cboPeriodo").focus();
         }
-        var miCodigoQR = new QRCode("codigoQR");
-        $.ajax({
-            type: "post",
-            url: "vistas/ca/ajax/camngcl.ashx?OPCION=LPCQR&p_CODE=" + codigodctoglobal, //CUANDO SE PRESIONA EL BOTON COMPLETAR
-            async: false,
-            success: function (datos) {
-
-                if (datos != "") {
-                    var cadena;
-                    cadena =
-                        datos[0].RUC_EMISOR + "|" +
-                        datos[0].CODIGO_DOC + "|" +
-                        datos[0].SERIE + "|" +
-                        datos[0].NUMERO + "|" +
-                        datos[0].TOTAL_IGV + "|" +
-                        datos[0].IMPORTE_TOTAL + "|" +
-                        datos[0].FECHA_TRANSACCION + "|" +
-                        datos[0].TIPO_DOC_ADQUIRIENTE + "|" +
-                        datos[0].NUMERO_DOC_ADQUIRIENTE
-
-                    miCodigoQR.makeCode(cadena);
-                    setTimeout(guardarQR, 1000);
-                    // guardarQR();
-                    return false;
-                }
-            },
-            error: function (msg) {
-                alertCustom("No se generó correctamente el QR!")
-            }
-        });
-        $('#codigoQR').hide();
-    }
-    
+    }    
 };
 
 function guardarQR() {
@@ -1411,19 +1390,23 @@ function guardarQR() {
 
     $.ajax({
         type: "post",
-        url: "vistas/ca/ajax/camngcl.ashx?OPCION=GQR&p_CODE=" + codigodctoglobal, //CUANDO SE PRESIONA EL BOTON COMPLETAR
+        url: "vistas/ca/ajax/camngcl.ashx?OPCION=GQR&p_CODE=" + $("#hfCodigoNotaCredito").val(), //CUANDO SE PRESIONA EL BOTON COMPLETAR
         data: qrData,
         async: false,
         contentType: false,
         processData: false,
-        success: function (datos) {
-
-            if (datos != '') {
-                alert("CODIGO:" + datos[0].CODIGO);
-                alert("DATA_IMAGEN:" + datos[0].QR);
+        success: function (res) {
+            if (res != null) {
+                if (res == "OK") {
+                    //exito();
+                } else {
+                    noexito();
+                }
+            } else {
+                noexito();
             }
         },
-        error: function (msg) {
+        error: function () {
             alertCustom("No se guardaron correctamente los datos!")
         }
     });
@@ -1471,7 +1454,7 @@ function ImprimirDcto() {
     }
 
     if (continuar) {
-        Bloquear("contenedorPrincipal");
+        //Bloquear("contenedorPrincipal");
         var data = new FormData();
         data.append('p_CODE', code);
         data.append('p_CTLG_CODE', codempr);
@@ -1489,19 +1472,134 @@ function ImprimirDcto() {
                $("#divDctoImprimir").html(datos);
                setTimeout(function () {
                    window.print();
-               }, 200)
+               }, 0.0000000000000001)
 
            } else {
                noexito();
            }
-           Desbloquear("contenedorPrincipal");
+           //Desbloquear("contenedorPrincipal");
        })
        .error(function () {
-           Desbloquear("contenedorPrincipal");
+           //Desbloquear("contenedorPrincipal");
            noexito();
        });
     }
 }
+
+//EMAIL
+function cargarCorreos() {
+    var REGEX_EMAIL = '([a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)';
+    $.ajax({
+        type: 'post',
+        url: 'vistas/na/ajax/naminsa.ashx?OPCION=LMAILS',
+        async: false
+    }).done(function (data) {
+        data = JSON.parse(data);
+        for (var u in data) {
+            if (data[u].usuario === $('#ctl00_txtus').val()) {
+                $('#txtRemitente').val(data[u].email);
+                break;
+            }
+        }
+        $('#cboCorreos').selectize({
+            persist: false,
+            maxItems: null,
+            valueField: 'email',
+            labelField: 'name',
+            searchField: ['name', 'email'],
+            options: data,
+            render: {
+                item: function (item, escape) {
+                    return '<div>' +
+                        (item.name ? '<span class="name">' + escape(item.name) + '</span>&nbsp;' : '') +
+                        (item.email ? '<span class="email">' + escape(item.email) + '</span>' : '') +
+                        '</div>';
+                },
+                option: function (item, escape) {
+                    var label = item.name || item.email;
+                    var caption = item.name ? item.email : null;
+                    return '<div style="padding: 2px">' +
+                        '<span class="label" style="display: block; font-size: 14px; background-color: inherit; color: inherit; text-shadow: none">' + escape(label) + '</span>' +
+                        (caption ? '<span class="caption" style="display: block; font-size: 12px; margin: 2px 5px">' + escape(caption) + '</span>' : '') +
+                        '</div>';
+                }
+            },
+            createFilter: function (input) {
+                var match, regex;
+                // email@address.com
+                regex = new RegExp('^' + REGEX_EMAIL + '$', 'i');
+                match = input.match(regex);
+                if (match) return !this.options.hasOwnProperty(match[0]);
+                // name <email@address.com>
+                regex = new RegExp('^([^<]*)\<' + REGEX_EMAIL + '\>$', 'i');
+                match = input.match(regex);
+                if (match) return !this.options.hasOwnProperty(match[2]);
+                return false;
+            },
+            create: function (input) {
+                if ((new RegExp('^' + REGEX_EMAIL + '$', 'i')).test(input)) {
+                    return { email: input };
+                }
+                var match = input.match(new RegExp('^([^<]*)\<' + REGEX_EMAIL + '\>$', 'i'));
+                if (match) { return { email: match[2], name: $.trim(match[1]) }; }
+                alert('Invalid email address.');
+                return false;
+            }
+        });
+        $('.selectize-control').css('margin-left', '0px').css('margin-bottom', '15px');
+        $('.selectize-dropdown').css('margin-left', '0px');
+
+        for (var c in data) {
+            if (data[c].codigo === $('#hfPIDM').val()) {
+                $("#cboCorreos")[0].selectize.setValue(data[c].email);
+                break;
+            }
+        }
+
+    });
+
+    if ($("#txtRemitente").val() == "") {
+        $("#txtRemitente").val($("#ctl00_lblusuario").html() + "@gmail.com");
+    }
+};
+
+function enviarCorreo() {
+    var destinos = $('#cboCorreos').val();
+    if (vErrors(['cboCorreos', 'txtAsunto'])) {
+
+        $('#btnEnviarCorreo').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
+        destinos = destinos.toString();
+        $.ajax({
+            type: "post",
+            url: "vistas/ca/ajax/CAMNGCL.ashx?OPCION=correo" +
+                "&p_CODE=" + $("#hfCodigoNotaCredito").val() +
+                "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
+                "&REMITENTE=" + $('#txtRemitente').val() +
+                "&NREMITENTE=" + $('#txtRemitente').val() +
+                "&DESTINATARIOS=" + destinos +
+                "&ASUNTO=" + $('#txtAsunto').val() +
+                "&MENSAJE=" + $('#txtcontenido').val(),
+            contentType: "application/json;",
+            dataType: false,
+            success: function (datos) {
+                if (datos.indexOf("error") >= 0) {
+                    alertCustom("No se encontró el archivo adjunto. Correo no se envió correctamente.");
+
+                } else {
+                    exito();
+                }
+                $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+                setTimeout(function () { $('#divMail').modal('hide'); }, 25);
+
+            },
+            error: function (msg) {
+                alertCustom('Ocurrió un error en el servidor al intentar enviar el correo electrónico. Por favor, inténtelo nuevamente.');
+                $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+            }
+        });
+
+    }
+};
 
 //*********************************** LISTAR  *************************************
 var json = null;
@@ -1740,7 +1838,8 @@ var CALNGCL = function () {
 }();
 
 function cargarNotaCredito(codigo, codempr) {
-    window.location.href = "?f=CAMNGCL&codigo=" + codigo
+    //window.location.href = "?f=CAMNGCL&codigo=" + codigo
+    window.open("?f=CAMNGCL&codigo=" + codigo, '_blank');
 }
 
 function irAnularDcto(codigo) {

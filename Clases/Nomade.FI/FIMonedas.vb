@@ -87,6 +87,27 @@
         End Try
     End Function
 
+    Public Function fActualizarUltimoIndicador(ByVal p_ULTIMO_INDICADOR As String) As String
+
+        Try
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+            Dim msg As String
+
+            cmd = cn.GetNewCommand("PFG_ACTUALIZAR_ULTIMO_INDICADOR", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ULTIMO_INDICADOR", p_ULTIMO_INDICADOR, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@P_RESP", String.Empty, ParameterDirection.Output, 253))
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg = cmd1.Parameters("@P_RESP").Value
+
+            Return msg
+
+        Catch ex As Exception
+            Return ex.Message
+        End Try
+    End Function
+
     Public Function fValidaTipoCambio() As String
         Dim cmd As IDbCommand
         Dim nRow As DataRow

@@ -14,7 +14,7 @@ var formulario4;
 var NVLTDVE = function () {
 
     var plugins = function () {
-        $('#cboEmpresa, #cboEstablecimiento, #cboTipoDcto, #cboCliente').select2();
+        $('#cboEmpresa, #cboEstablecimiento, #cboTipoDcto').select2();
         $('#txtCodigoVenta').inputmask({ "mask": "#", "repeat": 9, "greedy": false });
 
         $('#txtDesde').datepicker().change(function () {
@@ -121,31 +121,6 @@ var NVLTDVE = function () {
         });
     }
 
-    var fillCliente = function () {
-        var selectEst = $('#cboCliente');
-        selectEst.empty();
-        selectEst.append('<option></option>').append('<option Value="TODOS">TODOS</option>');
-        $('#cboCliente').select2('val', 'TODOS');
-        $.ajax({
-            type: "post",
-            url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
-            contenttype: "application/json;",
-            datatype: "json",
-            async: true,
-            success: function (datos) {
-                if (datos != null) {
-                    for (var i = 0; i < datos.length; i++) {
-                        selectEst.append('<option value="' + datos[i].ID + '">' + datos[i].RAZON_SOCIAL + '</option>');
-                    }
-                }
-                $('#cboCliente').select2('val', 'TODOS');
-            },
-            error: function (msg) {
-                alert(msg.d);
-            }
-        });
-    }
-
     var cargarTipoDocumento = function () {
         var select = $('#cboTipoDcto').select2('destroy');
         $.ajax({
@@ -175,24 +150,17 @@ var NVLTDVE = function () {
     var eventoControles = function () {
 
         $("#cboEmpresa").on("change", function () {
+            $("#inputRazsocial").html("");
+            $("#inputRazsocial").html(`<input id="txtrazsocial" class="span11" type="text" data-provide="typeahead" placeholder="TODOS"/>`);
             fillCboEstablecimiento($("#cboEmpresa").val());
+            filltxtrazsocial('#txtrazsocial', '');
+            $("#hfPIDM").val("");
         });
 
         $('#cboTipoDcto').change(function () {
             $('#txtCodigoDoc, #txtDocumento').val(null);
             $('#txtCodigoVenta').val("");
             $('svg').html('');
-        });
-
-        var CLIENTE = '';
-        $("#cboCliente").on("change", function () {
-            CLIENTE = $("#cboCliente :selected").text();
-            if (CLIENTE === "TODOS") {
-                CLIENTE = "";
-            }
-            else {
-                CLIENTE = parseFloat($("#cboCliente :selected").val()).toString();
-            }
         });
 
         $('#btnFiltrar').click(function () {
@@ -204,7 +172,7 @@ var NVLTDVE = function () {
             Bloquear("ventana");
             $.ajax({
                 type: "post",
-                url: 'vistas/NV/ajax/NVLTDVE.ASHX?OPCION=DOCUMENTOS&CTLG_CODE=' + $('#cboEmpresa').val() + '&SCSL_CODE=' + $('#cboEstablecimiento').val() + '&TIPO_DCTO=' + $('#cboTipoDcto').val() + '&RAZON_SOCIAL=' + CLIENTE + '&DESDE=' + $("#txtDesde").val() + '&HASTA=' + $("#txtHasta").val(),
+                url: 'vistas/NV/ajax/NVLTDVE.ASHX?OPCION=DOCUMENTOS&CTLG_CODE=' + $('#cboEmpresa').val() + '&SCSL_CODE=' + $('#cboEstablecimiento').val() + '&TIPO_DCTO=' + $('#cboTipoDcto').val() + '&RAZON_SOCIAL=' + $("#hfPIDM").val() + '&DESDE=' + $("#txtDesde").val() + '&HASTA=' + $("#txtHasta").val(),
                 contenttype: "application/json",
                 datatype: "json",
                 async: true,
@@ -259,6 +227,13 @@ var NVLTDVE = function () {
                     }
 
                     $('#divBuscarDoc').modal('show');
+
+                    if ($("#divBuscarDoc").hasClass('in') == true) {
+                        $('#tblDocumentos_filter.dataTables_filter input[type=search]').focus();
+                    }
+                    $('#divBuscarDoc').on('shown.bs.modal', function () {
+                        $('#tblDocumentos_filter.dataTables_filter input[type=search]').focus();
+                    });
                 },
                 error: function (msg) {
                     alertCustom('Error al cargar tipo de documentos.');
@@ -536,19 +511,6 @@ var NVLTDVE = function () {
         var tipDoc = ObtenerQueryString("tipDoc");
         var emp = ObtenerQueryString("emp");
         var sucu = ObtenerQueryString("sucu");
-        var cli = ObtenerQueryString("cli");
-
-        /*
-        $("#btnFiltrar").on("click", function () {
-            if ($("#txtDesde").val().trim() == "" && $("#txtHasta").val().trim() == "") {
-                eventoControles();
-            } else if ($("#txtDesde").val().trim() != "" && $("#txtHasta").val().trim() != "") {
-                eventoControles();
-            } else {
-                alertCustom("Ingrese ambas fechas para filtrar.")
-            }
-        });
-        */
 
         if (codDoc != undefined && codDoc != null) {          
             $('#cboEmpresa').select2('val', emp); 
@@ -556,7 +518,7 @@ var NVLTDVE = function () {
             $('#cboTipoDcto').select2('val', tipDoc); 
             $('#txtDocumento').val(nroDoc);
             $('#txtCodigoVenta').val(codDoc);
-            $('#cboCliente').select2('val', cli);
+            
             
             
             $('#btnVerFlujo').click();
@@ -590,9 +552,9 @@ var NVLTDVE = function () {
             var fNueva = '01/' + mes + '/' + ano;
         else
             var fNueva = '01/0' + mes + '/' + ano;
-
-        $("#txtDesde").val(fNueva);
         
+        $("#txtDesde").val(fNueva);
+
     };
 
     return {
@@ -600,7 +562,6 @@ var NVLTDVE = function () {
             plugins();
             fillCboEmpresa();
             fillCboMoneda();
-            fillCliente();
             eventoControles();
             $("#cboEmpresa").select2("val", $("#ctl00_hddctlg").val()).change();
             cargarTipoDocumento();
@@ -609,6 +570,83 @@ var NVLTDVE = function () {
         }
     }
 }();
+
+function filltxtrazsocial(v_ID, v_value) {
+
+    var selectRazonSocial = $(v_ID);
+    //Proveedores
+    $.ajax({
+        type: "post",
+        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2&p_CTLG_CODE=" + $("#cboEmpresa").val(),
+        contenttype: "application/json;",
+        datatype: "json",
+        async: false,
+        success: function (datos) {
+            if (datos != null) {
+                persona = datos;
+                selectRazonSocial.typeahead({
+                    source: function (query, process) {
+                        arrayRazonSocial = [];
+                        map = {};
+                        var obj = "[";
+                        for (var i = 0; i < datos.length; i++) {
+                            arrayRazonSocial.push(datos[i].RAZON_SOCIAL);
+                            obj += '{';
+                            obj += '"DNI":"' + datos[i].DNI + '","RUC":"' + datos[i].RUC + '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL + '","PIDM":"' + datos[i].PIDM + '"';
+                            obj += '},';
+                        }
+                        obj += "{}";
+                        obj = obj.replace(",{}", "");
+                        obj += "]";
+                        var json = $.parseJSON(obj);
+                        $.each(json, function (i, objeto) {
+                            map[objeto.RAZON_SOCIAL] = objeto;
+                        });
+                        process(arrayRazonSocial);
+                    },
+
+                    updater: function (item) {
+                        $("#hfPIDM").val("");
+                        //$("#hfDNI").val("");
+                        //$("#hfRUC").val("");
+
+                        $("#hfPIDM").val(map[item].PIDM);
+                        //$("#hfDNI").val(map[item].DNI);
+                        //$("#hfRUC").val(map[item].RUC);
+                        $("#txtrazsocial").val(map[item].RAZON_SOCIAL);
+                        //if (map[item].RUC == "") {
+                        //    $("#txtRuc").val(map[item].DNI);
+                        //}
+                        //else {
+                        //    $("#txtRuc").val(map[item].RUC);
+                        //}
+                        return item;
+                    },
+
+
+                });
+                selectRazonSocial.keyup(function () {
+                    $(this).siblings("ul").css("width", $(this).css("width"))
+                    if ($("#txtrazsocial").val().length <= 0) {
+                        $(this).attr("placeholder", "TODOS");
+                        //$("#txtRuc").val("");
+                        $("#hfPIDM").val("");
+                    }
+                });
+
+            } else {
+                persona = [];
+            }
+            if (datos != null && $.trim(v_value).length > 0) {
+                selectRazonSocial.val(v_value);
+            }
+        },
+        error: function (msg) {
+            alert(msg);
+        }
+    });
+
+}
 
 function CargarDatosDcto(id) {
     //id: id del boton que identifica al tipo de documento a cargar
@@ -770,7 +808,7 @@ function CargarDatosDctoDetallado(id) {
                     //CargarDocumentosOrigen  
                     if (datosFlujo.ORIGENES[i].DATOS[0].DCTO_CODE_REF != null) {
                         var codigos = (datosFlujo.ORIGENES[i].DATOS[0].DCTO_CODE_REF).split(",");
-                        var series = (datosFlujo.ORIGENES[i].DATOS[0].DCTO_REF_SERIE).split(","); 
+                        var series = (datosFlujo.ORIGENES[i].DATOS[0].DCTO_REF_SERIE).split(",");
                         var nros = (datosFlujo.ORIGENES[i].DATOS[0].DCTO_REF_NRO).split(",");
                     } else {
                         var codigos = [];
@@ -838,7 +876,7 @@ function CargarDatosDctoDetallado(id) {
                 $("#bloqueVenta #txtModoPago").val("CREDITO");
             }
             //CargarDocumentosOrigen  
-            if (datosFlujo.DATOS[0].DCTO_CODE_REF != null && datosFlujo.DATOS[0].DCTO_TIPO_CODE_REF != 'XXXX') {
+            if (datosFlujo.DATOS[0].DCTO_CODE_REF != null && datosFlujo.DATOS[0].DCTO_TIPO_CODE_REF != 'XXXX' ) {
                 var codigos = (datosFlujo.DATOS[0].DCTO_CODE_REF).split(",");
                 var series = (datosFlujo.DATOS[0].DCTO_REF_SERIE).split(",");
                 var nros = (datosFlujo.DATOS[0].DCTO_REF_NRO).split(",");

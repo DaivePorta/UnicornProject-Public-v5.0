@@ -3117,6 +3117,14 @@ var buscarDocumento = function (btnBuscar) {
                     $(tbody).css('cursor', 'pointer');
                     $('#tblDocumentos_wrapper').find(':last').remove();
                     $('#divBuscarDoc').modal('show');
+
+                    if ($("#divBuscarDoc").hasClass('in') == true) {
+                        $('#tblDocumentos_filter.dataTables_filter input[type=search]').focus();
+                    }
+                    $('#divBuscarDoc').on('shown.bs.modal', function () {
+                        $('#tblDocumentos_filter.dataTables_filter input[type=search]').focus();
+                    });
+
                     tbody.on('click', 'tr', function () {
                         $(this).addClass('selected');
                         var dcto = tabla.row(this).data();

@@ -60,8 +60,8 @@
 
                     fillCboTipoDoc();
                     fillVendedor();
-                    fillProducto();
-                    fillCliente();
+                    //fillProducto();
+                    //fillCliente();
 
                 } else {
                     $('#cboEmpresa').select2('val', '');
@@ -134,7 +134,11 @@
         // var CTLG_CODE = ($("#cboEmpresa").val() == "TODOS") ? '' : $("#cboEmpresa").val();
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/NVLDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            //url: "vistas/nv/ajax/NVLDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LVEND" +
+                "&CTLG=" + $("#cboEmpresa").val() +
+                "&SCSL=" + $("#cboEstablecimiento").val() +
+                "&p_ESTADO_IND=" + "A",
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -144,7 +148,7 @@
                 if (datos != null) {
                     $('#cboVendedor').append('<option Value="TODOS">TODOS</option>');
                     for (var i = 0; i < datos.length; i++) {
-                        selectEst.append('<option value="' + datos[i].USUARIO + '">' + datos[i].NOMBRE + '</option>');
+                        selectEst.append('<option value="' + datos[i].USUARIO + '">' + datos[i].NOMBRE_EMPLEADO + '</option>');
                     }
                     $('#cboVendedor').select2('val', 'TODOS');
                 } else {
@@ -166,7 +170,8 @@
         $.ajax({
             type: "post",
             //url: "vistas/no/ajax/NOMDOCC.ashx?OPCION=LPROD&CTLG_CODE=" + $("#cboEmpresa").val(),
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPROD2&CTLG=" + $('#cboEmpresa').val() + "&SCSL=" + $('#cboEstablecimiento').val(),
+            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPROD2&CTLG=" + $('#cboEmpresa').val() + "&SCSL=" + $('#cboEstablecimiento').val(),
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODALMC_CAB&CTLG=" + $('#cboEmpresa').val() + "&ALMC_CODE=" + $('#cboEstablecimiento').val() + "&SERIADO_IND=" + "",
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -200,7 +205,8 @@
         Bloquear("divCboCliente");
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            //url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.5&p_CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: true,
@@ -208,7 +214,7 @@
                 Desbloquear("divCboCliente");
                 if (datos != null) {
                     for (var i = 0; i < datos.length; i++) {
-                        selectEst.append('<option value="' + datos[i].ID + '">' + datos[i].RAZON_SOCIAL + '</option>');
+                        selectEst.append('<option value="' + datos[i].PIDM + '">' + datos[i].RAZON_SOCIAL + '</option>');
                     }
                 }
                 $('#cboCliente').select2('val', 'TODOS');

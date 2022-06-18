@@ -26,8 +26,8 @@ Public Class NVLTDVE : Implements IHttpHandler
             TIPO_DCTO = context.Request("TIPO_DCTO")
             RAZON_SOCIAL = context.Request("RAZON_SOCIAL")
             FACC_CODE = context.Request("FACC_CODE")
-            DESDE = context.Request("txtDesde")
-            HASTA = context.Request("txtHasta")
+            DESDE = context.Request("DESDE")
+            HASTA = context.Request("HASTA")
 
 
             'USADO PARA CONSULTA       
@@ -101,7 +101,7 @@ Public Class NVLTDVE : Implements IHttpHandler
                             resb.Append("]")
                         End If
                     Else
-                        dt = New Nomade.NV.NVVenta("BN").ListarDocVenta_Busq("", RAZON_SOCIAL, "", TIPO_DCTO, "", "", "", "", "0000-00-00", "0000-00-00", CTLG_CODE, SCSL_CODE, "", "", "")
+                        dt = New Nomade.NV.NVVenta("BN").ListarDocVenta_Busq("", RAZON_SOCIAL, "", TIPO_DCTO, "", "", "", "", Utilities.fechaLocal(DESDE), Utilities.fechaLocal(HASTA), CTLG_CODE, SCSL_CODE, "", "", "")
                         If Not (dt Is Nothing) Then
                             resb.Append("[")
                             For Each MiDataRow As DataRow In dt.Rows

@@ -251,6 +251,8 @@ Public Class NVLDOCT : Implements IHttpHandler
                             resb.Append("""CONTRAENTREGA_IND"" :" & """" & MiDataRow("CONTRAENTREGA_IND").ToString & """,")
                             resb.Append("""GLOSA"" :" & """" & MiDataRow("GLOSA").ToString & """,")
                             resb.Append("""PIDM_CLIENTE"" :" & """" & MiDataRow("PIDM_CLIENTE").ToString & """,")
+                            resb.Append("""ELECTRONICO_IND"" :" & """" & MiDataRow("ELECTRONICO_IND").ToString & """,")
+                            resb.Append("""TIPO_MODULO"" :" & """" & MiDataRow("TIPO_MODULO").ToString & """,")
                             resb.Append("""DESCUENTO"" :" & """" & MiDataRow("DESCUENTO").ToString & """")
                             resb.Append("}")
                             resb.Append(",")

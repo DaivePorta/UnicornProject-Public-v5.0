@@ -539,7 +539,7 @@ var CAMNOCL = function () {
 
         $('#btnMail').click(function (e) {
             $('#txtcontenido').attr('disabled', false);
-            $('#txtAsunto').val("NOTA DE CREDITO");
+            $('#txtAsunto').val("NOTA DE CRÉDITO");
             $('#txtcontenido').val("");
             cargarCorreos();
             $('#divMail').modal('show');
@@ -736,7 +736,7 @@ var CAMNOCL = function () {
             $("#cboSerieNC").attr("disabled", "disabled");
             $("#txtNroNC").attr("disabled", "disabled");
             $("#txtFechaEmision").attr("disabled", "disabled");
-
+            $("#imprimir").attr("style", "display:inline-block;");
             $("#btnImprimirDcto").removeAttr("style");
 
             $.ajax({
@@ -904,7 +904,7 @@ var CAMNOCL = function () {
 }();
 
 function mostrarModalBuscarDocumento() {
-    Bloquear("ventana")
+    //Bloquear("ventana")
     var html =
     '<div id="_buscarDocumento" style="display: block; width: 850px; left: 45%;"  class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="false" style="display: none;">' +
     '<div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color:#ffffff;">' +
@@ -922,7 +922,7 @@ function mostrarModalBuscarDocumento() {
     '                         <th>CODIGO</th>' +
     '                         <th>SERIE</th>' +
     '                         <th>NRO</th>' +
-    '                         <th>EMISION</th>' +
+    '                         <th>EMISIÓN</th>' +
     '                     </tr>' +
     '                 </thead>' +
     '                 <tbody>' +
@@ -965,6 +965,13 @@ function mostrarModalBuscarDocumento() {
     var oTable = $('#tblBuscarDocumento').dataTable();
     oTable.fnSort([[0, "desc"]]);
     $("#_buscarDocumento").modal('show');
+
+    if ($("#_buscarDocumento").hasClass('in') == true) {
+        $('#tblBuscarDocumento_filter.dataTables_filter input[type=search]').focus();
+    }
+    $('#_buscarDocumento').on('shown.bs.modal', function () {
+        $('#tblBuscarDocumento_filter.dataTables_filter input[type=search]').focus();
+    });
 }
 
 var isc_documento_seleccionado = 0;
@@ -1307,9 +1314,10 @@ function enviarCorreo() {
         $.ajax({
             type: "post",
             url: "vistas/ca/ajax/CAMNOCL.ashx?OPCION=correo" +
-            "&p_NOCC_CODE=" + ObtenerQueryString("codigo") +
+            "&p_NOCC_CODE=" + $("#hfCodigoNotaCredito").val() +
             "&p_CTLG_CODE=" + $('#cboEmpresa').val() +
             "&REMITENTE=" + $('#txtRemitente').val() +
+            "&NREMITENTE=" + $('#txtRemitente').val() +
             "&DESTINATARIOS=" + destinos +
             "&ASUNTO=" + $('#txtAsunto').val() +
             "&MENSAJE=" + $('#txtcontenido').val(),
@@ -1546,7 +1554,8 @@ function GrabarNotaCredito() {
                            $("#grabar").attr("href", "?f=CAMNOCL");
                            exito();
                            fillTblDetallesNotaCredito(datos[0].CODIGO, $("#cboEmpresa").val(), datos[0].SECUENCIA)
-
+                           $("#cancelar").attr("style", "display:none;");
+                           $("#imprimir").attr("style", "display:inline-block;");
                            //BloquearCampos
                            $("#txtTotalDevolucion").attr("disabled", "disabled");
                            $("#txtMontoIgv").attr("disabled", "disabled");
@@ -1561,7 +1570,9 @@ function GrabarNotaCredito() {
                            $("#cboMotivo").attr('disabled', true);
                            $("#chkAplicar").attr('disabled', true);
                            $("#txtGlosa").attr('disabled', true);
-
+                           var miCodigoQR = new QRCode("codigoQR");
+                           miCodigoQR.makeCode(datos[0].DATOS_QR);
+                           setTimeout(guardarQR, 0.0000000000000001);
                            $("#divTotales").slideDown();
                            $("#btnImprimirDcto").removeAttr("style");
                            //$("#btnEFac").removeClass("hidden");
@@ -1582,6 +1593,37 @@ function GrabarNotaCredito() {
             alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> Los campos de cantidad en los detalles no deben ser vacíos o mayores a la cantidad despachada!")
         }
     }
+}
+
+function guardarQR() {
+    //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 
+    var NombreQR = $('#codigoQR img').attr('src');
+
+    var qrData = new FormData();
+    qrData.append('p_IMGQR', NombreQR);
+
+    $.ajax({
+        type: "post",
+        url: "vistas/ca/ajax/camnocl.ashx?OPCION=GQR&p_NOCC_CODE=" + $("#hfCodigoNotaCredito").val(), //CUANDO SE PRESIONA EL BOTON COMPLETAR
+        data: qrData,
+        async: false,
+        contentType: false,
+        processData: false,
+        success: function (res) {
+            if (res != null) {
+                if (res == "OK") {
+                    //exito();
+                } else {
+                    noexito();
+                }
+            } else {
+                noexito();
+            }
+        },
+        error: function () {
+            alertCustom("No se guardaron correctamente los datos!")
+        }
+    });
 }
 
 function CalcularTotales() {
@@ -2128,7 +2170,7 @@ function ImprimirDcto() {
     }    
   
     if (continuar) {
-        Bloquear("ventana");
+        //Bloquear("ventana");
         var data = new FormData();
         data.append('p_NOCC_CODE', code);
         data.append('p_CTLG_CODE', codempr);
@@ -2146,15 +2188,15 @@ function ImprimirDcto() {
                $("#divDctoImprimir").html(datos);
                setTimeout(function () {
                    window.print();
-               }, 200)
+               }, 0.0000000000000001)
 
            } else {
                noexito();
            }
-           Desbloquear("ventana");
+           //Desbloquear("ventana");
        })
        .error(function () {
-           Desbloquear("ventana");
+           //Desbloquear("ventana");
            noexito();
        });
     } 
@@ -2180,15 +2222,42 @@ function ListarNotasCredito(ctlg, scsl, desde, hasta) {
 
                 $('#divTblNotasCredito').html(datos);
 
-                var oTable = $("#tblNotasCredito").DataTable({
+                $("#tblNotasCredito").dataTable({
+                    "sDom": 'TC<"clear">lfrtip',
+                    "sPaginationType": "full_numbers",
+                    "scrollX": true,
+                    "bAutoWidth": false,
                     "oLanguage": {
                         "sEmptyTable": "No hay datos disponibles en la tabla.",
                         "sZeroRecords": "No hay datos disponibles en la tabla."
                     },
-                    "scrollX": "true"                    
+                    "oTableTools": {
+                        "sSwfPath": "recursos/plugins/swf/copy_csv_xls_pdf.swf",
+                        "aButtons": [
+                            {
+                                "sExtends": "copy",
+                                "sButtonText": "Copiar"
+                            },
+                            {
+                                "sExtends": "pdf",
+                                "sPdfOrientation": "landscape",
+                                "sButtonText": "Exportar a PDF"
+                            },
+                            {
+                                "sExtends": "xls",
+                                "sButtonText": "Exportar a Excel"
+                            }
+                        ]
+                    }
                 });
 
-                oTable.column(0).visible(false);
+                var oTable = $('#tblNotasCredito').dataTable();
+                oTable.fnSort([[0, "desc"]]);
+
+                $("#tblNotasCredito").DataTable();
+                actualizarEstilos()
+
+                //oTable.column(0).visible(false);
 
 
             }
@@ -2222,6 +2291,13 @@ var CALNOCL = function () {
         });
     }
 
+    var actualizarEstilos = function () {
+        $(".ColVis_Button, .TableTools_Button ColVis_MasterButton").css("margin-bottom", "10px");
+        $(".ColVis_Button, .TableTools_Button ColVis_MasterButton").addClass("btn green");
+        $("TableTools_Button").css("float", "left");
+        $(".DTTT.btn-group").addClass("pull-right");
+
+    }
     var cargaInicial = function () {
         $("#cboEmpresa").select2("val", $("#ctl00_hddctlg").val());
         $("#cboEmpresa").change();
@@ -2274,7 +2350,8 @@ var CALNOCL = function () {
 }();
 
 function cargarNotaCredito(codigo, codempr) {
-    window.location.href = "?f=CAMNOCL&codigo=" + codigo + "&codempr=" + codempr
+    //window.location.href = "?f=CAMNOCL&codigo=" + codigo + "&codempr=" + codempr
+    window.open("?f=CAMNOCL&codigo=" + codigo + "&codempr=" + codempr, '_blank');
 }
 
 function irAnularDcto(codigo) {

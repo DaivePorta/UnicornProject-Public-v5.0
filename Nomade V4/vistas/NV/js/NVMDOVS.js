@@ -11,7 +11,7 @@ var limitItems = false; controlCargaIgv = false;
 var cargarprederteminado = false;
 var aux_predeterminado = false;
 //CODIGO DE LA VENTA DE MANERA GLOBAL
-var codigodctoglobal;
+//var codigodctoglobal;
 var deuda;
 //Pruebita 2 DPORTA
 var cod_cate_clie = "";
@@ -738,7 +738,7 @@ var NVMDOVS = function () {
             }
 
             var tipo = $(this).val();
-            //$('#cboDocumentoVenta').val("").change();//DPORTA
+            $('#cboDocumentoVenta').val("").change();//DPORTA
             if (tipo === '6') {
                 $('#txtNroDctoCliente').val($("#hfRUC").val());
             } else {
@@ -749,17 +749,35 @@ var NVMDOVS = function () {
                 }
             }
 
+            //if ($('#cboTipoDoc').val() == '6') {
+            //    $("#cboDocumentoVenta option[value=0001]").removeAttr("disabled");
+            //    $("#cboDocumentoVenta option[value=0003]").attr("disabled", "disabled");
+            //} else {
+            //    $("#cboDocumentoVenta option[value=0003]").removeAttr("disabled");
+            //    $("#cboDocumentoVenta option[value=0001]").attr("disabled", "disabled");
+            //}
+
             if ($('#cboTipoDoc').val() == '6') {
                 $("#cboDocumentoVenta option:not([value=0001])").attr("disabled", "disabled");
                 $("#cboDocumentoVenta option[value=0012]").removeAttr("disabled");
                 $("#cboDocumentoVenta option[value=0101]").removeAttr("disabled"); //PARA QUE ESTÉ DESBLOQUEADO LA NOTA DE VENTA O EL NOMBRE QUE LE HAYA PUESTO EL CLIENTE
                 $("#cboDocumentoVenta option[value=0001]").removeAttr("disabled");
 
+                //var oItems = $('#cboDocumentoVenta option');
+                //for (var i = 0; i < oItems.length; i++) {
+                //    if (oItems[i].value === "0012") {
+                //        $("#cboDocumentoVenta").select2("val", "0012").change();
+                //    } else {
+                //        if ($('#cboSerieDocVenta').val() == "") {//DPORTA
+                //            $("#cboDocumentoVenta").select2("val", "0001").change();
+                //        }
+                //    }
+                //}
                 var oItems = $('#cboDocumentoVenta option');
                 for (var i = 0; i < oItems.length; i++) {
                     if (oItems[i].value != "" && oItems[i].value != "0003") {
                         if (oItems[i].value === "0012" && $("#txtNroDocVenta").val() == "") {
-                        $("#cboDocumentoVenta").select2("val", "0012").change();
+                            $("#cboDocumentoVenta").select2("val", "0012").change();
                         } else if (oItems[i].value === "0001" && $("#txtNroDocVenta").val() == "") {
                             //if ($('#cboSerieDocVenta').val() == "0001") {//DPORTA
                             $("#cboDocumentoVenta").select2("val", "0001").change();
@@ -773,11 +791,21 @@ var NVMDOVS = function () {
                 $("#cboDocumentoVenta option:not([value=0001])").removeAttr("disabled");
                 $("#cboDocumentoVenta option[value=0001]").attr("disabled", "disabled");
 
+                //var oItems = $('#cboDocumentoVenta option');
+                //for (var i = 0; i < oItems.length; i++) {
+                //    if (oItems[i].value === "0012") {
+                //        $("#cboDocumentoVenta").select2("val", "0012").change();
+                //    } else {
+                //        if ($('#cboSerieDocVenta').val() == "") {
+                //            $("#cboDocumentoVenta").select2("val", "0003").change();
+                //        }
+                //    }
+                //}
                 var oItems = $('#cboDocumentoVenta option');
                 for (var i = 0; i < oItems.length; i++) {
                     if (oItems[i].value != "" && oItems[i].value != "0001") {
                         if (oItems[i].value === "0012" && $("#txtNroDocVenta").val() == "") {
-                        $("#cboDocumentoVenta").select2("val", "0012").change();
+                            $("#cboDocumentoVenta").select2("val", "0012").change();
                         } else if (oItems[i].value === "0003" && $("#txtNroDocVenta").val() == "") {
                             //if ($('#cboSerieDocVenta').val() == "0003") {
                             $("#cboDocumentoVenta").select2("val", "0003").change();
@@ -942,14 +970,6 @@ var NVMDOVS = function () {
             $('#txtAsunto').val($('#txt_comentario').val());
             cargarCorreos();
             $('#divMail').modal('show');
-        });
-
-        //WHATSAPP
-        $('#btnWhatsapp').click(function (e) {
-            $('#txtcontenidoWhatsapp').attr('disabled', false);
-            $('#txtcontenidoWhatsapp').val("");
-            //cargarNumerosWhatsapp();
-            $('#divWhatsapp').modal('show');
         });
 
         $("#btnHabido").on("click", function () {
@@ -1399,10 +1419,10 @@ var NVMDOVS = function () {
                     if ($("#hfCompletoInd").val() == "S") {
 
                         $("#hfImprimirPreciosIGV").val(datos[0].IGV_IMPR_IND);
-                        $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
+                        $("#btnImprimir, #btnImprimirST").attr("style", "display:inline-block;margin-top:2px;");
+                        $("#btnImprimir").html("<i class='icon-print'></i> Imprimir Doc.");
                         $(".btnImprimir").show();
                         $('#btnMail').removeClass('hidden');
-                        $('#btnWhatsapp').removeClass('hidden');
 
                         $("#lblCopia").css("display", "inline-block");
                         $("#divBtnsMantenimiento").attr("style", "display:none");
@@ -2224,7 +2244,7 @@ function cargarParametrosSistema() {
         url: "vistas/no/ajax/nomdocc.ashx?OPCION=3.5&FILTRO=" + filtro,
         contenttype: "application/json;",
         datatype: "json",
-        async: true,
+        async: false,
         success: function (datos) {
             if (datos != null) {
                 for (var i = 0; i < datos.length; i++) {
@@ -6068,14 +6088,13 @@ function GrabarCompletarDctoVenta() {
                                         $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
                                         $(".btnImprimir").show();
                                         $('#btnMail').removeClass('hidden');
-                                        $('#btnWhatsapp').removeClass('hidden')
                                         //$('#btnEFac').removeClass('hidden');
                                         $("#lblCopia").css("display", "inline-block");
                                         //$("#lblCopia").css("display", "inline-block");
                                         $("#txtNumDctoComp").val(datos[0].CODIGO);
                                         //Desbloquear("ventana");
                                         //EL CODIGO GLOBAL OBTIENE EL CODIGO DE LA VENTA
-                                        codigodctoglobal = datos[0].CODIGO;
+                                        //codigodctoglobal = datos[0].CODIGO;
                                         if ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) {
                                             $("#txt_comentario").val("Orden de Servicio");
                                         }
@@ -6083,15 +6102,15 @@ function GrabarCompletarDctoVenta() {
                                         if (formato == 'E') {//DPORTA
                                             var miCodigoQR = new QRCode("codigoQR");
                                             miCodigoQR.makeCode(datos[0].DATOS_QR);
-                                            $('#codigoQR').hide();
+                                            //$('#codigoQR').hide();
                                             setTimeout(guardarQR, 0.0000000000000001);
                                         }
-                                        //BloquearCampos();
+                                        BloquearCampos();
                                         $("#txtEfectivo, #txtEfectivo2, #txtEfectivo3").attr('disabled', true);
                                         if (prmtACON == "SI") {
                                             $('#btnGenerarAsiento').click();
                                         }
-                                        setTimeout(ImprimirDctoVenta, 0.0000000000000001);
+                                        setTimeout(ImprimirDctoVentaServicios, 0.0000000000000001);
                                     }
                                 }
                             }
@@ -6131,19 +6150,23 @@ function guardarQR() {
 
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=GQR&p_FVBVTAC_CODE=" + codigodctoglobal,
+        url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=GQR&p_FVBVTAC_CODE=" + $("#txtNumDctoComp").val(),
         data: qrData,
         async: false,
         contentType: false,
         processData: false,
-        success: function (datos) {
-
-            if (datos != '') {
-                alert("CODIGO:" + datos[0].CODIGO);
-                //alert("DATA_IMAGEN:" + datos[0].QR);
+        success: function (res) {
+            if (res != null) {
+                if (res == "OK") {
+                    //exito();
+                } else {
+                    noexito();
+                }
+            } else {
+                noexito();
             }
         },
-        error: function (msg) {
+        error: function () {
             alertCustom("No se guardaron correctamente los datos!")
         }
     });
@@ -6225,7 +6248,7 @@ function ImprimirDctoVenta() {
             });
         //ImprimirDctoVentaTicket();
     } else {
-        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0) {
+        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101') {
             var data = new FormData();
             data.append('p_CODE', $("#txtNumDctoComp").val());
             data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
@@ -6262,37 +6285,110 @@ function ImprimirDctoVenta() {
     }
 }
 
-//function ImprimirDctoVentaTicket() {
-//    //Bloquear("ventana");
+function ImprimirDctoVentaServicios() {
+    //Bloquear("ventana");
+    let ticket = $("#cboSerieDocVenta :selected").attr("data-ticket");//DPORTA
 
-//    var data = new FormData();
-//    data.append('p_CODE', $("#txtNumDctoComp").val());
-//    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
-//    var jqxhr = $.ajax({
-//        type: "POST",
-//        url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
-//        contentType: false,
-//        data: data,
-//        processData: false,
-//        async: true,
-//        cache: false
-//    })
-//        .success(function (datos) {
-//            if (datos != null) {
+    if (ticket == 'SI') {
+        //if (verificarFormatoTicket($("#cboDocumentoVenta").val()) == '[{"FORMATO_TICKET" :"SI"}]') {
+        var data = new FormData();
+        data.append('p_CODE', $("#txtNumDctoComp").val());
+        data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+        //data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+        var jqxhr = $.ajax({
+            type: "POST",
+            url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
+            contentType: false,
+            data: data,
+            processData: false,
+            async: false,
+            cache: false
+        })
+            .success(function (datos) {
+                if (datos != null) {
 
-//                $("#divDctoImprimir").html(datos);
-//                setTimeout(function () {
-//                    window.print();
-//                }, 200)
-//            } else {
-//                noexito();
-//            }
-//        })
-//        .error(function () {
-//            noexito();
-//        });
+                    $("#divDctoImprimir").html(datos);
+                    setTimeout(function () {
+                        window.print();
+                    }, 0.0000000000000001)
 
-//}
+                } else {
+                    noexito();
+                }
+            })
+            .error(function () {
+                noexito();
+            });
+        ImprimirDctoVentaTicket();
+    } else {
+        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101') {
+            var data = new FormData();
+            data.append('p_CODE', $("#txtNumDctoComp").val());
+            data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+            //data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+            var jqxhr = $.ajax({
+                type: "POST",
+                url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
+                contentType: false,
+                data: data,
+                processData: false,
+                async: false,
+                cache: false
+            })
+                .success(function (datos) {
+                    if (datos != null) {
+
+
+                        $("#divDctoImprimir").html(datos);
+                        setTimeout(function () {
+                            window.print();
+                        }, 0.0000000000000001)
+
+                    } else {
+                        noexito();
+                    }
+                })
+                .error(function () {
+                    noexito();
+                });
+            ImprimirDctoVentaTicket();
+        } else {
+            crearImpresion($("#txtNumDctoComp").val());
+        }
+    }
+}
+
+function ImprimirDctoVentaTicket() {
+    //Bloquear("ventana");
+
+    var data = new FormData();
+    data.append('p_CODE', $("#txtNumDctoComp").val());
+    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    var jqxhr = $.ajax({
+        type: "POST",
+        url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRTICKET",
+        contentType: false,
+        data: data,
+        processData: false,
+        async: true,
+        cache: false
+    })
+        .success(function (datos) {
+            if (datos != null) {
+
+                $("#divDctoImprimir").html(datos);
+                setTimeout(function () {
+                    window.print();
+                }, 0.0000000000000001)
+            } else {
+                noexito();
+            }
+        })
+        .error(function () {
+            noexito();
+        });
+
+}
 
 //Devuelve vacio si el descuento es 0, sino devuelve su valor con el signo negativo
 function vDesc(valor) {
@@ -7051,17 +7147,19 @@ function CargarDatosCobro() {
             offObjectEvents("txtNroOpe");
 
             $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
             switch (MedioActual) {
                 case "0001"://DEPOSITO BANCARIO
 
                     $("#lbl_detalle3").html("Origen de Pago");
-                    $("#lbl_detalle4").html("Nro. Op.");
+                    $("#lbl_detalle4").html("Nro. Operación");
                     $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
                     $("#cbDestino").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
 
                     $(".mPersona").css("display", "none");
                     offObjectEvents("txtNroOpe");
                     $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                     $("#txtMonto").attr("disabled", true);
                     $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
                     $("#txtEfectivo").val("");
@@ -7076,7 +7174,7 @@ function CargarDatosCobro() {
 
                     $("#txtDestino").val("ENTREGA DIRECTA").attr("disabled", true);
                     $(".mPersona").css("display", "block");
-
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
                     $("#txtNroOpe").addClass("personas").attr("disabled", false);
                     cargarInputsPersona();
 
@@ -7095,7 +7193,7 @@ function CargarDatosCobro() {
                 case "0003": //transferencia
 
                     $("#lbl_detalle3").html("Origen");
-                    $("#lbl_detalle4").html("Nro. Op.");
+                    $("#lbl_detalle4").html("Nro. Operación");
 
                     $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
                     $("#cbDestino").select2();
@@ -7130,7 +7228,8 @@ function CargarDatosCobro() {
                     $("#cbDestino").attr("disabled", false).change();
                     $("#cbo_moneda").attr("disabled", true);
                     $("#txtMonto").attr("disabled", true);
-                    $("#txtNroOpe").attr("disabled", false);
+                    //$("#txtNroOpe").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                     $("#txtEfectivo").val("");
                     $("#id_Vuelto").hide();
                     ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
@@ -7141,7 +7240,8 @@ function CargarDatosCobro() {
                     $("#lbl_detalle3").html("N° Cheque");
                     $("#lbl_detalle4").html("Girado a");
                     $("#txtDestino").attr("disabled", false);
-                    $("#txtNroOpe").attr("disabled", false);
+                    //$("#txtNroOpe").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
                     $("#txtMonto").attr("disabled", true);
                     $("#txtEfectivo").val("");
                     $("#id_Vuelto").hide();
@@ -7152,10 +7252,11 @@ function CargarDatosCobro() {
 
                     $("#cbo_moneda").attr("disabled", false);
                     $("#lbl_detalle3").html("N° Tarjeta");
-                    $("#lbl_detalle4").html("Cod. Aut.");
+                    $("#lbl_detalle4").html("Cod. Autorización");
                     $("#txtNroOpe").attr("disabled", false);
                     $("#txtMonto").attr("disabled", true);
                     $("#txtDestino").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
                     mascespecial("txtDestino", "************", 16);
 
                     $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos" class="span12"><option></option></select></div></div>');
@@ -7249,12 +7350,13 @@ function CargarDatosCobro() {
                 case "0005": // tarjeta de debito
 
                     $("#lbl_detalle3").html("N° Tarjeta");
-                    $("#lbl_detalle4").html("Cod. Aut.");
+                    $("#lbl_detalle4").html("Cod. Autorización");
 
                     $("#txtNroOpe").attr("disabled", false);
                     $("#txtMonto").attr("disabled", true);
 
                     $("#txtDestino").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
                     mascespecial("txtDestino", "************", 16);
 
                     $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos" class="span12"><option></option></select></div></div>');
@@ -7358,6 +7460,7 @@ function CargarDatosCobro() {
                         $(".mPersona").css("display", "none");
                         offObjectEvents("txtNroOpe");
                         $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de billetera digital");
                         $("#txtMonto").attr("disabled", true);
                         $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
 
@@ -7407,17 +7510,19 @@ function CargarDatosCobro() {
             offObjectEvents("txtNroOpe2");
 
             $("#txtNroOpe2").removeClass("personas").attr("disabled", false);
+            $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "");
             switch (MedioActual2) {
                 case "0001"://DEPOSITO BANCARIO
 
                     $("#lbl_detalle3_2").html("Origen de Pago");
-                    $("#lbl_detalle4_2").html("Nro. Op.");
+                    $("#lbl_detalle4_2").html("Nro. Operación");
                     $("#txtDestino2").parent().html("<select id='cbDestino2' class='obligatorio span12 cbocta2' data-placeholder='CUENTA DE CLIENTE'></select>");
                     $("#cbDestino2").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
 
                     $(".mPersona2").css("display", "none");
                     offObjectEvents("txtNroOpe2");
                     $("#txtNroOpe2").removeClass("personas").attr("disabled", false);
+                    $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la transacción");
                     $("#txtMonto").attr("disabled", true);
                     $("#cbo_moneda").val($("#cbo_Det_Origen2 :selected").attr("moneda")).change().attr("disabled", true);
                     $("#txtEfectivo2").val("");
@@ -7428,7 +7533,7 @@ function CargarDatosCobro() {
                 case "0003": //transferencia
 
                     $("#lbl_detalle3_2").html("Origen");
-                    $("#lbl_detalle4_2").html("Nro. Op.");
+                    $("#lbl_detalle4_2").html("Nro. Operación");
 
                     $("#txtDestino2").parent().html("<select id='cbDestino2' class='obligatorio span12 cbocta2' data-placeholder='CUENTA DE CLIENTE'></select>");
                     $("#cbDestino2").select2();
@@ -7463,7 +7568,8 @@ function CargarDatosCobro() {
                     $("#cbDestino2").attr("disabled", false).change();
                     $("#cbo_moneda").attr("disabled", true);
                     $("#txtMonto").attr("disabled", true);
-                    $("#txtNroOpe2").attr("disabled", false);
+                    //$("#txtNroOpe2").attr("disabled", false);
+                    $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la transacción");
                     $("#txtEfectivo2").val("");
                     ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
 
@@ -7474,7 +7580,8 @@ function CargarDatosCobro() {
                     $("#lbl_detalle3_2").html("N° Cheque");
                     $("#lbl_detalle4_2").html("Girado a");
                     $("#txtDestino2").attr("disabled", false);
-                    $("#txtNroOpe2").attr("disabled", false);
+                    //$("#txtNroOpe2").attr("disabled", false);
+                    $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "");
                     $("#txtMonto").attr("disabled", true);
                     $("#txtEfectivo2").val("");
                     ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
@@ -7485,12 +7592,13 @@ function CargarDatosCobro() {
 
                     $("#cbo_moneda").attr("disabled", false);
                     $("#lbl_detalle3_2").html("N° Tarjeta");
-                    $("#lbl_detalle4_2").html("Cod. Aut.");
+                    $("#lbl_detalle4_2").html("Cod. Autorización");
 
                     $("#txtNroOpe2").attr("disabled", false);
                     $("#txtMonto").attr("disabled", true);
 
                     $("#txtDestino2").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                    $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la operación");
                     mascespecial("txtDestino2", "************", 16);
 
                     $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos2"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos2" class="span12"><option></option></select></div></div>');
@@ -7584,12 +7692,13 @@ function CargarDatosCobro() {
                 case "0005": // tarjeta de debito
 
                     $("#lbl_detalle3_2").html("N° Tarjeta");
-                    $("#lbl_detalle4_2").html("Cod. Aut.");
+                    $("#lbl_detalle4_2").html("Cod. Autorización");
 
                     $("#txtNroOpe2").attr("disabled", false);
                     $("#txtMonto").attr("disabled", true);
 
                     $("#txtDestino2").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                    $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la operación");
                     mascespecial("txtDestino2", "************", 16);
 
                     $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos2"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos2" class="span12"><option></option></select></div></div>');
@@ -7693,6 +7802,7 @@ function CargarDatosCobro() {
                         $(".mPersona2").css("display", "none");
                         offObjectEvents("txtNroOpe2");
                         $("#txtNroOpe2").removeClass("personas").attr("disabled", false);
+                        $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de billetera digital");
                         $("#txtMonto").attr("disabled", true);
                         $("#cbo_moneda").val($("#cbo_Det_Origen2 :selected").attr("moneda")).change().attr("disabled", true);
 
@@ -7741,17 +7851,19 @@ function CargarDatosCobro() {
             offObjectEvents("txtNroOpe3");
 
             $("#txtNroOpe3").removeClass("personas").attr("disabled", false);
+            $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "");
             switch (MedioActual3) {
                 case "0001"://DEPOSITO BANCARIO
 
                     $("#lbl_detalle3_3").html("Origen de Pago");
-                    $("#lbl_detalle4_3").html("Nro. Op.");
+                    $("#lbl_detalle4_3").html("Nro. Operación");
                     $("#txtDestino3").parent().html("<select id='cbDestino3' class='obligatorio span12 cbocta3' data-placeholder='CUENTA DE CLIENTE'></select>");
                     $("#cbDestino3").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
 
                     $(".mPersona3").css("display", "none");
                     offObjectEvents("txtNroOpe3");
                     $("#txtNroOpe3").removeClass("personas").attr("disabled", false);
+                    $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la transacción");
                     $("#txtMonto").attr("disabled", true);
                     $("#cbo_moneda").val($("#cbo_Det_Origen3 :selected").attr("moneda")).change().attr("disabled", true);
                     $("#txtEfectivo3").val("");
@@ -7762,7 +7874,7 @@ function CargarDatosCobro() {
                 case "0003": //transferencia
 
                     $("#lbl_detalle3_3").html("Origen");
-                    $("#lbl_detalle4_3").html("Nro. Op.");
+                    $("#lbl_detalle4_3").html("Nro. Operación");
 
                     $("#txtDestino3").parent().html("<select id='cbDestino3' class='obligatorio span12 cbocta3' data-placeholder='CUENTA DE CLIENTE'></select>");
                     $("#cbDestino3").select2();
@@ -7797,7 +7909,8 @@ function CargarDatosCobro() {
                     $("#cbDestino3").attr("disabled", false).change();
                     $("#cbo_moneda").attr("disabled", true);
                     $("#txtMonto").attr("disabled", true);
-                    $("#txtNroOpe3").attr("disabled", false);
+                    //$("#txtNroOpe3").attr("disabled", false);
+                    $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la transacción");
                     $("#txtEfectivo3").val("");
                     ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
 
@@ -7808,7 +7921,8 @@ function CargarDatosCobro() {
                     $("#lbl_detalle3_3").html("N° Cheque");
                     $("#lbl_detalle4_3").html("Girado a");
                     $("#txtDestino3").attr("disabled", false);
-                    $("#txtNroOpe3").attr("disabled", false);
+                    //$("#txtNroOpe3").attr("disabled", false);
+                    $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "");
                     $("#txtMonto").attr("disabled", true);
                     $("#txtEfectivo3").val("");
                     ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
@@ -7819,12 +7933,13 @@ function CargarDatosCobro() {
 
                     $("#cbo_moneda").attr("disabled", false);
                     $("#lbl_detalle3_3").html("N° Tarjeta");
-                    $("#lbl_detalle4_3").html("Cod. Aut.");
+                    $("#lbl_detalle4_3").html("Cod. Autorización");
 
                     $("#txtNroOpe3").attr("disabled", false);
                     $("#txtMonto").attr("disabled", true);
 
                     $("#txtDestino3").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                    $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la operación");
                     mascespecial("txtDestino3", "************", 16);
 
                     $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos3"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos3" class="span12"><option></option></select></div></div>');
@@ -7918,12 +8033,13 @@ function CargarDatosCobro() {
                 case "0005": // tarjeta de debito
 
                     $("#lbl_detalle3_3").html("N° Tarjeta");
-                    $("#lbl_detalle4_3").html("Cod. Aut.");
+                    $("#lbl_detalle4_3").html("Cod. Autorización");
 
                     $("#txtNroOpe3").attr("disabled", false);
                     $("#txtMonto").attr("disabled", true);
 
                     $("#txtDestino3").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                    $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la operación");
                     mascespecial("txtDestino3", "************", 16);
 
                     $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos3"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos3" class="span12"><option></option></select></div></div>');
@@ -8027,6 +8143,7 @@ function CargarDatosCobro() {
                         $(".mPersona3").css("display", "none");
                         offObjectEvents("txtNroOpe3");
                         $("#txtNroOpe3").removeClass("personas").attr("disabled", false);
+                        $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de billetera digital");
                         $("#txtMonto").attr("disabled", true);
                         $("#cbo_moneda").val($("#cbo_Det_Origen3 :selected").attr("moneda")).change().attr("disabled", true);
 

@@ -564,7 +564,7 @@ function cargarEstereotipos() {
             $.ajaxSetup({ async: true });
 
             ADICIONALES.init();
-            $("#txtdir").val((dire == ('-' || '') ? "TRUJILLO" : dire));//dporta
+            $("#txtdir").val((dire == ('-' || '') ? "TRUJILLO" : eliminarDiacriticos(dire)));//dporta
             //$("#txtubigeo").val((dire == ('-' || '') ? "130101" : ubigeo));//dporta
 
             $("#tabAdicionales").on("click", function () {

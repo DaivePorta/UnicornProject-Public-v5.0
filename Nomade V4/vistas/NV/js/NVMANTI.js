@@ -1030,7 +1030,8 @@ var NVMANTI = function () {
         //EMAIL
         $('#btnMail').click(function (e) {
             $('#txtcontenido').attr('disabled', false);
-            $('#txtAsunto').val("DOCUMENTO DE VENTA");
+            $('#txtAsunto').val("ANTICIPO DE VENTA");
+            $('#txtcontenido').val("");
             cargarCorreos();
             $('#divMail').modal('show');
         });
@@ -1071,7 +1072,7 @@ var NVMANTI = function () {
             $("#grabar").html("<i class='icon-pencil'></i> Modificar");
             $("#grabar").attr("href", "javascript:ActualizarDctoVenta();");
 
-            Bloquear("ventana");
+            //Bloquear("ventana");
             $.ajax({
                 type: "POST",
                 //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LDOCC&p_FVBVTAC_CODE=" + cod,
@@ -1139,8 +1140,10 @@ var NVMANTI = function () {
                         $("#lbltexto_sin_origen").html("ADELANTO EN ESTE DOCUMENTO: ");
                     }
                     else {
-                        llenaCotizaciones();
-                        $("#cbo_coti").val(datos[0].DCTO_CODE_REF).change();
+                        if ($("#hfCompletoInd").val() != "S") {
+                            llenaCotizaciones();
+                            $("#cbo_coti").val(datos[0].DCTO_CODE_REF).change();
+                        }                      
 
                         //$("#cbo_moneda").val(datos[0].MONEDA).change();
                         /*$('#uniform-chkactivo span').removeClass();
@@ -1407,7 +1410,7 @@ var NVMANTI = function () {
                     alertCustom(msg);
                 }
             });
-            Desbloquear("ventana");
+            //Desbloquear("ventana");
         } else {
             fnCargaTablaCuentasC();
         }
@@ -3878,7 +3881,7 @@ function CargarFactorImpuestoRentaVenta() {
 
 //Imprimir dcto venta
 function ImprimirDctoVenta() {
-    Bloquear("ventana");
+    //Bloquear("ventana");
     var data = new FormData();
     data.append('p_CODE', $("#txtNumDctoComp").val());
     data.append('p_CODE_COTI', $("#cbo_coti").val());
@@ -3907,10 +3910,10 @@ function ImprimirDctoVenta() {
        } else {
            noexito();
        }
-       Desbloquear("ventana");
+       //Desbloquear("ventana");
    })
    .error(function () {
-       Desbloquear("ventana");
+       //Desbloquear("ventana");
        noexito();
    });
 }
@@ -4302,7 +4305,10 @@ function GrabarCompletarDctoVenta() {
                                $("#txtNumDctoComp").val(datos[0].CODIGO);
                                let formato = $("#cboSerieDocVenta :selected").attr("data-formato");//DPORTA
                                if (formato == 'E') {//DPORTA
-                                   generarQR($("#txtNumDctoComp").val());
+                                   var miCodigoQR = new QRCode("codigoQR");
+                                   miCodigoQR.makeCode(datos[0].DATOS_QR);
+                                   //$('#codigoQR').hide();
+                                   setTimeout(guardarQR, 0.0000000000000001);
                                }
                                BloquearCampos();
 
@@ -4318,15 +4324,6 @@ function GrabarCompletarDctoVenta() {
                            }
                            else {
                                alertCustom(caderesp);
-                               //if (datos[0].CODIGO == 'LIMITE') {
-                               //    alertCustom("Se ha excedido el límite de los documentos autorizados. Intente utilizar otra serie o refrescar la página");
-
-                               //} else if (datos[0].CODIGO == 'DEST') {
-                               //    alertCustom("Un documento de origen ya ha sido usado por otro!");
-
-                               //} else if (datos[0].CODIGO == 'NOSTOCK') {
-                               //    alertCustom("No hay stock para los siguientes Items: " + datos[0].SECUENCIA.split("|")[1] + "");
-                               //}
                            }
                        }
                        else {
@@ -4343,51 +4340,12 @@ function GrabarCompletarDctoVenta() {
         });
 
             }
-            //} else {//MODIFICA
-            //    CompletarDctoVenta();
-            //}
         }
-
     }
     else {
         alertCustom("No se puede aceptar un Anticipo con valor 0 (cero)");
     }
 };
-
-function generarQR(codAnticipo) {
-    //CODIGO PARA GENERAR EL CODIGOQR
-    var miCodigoQR = new QRCode("codigoQR");
-    $.ajax({
-        type: "post",
-        url: "vistas/nv/ajax/nvmanti.ashx?OPCION=LPCQRANTI&p_CODE_COTI=" + codAnticipo, //codigodctoglobal -- CUANDO SE DA PRIMERO EN EL BOTON COMPLETAR
-        async: false,
-        success: function (datos) {
-
-            if (datos != "") {
-                var cadena;
-                cadena =
-                    datos[0].RUC_EMISOR + "|" +
-                    datos[0].CODIGO_DOC + "|" +
-                    datos[0].SERIE + "|" +
-                    datos[0].NUMERO + "|" +
-                    datos[0].TOTAL_IGV + "|" +
-                    datos[0].IMPORTE_TOTAL + "|" +
-                    datos[0].FECHA_EMISION + "|" +
-                    datos[0].TIPO_DOC_ADQUIRIENTE + "|" +
-                    datos[0].NUMERO_DOC_ADQUIRIENTE
-
-                miCodigoQR.makeCode(cadena);
-                setTimeout(guardarQR, 0.0001);
-                // guardarQR();
-                return false;
-            }
-        },
-        error: function (msg) {
-            alertCustom("No se generó correctamente el QR!")
-        }
-    });
-    $('#codigoQR').hide();
-}
 
 function guardarQR() {
     //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 
@@ -4398,19 +4356,23 @@ function guardarQR() {
 
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmanti.ashx?OPCION=GQRANTI&p_CODE_COTI=" + $("#txtNumDctoComp").val(), //codigodctoglobal -- CUANDO SE DA PRIMERO EN EL BOTON COMPLETAR
+        url: "vistas/nv/ajax/nvmanti.ashx?OPCION=GQR&p_CODE_COTI=" + $("#txtNumDctoComp").val(), //codigodctoglobal -- CUANDO SE DA PRIMERO EN EL BOTON COMPLETAR
         data: qrData,
         async: false,
         contentType: false,
         processData: false,
-        success: function (datos) {
-
-            if (datos != '') {
-                alert("CODIGO:" + datos[0].CODIGO);
-                //alert("DATA_IMAGEN:" + datos[0].QR);
+        success: function (res) {
+            if (res != null) {
+                if (res == "OK") {
+                    //exito();
+                } else {
+                    noexito();
+                }
+            } else {
+                noexito();
             }
         },
-        error: function (msg) {
+        error: function () {
             alertCustom("No se guardaron correctamente los datos!")
         }
     });
@@ -5503,7 +5465,7 @@ function cargarCorreos() {
                     return '<div>' +
                         (item.name ? '<span class="name">' + escape(item.name) + '</span>&nbsp;' : '') +
                         (item.email ? '<span class="email">' + escape(item.email) + '</span>' : '') +
-                    '</div>';
+                        '</div>';
                 },
                 option: function (item, escape) {
                     var label = item.name || item.email;
@@ -5511,7 +5473,7 @@ function cargarCorreos() {
                     return '<div style="padding: 2px">' +
                         '<span class="label" style="display: block; font-size: 14px; background-color: inherit; color: inherit; text-shadow: none">' + escape(label) + '</span>' +
                         (caption ? '<span class="caption" style="display: block; font-size: 12px; margin: 2px 5px">' + escape(caption) + '</span>' : '') +
-                    '</div>';
+                        '</div>';
                 }
             },
             createFilter: function (input) {
@@ -5546,7 +5508,6 @@ function cargarCorreos() {
             }
         }
 
-        $('#txtcontenido').val($('#txt_comentario').val());
     });
 
     if ($("#txtRemitente").val() == "") {
@@ -5556,25 +5517,20 @@ function cargarCorreos() {
 
 function enviarCorreo() {
     var destinos = $('#cboCorreos').val();
-    var USAR_IGV_IND = ($("#chk_inc_igv").is(":checked")) ? "S" : "N";
     if (vErrors(['cboCorreos', 'txtAsunto'])) {
 
         $('#btnEnviarCorreo').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
         destinos = destinos.toString();
         $.ajax({
             type: "post",
-            //url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=correo" +
             url: "vistas/nv/ajax/NVMANTI.ashx?OPCION=correo" +
-                      "&p_CODE=" + $('#txtNumDctoComp').val() +
-                      "&p_CODE_COTI=" + $("#cbo_coti").val() +
-                      "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
-                    "&USAR_IGV_IND=" + USAR_IGV_IND +           
-                      "&p_SCSL_CODE=" + $('#cbo_Sucursal').val() +
-                      "&REMITENTE=" + $('#txtRemitente').val() +
-                      "&NREMITENTE=" + $('#txtRemitente').val() +
-                      "&DESTINATARIOS=" + destinos +
-                      "&ASUNTO=" + $('#txtAsunto').val() +
-                      "&MENSAJE=" + $('#txtcontenido').val(),
+                "&p_CODE=" + $('#txtNumDctoComp').val() +
+                "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
+                "&REMITENTE=" + $('#txtRemitente').val() +
+                "&NREMITENTE=" + $('#txtRemitente').val() +
+                "&DESTINATARIOS=" + destinos +
+                "&ASUNTO=" + $('#txtAsunto').val() +
+                "&MENSAJE=" + $('#txtcontenido').val(),
             contentType: "application/json;",
             dataType: false,
             success: function (datos) {

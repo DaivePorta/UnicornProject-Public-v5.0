@@ -1,4 +1,64 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="CALNOCL.ascx.vb" Inherits="vistas_CA_CALNOCL" %>
+<style>
+    @media print {
+
+        .navbar-inner {
+            display: none !important;
+        }
+
+        .page-sidebar {
+            display: none !important;
+        }
+
+        .footer {
+            display: none !important;
+        }
+
+        .page-content {
+            margin-left: 0px !important;
+        }
+
+        #gritter-notice-wrapper {
+            display: none !important;
+        }
+        /*#ventana parent {*/
+        #contenedor {
+            display: none !important;
+        }
+
+        /*.breadcrumb parent{*/
+        #contenedorBreadcrumb {
+            display: none !important;
+        }
+
+        .page-container {
+            margin-top: 0px !important;
+        }
+
+        #divDctoImprimir {
+            display: block !important;
+            width: 100% !important;
+            font-size: 10px !important;
+            line-height: 11px !important;
+            /*font-family: 'Lucida Console'  !important;*/
+            font-family: Arial !important;
+        }
+
+        #tblDocumento, .arial {
+            font-family: 'Arial' !important;
+        }
+
+        .container-fluid {
+            padding: 0px !important;
+        }
+
+        .chat-window {
+            display: none;
+            margin:0px !important;
+        }
+
+    }
+</style>
 <div class="row-fluid">
     <div class="span12 ">
         <!-- INICIA CUADRO PARA LA FORMA -->
@@ -103,11 +163,11 @@
                     </div>
                 </div>--%>
 
-                <div class="row-fluid">
-                    <div class="span12">
-                        <div class="row-fluid" id="divTblNotasCredito">
-                            <table id="tblNotasCredito" class="display DTTT_selectable bordered dataTable no-footer" style='width: 100%;'>
-                                <thead >
+               <div class="row-fluid" style="margin-top: 10px;">
+                   <%-- <div class="span12">--%>
+                        <div id="divTblNotasCredito">
+                          <%--  <table id="tblNotasCredito" class="display DTTT_selectable bordered dataTable no-footer" style='width: 100%;'>--%>
+                                <%--<thead >
                                     <tr>
                                         <th>CÓDIGO</th>
                                         <th>ESTABLECIMIENTO</th>
@@ -125,10 +185,10 @@
                                     <tr>
                                         <td colspan="7" style="text-align: center;">-</td>
                                     </tr>
-                                </tbody>
-                            </table>
+                                </tbody>--%>
+                           <%-- </table>--%>
                         </div>
-                    </div>
+                    <%--</div>--%>
                 </div>
             </div>
         </div>

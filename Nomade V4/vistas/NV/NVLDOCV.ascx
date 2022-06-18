@@ -68,7 +68,7 @@
                 <div class="actions">
                     <a class="btn black" onclick="javascript:imprimirListaDctosVenta();"><i class="icon-print"></i>&nbsp;Imprimir</a>
                     <a class="btn green" href="?f=nvmdocv"><i class="icon-plus"></i>&nbsp;Nuevo</a>
-                                         <a id="A4" class="btn purple enviaMail"><i class="icon-envelope"></i>&nbsp Mail</a>
+                    <a class="btn red" href="?f=nvldocv"><i class="icon-list"></i>&nbsp;Listar</a>
                 </div>
             </div>
 

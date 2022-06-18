@@ -266,15 +266,14 @@
                     <div class="row-fluid">
                         <div class="span2">
                             <div class="control-group">
-                                <label class="control-label" for="cboCliente">Cliente</label>
+                                <label class="control-label" for="txtRuc">
+                                    Cliente</label>
                             </div>
                         </div>
                         <div class="span4">
                             <div class="control-group">
-                                <div class="controls">
-                                    <select id="cboCliente" class="span11" data-placeholder="Cliente">
-                                        <option></option>
-                                    </select>
+                                <div class="controls" id="inputRazsocial">
+                                    <input id="txtrazsocial" class="span11" type="text" data-provide="typeahead" />
                                 </div>
                             </div>
                         </div>
@@ -1532,6 +1531,8 @@
 <script src="../../recursos/plugins/d3-master/d3.js"></script>
 <script src="../../recursos/plugins/d3-master/d3.min.js"></script>
 <script src="../../recursos/plugins/d3-master/d3.layout.js"></script>
+
+<input id="hfPIDM" type="hidden" />
 
 <script type="text/javascript" src="../vistas/NV/js/NVLTDVE.js"></script>
 <script>

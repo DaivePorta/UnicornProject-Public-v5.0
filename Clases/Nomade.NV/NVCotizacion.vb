@@ -401,8 +401,6 @@
         End Try
     End Function
 
-
-
     'Lista los detalles de una cotizacion 
     Public Function ListarDetalleCotizacionCliente(ByVal p_COTI_CODE As String, ByVal p_COTI_NUM_SEQ_DOC As String,
                                    ByVal p_ITEM As String) As DataTable
@@ -424,7 +422,43 @@
             Throw (ex)
         End Try
     End Function
+    'DPORTA
+    Public Function ListarCabCotizacionClienteImpresion(ByVal p_COTI_CODE As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
 
+            cmd = cn.GetNewCommand("PFV_LISTAR_CAB_COTIZACION_CLIENTE_IMPRESION", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_COTI_CODE", p_COTI_CODE, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+    'DPORTA
+    Public Function ListarDetCotizacionClienteImpresion(ByVal p_COTI_CODE As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFV_LISTAR_DET_COTIZACION_CLIENTE_IMPRESION", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_COTI_CODE", p_COTI_CODE, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 
     'Lista los detalles de una cotización en recepción de anticipos
     Public Function ListarDetalleCotizacionClienteAnticipos(ByVal p_COTI_CODE As String, ByVal p_COTI_NUM_SEQ_DOC As String,

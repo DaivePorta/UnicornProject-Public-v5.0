@@ -24,7 +24,8 @@ var NVLDOVR = function () {
                 $('#txtHasta').datepicker('setStartDate', $('#txtDesde').val());
             }
         });
-        //$("#txtSerie").inputmask({ "mask": "9", "repeat": 9, "greedy": false });
+
+        $("#txtSerie").inputmask({ "mask": "#", "repeat": 4, "greedy": false });
         $("#txtNumero").inputmask({ "mask": "9", "repeat": 9, "greedy": false });
     }
 
@@ -134,7 +135,7 @@ var NVLDOVR = function () {
     function fillCboVendedor(ctlg, scsl, estado, bAsync) {
         ctlg = $("#cboEmpresa").val()
         scsl = $("#cboEstablecimiento").val()
-        estado = "";
+        estado = "A";
         bAsync = true;
         if (bAsync == undefined) {
             bAsync = true;
@@ -190,7 +191,8 @@ var NVLDOVR = function () {
         $.ajax({
             type: "post",
             //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPROD2&CTLG=" + $('#cboEmpresa').val() + "&SCSL=" + $('#cboEstablecimiento').val(),
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODTODOS&CTLG=" + $('#cboEmpresa').val() + "&SCSL=" + $('#cboEstablecimiento').val() + "&SERIADO_IND=",
+            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODTODOS&CTLG=" + $('#cboEmpresa').val() + "&SCSL=" + $('#cboEstablecimiento').val() + "&SERIADO_IND=",
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODALMC_CAB&CTLG=" + $('#cboEmpresa').val() + "&ALMC_CODE=" + $('#cboEstablecimiento').val() + "&SERIADO_IND=" + "",
             contenttype: "application/json;",
             datatype: "json",
             async: true,
@@ -221,7 +223,8 @@ var NVLDOVR = function () {
         Bloquear("divCboCliente");
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            //url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.5&p_CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: true,
@@ -229,7 +232,7 @@ var NVLDOVR = function () {
                 Desbloquear("divCboCliente"); 
                 if (datos != null) {
                     for (var i = 0; i < datos.length; i++) {
-                        selectEst.append('<option value="' + datos[i].ID + '">' + datos[i].RAZON_SOCIAL + '</option>');
+                        selectEst.append('<option value="' + datos[i].PIDM + '">' + datos[i].RAZON_SOCIAL + '</option>');
                     }
                 } 
                 $('#cboCliente').select2('val', 'TODOS');
@@ -246,8 +249,7 @@ var NVLDOVR = function () {
         var SCSL_CODE = $("#cboEstablecimiento").val();
         var DCTO_CODE = ($("#cboTipoDoc").val() == "TODOS") ? '' : $("#cboTipoDoc").val();
         var VENDEDOR = ($("#cboVendedor").val() == "TODOS") ? '' : $("#cboVendedor :selected").text();
-        var CLIENTE = ($("#cboCliente").val() == "TODOS") ? '' : parseFloat($("#cboCliente :selected").val()).toString();
-        if (CLIENTE = "NaN") CLIENTE = "";  
+        var CLIENTE = ($("#cboCliente").val() == "TODOS" || $("#cboCliente").val() == "") ? '' : parseFloat($("#cboCliente :selected").val()).toString();
         var PRODUCTO = ($("#cboProducto").val() == "TODOS") ? '' : $("#cboProducto").val();
         var ESTADO = ($("#cboEstado").val() == "TODOS") ? '' : $("#cboEstado").val();
         var COMPLETO = ($("#cboCompleto").val() == "TODOS") ? '' : $("#cboCompleto").val();
@@ -348,13 +350,13 @@ var NVLDOVR = function () {
         var controlProCli = false;
 
         $('#cboEmpresa').on('change', function () {
-            Bloquear("ventana");
+            //Bloquear("ventana");
             fillCboEstablecimiento();
             fillCboTipoDoc();
             fillCboVendedor();
             //fillProducto();
             //fillCliente();
-            Desbloquear("ventana");
+            //Desbloquear("ventana");
         });
 
         $("#btnBuscarDoc").on("click", function () {
@@ -437,49 +439,50 @@ function solonumbef(string) {//Solo numeros
 } 
 
 
-function verificarFormatoTicket(tipoDoc) {
-    Bloquear("ventana");
+//function verificarFormatoTicket(tipoDoc) {
+//    Bloquear("ventana");
 
-    var data = new FormData();
-    data.append('DOC_CODE', tipoDoc);
-    data.append('CTLG', $("#cboEmpresa").val());
-    data.append('SCSL', $("#cboEstablecimiento").val());
+//    var data = new FormData();
+//    data.append('DOC_CODE', tipoDoc);
+//    data.append('CTLG', $("#cboEmpresa").val());
+//    data.append('SCSL', $("#cboEstablecimiento").val());
 
-    var jqxhr = $.ajax({
-        type: "POST",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=FORTICK",
-        contentType: false,
-        data: data,
-        processData: false,
-        async: false,
-        cache: false
-    })
-        .success(function (datos) {
-            Desbloquear("ventana");
-            if (datos != null) {
-                if (datos[0].FORMATO_TICKET == "SI") {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-                //noexito();
-            }
-        })
-        .error(function () {
-            Desbloquear("ventana");
-            //noexito();
-        });
+//    var jqxhr = $.ajax({
+//        type: "POST",
+//        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=FORTICK",
+//        contentType: false,
+//        data: data,
+//        processData: false,
+//        async: false,
+//        cache: false
+//    })
+//        .success(function (datos) {
+//            Desbloquear("ventana");
+//            if (datos != null) {
+//                if (datos[0].FORMATO_TICKET == "SI") {
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            } else {
+//                return false;
+//                //noexito();
+//            }
+//        })
+//        .error(function () {
+//            Desbloquear("ventana");
+//            //noexito();
+//        });
 
-    return jqxhr.responseText;
+//    return jqxhr.responseText;
 
-}
+//}
 
-function imprimirDetalle(codigo, nroDoc, tipoDoc) {
-    Bloquear("ventana");
+function imprimirDetalle(codigo, nroDoc, tipoDoc, electronicInd) {
+    //Bloquear("ventana");
 
-    if (verificarFormatoTicket(tipoDoc) == '[{"FORMATO_TICKET" :"SI"}]') {
+    //if (verificarFormatoTicket(tipoDoc) == '[{"FORMATO_TICKET" :"SI"}]') {
+    if (electronicInd == 'S') {
         var data = new FormData();
         data.append('p_CODE', codigo);
         var jqxhr = $.ajax({
@@ -496,19 +499,19 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc) {
                     $("#divDctoImprimir").html(datos);
                     setTimeout(function () {
                         window.print();
-                    }, 200)
+                    }, 0000000000000001)
 
                 } else {
                     noexito();
                 }
-                Desbloquear("ventana");
+                //Desbloquear("ventana");
             })
             .error(function () {
-                Desbloquear("ventana");
+                //Desbloquear("ventana");
                 noexito();
             });
     } else {
-        if (tipoDoc == '0012') { //ticket
+        if (tipoDoc == '0012' || tipoDoc == '0101') { //ticket
             var data = new FormData();
             data.append('p_CODE', codigo);
             var jqxhr = $.ajax({
@@ -525,20 +528,20 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc) {
                         $("#divDctoImprimir").html(datos);
                         setTimeout(function () {
                             window.print();
-                        }, 200)
+                        }, 0000000000000001)
 
                     } else {
                         noexito();
                     }
-                    Desbloquear("ventana");
+                    //Desbloquear("ventana");
                 })
                 .error(function () {
-                    Desbloquear("ventana");
+                    //Desbloquear("ventana");
                     noexito();
                 });
         } else {
             crearImpresion(codigo);
-            Desbloquear("ventana");
+            //Desbloquear("ventana");
         }
     }
 
@@ -547,15 +550,16 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc) {
 
 
 function imprimirListaDctosVenta() {
-    Bloquear("ventana")
+    //Bloquear("ventana")
     var data = new FormData();
     var CTLG_CODE = $("#cboEmpresa").val();
     var SCSL_CODE = $("#cboEstablecimiento").val();
     var DCTO_CODE = ($("#cboTipoDoc").val() == "TODOS") ? '' : $("#cboTipoDoc").val();
     var VENDEDOR = ($("#cboVendedor").val() == "TODOS") ? '' : $("#cboVendedor :selected").text();
-    var CLIENTE = ($("#cboCliente").val() == "TODOS") ? '' : $("#cboCliente :selected").text();
+    var CLIENTE = ($("#cboCliente").val() == "TODOS" || $("#cboCliente").val() == "") ? '' : parseFloat($("#cboCliente :selected").val()).toString();
     var PRODUCTO = ($("#cboProducto").val() == "TODOS") ? '' : $("#cboProducto").val();
     var ESTADO = ($("#cboEstado").val() == "TODOS") ? '' : $("#cboEstado").val();
+    var TIPO_VENTA = 'S';
     data.append('CTLG_CODE', CTLG_CODE);
     data.append('SCSL_CODE', SCSL_CODE);
     data.append('DCTO_CODE', DCTO_CODE);
@@ -567,16 +571,17 @@ function imprimirListaDctosVenta() {
     data.append('NUM_DCTO', $("#txtNumero").val());
     data.append('DESDE', $("#txtDesde").val());
     data.append('HASTA', $("#txtHasta").val());
+    data.append('TIPO_VENTA', TIPO_VENTA);
     var jqxhr = $.ajax({
         type: "POST",
-        url: "vistas/NV/ajax/NVLDOCV.ashx?OPCION=5",
+        url: "vistas/NV/ajax/NVLDOCV.ashx?OPCION=5.5",
         async: false,
         contentType: false,
         data: data,
         processData: false,
         cache: false,
         success: function (datos) {
-            Desbloquear("ventana")
+            //Desbloquear("ventana")
             if (datos != null) {
                 $("#divDctoImprimir").html(datos);
                 $("#divDctoImprimir #tblDocumento").attr("border", "1");
@@ -585,15 +590,15 @@ function imprimirListaDctosVenta() {
                 nomSucursal = $("#cboEstablecimiento :selected").html();
                 nomEmpresa = $("#cboEmpresa :selected").html();
                 $("#divDctoImprimir").prepend("<hr></hr>")
-                $("#divDctoImprimir").prepend("<h5 class='arial'>DOCUMENTOS DE VENTA - " + nomSucursal + "</h5>")
+                $("#divDctoImprimir").prepend("<h5 class='arial'>DOCUMENTOS DE VENTA RÁPIDA - " + nomSucursal + "</h5>")
                 $("#divDctoImprimir").prepend("<h4 class='arial'>" + nomEmpresa + "</h4>")
                 setTimeout(function () {
                     window.print();
-                }, 200);
+                }, 0000000000000001);
             }
         },
         error: function (msg) {
-            Desbloquear("ventana")
+            //Desbloquear("ventana")
             alertCustom("No se pudo obtener correctamente los documentos de venta.");
         }
     });

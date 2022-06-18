@@ -3205,7 +3205,7 @@ function cargarParametrosSistema() {
         url: "vistas/no/ajax/nomdocc.ashx?OPCION=3.5&FILTRO=" + filtro,
         contenttype: "application/json;",
         datatype: "json",
-        async: true,
+        async: false,
         success: function (datos) {
             if (datos != null) {
                 for (var i = 0; i < datos.length; i++) {
@@ -10019,7 +10019,7 @@ function CompletarDctoVenta() {
                                     if (formato == 'E') {//DPORTA
                                         var miCodigoQR = new QRCode("codigoQR");
                                         miCodigoQR.makeCode(datos[0].DATOS_QR);
-                                        $('#codigoQR').hide();
+                                        //$('#codigoQR').hide();
                                         setTimeout(guardarQR, 0.0000000000000001);
                                     }
                                     BloquearCampos();
@@ -10068,14 +10068,18 @@ function guardarQR() {
         async: false,
         contentType: false,
         processData: false,
-        success: function (datos) {
-
-            if (datos != '') {
-                alert("CODIGO:" + datos[0].CODIGO);
-                //alert("DATA_IMAGEN:" + datos[0].QR);
+        success: function (res) {
+            if (res != null) {
+                if (res == "OK") {
+                    //exito();
+                } else {
+                    noexito();
+                }
+            } else {
+                noexito();
             }
         },
-        error: function (msg) {
+        error: function () {
             alertCustom("No se guardaron correctamente los datos!")
         }
     });
@@ -10158,7 +10162,7 @@ function ImprimirDctoVenta() {
                 noexito();
             });
     } else {
-        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0) {
+        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101') {
 
             var data = new FormData();
             data.append('p_CODE', $("#txtNumDctoComp").val());

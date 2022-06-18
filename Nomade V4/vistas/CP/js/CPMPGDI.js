@@ -710,13 +710,13 @@ var CPMPGDI = function () {
                 $("#cbDestino").attr("disabled", false).off("change");
 
                 $("#txtNroOpe").val("");
-
+                $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
                 switch (MedioActual) {
 
                     case "0001"://DEPOSITO BANCARIO
 
                         $("#lbl_detalle3").html("Destino");
-                        $("#lbl_detalle4").html("Nro. Op.");
+                        $("#lbl_detalle4").html("Nro. Operación");
 
                         if (objData.DESCRIPCION.indexOf("SERVICIO") >= 0 || objData.DESCRIPCION.indexOf("ALQUILER") >= 0) { //SERVICIO O ALQUILER
 
@@ -754,6 +754,7 @@ var CPMPGDI = function () {
                         $(".mPersona").css("display", "none");
                         offObjectEvents("txtNroOpe");
                         $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                         $("#txtMonto").attr("disabled", false);
                         break;
 
@@ -772,7 +773,7 @@ var CPMPGDI = function () {
                         $("#txtNroOpe").addClass("personas").attr("disabled", false);
                         cargarInputsPersona();
                         $("#txtNroOpe").val(persona_selec_nombre).keyup(); $($("#txtNroOpe").siblings("ul")).children().click();
-
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
                         $("#cbo_moneda").attr("disabled", false);
                         $("#txtMonto").attr("disabled", false);
                         break;
@@ -780,7 +781,7 @@ var CPMPGDI = function () {
                     case "0003": //transferencia
 
                         $("#lbl_detalle3").html("Destino");
-                        $("#lbl_detalle4").html("Nro. Op.");
+                        $("#lbl_detalle4").html("Nro. Operación");
                        
                         if (objData.DESCRIPCION.indexOf("SERVICIO") >= 0 || objData.DESCRIPCION.indexOf("ALQUILER") >= 0) { //SERVICIO O ALQUILER
 
@@ -825,7 +826,8 @@ var CPMPGDI = function () {
                         }
                         $("#cbo_moneda").attr("disabled", true);
                         $("#txtMonto").attr("disabled", false);
-                        $("#txtNroOpe").attr("disabled", false);
+                        //$("#txtNroOpe").attr("disabled", false);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                         break;
 
                     case "0013": //cheques bancarios
@@ -857,19 +859,19 @@ var CPMPGDI = function () {
                           });
                         $.ajaxSetup({ async: true });
 
-
-                        $("#txtNroOpe").attr("disabled", true);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
+                        //$("#txtNroOpe").attr("disabled", true);
                         $("#txtMonto").attr("disabled", true);
                         break;
 
                     case "0006": //tarjeta de credito
 
                         $("#lbl_detalle3").html("N° Tarjeta");
-                        $("#lbl_detalle4").html("Nro. Op.");
+                        $("#lbl_detalle4").html("Cod. Autorización");
 
                         $("#txtNroOpe").attr("disabled", false);
                         $("#txtMonto").attr("disabled", false);
-
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
                         $("#cbDestino").attr("disabled", false);
                         $.ajaxSetup({ async: false });
 
@@ -893,11 +895,11 @@ var CPMPGDI = function () {
                     case "0005": // tarjeta de debito
 
                         $("#lbl_detalle3").html("N° Tarjeta");
-                        $("#lbl_detalle4").html("Nro. Op.");
+                        $("#lbl_detalle4").html("Cod. Autorización");
 
                         $("#txtNroOpe").attr("disabled", false);
                         $("#txtMonto").attr("disabled", false);
-
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
                         $("#cbDestino").attr("disabled", false);
                         $.ajaxSetup({ async: false });
 
@@ -932,6 +934,7 @@ var CPMPGDI = function () {
                             $(".mPersona").css("display", "none");
                             offObjectEvents("txtNroOpe");
                             $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de billetera digital");
                             $("#txtMonto").attr("disabled", false);
                             $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
 
@@ -1232,7 +1235,7 @@ function pagar() {
             },
             contenttype: "application/json;",
             datatype: "json",
-            beforeSend: function () { Bloquear($("#ventana"), "Grabando Datos"); },
+            beforeSend: function () { Bloquear($("#ventana"), "Procesando pago ..."); },
             async: true,
             success:function(res){
                 if (res != null && res != "" && res.indexOf("error") < 0) {
@@ -1336,7 +1339,8 @@ function consultaDeudas() {
                 llenarTablaDeudas(json);
 
             } else {
-                llenarTablaDeudas(null);
+                ActualizarUltimoIndicador();
+                //llenarTablaDeudas(null);
             }
         },
         complete: function () {
@@ -1346,7 +1350,46 @@ function consultaDeudas() {
 
 }
 
+function ActualizarUltimoIndicador() {
+    $.ajax({
+        type: "POST",
+        url: "vistas/NC/ajax/NCMTCAM.ASHX?opcion=8.5",
+        success: function (datos) {
 
+            if (datos == "OK") {
+                consultaDeudas2();
+            }
+        },
+
+        error: function (msg) {
+            alert(msg);
+        }
+    });
+}
+
+function consultaDeudas2() {
+
+    $.ajax({
+        type: "post",
+        url: "vistas/CP/ajax/CPMPGDI.ASHX",
+        data: { flag: 4, empresa: $("#slcEmpresa").val(), estable: $("#slcSucural").val() },
+        async: true,
+        beforeSend: function () { Bloquear($($("#tblBandeja").parents("div")[0]), "Obteniendo Gastos por Pagar ..."); },
+        success: function (datos) {
+            if (datos != "" && datos != null && datos != "[-]") {
+                var json = $.parseJSON(datos);
+                llenarTablaDeudas(json);
+
+            } else {
+                llenarTablaDeudas(null);
+            }
+        },
+        complete: function () {
+            Desbloquear($($("#tblBandeja").parents("div")[0]));
+        }
+    });
+
+}
 
 function llenarTablaDeudas(json) {
 

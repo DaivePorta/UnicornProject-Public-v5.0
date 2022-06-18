@@ -412,7 +412,7 @@ Public Class NVMANTI : Implements IHttpHandler
 
                 Case "5" 'CREAR DOCUMENTO ANTICIPO
                     context.Response.ContentType = "application/json; charset=utf-8"
-                    Dim cadena As String
+                    Dim cadena As Array
                     If (p_POR_PAGAR = "S") Then ' CUANDO SELECCIONA EL MODO POR COBRAR
                         cadena = cAnticipo.CompletarAnticipoClientePorCobrar(p_CTLG_CODE, p_SCSL_CODE, p_DCTO_CODE, p_CLIE_PIDM, p_DCTO_CODE_REF,
                                                                   p_MONE_CODE, p_VALOR, p_VALOR_CAMBIO_OFI,
@@ -448,7 +448,8 @@ Public Class NVMANTI : Implements IHttpHandler
                     If Not (cadena Is Nothing) Then
                         resb.Append("[")
                         resb.Append("{")
-                        resb.Append("""CODIGO"" :" & """" & cadena & """")
+                        resb.Append("""CODIGO"" :" & """" & cadena(0).ToString & """,")
+                        resb.Append("""DATOS_QR"" :" & """" & cadena(1).ToString & """")
                         resb.Append("}")
                         resb.Append("]")
                     End If
@@ -542,61 +543,61 @@ Public Class NVMANTI : Implements IHttpHandler
 
                     res = sCodMovCont
 
-                Case "LPCQRANTI" 'Parametros para el QR
-                    context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = nvVenta.ListarParametrosQRAnticipo(If(p_CODE_COTI = Nothing, "", p_CODE_COTI))
-                    If Not (dt Is Nothing) Then
-                        resb.Append("[")
-                        For Each MiDataRow As DataRow In dt.Rows
-                            resb.Append("{")
-                            resb.Append("""RUC_EMISOR"" :" & """" & MiDataRow("RUC_EMISOR").ToString & """,")
-                            resb.Append("""CODIGO_DOC"" :" & """" & MiDataRow("CODIGO_DOC").ToString & """,")
-                            resb.Append("""SERIE"" :" & """" & MiDataRow("SERIE").ToString & """,")
-                            resb.Append("""NUMERO"" :" & """" & MiDataRow("NUMERO").ToString & """,")
-                            resb.Append("""TOTAL_IGV"" :" & """" & MiDataRow("TOTAL_IGV").ToString & """,")
-                            resb.Append("""IMPORTE_TOTAL"" :" & """" & MiDataRow("IMPORTE_TOTAL").ToString & """,")
-                            resb.Append("""FECHA_EMISION"" :" & """" & MiDataRow("FECHA_EMISION").ToString & """,")
-                            resb.Append("""TIPO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("TIPO_DOC_ADQUIRIENTE").ToString & """,")
-                            resb.Append("""NUMERO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("NUMERO_DOC_ADQUIRIENTE").ToString & """")
-                            resb.Append("}")
-                            resb.Append(",")
-                        Next
-                        resb.Append("{}")
-                        resb = resb.Replace(",{}", String.Empty)
-                        resb.Append("]")
-                    End If
-                    res = resb.ToString()
+                'Case "LPCQRANTI" 'Parametros para el QR
+                '    context.Response.ContentType = "application/json; charset=utf-8"
+                '    dt = nvVenta.ListarParametrosQRAnticipo(If(p_CODE_COTI = Nothing, "", p_CODE_COTI))
+                '    If Not (dt Is Nothing) Then
+                '        resb.Append("[")
+                '        For Each MiDataRow As DataRow In dt.Rows
+                '            resb.Append("{")
+                '            resb.Append("""RUC_EMISOR"" :" & """" & MiDataRow("RUC_EMISOR").ToString & """,")
+                '            resb.Append("""CODIGO_DOC"" :" & """" & MiDataRow("CODIGO_DOC").ToString & """,")
+                '            resb.Append("""SERIE"" :" & """" & MiDataRow("SERIE").ToString & """,")
+                '            resb.Append("""NUMERO"" :" & """" & MiDataRow("NUMERO").ToString & """,")
+                '            resb.Append("""TOTAL_IGV"" :" & """" & MiDataRow("TOTAL_IGV").ToString & """,")
+                '            resb.Append("""IMPORTE_TOTAL"" :" & """" & MiDataRow("IMPORTE_TOTAL").ToString & """,")
+                '            resb.Append("""FECHA_EMISION"" :" & """" & MiDataRow("FECHA_EMISION").ToString & """,")
+                '            resb.Append("""TIPO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("TIPO_DOC_ADQUIRIENTE").ToString & """,")
+                '            resb.Append("""NUMERO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("NUMERO_DOC_ADQUIRIENTE").ToString & """")
+                '            resb.Append("}")
+                '            resb.Append(",")
+                '        Next
+                '        resb.Append("{}")
+                '        resb = resb.Replace(",{}", String.Empty)
+                '        resb.Append("]")
+                '    End If
+                '    res = resb.ToString()
 
-                Case "GQRANTI" 'Parametros para guardar el QR
-                    context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = nvVenta.GuardarCodigoQRAnticipo(p_CODE_COTI, p_IMGQR)
-                    If Not (dt Is Nothing) Then
-                        resb.Append("[")
-                        For Each MiDataRow As DataRow In dt.Rows
-                            resb.Append("{")
-                            resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
-                            resb.Append("""QR"" :" & """" & MiDataRow("QR").ToString & """")
-                            resb.Append("}")
-                            resb.Append(",")
-                        Next
-                        resb.Append("{}")
-                        resb = resb.Replace(",{}", String.Empty)
-                        resb.Append("]")
+                Case "GQR" 'Parametros para guardar el QR
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    res = nvVenta.GuardarCodigoQR(p_CODE_COTI, p_IMGQR)
+                Case "GENERAR_PDF" 'DPORTA
+                    Dim msgError As String = "OK"
+                    Dim dtCabecera As New DataTable
+                    'dtCabecera = cAnticipo.ListarAnticiposCliente(p_CODE, "", "", "", "", Nothing, "5", "", "")
+                    If p_CODE.Length = 9 Then 'And dtCabecera.Rows(0)("PAGADO_IND") = "S" Then
+                        Try
+                            GenerarPDF(p_CODE)
+                        Catch ex As Exception
+                            msgError = "ERROR: " + ex.Message
+                        End Try
+                    Else
+                        msgError = "ERROR"
                     End If
-                    res = resb.ToString()
+                    res = msgError.ToString()
                 Case "correo"
                     Dim email As New Nomade.Mail.NomadeMail("Bn")
-                    USAR_IGV_IND = context.Request("USAR_IGV_IND")
+                    'USAR_IGV_IND = context.Request("USAR_IGV_IND")
                     'CAMBIAR EL primer NREMITENTE POR EL NOMBRE DEL USUARIO
-                    If Not My.Computer.FileSystem.FileExists(HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf") Then
-                        ' email.enviar(NREMITENTE, NREMITENTE, DESTINATARIOS, ASUNTO, MENSAJE)
-                        GenerarPDF(p_CODE, USAR_IGV_IND)
-                    End If
+                    'If Not My.Computer.FileSystem.FileExists(HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf") Then
+                    ' email.enviar(NREMITENTE, NREMITENTE, DESTINATARIOS, ASUNTO, MENSAJE)
+                    GenerarPDF(p_CODE)
+                    'End If
                     Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf"
 
                     MENSAJE += "<br/>"
                     Dim documento As String = ""
-                    documento = GenerarDctoImprimir(p_CODE, "S", "N") 'GenerarDctoCorreo(p_CODE, USAR_IGV_IND, "")
+                    documento = GenerarDctoCorreo(p_CODE, USAR_IGV_IND, "") 'GenerarDctoCorreo(p_CODE, USAR_IGV_IND, "")
                     MENSAJE += documento
                     'Dim piePagina As String = ""
                     'piePagina = "<br/><table><tr><td colspan='4'>&nbsp;</td></tr>"
@@ -637,17 +638,17 @@ Public Class NVMANTI : Implements IHttpHandler
         Dim tabla As New StringBuilder
         Dim dtCabecera As New DataTable
         Dim dtDetalles As New DataTable
-        Dim dtEmpresas As New DataTable
+        ' Dim dtEmpresas As New DataTable
 
-        Dim dtParametroLogo As New DataTable
-        Dim dtParametroPiePagina As New DataTable
+        'Dim dtParametroLogo As New DataTable
+        'Dim dtParametroPiePagina As New DataTable
 
         'dtCabecera = cAnticipo.ListarAnticiposCliente(p_CODE, "", "", "", "", Nothing, "1", p_CTLG_CODE, p_SCSL_CODE)
-        dtCabecera = cAnticipo.ListarAnticiposCliente(p_CODE, "", "", "", "", Nothing, "1", "", "") 'nvVenta.ListarDocumentosVenta(p_CODE, "", "", "", "", "", "", "", "")
+        dtCabecera = cAnticipo.ListarAnticiposCliente(p_CODE, "", "", "", "", Nothing, "4", "", "") 'nvVenta.ListarDocumentosVenta(p_CODE, "", "", "", "", "", "", "", "")
         dtDetalles = Nothing
 
-        dtParametroLogo = New Nomade.NC.NCParametros("Bn").ListarParametros("LOVE", "")
-        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "")
+        'dtParametroLogo = New Nomade.NC.NCParametros("Bn").ListarParametros("LOVE", "")
+        'dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "")
 
         'dtDetalles = nvVenta.ListarDetalleDocumentoVenta(p_CODE, "0", "")
         If dtCabecera IsNot Nothing Then
@@ -682,7 +683,7 @@ Public Class NVMANTI : Implements IHttpHandler
             'VARIABLE PARA COLOCAR EL QR EN EL PDF
             Dim rutaQr As String = ""
             'PIE DE PAGINA EDITABLE
-            Dim pie_pagina As String = ""
+            'Dim pie_pagina As String = ""
 
             Dim mon As String = dtCabecera.Rows(0)("SIMBOLO_MONEDA") 'Simbolo de moneda     
             Dim descMon As String = dtCabecera.Rows(0)("DESC_MONEDA") 'Descripcion de moneda        
@@ -691,11 +692,11 @@ Public Class NVMANTI : Implements IHttpHandler
             Dim totalSinDscto As Decimal = 0
             Dim totalDsctoSinIgv As Decimal = 0
             'OBTENER LOGO
-            dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA"), "A", "")
-            rutaLogo = dtEmpresas(0)("RUTA_IMAGEN").ToString
+            'dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA"), "A", "")
+            rutaLogo = dtCabecera.Rows(0)("RUTA_IMAGEN").ToString
 
             'OBTENER EL TEXTO QUE VA A IR EN LA IMPRESION COMO PIE DE PAGINA
-            pie_pagina = dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString
+            'pie_pagina = dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString
 
             'LA RUTA QUE VA A TENER
             rutaQr = dtCabecera(0)("IMAGEN_QR").ToString
@@ -709,20 +710,25 @@ Public Class NVMANTI : Implements IHttpHandler
                 tabla.AppendFormat("<tr><th colspan='4'>&nbsp;</th></tr>")
             End If
 
-            If dtParametroLogo IsNot Nothing Then
-                If dtParametroLogo.Rows(0)("VALOR") = "S" Then
-                    If Not rutaLogo = "" Then
-                        tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
-                    End If
-                End If
-            Else
-                If Not rutaLogo = "" Then
-                    tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
-                End If
-            End If
+            'If dtParametroLogo IsNot Nothing Then
+            '    If dtParametroLogo.Rows(0)("VALOR") = "S" Then
+            '        If Not rutaLogo = "" Then
+            '            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
+            '        End If
+            '    End If
+            'Else
+            '    If Not rutaLogo = "" Then
+            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
+            '    End If
+            'End If
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
-            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
+            If (dtCabecera.Rows(0)("RUC").substring(0, 2) = "10") Then 'DPORTA 10/12/2021
+                tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("DESC_CORTA_EMPRESA"))
+                tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>De: {0}</td></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
+            Else
+                tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
+            End If
             tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>RUC {0}</th></tr>", dtCabecera.Rows(0)("RUC"))
             tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", dtCabecera.Rows(0)("DIRECCION"))
             'tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>TELEF: {0}</td></tr>", dtCabecera.Rows(0)("TELEFONO"))
@@ -730,7 +736,7 @@ Public Class NVMANTI : Implements IHttpHandler
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
             tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("DOCUMENTO"))
-            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("NUM_DCTO"), dtCabecera.Rows(0)("DOCUMENTO_MIN"))
+            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("NUM_DCTO"))
             tabla.Append("</thead>")
 
             tabla.Append("<tbody")
@@ -747,10 +753,6 @@ Public Class NVMANTI : Implements IHttpHandler
             If dtCabecera.Rows(0)("MOPA") = "0002" Then
                 tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Cuotas<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("CUOTAS")) 'Cuotas
             End If
-
-
-
-
             'tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Moneda<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DESC_MONEDA"))
             If exoneradaInd = "S" Then
                 tabla.Append("<tr><td></td><td colspan='3'>(Exonerado)</td></tr>")
@@ -778,8 +780,8 @@ Public Class NVMANTI : Implements IHttpHandler
                 Next
             Else
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td style='text-align: left;'></td>")
-                tabla.AppendFormat("<td style='text-align: left;padding-right:10px;padding-left:5px;' colspan='2'><span style='word-break:break-all;'> {0}</span></td>", dtCabecera.Rows(0)("GLOSA")) ', dtCabecera.Rows(0)("VALOR")) SIMBOLO_MONEDA
+                tabla.AppendFormat("<td style='text-align: left;'>1</td>")
+                tabla.AppendFormat("<td style='text-align: left;padding-right:10px;padding-left:5px;' colspan='2'><span style='word-break:break-all;'> {0}</span></td>", "ANTICIPO") ', dtCabecera.Rows(0)("VALOR")) SIMBOLO_MONEDA
                 tabla.AppendFormat("<td style='text-align: right;'>{0}<br/><span style='display: inline-block;position: relative;left: 6px' >{1}</span></td></br>", dtCabecera.Rows(0)("VALOR"), "")
                 tabla.Append("</tr>")
             End If
@@ -939,18 +941,21 @@ Public Class NVMANTI : Implements IHttpHandler
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
             'tabla.Append("<tr style='border-top: 1px dashed black;'>")
             'tabla.Append("<td colspan='4' style='text-align: center;'>Escribanos al correo: <strong>informes@orbitum.org</strong></td>")
-            If dtParametroPiePagina IsNot Nothing Then 'PIE DE PAGINA 
-                If dtParametroPiePagina.Rows(0)("VALOR") = "SI" Then
-                    If Not pie_pagina = "" Then
-                        tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", pie_pagina)
-                        'tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><span style='float:right'></span>{0}</th></tr>", pie_pagina)
-                    End If
-                Else
-                    ' If Not pie_pagina = "" Then
-                    tabla.Append("<td colspan='4' style='text-align: center;'>GRACIAS POR SU COMPRA</td>")
-                    'End If
-                End If
+            'If dtParametroPiePagina IsNot Nothing Then 'PIE DE PAGINA 
+            Dim docu = dtCabecera.Rows(0)("NUM_DCTO")
+            If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" Then
+                'If Not pie_pagina = "" Then
+                tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", "Para consultar el documento ingrese a http://52.41.93.228:1115, debe estar disponible dentro de las próximas 48 hrs. a partir de la fecha de emisión.")
+                'tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><span style='float:right'></span>{0}</th></tr>", pie_pagina)
+                'End If
+            ElseIf (docu.substring(0, 2) = "NV") Then
+                ' If Not pie_pagina = "" Then
+                tabla.Append("<td colspan='4' style='text-align: center;'>CANJEAR POR BOLETA O FACTURA</td>")
+                'End If
+            Else
+                tabla.Append("<td colspan='4' style='text-align: center;'>GRACIAS POR SU PREFERENCIA</td>")
             End If
+            'End If
         End If
         tabla.Append("</tr>")
         tabla.Append("</thead>")
@@ -962,26 +967,43 @@ Public Class NVMANTI : Implements IHttpHandler
 
 
     'CORREO    
-    Public Function GenerarPDF(ByVal CODIGO As String, ByVal USAR_IGV_IND As String) As String
+    Public Function GenerarPDF(ByVal CODIGO As String) As String
         Dim ress As String = ""
         Dim htmlText As String = ""
         Dim cNomArch As String = CODIGO & ".pdf"
-        htmlText = getHtmlTextPDF(CODIGO, USAR_IGV_IND)
-
-        HTMLToPDF(htmlText, cNomArch)
+        htmlText = getHtmlTextPDF(CODIGO)
+        HTMLToPDF(htmlText, cNomArch, CODIGO)
         Return ress
     End Function
 
-    Function getHtmlTextPDF(ByVal codigo As String, ByVal USAR_IGV_IND As String) As String
+    Function getHtmlTextPDF(ByVal codigo As String) As String
         Dim htmlText As New StringBuilder
         htmlText.Length = 0
         Dim documento As String = ""
-        documento = GenerarDctoCorreo(codigo, USAR_IGV_IND)
+        documento = GenerarDctoCorreo(codigo, USAR_IGV_IND, "")
         htmlText.Append(documento)
         Return htmlText.ToString
     End Function
 
-    Sub HTMLToPDF(ByVal HTML As String, ByVal FilePath As String)
+    Sub HTMLToPDF(ByVal HTML As String, ByVal FilePath As String, ByVal p_CODE As String)
+
+        Dim nc As New Nomade.NC.NCEmpresa("Bn")
+        Dim dtCabecera As DataTable
+        dtCabecera = cAnticipo.ListarAnticiposCliente(p_CODE, "", "", "", "", Nothing, "4", "", "")
+
+        Dim imgS, imgI As String
+
+        Dim imgSuperior As String = dtCabecera(0)("IMG_SUPERIOR").ToString
+        imgS = imgSuperior.Replace("../../../", String.Empty)
+        If Not My.Computer.FileSystem.FileExists(HttpContext.Current.Server.MapPath("~") & imgS) Then
+            imgS = "\recursos\img\SIN_IMAGEN.png"
+        End If
+
+        Dim imgInferior As String = dtCabecera(0)("IMG_INFERIOR").ToString
+        imgI = imgInferior.Replace("../../../", String.Empty)
+        If Not My.Computer.FileSystem.FileExists(HttpContext.Current.Server.MapPath("~") & imgI) Then
+            imgI = "\recursos\img\SIN_IMAGEN.png"
+        End If
 
         Dim archivo, res As String
         res = "Archivos\" + FilePath
@@ -992,39 +1014,48 @@ Public Class NVMANTI : Implements IHttpHandler
 
         Dim document As Document
         document = New Document(PageSize.A4, 25, 25, 55, 65)
+
         PdfWriter.GetInstance(document, New FileStream(archivo, FileMode.Create))
         document.Open()
 
-        Dim nc As New Nomade.NC.NCEmpresa("Bn")
-        Dim dtEmpre As DataTable
-        dtEmpre = nc.ListarEmpresa(p_CTLG_CODE, "", "")
-
-        Dim imgS, imgI As String
-
-        Dim imgSuperior As String = dtEmpre.Rows(0)("IMG_SUPERIOR").ToString()
-        imgS = imgSuperior.Replace("../../../", String.Empty)
-        If Not My.Computer.FileSystem.FileExists(HttpContext.Current.Server.MapPath("~") & imgS) Then
-            imgS = "\recursos\img\SIN_IMAGEN.png"
-        End If
-
-        Dim imgInferior As String = dtEmpre.Rows(0)("IMG_INFERIOR").ToString()
-        imgI = imgInferior.Replace("../../../", String.Empty)
-        If Not My.Computer.FileSystem.FileExists(HttpContext.Current.Server.MapPath("~") & imgI) Then
-            imgI = "\recursos\img\SIN_IMAGEN.png"
-        End If
-
-        Dim abc As StringReader = New StringReader(HTML)
         Dim styles As iTextSharp.text.html.simpleparser.StyleSheet = New iTextSharp.text.html.simpleparser.StyleSheet()
         styles.LoadStyle("border", "border-bottom", "2px")
 
         Dim hw As iTextSharp.text.html.simpleparser.HTMLWorker = New iTextSharp.text.html.simpleparser.HTMLWorker(document)
-        hw.Parse(New StringReader(HTML))
+        hw.Parse(New StringReader(HTML.ToString))
         document.Close()
 
-        imgC(FilePath, imgS, imgI)
+        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" Then 'DPORTA 20/05/2022
+            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(dtCabecera(0)("IMAGEN_QR").ToString)) 'SOLO PARA ´DOCS ELECTRÓNICOS
+        Else
+            imgC(FilePath, imgS, imgI)
+        End If
     End Sub
 
-    Function imgC(ByVal Archivo As String, ByVal imgs As String, ByVal imginf As String) As String
+    Function Base64ToImage(ByVal base64string As String) As System.Drawing.Image 'DPORTA 20/05/2022
+        'Configurar imagen y obtener flujo de datos juntos
+        Dim img As System.Drawing.Image
+        Dim MS As System.IO.MemoryStream = New System.IO.MemoryStream
+        Dim b64 As String
+        If base64string = "" Then
+            b64 = ""
+        Else
+            b64 = base64string.Split(",")(1).Replace(" ", "+") 'Con el split se Toma lo que corresponde al base64 y luego se reemplaza
+        End If
+
+        Dim b() As Byte
+
+        'Convierte el mensaje codificado en base64 en datos de imagen
+        b = Convert.FromBase64String(b64)
+        MS = New System.IO.MemoryStream(b)
+
+        'Crea la imagen
+        img = System.Drawing.Image.FromStream(MS)
+
+        Return img
+    End Function
+
+    Function imgCabConQR(ByVal Archivo As String, ByVal imgs As String, ByVal imginf As String, ByVal imgQR As System.Drawing.Image) As String 'DPORTA 20/05/2022
 
         Dim WatermarkLocation As String = HttpContext.Current.Server.MapPath("~") & imgs
         Dim WatermarkLocationI As String = HttpContext.Current.Server.MapPath("~") & imginf
@@ -1036,21 +1067,24 @@ Public Class NVMANTI : Implements IHttpHandler
 
         Dim img As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(WatermarkLocation)
 
-        img.ScaleAbsoluteWidth(600)
+        img.ScaleAbsoluteWidth(425) '600
         img.ScaleAbsoluteHeight(73)
-        img.SetAbsolutePosition(0, 770)
+        img.SetAbsolutePosition(25, 770) '0,770
 
-        Dim imgIn As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(WatermarkLocationI)
-        imgIn.ScaleAbsoluteWidth(600)
-        imgIn.ScaleAbsoluteHeight(70)
-        imgIn.Alignment = iTextSharp.text.Image.UNDERLYING
-        imgIn.SetAbsolutePosition(0, 0)
+        Dim imgQ As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(imgQR, System.Drawing.Imaging.ImageFormat.Jpeg) 'Con esto se dibuja la imagen en el PDF
+        imgQ.ScaleAbsoluteWidth(60)
+        imgQ.ScaleAbsoluteHeight(60)
+        imgQ.SetAbsolutePosition(515, 770)
 
         Dim waterMark As PdfContentByte
         For page As Integer = 1 To pdfReader.NumberOfPages
-            waterMark = stamp.GetOverContent(page)
-            waterMark.AddImage(img)
-            waterMark.AddImage(imgIn)
+            If page = 1 Then
+                waterMark = stamp.GetOverContent(page)
+                waterMark.AddImage(img)
+                'If elect = "S" Then
+                waterMark.AddImage(imgQ)
+                'End If
+            End If
         Next
 
         stamp.FormFlattening = True
@@ -1064,6 +1098,65 @@ Public Class NVMANTI : Implements IHttpHandler
 
     End Function
 
+    Function imgC(ByVal Archivo As String, ByVal imgs As String, ByVal imginf As String) As String
+
+        Dim WatermarkLocation As String = HttpContext.Current.Server.MapPath("~") & imgs
+        Dim WatermarkLocationI As String = HttpContext.Current.Server.MapPath("~") & imginf
+        'Dim WatermarkLocationQ As String = HttpContext.Current.Server.MapPath("~") & imgQR
+        Dim FileLocation As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & Archivo
+        Dim filePath As String = HttpContext.Current.Server.MapPath("~") & "Archivos\ArchivosAux\" & Archivo
+        Dim document As Document = New Document()
+        Dim pdfReader As PdfReader = New PdfReader(FileLocation)
+        Dim stamp As PdfStamper = New PdfStamper(pdfReader, New FileStream(filePath, FileMode.Create))
+
+        Dim img As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(WatermarkLocation)
+
+        img.ScaleAbsoluteWidth(425) '600
+        img.ScaleAbsoluteHeight(73)
+        img.SetAbsolutePosition(25, 770) '0,770
+
+        'Dim imgQ As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(WatermarkLocationQ)
+        'imgQ.ScaleAbsoluteWidth(60)
+        'imgQ.ScaleAbsoluteHeight(60)
+        'imgQ.SetAbsolutePosition(515, 770)
+
+
+        'Dim imgIn As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(WatermarkLocationI)
+        'imgIn.ScaleAbsoluteWidth(600)
+        'imgIn.ScaleAbsoluteHeight(70)
+        'imgIn.Alignment = iTextSharp.text.Image.UNDERLYING
+        'imgIn.SetAbsolutePosition(0, 0)
+
+        Dim waterMark As PdfContentByte
+        For page As Integer = 1 To pdfReader.NumberOfPages
+            If page = 1 Then
+                waterMark = stamp.GetOverContent(page)
+                waterMark.AddImage(img)
+                'If elect = "S" Then
+                '    waterMark.AddImage(imgQ)
+                'End If
+                'waterMark.AddImage(imgIn)
+            End If
+        Next
+
+        stamp.FormFlattening = True
+        stamp.Close()
+        pdfReader.Close()
+        document.Close()
+
+        My.Computer.FileSystem.DeleteFile(FileLocation)
+        My.Computer.FileSystem.MoveFile(filePath, FileLocation)
+        Return "ok"
+
+    End Function
+
+    Public Function getLinks(ByVal pie_pagina As String) As String 'DPORTA 31/05/2022
+        Dim cadena As String
+        cadena = "@»(http://([w.]+/?)S*)»"
+        Dim re As Regex = New Regex(cadena, RegexOptions.IgnoreCase Or RegexOptions.Compiled)
+        pie_pagina = re.Replace(pie_pagina, "«<a href=»$1″» target=»»_blank»»>$1</a>»»")
+        Return pie_pagina
+    End Function
 
     '----------------------------------------------------------
     '----------------------------------------------------------
@@ -1071,13 +1164,13 @@ Public Class NVMANTI : Implements IHttpHandler
     '-----------DOCUMENTO PARA CORREO ELECTRÓNICO-------------
     '----------------------------------------------------------
 
-    Public Function GenerarDctoCorreo(ByVal p_CODE As String, ByVal USAR_IGV_IND As String) As String
+    Public Function GenerarDctoCorreo(ByVal p_CODE As String, ByVal USAR_IGV_IND As String, ByVal COPIA_IND As String) As String
         Dim tabla As New StringBuilder
         Dim dtCabecera As New DataTable
         Dim dtDetalles As New DataTable
-        Dim dtEmpresas As New DataTable
+        'Dim dtEmpresas As New DataTable
         'dtCabecera = cAnticipo.ListarAnticiposCliente(p_CODE, "", "", "", "", Nothing, "1", p_CTLG_CODE, p_SCSL_CODE)
-        dtCabecera = cAnticipo.ListarAnticiposCliente(p_CODE, "", "", "", "", Nothing, "1", "", "") 'nvVenta.ListarDocumentosVenta(p_CODE, "", "", "", "", "", "", "", "")
+        dtCabecera = cAnticipo.ListarAnticiposCliente(p_CODE, "", "", "", "", Nothing, "4", "", "") 'nvVenta.ListarDocumentosVenta(p_CODE, "", "", "", "", "", "", "", "")
         dtDetalles = Nothing
         'dtDetalles = nvVenta.ListarDetalleDocumentoVenta(p_CODE, "0", "")
         If dtCabecera IsNot Nothing Then
@@ -1109,17 +1202,16 @@ Public Class NVMANTI : Implements IHttpHandler
 
             Dim exoneradaInd = dtCabecera.Rows(0)("SCSL_EXONERADA_IND")
             Dim rutaLogo As String = ""
-            Dim mon As String = dtCabecera.Rows(0)("SIMBOLO_MONEDA") 'Simbolo de moneda     
+            Dim mon As String = dtCabecera.Rows(0)("SIMBOLO_MONEDA") 'Simbolo de moneda    
             Dim descMon As String = dtCabecera.Rows(0)("DESC_MONEDA") 'Descripcion de moneda            
 
             Dim totalSinDscto As Decimal = 0
             Dim totalDsctoSinIgv As Decimal = 0
             'OBTENER LOGO
-            dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA"), "A", "")
+            'dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA"), "A", "")
 
             'rutaLogo = dtEmpresas(0)("RUTA_IMAGEN").ToString
 
-            tabla.Append("<br>")
             tabla.Append("<br>")
             tabla.Append("<br>")
             tabla.Append("<table border='0' style='width: 90%;' align='center'>")
@@ -1142,20 +1234,28 @@ Public Class NVMANTI : Implements IHttpHandler
             tabla.Append("</thead>")
             tabla.Append("</table>")
 
-
             tabla.Append("<table border='0' style='width: 90%;' align='center' font size=9pt>")
             tabla.Append("<thead>")
-            tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>{0}</th></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
+            If (dtCabecera.Rows(0)("RUC").substring(0, 2) = "10") Then 'DPORTA 10/12/2021
+                tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>{0}</th></tr>", dtCabecera.Rows(0)("DESC_CORTA_EMPRESA"))
+                tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>De: {0}</th></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
+            Else
+                tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>{0}</th></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
+            End If
             tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>RUC {0}</th></tr>", dtCabecera.Rows(0)("RUC"))
             tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>{0}</th></tr>", dtCabecera.Rows(0)("DIRECCION"))
             tabla.Append("</thead>")
             tabla.Append("<tbody>")
             tabla.Append("<tr><td colspan='4' border='1' style='border-top:1px solid black;'></td></tr>")
-            tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Nro Maq</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+            If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" Then
+                If dtCabecera.Rows(0)("TIPO_DCTO") = "0012" Then
+                    tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Nro Maq </strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+                Else
+                    tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Autorizado mediante </strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+                End If
+            End If
             tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Fecha</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("EMISION"))
             tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Local</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("DESC_SUCURSAL"))
-
-
             tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Vend.</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("VENDEDOR_USUA_ID")) 'VENDEDOR
             tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Moneda</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("DESC_MONEDA"))
             tabla.Append("<tr><td colspan='4' border='1' style='border-top:1px solid black;' ></td></tr>")
@@ -1168,12 +1268,12 @@ Public Class NVMANTI : Implements IHttpHandler
             tabla.Append("</table>")
             tabla.Append("<br>")
 
-            tabla.Append("<table border='1' style='width: 100%;' cellspacing='0px'  align='center' font size=9pt>")
+            tabla.Append("<table border='1' style='width: 90%;' cellspacing='0px'  align='center' font size=9pt>")
             tabla.Append("<thead>")
 
             tabla.Append("</thead>")
             tabla.Append("<tbody>")
-            tabla.Append("<tr style='border-top: 1px dashed black;border-bottom: 1px dashed black;'>")
+            tabla.Append("<tr style='border-top: 1px dashed black;border-bottom: 1px dashed black;background-color: #D6EAF8;'>")
             tabla.Append("<td style='text-align: left;'><strong>Cant.</strong></td>")
             tabla.Append("<td style='text-align: left;padding-left:5px;' colspan='2'><strong>Descripción</strong></td>")
             tabla.Append("<td style='text-align: right;'><strong>Total</strong></td>")
@@ -1194,33 +1294,30 @@ Public Class NVMANTI : Implements IHttpHandler
                 Next
             Else
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td style='text-align: left;'></td>")
-                tabla.AppendFormat("<td style='text-align: left;padding-right:10px;padding-left:5px;' colspan='2'><span style='word-break:break-all;'>ANTICIPO EN {0}</span></td>", dtCabecera.Rows(0)("DESC_MONEDA")) ', dtCabecera.Rows(0)("VALOR")) SIMBOLO_MONEDA
+                tabla.AppendFormat("<td style='text-align: left;'>1</td>")
+                tabla.AppendFormat("<td style='text-align: left;padding-right:10px;padding-left:5px;' colspan='2'><span style='word-break:break-all;'> {0}</span></td>", "ANTICIPO") ', dtCabecera.Rows(0)("VALOR")) SIMBOLO_MONEDA
                 tabla.AppendFormat("<td style='text-align: right;'>{0}<br/><span style='display: inline-block;position: relative;left: 6px' >{1}</span></td></br>", dtCabecera.Rows(0)("VALOR"), "")
                 tabla.Append("</tr>")
             End If
 
             tabla.Append("</tbody></table>")
-
-
-            tabla.Append("<table border='0' style='width: 100%;' cellspacing='0px' align='center' font size=9pt>")
+            tabla.Append("<table border='0' style='width: 90%;' cellspacing='0px' align='center' font size=9pt>")
             tabla.Append("<thead>")
-
             tabla.Append("</thead>")
             tabla.Append("<tbody>")
 
             If incIgv = "S" Then
                 tabla.Append("<tr style='border-top: 1px dashed black;'>")
-                tabla.Append("<td colspan='3' style='text-align: right;'><strong>Total Descuento<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Total Descuento {0}</strong></td>", mon)
                 tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("DESCUENTO"))
                 tabla.Append("</tr>")
                 tabla.Append("<tr>")
-                tabla.Append("<td colspan='3' style='text-align: right;'><strong>SubTotal<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>SubTotal {0}</strong></td>", mon)
                 tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("VALOR"))
                 tabla.Append("</tr>")
             Else
                 tabla.Append("<tr style='border-top: 1px dashed black;'>")
-                tabla.Append("<td colspan='3' style='text-align: right;'><strong>Total Descuento<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Total Descuento {0}</strong></td>", mon)
                 tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", Math.Round(totalDsctoSinIgv, 2))
                 tabla.Append("</tr>")
                 Dim baseImponible As Decimal = Math.Round(
@@ -1229,39 +1326,39 @@ Public Class NVMANTI : Implements IHttpHandler
                     Decimal.Parse(dtCabecera.Rows(0)("IMPORTE_GRA")), 2)
 
                 tabla.Append("<tr>")
-                tabla.Append("<td colspan='3' style='text-align: right;'><strong>SubTotal<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>SubTotal {0}</strong></td>", mon)
                 tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", baseImponible)
                 tabla.Append("</tr>")
             End If
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
             tabla.Append("<tr>")
-            tabla.Append("<td colspan='3' style='text-align: right;'><strong>Op. Exonerada<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+            tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Op. Exonerada {0}</strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE_EXO"))
             tabla.Append("</tr>")
 
             tabla.Append("<tr>")
-            tabla.Append("<td colspan='3' style='text-align: right;'><strong>Op. Inafecta<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+            tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Op. Inafecta {0}</strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE_INA"))
             tabla.Append("</tr>")
 
             tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3' style='text-align: right;'><strong>Op. Gravada<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+            tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Op. Gravada {0}</strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE_GRA"))
             tabla.Append("</tr>")
 
             tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3' style='text-align: right;'><strong>I.S.C.<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+            tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>I.S.C. <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("ISC"))
             tabla.Append("</tr>")
 
             tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3' style='text-align: right;'><strong>I.G.V.<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+            tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>I.G.V. <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IGV"))
             tabla.Append("</tr>")
 
             tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3' style='text-align: right;'><strong>Importe Total<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+            tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Importe Total <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("VALOR"))
             tabla.Append("</tr>")
 
@@ -1275,51 +1372,57 @@ Public Class NVMANTI : Implements IHttpHandler
 
             If dtCabecera.Rows(0)("DETRACCION_IND") = "S" Then
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td colspan='3' style='text-align: right;'><strong>Detracción<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Detracción <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
                 tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("DETRACCION"))
                 tabla.Append("</tr>")
             End If
 
             If dtCabecera.Rows(0)("PERCEPCION_IND") = "S" Then
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td colspan='3' style='text-align: right;'><strong>Percepción<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Percepción <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
                 tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("PERCEPCION"))
                 tabla.Append("</tr>")
             End If
 
             If dtCabecera.Rows(0)("RETENCION_IND") = "S" Then
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td colspan='3' style='text-align: right;'><strong>Retención<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Retención <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
                 tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("RETENCION"))
                 tabla.Append("</tr>")
             End If
 
             If Not Decimal.Parse(dtCabecera.Rows(0)("REDONDEO")) = 0 Then
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td colspan='3' style='text-align: right;'><strong>Redondeo<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Redondeo <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
                 tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("REDONDEO"))
                 tabla.Append("</tr>")
             End If
 
             If Not Decimal.Parse(dtCabecera.Rows(0)("DONACION")) = 0 Then
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td colspan='3' style='text-align: right;'><strong>Donación<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Donación <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
                 tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("DONACION"))
                 tabla.Append("</tr>")
             End If
 
             tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3' style='text-align: right;'><strong>Total a Pagar<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+            tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Neto a Pagar <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='text-align: right;'><strong>{0}</strong></td>", dtCabecera.Rows(0)("IMPORTE"))
+            tabla.Append("<br>")
             tabla.Append("</tr>")
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
-            tabla.Append("<tr style='border-top: 1px dashed black;'>")
-            tabla.Append("<td colspan='4' style='text-align: center;'><strong>GRACIAS POR SU PREFERENCIA</strong></td>")
-            tabla.Append("</tr>")
-            tabla.Append("</tbody></table>")
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            tabla.Append("<tr><td colspan='4' border='1'></td></tr>")
+            tabla.Append("<tr>")
+            If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" Then
+                tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", "Para consultar el documento ingrese a http://52.41.93.228:1115, debe estar disponible dentro de las próximas 48 hrs. a partir de la fecha de emisión.")
+            Else
+                tabla.Append("<td colspan='4' style='text-align: center;'>GRACIAS POR SU PREFERENCIA</td>")
+            End If
 
-            tabla.Append("<br>")
+
+            tabla.Append("</table>")
 
         End If
         Return tabla.ToString()

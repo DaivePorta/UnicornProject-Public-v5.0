@@ -141,7 +141,10 @@ Public Class NCMTCAM : Implements IHttpHandler
                 context.Response.ContentType = "text/html"
                 'P.fInserarTipoCambio()
                 res = fActualizarTipoCambio(valorcompralt, valorventalt, fecha, usuario, p_HMS, p_TIPO_CAMBIO)
-
+            Case "8.5" 'Es un artificio auxiliar cuando no se ha guardado el último tipo de cambio del día
+                context.Response.ContentType = "text/html"
+                'P.fInserarTipoCambio()
+                res = fActualizarUltimoIndicador("S")
             Case "7" ' LISTA VALOR CAMBIO UNICO
                 context.Response.ContentType = "application/json; charset=utf-8"
                 Dim oTC As New Nomade.FI.FIMonedas("bn")
@@ -222,6 +225,17 @@ Public Class NCMTCAM : Implements IHttpHandler
         Dim datos As String
 
         datos = P.fActualizarTipoCambio(pTCCompraAlt, pTCVentaAlt, Utilities.fechaLocal(pTCFecha), pUsuario, p_HMS, p_TIPO_CAMBIO)
+
+        Return datos
+
+
+    End Function
+
+    Public Function fActualizarUltimoIndicador(ByVal pIndicador As String) As String
+
+        Dim datos As String
+
+        datos = P.fActualizarUltimoIndicador(pIndicador)
 
         Return datos
 

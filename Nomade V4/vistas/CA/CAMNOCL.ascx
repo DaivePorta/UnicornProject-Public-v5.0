@@ -425,7 +425,7 @@
                                 <div class="span2">
                                     <div class="control-group">
                                         <div class="controls">
-                                            <input id='txtMontoGravado' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
+                                            <input id='txtMontoGravado' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
                                         </div>
                                     </div>
                                 </div>                                
@@ -442,7 +442,7 @@
                                 <div class="span2">
                                     <div class="control-group">
                                         <div class="controls">
-                                            <input id='txtMontoInafecta' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
+                                            <input id='txtMontoInafecta' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
                                         </div>
                                     </div>
                                 </div>                                
@@ -459,7 +459,7 @@
                                 <div class="span2">
                                     <div class="control-group">
                                         <div class="controls">
-                                            <input id='txtMontoExonerado' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
+                                            <input id='txtMontoExonerado' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
                                         </div>
                                     </div>
                                 </div>                                
@@ -480,7 +480,7 @@
                                 <div class="span2">
                                     <div class="control-group">
                                         <div class="controls">
-                                            <input id='txtMontoIgv' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
+                                            <input id='txtMontoIgv' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
                                         </div>
                                     </div>
                                 </div>                                
@@ -498,13 +498,13 @@
                                 <div class="span2">
                                     <div class="control-group">
                                         <div class="controls">
-                                            <input id='txtTotalDevolucion' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
+                                            <input id='txtTotalDevolucion' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <input id='txtMontoISC' class="span12" style='text-align: right;' type='hidden' onkeypress="return ValidaDecimales(event,this,2)" />
+                            <input id='txtMontoISC' disabled='disabled' class="span12" style='text-align: right;' type='hidden' onkeypress="return ValidaDecimales(event,this,2)" />
 
                             <%--<div class="row-fluid">
                                 <div id="divMensajes">
@@ -542,6 +542,7 @@
                     <a class="btn hidden black" id="btnEFac" style="display:none;"><i class="icon-file"></i>&nbsp;Fac. Electronica</a>
                     <a id="grabar" class="btn blue" href="javascript:Crear();"><i class="icon-save"></i>&nbsp;Grabar</a>
                     <a id="cancelar" class="btn" href="javascript:Cancelar();"><i class="icon-remove"></i>&nbsp;Cancelar</a>
+                    <a id="imprimir" class="btn black" href="javascript:ImprimirDcto();" style="display:none"><i class="icon-print"></i>&nbsp;Imprimir</a>
                 </div>
 
             </div>
@@ -618,7 +619,8 @@
 <!-- FIN CUADRO PARA LA FORMA-->
 <div id="divDctoImprimir" style="display: none;">
 </div>
-
+ <!-- CAMPOS PARA CREAR QR -->
+<div id="codigoQR" style="display: none"></div>  
 <input id="hfPIDM" type="hidden" />
 <input id="hfDIR" type="hidden" />
 <input id="hfDNI" type="hidden" />
@@ -646,6 +648,7 @@
 
 <!-- IMPORTAMOS LOS PLUGINS QUE SE USARAN-->
 <script type="text/javascript" src="../vistas/CA/js/CAMNOCL.js"></script>
+<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>
 <script>
     jQuery(document).ready(function () {
         // Se Inicializa el modulo de javascript para esta forma.

@@ -92,7 +92,7 @@ Public Class NVLREMO : Implements IHttpHandler
                     End If
                 Case "IMPR" 'Generar tabla para impresion de detalle 
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    res = GenerarReporteImprimir(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    res = GenerarReporteImprimir(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_HASTA)
                 Case "GENERAR_PDF" 'DPORTA
                     Dim msgError As String = "OK"
                     p_CODE_MOVI = "Reporte_Monetario_"
@@ -1058,7 +1058,7 @@ Public Class NVLREMO : Implements IHttpHandler
 
         'Fila 6 TOTAL CRÉDITO 
         resb.AppendFormat("<tr>")
-        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>{1}{0:N}</strong></td>", Date.Now().ToString("dd/MM/yyyy"), "PENDIENTES A COBRAR AL ")
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>{1}{0:N}</strong></td>", p_HASTA, "PENDIENTES A COBRAR AL ")
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalCreditoSoles, simbMonedaBase)
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalCreditoDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
@@ -1278,7 +1278,7 @@ Public Class NVLREMO : Implements IHttpHandler
         End Get
     End Property
 
-    Public Function GenerarReporteImprimir(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String) As String
+    Public Function GenerarReporteImprimir(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_HASTAH As String) As String
         Dim tabla As New StringBuilder
         Dim dtVentasContado As New DataTable
         Dim dtVentasCredito As New DataTable
@@ -1626,7 +1626,7 @@ Public Class NVLREMO : Implements IHttpHandler
 
         'Fila 6 TOTAL CRÉDITO 
         tabla.AppendFormat("<tr>")
-        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>{1}{0:N}</strong></td>", p_HASTA, "PENDIENTES A COBRAR AL ")
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>{1}{0:N}</strong></td>", p_HASTAH, "PENDIENTES A COBRAR AL ")
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", totalCreditoSolesC, simbMonedaBase)
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", totalCreditoDolaresC, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")

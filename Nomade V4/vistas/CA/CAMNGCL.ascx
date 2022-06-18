@@ -1,5 +1,9 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="CAMNGCL.ascx.vb" Inherits="vistas_CA_CAMNGCL" %>
 <style>
+    #divMail, #divBuscarDoc, #mapaModal {
+        margin-left: 0px !important;
+    }
+
     .typeahead.dropdown-menu li > a {
         padding: 6px 12px 6px 12px;
     }
@@ -36,6 +40,7 @@
                 <h4>
                     <i class="icon-reorder"></i>NOTA DE CRÉDITO GENÉRICA CLIENTE</h4>
                 <div class="actions">
+                    <a class="btn purple hidden" id="btnMail"><i class="icon-envelope"></i>&nbsp;Enviar Mail</a>
                     <a href="javascript: ImprimirDcto();" class="btn black" id="btnImprimirDcto" style="display: none;"><i class="icon-print"></i>&nbsp;Imprimir</a>
                     <a href="?f=CAMNGCL" class="btn green"><i class="icon-plus"></i>&nbsp;Nuevo</a>
                     <a href="?f=CALNGCL" class="btn red"><i class="icon-list"></i>&nbsp;Listar</a>
@@ -523,16 +528,81 @@
 
                 </div>
                  <!-- CAMPOS PARA CREAR QR -->
-                 <div id="codigoQR"></div>
+                 <div id="codigoQR" style="display: none"></div>  
 
                 <div class="form-actions" style="margin-top: 20px;">
                     <a id="grabar" class="btn blue" href="javascript:Crear();"><i class="icon-save"></i>&nbsp;Grabar</a>
                     <a id="cancelar" class="btn" href="javascript:Cancelar();"><i class="icon-remove"></i>&nbsp;Cancelar</a>
+                    <a id="imprimir" class="btn black" href="javascript:ImprimirDcto();" style="display:none"><i class="icon-print"></i>&nbsp;Imprimir</a>
                 </div>
 
             </div>
 
         </div>
+    </div>
+</div>
+<div id="divMail" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 60%; left: 20%" aria-hidden="true">
+    <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
+        <button type="button" class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
+            <i class="icon-remove"></i>
+        </button>
+        <h4 id="divMail_title"><i class="icon-pencil" style="line-height: initial;"></i>&nbsp;Redactar correo electrónico</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row-fluid">
+            <div class="span12" id="divMail_body">
+                <div class="row-fluid">
+                    <div class="span2">
+                        <div class="control-group">
+                            <label class="control-label">De:</label>
+                        </div>
+                    </div>
+                    <div class="span10">
+                        <div class="control-group">
+                            <div class="controls">
+                                <input type="text" id="txtRemitente" class="span12" disabled><input id="txtNRemitente" type="hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span2">
+                        <div class="control-group">
+                            <label class="control-label">Para:</label>
+                        </div>
+                    </div>
+                    <div class="span10">
+                        <div class="control-group">
+                            <div class="controls">
+                                <select multiple class="span12" id="cboCorreos"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span2">
+                        <div class="control-group">
+                            <label class="control-label">Asunto:</label>
+                        </div>
+                    </div>
+                    <div class="span10">
+                        <div class="control-group">
+                            <div class="controls">
+                                <input type="text" id="txtAsunto" class="span12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12" style="padding: 10px; border: thin inset">
+                        <textarea style="border: none; width: 99%; height: 80px" placeholder="Escriba aquí su mensaje" id="txtcontenido"></textarea><hr style="margin: 8px 0px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn green" type="button" onclick="enviarCorreo()" id="btnEnviarCorreo"><i class="icon-plane"></i>&nbsp;Enviar</button>
     </div>
 </div>
 <!-- FIN CUADRO PARA LA FORMA-->

@@ -130,6 +130,7 @@
                 <div class="actions">
                     <a class="btn black" onclick="javascript:imprimirListaDctosVenta();"><i class="icon-print"></i>&nbsp;Imprimir</a>
                     <a class="btn green" href="?f=nvmdocv"><i class="icon-plus"></i>&nbsp;Nuevo</a>
+                    <a class="btn red" href="?f=nvldoct"><i class="icon-list"></i>&nbsp;Listar</a>
                 </div>
             </div>
 
@@ -825,23 +826,23 @@
     </div>
     <div class="modal-footer">
         <div class="row-fluid">
-            <div class="span1"></div>
-            <div class="span7" id="divBotones1">
+            <%--<div class="span1"></div>--%>
+            <div class="span8" id="divBotones1">
                 <a class="btn purple" id="btnMail"><i class="icon-envelope"></i>&nbsp;Enviar Mail</a>
                 <a id="btnImprimirDetalle" class="btn black"><i class="icon-print"></i>&nbsp; Imprimir</a>
                 <a class="btn blue" id="btnVerAsiento"><i class="icon-book"></i>&nbsp; Ver Asiento</a>
                 <a class="btn blue" id="btnVerDetVenta" style="display:none"><i class="icon-book"></i>&nbsp; Ver Detalle Venta</a>
-                <a class="btn red" id="btnGenerarPDF"><i class="icon-book"></i>&nbsp; Generar PDF</a>
+                <a class="btn red" id="btnGenerarPDF"><i class="icon-book"></i>&nbsp; Descargar PDF</a>
             </div>
-            <div class="span7" id="divBotones2" style="display: none;"><%--DPORTA--%>
-                <a class="btn purple" id="btnMail"><i class="icon-envelope"></i>&nbsp;Enviar Mail</a>
+            <div class="span7" id="divBotones2" style="display: none;">
+                <%--<a class="btn purple" id="btnMail"><i class="icon-envelope"></i>&nbsp;Enviar Mail</a>
                 <a id="btnImprimirDetalle" class="btn black"><i class="icon-print"></i>&nbsp; Imprimir</a>
                 <a class="btn blue" id="btnVerAsiento"><i class="icon-book"></i>&nbsp; Ver Asiento</a>
                 <a class="btn blue" id="btnVerDetVenta" style="display:none"><i class="icon-book"></i>&nbsp; Ver Detalle Venta</a>
-                <a class="btn red" id="btnGenerarPDF" style="display:none"><i class="icon-book"></i>&nbsp; Generar PDF</a>
-                <asp:Button class="btn red" ID="btnLibroPDF" runat="server" Text="Descargar PDF" />
+                <a class="btn red" id="btnGenerarPDF" style="display:none"><i class="icon-book"></i>&nbsp; Generar PDF</a>--%>
+                <asp:Button class="btn red" ID="btnLibroPDF" runat="server" Text="Descargar PDF" OnClick="btnPdf_Click"/>
             </div>
-            <div class="span3"></div>
+            <%--<div class="span3"></div>--%>
         </div>
     </div>
 </div>
@@ -919,6 +920,7 @@
     Dim aleatorio As String = System.Convert.ToString(numAleatorio.Next)
 </script>
 <input id="hfPIDM" type="hidden" />
+<input id="hfTipoModulo" type="hidden" />
 <script type="text/javascript" src="../vistas/NV/js/NVLDOCT.js?<%=aleatorio%>"></script>
 <script>
 

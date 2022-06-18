@@ -862,13 +862,13 @@ var CPMPGVA = function () {
             $("#cbDestino").attr("disabled", false).off("change");
 
             $("#txtNroOpe").val("");
-
+            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
             switch (MedioActual) {
 
                 case "0001"://DEPOSITO BANCARIO
 
                     $("#lbl_detalle3").html("Destino");
-                    $("#lbl_detalle4").html("Nro. Op.");
+                    $("#lbl_detalle4").html("Nro. Operación");
 
 
                     $.ajaxSetup({ async: false });
@@ -899,6 +899,7 @@ var CPMPGVA = function () {
                     $(".mPersona").css("display", "none");
                     offObjectEvents("txtNroOpe");
                     $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                     $("#txtMonto").attr("disabled", false);
                     break;
 
@@ -913,7 +914,7 @@ var CPMPGVA = function () {
                     $(".mPersona").css("display", "block");
 
 
-
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
                     $("#txtNroOpe").addClass("personas").attr("disabled", false);
                     cargarInputsPersona();
 
@@ -924,7 +925,7 @@ var CPMPGVA = function () {
                 case "0003": //transferencia
 
                     $("#lbl_detalle3").html("Destino");
-                    $("#lbl_detalle4").html("Nro. Op.");
+                    $("#lbl_detalle4").html("Nro. Operación");
 
 
 
@@ -960,8 +961,8 @@ var CPMPGVA = function () {
                     $("#cbDestino").attr("disabled", false).change();
                     $("#cbo_moneda").attr("disabled", true);
                     $("#txtMonto").attr("disabled", false);
-                    $("#txtNroOpe").attr("disabled", false);
-
+                    //$("#txtNroOpe").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                     break;
 
                 case "0013": //cheques bancarios
@@ -993,19 +994,19 @@ var CPMPGVA = function () {
                         });
                     $.ajaxSetup({ async: true });
 
-
-                    $("#txtNroOpe").attr("disabled", true);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
+                    //$("#txtNroOpe").attr("disabled", true);
                     $("#txtMonto").attr("disabled", true);
                     break;
 
                 case "0006": //tarjeta de credito
 
                     $("#lbl_detalle3").html("N° Tarjeta");
-                    $("#lbl_detalle4").html("Nro. Op.");
+                    $("#lbl_detalle4").html("Cod. Autorización");
 
-                    $("#txtNroOpe").attr("disabled", false);
+                    //$("#txtNroOpe").attr("disabled", false);
                     $("#txtMonto").attr("disabled", false);
-
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
                     $("#cbDestino").attr("disabled", false);
                     $.ajaxSetup({ async: false });
 
@@ -1029,11 +1030,11 @@ var CPMPGVA = function () {
                 case "0005": // tarjeta de debito
 
                     $("#lbl_detalle3").html("N° Tarjeta");
-                    $("#lbl_detalle4").html("Nro. Op.");
+                    $("#lbl_detalle4").html("Cod. Autorización");
 
-                    $("#txtNroOpe").attr("disabled", false);
+                    //$("#txtNroOpe").attr("disabled", false);
                     $("#txtMonto").attr("disabled", false);
-
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
                     $("#cbDestino").attr("disabled", false);
                     $.ajaxSetup({ async: false });
 
@@ -2344,13 +2345,14 @@ function pagar() {
             data.append('notacredito', cade_pagoConNotacredito.substring(1));
             data.append('tipo_cambio', $("#txt_TC").val());
             data.append('RUTA_IMAGEN', $("#imgSustento").attr("src"));
-            Bloquear("ventana");
+            //Bloquear("ventana");
             var jqxhr = $.ajax({
                 type: "POST",
                 url: "vistas/CP/ajax/CPMPGVA.ASHX",
                 contentType: false,
                 data: data,
                 processData: false,
+                beforeSend: function () { Bloquear($("#ventana"), "Procesando pago ..."); },
                 cache: false
             })
                 .success(function (res) {

@@ -133,12 +133,12 @@
                                                 ByVal p_PCTJ_IGV As String, ByVal p_EFECTIVO_RECIBIDO As String,
                                                 ByVal p_EFECTIVO_RECIBIDO_ALTERNO As String, ByVal p_VUELTO As String,
                                                 ByVal p_VUELTO_ALTERNO As String, Optional p_CMNT_DCTO As String = "", Optional p_COMPLETAR As String = "S",
-                                                Optional p_PAGAR As String = "S", Optional p_TIPO As String = "C") As String
+                                                Optional p_PAGAR As String = "S", Optional p_TIPO As String = "C") As Array
 
 
         Try
             Dim cmd As IDbCommand
-            Dim respuesta As String
+            Dim msg(2) As String
 
             'Los valores monetarios se ingresan en moneda base y en el procedimiento se calculan a moneda alterna 
             cmd = cn.GetNewCommand("PFS_CREAR_ANTICIPO", CommandType.StoredProcedure)
@@ -193,10 +193,14 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_VUELTO_ALTERNO", p_VUELTO_ALTERNO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CMNT_DCTO", p_CMNT_DCTO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESP", String.Empty, ParameterDirection.Output, 253))
-            cmd = cn.Ejecuta_parms(cmd)
-            respuesta = cmd.Parameters("@p_RESP").Value
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ANTI_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
 
-            Return respuesta
+            cmd = cn.Ejecuta_parms(cmd)
+
+            msg(0) = cmd.Parameters("@p_RESP").Value
+            msg(1) = cmd.Parameters("@p_ANTI_DATOS_QR").Value
+
+            Return msg
 
         Catch ex As Exception
             Throw (ex)
@@ -225,10 +229,10 @@
                                                         ByVal p_SCSL_EXONERADA_IND As String, ByVal p_IGV_IMPR_IND As String,
                                                         ByVal p_PCTJ_IGV As String, Optional p_CMNT_DCTO As String = "",
                                                         Optional p_COMPLETAR As String = "S", Optional p_PAGAR As String = "S",
-                                                        Optional p_TIPO As String = "C") As String
+                                                        Optional p_TIPO As String = "C") As Array
         Try
             Dim cmd As IDbCommand
-            Dim respuesta As String
+            Dim msg(2) As String
 
             'Los valores monetarios se ingresan en moneda base y en el procedimiento se calculan a moneda alterna 
             cmd = cn.GetNewCommand("PFS_CREAR_ANTICIPO_POR_COBRAR", CommandType.StoredProcedure)
@@ -278,10 +282,14 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_PCTJ_IGV", p_PCTJ_IGV, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CMNT_DCTO", p_CMNT_DCTO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESP", String.Empty, ParameterDirection.Output, 253))
-            cmd = cn.Ejecuta_parms(cmd)
-            respuesta = cmd.Parameters("@p_RESP").Value
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ANTI_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
 
-            Return respuesta
+            cmd = cn.Ejecuta_parms(cmd)
+
+            msg(0) = cmd.Parameters("@p_RESP").Value
+            msg(1) = cmd.Parameters("@p_ANTI_DATOS_QR").Value
+
+            Return msg
 
         Catch ex As Exception
             Throw (ex)

@@ -145,17 +145,18 @@ Public Class CALNOCR : Implements IHttpHandler
         Dim tabla As New StringBuilder
         Dim dtCabecera As New DataTable
         Dim dtDetalles As New DataTable
-        Dim dtEmpresas As New DataTable
-        dtCabecera = ncNotaCredito.ListarNotaCredito(p_CODE, 0, "", "", "", "", "", "", "", "", "", "")
-        dtDetalles = ncNotaCredito.ListarDetallesNotaCredito(p_CODE, "0", "0")
+        'Dim dtEmpresas As New DataTable
+        dtCabecera = ncNotaCredito.ListarCabNotaCreditoImpresion(p_CODE)
+        dtDetalles = ncNotaCredito.ListarDetNotaCreditoImpresion(p_CODE)
 
         If dtCabecera IsNot Nothing Then
             Dim rutaLogo As String = ""
             Dim mon As String = dtCabecera.Rows(0)("MONEDA_SIMBOLO")
-
+            'VARIABLE PARA COLOCAR EL QR EN EL PDF
+            Dim rutaQr As String = ""
             If dtCabecera.Rows(0)("COMPRA_VENTA") = "V" Then
-                dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA_CODE"), "A", "")
-                rutaLogo = dtEmpresas(0)("RUTA_IMAGEN").ToString
+                'dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA_CODE"), "A", "")
+                rutaLogo = dtCabecera.Rows(0)("RUTA_IMAGEN")
             End If
             'OBTENER LOGO
 
@@ -180,7 +181,8 @@ Public Class CALNOCR : Implements IHttpHandler
             Dim descMon As String = dtCabecera.Rows(0)("MONEDA") 'Descripcion de moneda   
 
             Dim motivoSunat As String = dtCabecera.Rows(0)("MOTIVO_SUNAT") 'Código motivo SUNAT   
-
+            'LA RUTA QUE VA A TENER
+            rutaQr = dtCabecera.Rows(0)("IMAGEN_QR")
             If dtCabecera.Rows(0)("COMPRA_VENTA") = "V" Then
                 tabla.Append("<table id='tblDctoImprimir1' class='tblDctoImprimir' border='" + border + "' style='width: 100%;margin-bottom:" + marginBottom + "' cellpadding='" + cellpadding + "'  align='center'>")
                 tabla.Append("<tbody>")
@@ -192,7 +194,11 @@ Public Class CALNOCR : Implements IHttpHandler
                 tabla.AppendFormat("<td style='text-align: center;'><strong>NOTA DE CRÉDITO {0}</strong></td>", If(dtCabecera.Rows(0)("IND_ELECTRONICO") = "N", "", " ELECTRÓNICA"))
                 tabla.Append("</tr>") '------------------------------------------------            
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td>{0} {1}</td>", dtCabecera.Rows(0)("DESC_EMPRESA"), If(dtCabecera.Rows(0)("DIRECCION") = "", "", " - " + dtCabecera.Rows(0)("DIRECCION")))
+                If (dtCabecera.Rows(0)("RUC").substring(0, 2) = "10") Then 'DPORTA 10/12/2021
+                    tabla.AppendFormat("<td>{0} <br>De: {1} <br>{2}</td>", dtCabecera.Rows(0)("DESC_CORTA_EMPRESA"), dtCabecera.Rows(0)("DESC_EMPRESA"), If(dtCabecera.Rows(0)("DIRECCION") = "", "", dtCabecera.Rows(0)("DIRECCION")))
+                Else
+                    tabla.AppendFormat("<td>{0} {1}</td>", dtCabecera.Rows(0)("DESC_EMPRESA"), If(dtCabecera.Rows(0)("DIRECCION") = "", "", " - " + dtCabecera.Rows(0)("DIRECCION")))
+                End If
                 tabla.AppendFormat("<td style='text-align: center;'>{0}</td>", dtCabecera.Rows(0)("DOCUMENTO"))
                 tabla.Append("</tr>")
                 tabla.Append("</tbody></table>")
@@ -239,25 +245,25 @@ Public Class CALNOCR : Implements IHttpHandler
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_ORIGEN"))
                             tabla.AppendFormat("<td ><span style='word-break:break-all;'>{0}</span></td>", row("DESC_PRODUCTO_DCTO"))
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("PU"))
-                            tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("MONTO_SUBTOTAL"))
+                            tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("VALOR_VENTA"))
                         Else
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_DEVL"))
                             tabla.AppendFormat("<td ><span style='word-break:break-all;'>{0}</span></td>", row("DESC_PRODUCTO_DCTO"))
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("PU"))
-                            tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("MONTO_SUBTOTAL"))
+                            tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("VALOR_VENTA"))
                         End If
                     ElseIf motivoSunat = "06" Or motivoSunat = "07" Then
                         If Decimal.Parse(row("CANTIDAD_DEVL")) > 0 Then
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_DEVL"))
                             tabla.AppendFormat("<td ><span style='word-break:break-all;'>{0}</span></td>", row("DESC_PRODUCTO_DCTO"))
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("PU"))
-                            tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("MONTO_SUBTOTAL"))
+                            tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("VALOR_VENTA"))
                         End If
                     Else
                         tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_DEVL"))
                         tabla.AppendFormat("<td ><span style='word-break:break-all;'>{0}</span></td>", row("DESC_PRODUCTO_DCTO"))
                         tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("PU"))
-                        tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("MONTO_SUBTOTAL"))
+                        tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("VALOR_VENTA"))
                     End If
 
                     tabla.Append("</tr>")
@@ -332,7 +338,7 @@ Public Class CALNOCR : Implements IHttpHandler
                 tabla.Append("</tr>")
                 tabla.Append("<tr>")
                 tabla.Append("<td width='" + wRuc + "'><strong></strong> </td>")
-                tabla.Append("<td width='" + wDen + "'><strong>IGV:</strong> </td>")
+                tabla.AppendFormat("<td width='" + wDen + "'><strong>IGV ({0})</strong>: </td>", dtCabecera.Rows(0)("MONEDA_SIMBOLO"))
                 tabla.AppendFormat("<td width='" + wNro + "' style='text-align: right;'><strong></strong> {0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtCabecera.Rows(0)("MONTO_IGV").ToString())))
                 tabla.Append("</tr>")
                 tabla.Append("<tr>")
@@ -342,6 +348,18 @@ Public Class CALNOCR : Implements IHttpHandler
                 tabla.Append("</tr>")
                 tabla.Append("</tbody>")
                 tabla.Append("</table>")
+                tabla.Append("<table id='tblDctoImprimir5' class='tblDctoImprimir' style='width: 100%;margin-bottom:" + marginBottom + "' cellpadding='" + cellpadding + "'  align='center'>")
+                tabla.Append("<tbody>")
+                tabla.Append("<tr>")
+                If dtCabecera.Rows(0)("IND_ELECTRONICO") = "S" Then
+                    tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaQr)
+                    tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><strong>Autorizado mediante <span style='float:right'></span></strong>{0}</th></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+                    tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", "Para consultar el documento ingrese a http://52.41.93.228:1115, debe estar disponible dentro de las próximas 48 hrs. a partir de la fecha de emisión.")
+                Else
+                    tabla.AppendFormat("<td colspan='4' style='text-align: center;'>GRACIAS POR SU PREFERENCIA</td>")
+                End If
+                tabla.Append("</tr>")
+                tabla.Append("</tbody></table>")
             Else ' PROVEEDORES /  COMPRAS
                 tabla.Append("<table id='tblDctoImprimir1' class='tblDctoImprimir' border='" + border + "' style='width: 100%;margin-bottom:" + marginBottom + "' cellpadding='" + cellpadding + "'  align='center'>")
                 tabla.Append("<tbody>")

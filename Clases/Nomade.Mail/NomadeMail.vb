@@ -21,7 +21,7 @@ Public Class NomadeMail
             mail.Subject = asunto
             mail.From = New MailAddress(remitente, nombreRemitente)
             Dim body As String = mensaje
-            body &= "<p style=""text-align: right"">Correo generado por <strong>UNICORP ERP</strong> - <a href='http://www.orbitum.org'>Orbitum Net S.R.L.</a></p>"
+            body &= "<p style=""text-align: right"">Correo generado por <strong>UNICORN ERP</strong> - <a href='http://www.orbitum.org'>Orbitum Net S.R.L.</a></p>"
             mail.Body = body
             mail.IsBodyHtml = True
 

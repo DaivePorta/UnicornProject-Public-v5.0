@@ -118,7 +118,7 @@ Public Class NVLCOTI : Implements IHttpHandler
                 resb.AppendFormat("<td align='right' >{0}</td>", dt.Rows(i)("IMPORTE").ToString())
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("NOMBRE_VENDEDOR").ToString())
                 resb.AppendFormat("<td style='text-align:center;'>")
-                resb.AppendFormat("<a class='btn blue' onclick=""imprimirDetalle('{0}','{1}')""><i class='icon-search'></i></a>", dt.Rows(i)("CODE").ToString(), dt.Rows(i)("NUM_DCTO").ToString())
+                resb.AppendFormat("<a class='btn blue' onclick=""imprimirDetalle('{0}','{1}')""><i class='icon-print'></i></a>", dt.Rows(i)("CODE").ToString(), dt.Rows(i)("NUM_DCTO").ToString())
                 resb.AppendFormat("</td>")
                 resb.AppendFormat("</tr>")
             Next

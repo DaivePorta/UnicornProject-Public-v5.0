@@ -11,7 +11,7 @@ Public Class NVLDOCV : Implements IHttpHandler
 
     Dim CTLG_CODE, SCSL_CODE, USUA_ID, DESC, COMP_VENT_IND,
     DCTO_CODE, NUM_DCTO, SERIE_DCTO, VENDEDOR, CLIENTE, PRODUCTO, ESTADO,
-    DESDE, HASTA, CODE_VTA, NUM_DOC_COM As String
+    DESDE, HASTA, CODE_VTA, NUM_DOC_COM, TIPO_VENTA As String
     Dim p_ESTADO_IND As String
     Dim ncTipoDCEmpresa As New Nomade.NC.NCTipoDCEmpresa("Bn")
     Dim nvVenta As New Nomade.NV.NVVenta("Bn")
@@ -45,6 +45,7 @@ Public Class NVLDOCV : Implements IHttpHandler
         CODE_VTA = context.Request("CODE_VTA")
         NUM_DOC_COM = context.Request("NUM_DOC_COM")
         p_ESTADO_IND = context.Request("p_ESTADO_IND")
+        TIPO_VENTA = context.Request("TIPO_VENTA")
 
         Try
             Select Case OPCION
@@ -74,7 +75,7 @@ Public Class NVLDOCV : Implements IHttpHandler
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = nvVenta.ListarVendedorPorRol(CTLG_CODE, p_ESTADO_IND)
                     If Not (dt Is Nothing) Then
-                        dt = SortDataTableColumn(dt, "ESTADO", "ASC")
+                        'dt = SortDataTableColumn(dt, "ESTADO", "ASC")
                         resb.Append("[")
                         For Each MiDataRow As DataRow In dt.Rows
                             resb.Append("{")
@@ -104,6 +105,10 @@ Public Class NVLDOCV : Implements IHttpHandler
                 Case "5" 'Generar tabla para impresion de detalle 
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = nvVenta.ListarDocVenta_Busq("", CLIENTE, NUM_DCTO, DCTO_CODE, VENDEDOR, ESTADO, PRODUCTO, SERIE_DCTO, Utilities.fechaLocal(DESDE), Utilities.fechaLocal(HASTA), CTLG_CODE, SCSL_CODE)
+                    res = GenerarTablaDocumentoImprimir(dt)
+                Case "5.5" 'Generar tabla para impresion de detalle 
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    dt = nvVenta.ListarDocVenta_Busq_2("", CLIENTE, NUM_DCTO, DCTO_CODE, VENDEDOR, ESTADO, PRODUCTO, SERIE_DCTO, Utilities.fechaLocal(DESDE), Utilities.fechaLocal(HASTA), CTLG_CODE, SCSL_CODE, TIPO_VENTA)
                     res = GenerarTablaDocumentoImprimir(dt)
 
             End Select
@@ -155,7 +160,7 @@ Public Class NVLDOCV : Implements IHttpHandler
                 resb.AppendFormat("<td align='left' style='font-size:11.5px;'>{0}</td>", dt.Rows(i)("ATENDIDO").ToString())
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("ANULADO").ToString())
                 resb.AppendFormat("<td style='text-align:center;'>")
-                resb.AppendFormat("<a class='btn blue' onclick=""imprimirDetalle('{0}','{1}','{2}')""><i class='icon-print'></i></a>", dt.Rows(i)("CODE").ToString(), dt.Rows(i)("NUM_DCTO").ToString(), dt.Rows(i)("TIPO_DCTO"))
+                resb.AppendFormat("<a class='btn blue' onclick=""imprimirDetalle('{0}','{1}','{2}','{3}')""><i class='icon-print'></i></a>", dt.Rows(i)("CODE").ToString(), dt.Rows(i)("NUM_DCTO").ToString(), dt.Rows(i)("TIPO_DCTO"), dt.Rows(i)("ELECTRONICO_IND"))
                 resb.AppendFormat("</td>")
                 resb.AppendFormat("</tr>")
             Next

@@ -1,5 +1,6 @@
 ﻿var prmtODET = "";
 var codigoParaPDF = "";//DPORTA
+var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
 var NVLDOCT = function () {
     var codigoVenta = '';
     let sCodMovContSelec = "";
@@ -32,7 +33,7 @@ var NVLDOCT = function () {
             }
         });
 
-        //$("#txtSerie").inputmask({ "mask": "9", "repeat": 9, "greedy": false });
+        $("#txtSerie").inputmask({ "mask": "#", "repeat": 4, "greedy": false });
         $("#txtNumero").inputmask({ "mask": "9", "repeat": 9, "greedy": false });
     };
 
@@ -65,8 +66,8 @@ var NVLDOCT = function () {
 
                     fillCboTipoDoc();
                     fillCboVendedor();
-                    fillProducto();
-                    fillCliente();
+                    //fillProducto();
+                    //fillCliente();
                     fillGrupoProductos();
 
                 } else {
@@ -142,7 +143,7 @@ var NVLDOCT = function () {
     function fillCboVendedor(ctlg, scsl, estado, bAsync) {
         ctlg = $("#cboEmpresa").val()
         scsl = $("#cboEstablecimiento").val()
-        estado = "";
+        estado = "A";
         bAsync = true;
         if (bAsync == undefined) {
             bAsync = true;
@@ -196,19 +197,20 @@ var NVLDOCT = function () {
         selectEst.empty();
         selectEst.append('<option></option>').append('<option Value="TODOS">TODOS</option>');
         $('#cboProducto').select2('val', 'TODOS');
-        Bloquear("divCboProducto");
+        //Bloquear("divCboProducto");
         $.ajax({
             type: "post",
             //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPROD2&CTLG=" + $('#cboEmpresa').val() +
             //"&SCSL=" + $('#cboEstablecimiento').val() +
             //"&GRUP_PROD=" + ($("#cboGrupoProductos").val() === null ? "" : $("#cboGrupoProductos").val().toString()),
 
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODTODOS&CTLG=" + $('#cboEmpresa').val() + "&SCSL=" + $('#cboEstablecimiento').val() + "&SERIADO_IND=",
+            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODTODOS&CTLG=" + $('#cboEmpresa').val() + "&SCSL=" + $('#cboEstablecimiento').val() + "&SERIADO_IND=",
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODALMC_CAB&CTLG=" + $('#cboEmpresa').val() + "&ALMC_CODE=" + $('#cboEstablecimiento').val() + "&SERIADO_IND=" + "",
             contenttype: "application/json;",
             datatype: "json",
             async: true,
             success: function (datos) {
-                Desbloquear("divCboProducto");
+                //Desbloquear("divCboProducto");
                 selectEst.empty();
                 selectEst.append('<option></option>');
                 if (datos != null) {
@@ -220,7 +222,7 @@ var NVLDOCT = function () {
                 $('#cboProducto').select2('val', 'TODOS');
             },
             error: function (msg) {
-                Desbloquear("divCboProducto");
+                //Desbloquear("divCboProducto");
                 alert(msg.d);
             }
         });
@@ -231,18 +233,19 @@ var NVLDOCT = function () {
         selectEst.empty();
         selectEst.append('<option></option>').append('<option Value="TODOS">TODOS</option>');
         $('#cboCliente').select2('val', 'TODOS');
-        Bloquear("divCboCliente");
+        //Bloquear("divCboCliente");
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            //url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.5&p_CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: true,
             success: function (datos) {
-                Desbloquear("divCboCliente");
+                //Desbloquear("divCboCliente");
                 if (datos != null) {
                     for (var i = 0; i < datos.length; i++) {
-                        selectEst.append('<option value="' + datos[i].ID + '">' + datos[i].RAZON_SOCIAL + '</option>');
+                        selectEst.append('<option value="' + datos[i].PIDM + '">' + datos[i].RAZON_SOCIAL + '</option>');
                     }
                 }
                 $('#cboCliente').select2('val', 'TODOS');
@@ -267,7 +270,9 @@ var NVLDOCT = function () {
             contenttype: "application/json;",
             datatype: "json",
             async: true,
-            beforeSend: function () { Bloquear("divGrupProd"); },
+            beforeSend: function () {
+                //Bloquear("divGrupProd");
+            },
             success: function (datos) {
                 if (datos != null) {
                     for (var i = 0; i < datos.length; i++) {
@@ -276,7 +281,9 @@ var NVLDOCT = function () {
                 }
                 $('#cboGrupoProductos').select2('val', '');
             },
-            complete: function () { Desbloquear("divGrupProd"); },
+            complete: function () {
+                //Desbloquear("divGrupProd");
+            },
             error: function (msg) {
                 alert(msg.d);
             }
@@ -447,7 +454,7 @@ var NVLDOCT = function () {
                     data: null, createdCell: function (td, cellData, rowData, row, col) {
 
                         $(td)
-                            .html("<a class='btn blue' onclick=\"imprimirDetalle('" + rowData.CODE + "','" + rowData.NUM_DCTO + "','" + rowData.TIPO_DCTO + "')\"><i class='icon-print'></i></a><a class='btn red' onclick=\"tracking('" + rowData.CODE + "','" + rowData.NUM_DCTO + "','" + rowData.TIPO_DCTO + "')\"><i class='icon-search'></i></a>")
+                            .html("<a class='btn blue' onclick=\"imprimirDetalle('" + rowData.CODE + "','" + rowData.TIPO_MODULO + "','" + rowData.TIPO_DCTO + "','" + rowData.ELECTRONICO_IND + "')\"><i class='icon-print'></i></a><a class='btn red' onclick=\"tracking('" + rowData.CODE + "','" + rowData.NUM_DCTO + "','" + rowData.TIPO_DCTO + "')\"><i class='icon-search'></i></a>")
 
                             .attr("align", "center");
                     }
@@ -594,8 +601,11 @@ var NVLDOCT = function () {
                 $('#divDetVenta').slideDown();
 
                 $("#btnVerDetVenta").css({ "display": "none" });
-                $("#btnVerAsiento").css({ "display": "inline" });
-
+                if (prmtACON == "SI") {
+                    $("#btnVerAsiento").css({ "display": "inline" });
+                } else {
+                    $("#btnVerAsiento").css({ "display": "none" });
+                }
             }
         });
         $('#tblDocumento tbody').on('click', 'a', function () {
@@ -609,7 +619,7 @@ var NVLDOCT = function () {
         var SCSL_CODE = $("#cboEstablecimiento").val();
         var DCTO_CODE = ($("#cboTipoDoc").val() == "TODOS") ? '' : $("#cboTipoDoc").val();
         var VENDEDOR = ($("#cboVendedor").val() == "TODOS") ? '' : $("#cboVendedor :selected").text();
-        var CLIENTE = ($("#cboCliente").val() == "TODOS") ? '' : parseFloat($("#cboCliente :selected").val()).toString();
+        var CLIENTE = ($("#cboCliente").val() == "TODOS" || $("#cboCliente").val() == "") ? '' : parseFloat($("#cboCliente :selected").val()).toString();
         var PRODUCTO = ($("#cboProducto").val() == "TODOS") ? '' : $("#cboProducto").val();
         var ESTADO = ($("#cboEstado").val() == "TODOS") ? '' : $("#cboEstado").val();
         var GRUPO = ($("#cboGrupoProductos").val() === null ? '' : $("#cboGrupoProductos").val().toString())
@@ -669,7 +679,7 @@ var NVLDOCT = function () {
             error: function () {
                 noexito();
             }, complete: function () {
-                Desbloquear("divDocumento");
+               Desbloquear("divDocumento");
             }
         });
 
@@ -679,14 +689,14 @@ var NVLDOCT = function () {
         var controlProCli = false;
 
         $('#cboEmpresa').on('change', function () {
-            Bloquear("ventana");
+            //Bloquear("ventana");
             fillCboEstablecimiento();
             //fillCboTipoDoc();
             //fillCboVendedor();
             //fillProducto();
             //fillCliente();
             //fillGrupoProductos();
-            Desbloquear("ventana");
+            //Desbloquear("ventana");
         });
 
         $("#cboGrupoProductos").on("change", function () {
@@ -737,9 +747,11 @@ var NVLDOCT = function () {
             $('#divDetVenta').slideDown();
 
             $("#btnVerDetVenta").css({ "display": "none" });
-            $("#btnVerAsiento").css({ "display": "inline" });
-
-
+            if (prmtACON == "SI") {
+                $("#btnVerAsiento").css({ "display": "inline" });
+            } else {
+                $("#btnVerAsiento").css({ "display": "none" });
+            }
         });
 
         $("#txtHasta").datepicker({
@@ -755,7 +767,7 @@ var NVLDOCT = function () {
             mes = 12;
             ano = ano - 1
         } else {
-            mes = mes - 1;
+            //mes = mes - 1;
         }
 
         if (mes >= 10)
@@ -833,7 +845,7 @@ var NVLDOCT = function () {
             var sCodVenta = codigoVenta;
             sCodVenta = $.trim(sCodVenta);
             console.log(sCodVenta);
-            if (sCodVenta.substring(0, 2) == "V0") {
+            if (sCodVenta.substring(0, 1) == "V") {
                 var oDocVenta = fnGetDocVta(sCodVenta);
             } else {
                 var oDocVenta = fnGetDocAnti(sCodVenta);
@@ -1189,29 +1201,87 @@ var NVLDOCT = function () {
         data.append("OPCION", "GENERAR_PDF");
         data.append("p_CODE", sCodVenta);
         data.append("p_CTLG_CODE", $("#cboEmpresa").val());
-        $.ajax({
-            type: "POST",
-            url: "vistas/nv/ajax/nvmdocv.ashx",
-            contentType: false,
-            data: data,
-            processData: false,
-            async: false,
-            success: function (data) {
-                //Desbloquear("ventana");
-                if (data == "OK") {
-                    exito();
-                    $("#divBotones1").hide();
-                    $("#divBotones2").show();
-                } else {
-                    noexito();
-                    return;
+
+        if (sCodVenta.substring(0, 2) == "AP") {
+            $.ajax({
+                type: "POST",
+                url: "vistas/nv/ajax/nvmanti.ashx",
+                contentType: false,
+                data: data,
+                processData: false,
+                async: false,
+                success: function (data) {
+                    //Desbloquear("ventana");
+                    if (data == "OK") {
+                        //exito();
+                        //$("#divBotones1").hide();
+                        //$("#divBotones2").show();
+                        $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+                    } else {
+                        noexito();
+                        return;
+                    }
+                },
+                error: function (msg) {
+                    //Desbloquear("ventana");
+                    noexitoCustom("No se pudo generar el PDF.");
                 }
-            },
-            error: function (msg) {
-                //Desbloquear("ventana");
-                noexitoCustom("No se pudo generar el PDF.");
+            });
+        } else {
+            if ($("#hfTipoModulo").val() == "X") {// SOLO PARA LAS VENTAS QUE TIENEN ORDENES DE SERVICIO O SON REALIZADAS EN ESAS PANTALLAS
+                $.ajax({
+                    type: "POST",
+                    url: "vistas/nv/ajax/nvmdovs.ashx",
+                    contentType: false,
+                    data: data,
+                    processData: false,
+                    async: false,
+                    success: function (data) {
+                        //Desbloquear("ventana");
+                        if (data == "OK") {
+                            //exito();
+                            //$("#divBotones1").hide();
+                            //$("#divBotones2").show();
+                            $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+                        } else {
+                            noexito();
+                            return;
+                        }
+                    },
+                    error: function (msg) {
+                        //Desbloquear("ventana");
+                        noexitoCustom("No se pudo generar el PDF.");
+                    }
+                });
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "vistas/nv/ajax/nvmdocv.ashx",
+                    contentType: false,
+                    data: data,
+                    processData: false,
+                    async: false,
+                    success: function (data) {
+                        //Desbloquear("ventana");
+                        if (data == "OK") {
+                            //exito();
+                            //$("#divBotones1").hide();
+                            //$("#divBotones2").show();
+                            $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+                        } else {
+                            noexito();
+                            return;
+                        }
+                    },
+                    error: function (msg) {
+                        //Desbloquear("ventana");
+                        noexitoCustom("No se pudo generar el PDF.");
+                    }
+                });
             }
-        });
+            
+        }
+        
         //Desbloquear("ventana");
     };
 
@@ -1307,6 +1377,24 @@ function cargarParametrosSistema() {
             }
         },
     });
+
+    //QUE SE GENERE O NO EL ASIENTO CONTABLE
+    $.ajax({
+        type: "post",
+        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: false,
+        success: function (datos) {
+            if (datos != null) {
+                prmtACON = datos[0].VALOR;
+            }
+            else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
+        },
+        error: function (msg) {
+            alertCustom("No se recuperó correctamente el parámetro ACON!");
+        }
+    });
 }
 
 function solonumbef(string) {
@@ -1357,8 +1445,8 @@ function verificarFormatoTicket(tipoDoc) {
 
 }
 
-function imprimirDetalle(codigo, nroDoc, tipoDoc) {
-    Bloquear("ventana");
+function imprimirDetalle(codigo, tipoModulo, tipoDoc, electronicoInd) {
+    //Bloquear("ventana");
     //Añadido para que tmb se puedan imprimir los anticipos
     var anticipo = 'AP';
     var index = codigo.indexOf(anticipo);
@@ -1385,49 +1473,21 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc) {
                 } else {
                     noexito();
                 }
-                Desbloquear("ventana");
+                //Desbloquear("ventana");
             })
             .error(function () {
-                Desbloquear("ventana");
+                //Desbloquear("ventana");
                 noexito();
             });
     } else {
-        if (verificarFormatoTicket(tipoDoc) == '[{"FORMATO_TICKET" :"SI"}]') {
-            var data = new FormData();
-            data.append('p_CODE', codigo);
-            var jqxhr = $.ajax({
-                type: "POST",
-                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
-                contentType: false,
-                data: data,
-                processData: false,
-                async: false,
-                cache: false
-            })
-                .success(function (datos) {
-                    Desbloquear("ventana");
-                    if (datos != null) {
-                        $("#divDctoImprimir").html(datos);
-                        setTimeout(function () {
-                            //imprimirDiv("divDctoImprimir", "", true);//Comentado porque la impresion no es la correcta
-                            window.print();
-                        }, 0.0000000000000001)
-                    } else {
-                        noexito();
-                    }
-
-                })
-                .error(function () {
-                    Desbloquear("ventana");
-                    noexito();
-                });
-        } else {
-            if (tipoDoc == '0012') { //ticket
+        if (electronicoInd == 'S') { //DPORTA 16/05/2022
+        //if (verificarFormatoTicket(tipoDoc) == '[{"FORMATO_TICKET" :"SI"}]') {
+            if (tipoModulo == 'X') { // SOLO PARA LAS VENTAS QUE TIENEN ORDENES DE SERVICIO O SON REALIZADAS EN ESAS PANTALLAS
                 var data = new FormData();
                 data.append('p_CODE', codigo);
                 var jqxhr = $.ajax({
                     type: "POST",
-                    url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
+                    url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
                     contentType: false,
                     data: data,
                     processData: false,
@@ -1435,7 +1495,7 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc) {
                     cache: false
                 })
                     .success(function (datos) {
-                        Desbloquear("ventana");
+                        //Desbloquear("ventana");
                         if (datos != null) {
                             $("#divDctoImprimir").html(datos);
                             setTimeout(function () {
@@ -1448,12 +1508,73 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc) {
 
                     })
                     .error(function () {
-                        Desbloquear("ventana");
+                        //Desbloquear("ventana");
+                        noexito();
+                    });
+            } else {
+                var data = new FormData();
+                data.append('p_CODE', codigo);
+                var jqxhr = $.ajax({
+                    type: "POST",
+                    url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
+                    contentType: false,
+                    data: data,
+                    processData: false,
+                    async: false,
+                    cache: false
+                })
+                    .success(function (datos) {
+                        //Desbloquear("ventana");
+                        if (datos != null) {
+                            $("#divDctoImprimir").html(datos);
+                            setTimeout(function () {
+                                //imprimirDiv("divDctoImprimir", "", true);//Comentado porque la impresion no es la correcta
+                                window.print();
+                            }, 0.0000000000000001)
+                        } else {
+                            noexito();
+                        }
+
+                    })
+                    .error(function () {
+                        //Desbloquear("ventana");
+                        noexito();
+                    });
+            }
+            
+        } else {
+            if (tipoDoc == '0012' || tipoDoc == '0101') { //0012 ticket - 0101 es para los tickets o notas de venta o lo que sea que tenga ese código
+                var data = new FormData();
+                data.append('p_CODE', codigo);
+                var jqxhr = $.ajax({
+                    type: "POST",
+                    url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
+                    contentType: false,
+                    data: data,
+                    processData: false,
+                    async: false,
+                    cache: false
+                })
+                    .success(function (datos) {
+                        //Desbloquear("ventana");
+                        if (datos != null) {
+                            $("#divDctoImprimir").html(datos);
+                            setTimeout(function () {
+                                //imprimirDiv("divDctoImprimir", "", true);//Comentado porque la impresion no es la correcta
+                                window.print();
+                            }, 0.0000000000000001)
+                        } else {
+                            noexito();
+                        }
+
+                    })
+                    .error(function () {
+                        //Desbloquear("ventana");
                         noexito();
                     });
             } else {
                 crearImpresion(codigo);
-                Desbloquear("ventana");
+                //Desbloquear("ventana");
             }
         }
     }
@@ -1466,7 +1587,7 @@ function tracking(codigo, nroDoc, tipoDoc) {
 }
 
 function imprimirListaDctosVenta() {
-    Bloquear("ventana")
+    //Bloquear("ventana")
     var data = new FormData();
     var CTLG_CODE = $("#cboEmpresa").val();
     var SCSL_CODE = $("#cboEstablecimiento").val();
@@ -1495,7 +1616,7 @@ function imprimirListaDctosVenta() {
         processData: false,
         cache: false,
         success: function (datos) {
-            Desbloquear("ventana")
+            //Desbloquear("ventana")
             if (datos != null) {
                 $("#divDctoImprimir").html(datos);
                 $("#divDctoImprimir #tblDocumento").attr("border", "1");
@@ -1503,18 +1624,18 @@ function imprimirListaDctosVenta() {
                 var nomSucursal, nomEmpresa;
                 nomSucursal = $("#cboEstablecimiento :selected").html();
                 nomEmpresa = $("#cboEmpresa :selected").html();
-                imprimirDiv("divDctoImprimir", "DOCUMENTOS DE VENTA - " + nomSucursal);
+                //imprimirDiv("divDctoImprimir", "DOCUMENTOS DE VENTA - " + nomSucursal);
 
-                //$("#divDctoImprimir").prepend("<hr></hr>")
-                //$("#divDctoImprimir").prepend("<h5 class='arial'>DOCUMENTOS DE VENTA - " + nomSucursal + "</h5>")
-                //$("#divDctoImprimir").prepend("<h4 class='arial'>" + nomEmpresa + "</h4>")
-                //setTimeout(function () {
-                //    window.print();
-                //}, 200);
+                $("#divDctoImprimir").prepend("<hr></hr>")
+                $("#divDctoImprimir").prepend("<h5 class='arial'>DOCUMENTOS DE VENTA - " + nomSucursal + "</h5>")
+                $("#divDctoImprimir").prepend("<h4 class='arial'>" + nomEmpresa + "</h4>")
+                setTimeout(function () {
+                    window.print();
+                }, 0000000000000001);
             }
         },
         error: function (msg) {
-            Desbloquear("ventana")
+            //Desbloquear("ventana")
             alertCustom("No se pudo obtener correctamente los documentos de venta.");
         }
     });
@@ -1525,11 +1646,11 @@ function obtenerDetalleVenta(codigo) {
     $("#divDetVta").show();
     $("#divDetAnticipo").hide();
 
-    Bloquear('tblDetalleVenta');
+    //Bloquear('tblDetalleVenta');
 
     $.ajax({
         type: "POST",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LISTA_&p_FVBVTAC_CODE=" + codigo,
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LISTA_DET_FAST&p_FVBVTAC_CODE=" + codigo,
         contentType: "application/json;",
         dataType: "json",
         success: function (datos2) {
@@ -1558,10 +1679,10 @@ function obtenerDetalleVenta(codigo) {
                         '<td>' + datos2[i].ESTADO_DESP + '</td>');
                 }
             }
-            Desbloquear('tblDetalleVenta');
+            //Desbloquear('tblDetalleVenta');
         },
         error: function (msg) {
-            Desbloquear('tblDetalleVenta');
+            //Desbloquear('tblDetalleVenta');
             alertCustom('Error al obtener detalle de la venta.');
         }
     });
@@ -1572,11 +1693,11 @@ function obtenerDetalleVenta2(codigo) {
     $("#divDetVta").show();
     $("#divDetAnticipo").hide();
 
-    Bloquear('tblDetalleVenta2');
+    //Bloquear('tblDetalleVenta2');
 
     $.ajax({
         type: "POST",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LISTA_&p_FVBVTAC_CODE=" + codigo,
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LISTA_DET_FAST&p_FVBVTAC_CODE=" + codigo,
         contentType: "application/json;",
         dataType: "json",
         success: function (datos2) {
@@ -1605,10 +1726,10 @@ function obtenerDetalleVenta2(codigo) {
                         '<td>' + datos2[i].ESTADO_DESP + '</td>');
                 }
             }
-            Desbloquear('tblDetalleVenta2');
+            //Desbloquear('tblDetalleVenta2');
         },
         error: function (msg) {
-            Desbloquear('tblDetalleVenta2');
+            //Desbloquear('tblDetalleVenta2');
             alertCustom('Error al obtener detalle de la venta.');
         }
     });
@@ -1712,6 +1833,7 @@ function enviarCorreo() {
                     alertCustom("No se encontró el archivo adjunto. Correo no se envió correctamente.");
                 } else {
                     exito();
+                    $('#txtcontenido').val("");
                 }
                 $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
                 setTimeout(function () { $('#divMail').modal('hide'); }, 25);
@@ -1734,9 +1856,10 @@ $(".close_mail").on("click", function () {
 
 
 function obtenerCabeceraVenta(codigo) {
-    codigoVenta = codigo;
-    codigoParaPDF = codigoVenta; //DPORTA
-    $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddCodDoc").val(codigoVenta);
+    //codigoVenta = codigo;
+    codigoParaPDF = codigo; //DPORTA
+    $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddCodDoc").val(codigoParaPDF);
+
     Bloquear('ventanaInfo');
     var cod;
     $.ajax({
@@ -1787,7 +1910,7 @@ function obtenerCabeceraVenta(codigo) {
                     let cajaDesc = datos[i].CAJA_DESC;
 
                     if (datos[i].FOPA_DESC == "LETRAS DE CAMBIO") {
-                        console.log('GDFGDFG');
+                        //console.log('GDFGDFG');
                         $("#tblCaja").text("CANJEADO EN LETRAS");
                     } else {
                         $.post("vistas/nv/ajax/nvldoct.ashx", { OPCION: "ALLAMORT", p_FVBVTAC_CODE: codigo },
@@ -1803,12 +1926,13 @@ function obtenerCabeceraVenta(codigo) {
                                     } else {
                                         $("#tblCaja").text(cajaDesc);
                                     }
+                                } else if (aoCuentaAmort.length === 0) {
+                                    $("#tblCaja").text("");
                                 } else {
                                     $("#tblCaja").text("VARIOS PAGOS");
                                 }
                             }).done(function () { });
                     }
-
                     $("#hfPIDM").val(datos[i].PIDM_CLIENTE);
 
                     $("#tblBase").html(formatoMiles(datos[i].GRAVADA)); //IMPORTE
@@ -1830,8 +1954,8 @@ function obtenerCabeceraVenta(codigo) {
                     if (datos[i].SIG_CLIE.length != 0) { 
                         $("#clieSiguiente").attr('href', "javascript:obtenerCabeceraVenta('" + datos[i].SIG_CLIE + "');");
                         $("#clieSiguiente").removeClass('disabled');
-                        $("#divBotones1").show();
-                        $("#divBotones2").hide();
+                        //$("#divBotones1").show();
+                        //$("#divBotones2").hide();
                     } else {
                         $("#clieSiguiente").attr('href', "javascript:fnMuestraMensaje('último');");
                         $("#clieSiguiente").addClass('disabled');
@@ -1839,8 +1963,8 @@ function obtenerCabeceraVenta(codigo) {
                     if (datos[i].ANT_CLIE.length != 0) {
                         $("#clieAnterior").attr('href', "javascript:obtenerCabeceraVenta('" + datos[i].ANT_CLIE + "');");
                         $("#clieAnterior").removeClass('disabled');
-                        $("#divBotones1").show();
-                        $("#divBotones2").hide();
+                        //$("#divBotones1").show();
+                        //$("#divBotones2").hide();
                     } else {
                         $("#clieAnterior").attr('href', "javascript:fnMuestraMensaje('primer');");
                         $("#clieAnterior").addClass('disabled');
@@ -1849,8 +1973,8 @@ function obtenerCabeceraVenta(codigo) {
                     if (datos[i].SIG_DOC.length != 0) {
                         $("#corrSiguiente").attr('href', "javascript:obtenerCabeceraVenta('" + datos[i].SIG_DOC + "');");
                         $("#corrSiguiente").removeClass('disabled');
-                        $("#divBotones1").show();
-                        $("#divBotones2").hide();
+                        //$("#divBotones1").show();
+                        //$("#divBotones2").hide();
                     } else {
                         $("#corrSiguiente").attr('href', "javascript:fnMuestraMensaje('último');");
                         $("#corrSiguiente").addClass('disabled');
@@ -1858,8 +1982,8 @@ function obtenerCabeceraVenta(codigo) {
                     if (datos[i].ANT_DOC.length != 0) {
                         $("#corrAnterior").attr('href', "javascript:obtenerCabeceraVenta('" + datos[i].ANT_DOC + "');");
                         $("#corrAnterior").removeClass('disabled');
-                        $("#divBotones1").show();
-                        $("#divBotones2").hide();
+                        //$("#divBotones1").show();
+                        //$("#divBotones2").hide();
                     } else {
                         $("#corrAnterior").attr('href', "javascript:fnMuestraMensaje('primer');");
                         $("#corrAnterior").addClass('disabled');
@@ -1868,7 +1992,7 @@ function obtenerCabeceraVenta(codigo) {
                         $("#docSiguiente").attr('href', "javascript:obtenerCabeceraVenta('" + datos[i].SIGUIENTE + "');");
                         $("#docSiguiente").removeClass('disabled');
                         $("#divBotones1").show();
-                        $("#divBotones2").hide();
+                        //$("#divBotones2").hide();
                     } else {
                         $("#docSiguiente").attr('href', "javascript:fnMuestraMensaje('último');");
                         $("#docSiguiente").addClass('disabled');
@@ -1876,8 +2000,8 @@ function obtenerCabeceraVenta(codigo) {
                     if (datos[i].ANTERIOR.length != 0) {
                         $("#docAnterior").attr('href', "javascript:obtenerCabeceraVenta('" + datos[i].ANTERIOR + "');");
                         $("#docAnterior").removeClass('disabled');
-                        $("#divBotones1").show();
-                        $("#divBotones2").hide();
+                        //$("#divBotones1").show();
+                        //$("#divBotones2").hide();
                     } else {
                         $("#docAnterior").attr('href', "javascript:fnMuestraMensaje('primer');");
                         $("#docAnterior").addClass('disabled');
@@ -1887,8 +2011,8 @@ function obtenerCabeceraVenta(codigo) {
                     if (dUltimo != codigo) {
                         $("#ultDocumento").attr('href', "javascript:obtenerCabeceraVenta('" + datos[i].ULTIMO + "');");
                         $("#ultDocumento").removeClass('disabled');
-                        $("#divBotones1").show();
-                        $("#divBotones2").hide();
+                        //$("#divBotones1").show();
+                        //$("#divBotones2").hide();
                     } else {
                         $("#ultDocumento").attr('href', "javascript:fnMuestraMensaje('último');");
                         $("#ultDocumento").addClass('disabled');
@@ -1899,15 +2023,15 @@ function obtenerCabeceraVenta(codigo) {
                     if (dPrimero != codigo) {
                         $("#priDocumento").attr('href', "javascript:obtenerCabeceraVenta('" + datos[i].PRIMERO + "');");
                         //$("#priDocumento").removeClass('disabled');
-                        $("#divBotones1").show();
-                        $("#divBotones2").hide();
+                        //$("#divBotones1").show();
+                        //$("#divBotones2").hide();
                     } else {
                         $("#priDocumento").attr('href', "javascript:fnMuestraMensaje('primer');");
                         //$("#priDocumento").addClass('disabled');
                     }
                     $("#hfPrimero").val(dPrimero);
-
-                    $("#btnImprimirDetalle").attr('onclick', "imprimirDetalle('" + datos[i].CODE + "','" + datos[i].NUM_DCTO + "','" + datos[i].DCTO_CODE + "')");
+                    $("#hfTipoModulo").val(datos[i].TIPO_MODULO);
+                    $("#btnImprimirDetalle").attr('onclick', "imprimirDetalle('" + datos[i].CODE + "','" + datos[i].TIPO_MODULO + "','" + datos[i].DCTO_CODE + "','" + datos[i].ELECTRONICO_IND +"')");
                 }
                 if (prmtODET == "NO") {
                     obtenerDetalleVenta(cod);
@@ -1922,13 +2046,16 @@ function obtenerCabeceraVenta(codigo) {
         error: function (msg) {
             Desbloquear('ventanaInfo');
             alertCustom('Error al obtener datos de cabecera de la venta.');
-            console.log(msg);
+            //console.log(msg);
         }
     });
 }
 
 
 function obtenerCabeceraAnticipo(codigo) {
+    //codigoVenta = codigo;
+    codigoParaPDF = codigo; //DPORTA
+    $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddCodDoc").val(codigoParaPDF);
     Bloquear('ventanaInfo');
     var cod;
     $.ajax({
@@ -2012,14 +2139,15 @@ function obtenerCabeceraAnticipo(codigo) {
 
                     $("#priDocumento").attr('href', "javascript:fnMuestraMensaje('primer');");
 
-
+                    $("#hfTipoModulo").val(datos[i].TIPO_MODULO);
                     $("#divDetAnticipo").show();
                     $("#divDetVta").hide();
-
+                    //$("#divBotones1").show();
+                    //$("#divBotones2").hide();
                     let sGlosa = datos[0].GLOSA;
                     $("#tblGlosaAnticipo tbody").html(`<tr><td>${sGlosa}</td></tr>`);
                     //Agregado para que pueda imprimir desde el modal 
-                    $("#btnImprimirDetalle").attr('onclick', "imprimirDetalle('" + datos[i].CODIGO + "','" + datos[i].NUM_DCTO + "','" + datos[i].DCTO_CODE + "')");
+                    $("#btnImprimirDetalle").attr('onclick', "imprimirDetalle('" + datos[i].CODIGO + "','" + datos[i].TIPO_MODULO + "','" + datos[i].DCTO_CODE + "','" + datos[i].ELECTRONICO_IND + "')");
 
                 }
 
@@ -2029,7 +2157,7 @@ function obtenerCabeceraAnticipo(codigo) {
         error: function (msg) {
             Desbloquear('ventanaInfo');
             alertCustom('Error al obtener datos de cabecera de la venta.');
-            console.log(msg);
+            //console.log(msg);
         }
     });
 }

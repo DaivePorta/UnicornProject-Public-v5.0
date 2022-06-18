@@ -476,8 +476,8 @@ function cargarEstereotipos() {
             $.ajaxSetup({ async: true });
 
             ADICIONALES.init();
-            $("#txtdir").val(dire);//dporta
-
+            //$("#txtdir").val(dire);//dporta
+            $("#txtdir").val((dire == ('-' || '') ? "TRUJILLO" : eliminarDiacriticos(dire)));//dporta
             $("#tabAdicionales").on("click", function () {
                 if ($.trim($('#hfEstereotipoActivo').val()) != "ADICIONALES") {
                     $('#hfEstereotipoActivo').val("ADICIONALES");

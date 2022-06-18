@@ -115,10 +115,52 @@
         End Try
     End Function
 
+    Public Function ListarDocVenta_Busq_2(p_VTAC_CODE As String, p_RAZON_SOCIAL As String, p_NUM_DCTO As String,
+                                        p_TIPO_DCTO As String, p_VENDEDOR As String, p_ANULADO As String,
+                                        p_PROD_CODE As String, ByVal p_NUM_SERIE As String, ByVal p_DESDE As String,
+                                        p_HASTA As String, p_CTLG_CODE As String, p_SCSL_CODE As String, p_TIPO_VENTA As String,
+                                        Optional p_COMPLETO_IND As String = "", Optional p_GRUPO_PROD As String = "",
+                                        Optional p_MONEDA As String = "", Optional p_TIPO_VTA As String = "") As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFV_LISTAR_DCTO_VENTA_BUSQ_2", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RAZON_SOCIAL", p_RAZON_SOCIAL, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_DCTO", p_TIPO_DCTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VENDEDOR", p_VENDEDOR, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ANULADO", p_ANULADO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PROD_CODE", p_PROD_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SERIE", p_NUM_SERIE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_VENTA", p_TIPO_VENTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_COMPLETO_IND", p_COMPLETO_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_GRUPO_PROD", p_GRUPO_PROD, ParameterDirection.Input, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_MONEDA", p_MONEDA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_VTA", p_TIPO_VTA, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
     Public Function ListarDocVenta_Busq_Serv(p_VTAC_CODE As String, p_RAZON_SOCIAL As String, p_NUM_DCTO As String,
                                         p_TIPO_DCTO As String, p_VENDEDOR As String, p_ANULADO As String,
                                         p_PROD_CODE As String, ByVal p_NUM_SERIE As String, ByVal p_DESDE As String,
-                                        p_HASTA As String, p_CTLG_CODE As String, p_SCSL_CODE As String,
+                                        p_HASTA As String, p_CTLG_CODE As String, p_SCSL_CODE As String, p_TIPO_VENTA As String,
                                         Optional p_COMPLETO_IND As String = "", Optional p_GRUPO_PROD As String = "",
                                         Optional p_MONEDA As String = "", Optional p_TIPO_VTA As String = "") As DataTable
         Try
@@ -138,6 +180,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_VENTA", p_TIPO_VENTA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_COMPLETO_IND", p_COMPLETO_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_GRUPO_PROD", p_GRUPO_PROD, ParameterDirection.Input, 253))
             'cmd.Parameters.Add(cn.GetNewParameter("@p_MONEDA", p_MONEDA, ParameterDirection.Input, 253))
@@ -874,88 +917,68 @@
         Return msg
     End Function
     'Crea el QR con todos los parametros requeridos
-    Public Function ListarParametrosQR(ByVal p_codigo As String) As DataTable
+    'Public Function ListarParametrosQR(ByVal p_codigo As String) As DataTable
+    '    Try
+    '        Dim dt As DataTable
+    '        Dim cmd As IDbCommand
+
+    '        cmd = cn.GetNewCommand("PFM_MOSTRAR_QR", CommandType.StoredProcedure)
+    '        cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_codigo, ParameterDirection.Input, 253))
+
+    '        dt = cn.Consulta(cmd)
+
+    '        If Not (dt Is Nothing) Then
+    '            Return dt
+    '        Else
+    '            Return Nothing
+    '        End If
+    '    Catch ex As Exception
+    '        Throw (ex)
+    '    End Try
+    'End Function
+    'Gurda la ruta de la imagen del QR convertida a base64
+    Public Function GuardarCodigoQR(ByVal p_CODE As String, ByVal p_IMGQR As String) As String
         Try
-            Dim dt As DataTable
+
+            Dim msg As String
             Dim cmd As IDbCommand
-
-            cmd = cn.GetNewCommand("PFM_MOSTRAR_QR", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_codigo, ParameterDirection.Input, 253))
-
-            dt = cn.Consulta(cmd)
-
-            If Not (dt Is Nothing) Then
-                Return dt
-            Else
-                Return Nothing
-            End If
-        Catch ex As Exception
-            Throw (ex)
-        End Try
-    End Function
-    'Gurda la imagen del QR convertida en texto base64 
-    Public Function GuardarCodigoQR(ByVal p_FVBVTAC_CODE As String, ByVal p_IMGQR As String) As DataTable
-        Try
-            Dim dt As DataTable
-            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
 
             cmd = cn.GetNewCommand("GUARDAR_QR", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_FVBVTAC_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMGQR", p_IMGQR, ParameterDirection.Input, 253))
 
-            dt = cn.Consulta(cmd)
+            cmd1 = cn.Ejecuta_parms(cmd)
 
-            If Not (dt Is Nothing) Then
-                Return dt
-            Else
-                Return Nothing
-            End If
+            msg = "OK"
+
+            Return msg
+
         Catch ex As Exception
             Throw (ex)
         End Try
     End Function
 
     'Crea el QR con todos los parametros requeridos
-    Public Function ListarParametrosQRAnticipo(ByVal p_codigo As String) As DataTable
-        Try
-            Dim dt As DataTable
-            Dim cmd As IDbCommand
+    'Public Function ListarParametrosQRAnticipo(ByVal p_codigo As String) As DataTable
+    '    Try
+    '        Dim dt As DataTable
+    '        Dim cmd As IDbCommand
 
-            cmd = cn.GetNewCommand("PFM_MOSTRAR_QR_ANTICIPO", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_COTI", p_codigo, ParameterDirection.Input, 253))
+    '        cmd = cn.GetNewCommand("PFM_MOSTRAR_QR_ANTICIPO", CommandType.StoredProcedure)
+    '        cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_COTI", p_codigo, ParameterDirection.Input, 253))
 
-            dt = cn.Consulta(cmd)
+    '        dt = cn.Consulta(cmd)
 
-            If Not (dt Is Nothing) Then
-                Return dt
-            Else
-                Return Nothing
-            End If
-        Catch ex As Exception
-            Throw (ex)
-        End Try
-    End Function
-    'Gurda la imagen del QR convertida en texto base64 
-    Public Function GuardarCodigoQRAnticipo(ByVal p_CODE_COTI As String, ByVal p_IMGQR As String) As DataTable
-        Try
-            Dim dt As DataTable
-            Dim cmd As IDbCommand
-
-            cmd = cn.GetNewCommand("GUARDAR_QR_ANTICIPO", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE_COTI, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_IMGQR", p_IMGQR, ParameterDirection.Input, 253))
-
-            dt = cn.Consulta(cmd)
-
-            If Not (dt Is Nothing) Then
-                Return dt
-            Else
-                Return Nothing
-            End If
-        Catch ex As Exception
-            Throw (ex)
-        End Try
-    End Function
+    '        If Not (dt Is Nothing) Then
+    '            Return dt
+    '        Else
+    '            Return Nothing
+    '        End If
+    '    Catch ex As Exception
+    '        Throw (ex)
+    '    End Try
+    'End Function
 
     'Crea un documento de venta que puede tener DESPACHO DIRECTO, tambien sus detalles y DATOS DE PAGO
     Public Function CrearDocumentoVentaRapidaWeb(ByVal p_NUM_SERIE As String, ByVal p_NUM_DCTO As String, ByVal p_DCTO_CODE As String, ByVal p_FECHA_EMISION As String,
@@ -2378,6 +2401,45 @@
         End Try
     End Function
 
+    'DPORTA 15/05/2022
+    Public Function ListarCabDctoVentaImpresion(ByVal p_VTAC_CODE As String, ByVal p_TIPO As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFV_LISTAR_CABECERA_VENTA_IMPRESION", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO", p_TIPO, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    'DPORTA 15/05/2022
+    Public Function ListarDetDctoVentaImpresion(ByVal p_VTAC_CODE As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFV_LISTAR_DETALLE_VENTA_IMPRESION", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 
     'Lista la cabecera de un documento de venta
     Public Function ListarDocumentosVentaNaminsa(ByVal p_VTAC_CODE As String, ByVal p_RAZON_SOCIAL As String, ByVal p_NUM_DCTO As String,
@@ -2503,6 +2565,28 @@
         End Try
     End Function
 
+    Public Function ListarDetalleDocumentoVentaNVLDOCT_FAST(ByVal p_VTAC_CODE As String, ByVal p_VTAC_NUM_SEQ_DOC As String, ByVal p_ITEM As String,
+                                                Optional ByVal p_CTLG_CODE As String = "", Optional ByVal p_SCSL_CODE As String = "") As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFV_LISTAR_DETALLE_DCTO_VENTA_WEB_nvldoct_FAST", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_NUM_SEQ_DOC", p_VTAC_NUM_SEQ_DOC, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ITEM", p_ITEM, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253)) 'AGARCIA 30/07/2015 PARA SABER STOCK
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253)) 'AGARCIA 30/07/2015
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 
     Public Function ListarDetalleBonificacionDocumentoVenta(ByVal p_VTAC_CODE As String, ByVal p_VTAC_NUM_SEQ_DOC As String, ByVal p_ITEM As String,
                                               Optional ByVal p_CTLG_CODE As String = "", Optional ByVal p_SCSL_CODE As String = "") As DataTable

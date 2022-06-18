@@ -1793,7 +1793,7 @@ function MuestraDireccion(obj) {
             if (data.success == true) {
                 if (data.condicion_de_domicilio == "HABIDO") {
               //if (data.estado_del_contribuyente == "ACTIVO" && data.condicion_de_domicilio == "HABIDO") {
-                    $("#" + obj.attr("id") + ' #txtdir').val((data.direccion == ('-' || '') ? city : data.direccion));
+                    $("#" + obj.attr("id") + ' #txtdir').val((data.direccion == ('-' || '') ? city : eliminarDiacriticos(data.direccion)));
                     //$("#" + obj.attr("id") + ' #txtubigeo').val((data.direccion == ('-' || '') ? '130101' : data.ubigeo));
                 }
             } else {

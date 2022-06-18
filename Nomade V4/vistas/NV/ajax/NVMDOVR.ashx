@@ -344,49 +344,34 @@ Public Class NVMDOVR : Implements IHttpHandler
                     context.Response.ContentType = "application/text; charset=utf-8"
 
                     res = nvVenta.verificarNroOperacion(p_NRO_OPERA)
-                Case "LPCQR" 'Parametros para el QR
-                    context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = nvVenta.ListarParametrosQR(If(p_FVBVTAC_CODE = Nothing, "", p_FVBVTAC_CODE))
-                    If Not (dt Is Nothing) Then
-                        resb.Append("[")
-                        For Each MiDataRow As DataRow In dt.Rows
-                            resb.Append("{")
-                            resb.Append("""RUC_EMISOR"" :" & """" & MiDataRow("RUC_EMISOR").ToString & """,")
-                            resb.Append("""CODIGO_DOC"" :" & """" & MiDataRow("CODIGO_DOC").ToString & """,")
-                            resb.Append("""SERIE"" :" & """" & MiDataRow("SERIE").ToString & """,")
-                            resb.Append("""NUMERO"" :" & """" & MiDataRow("NUMERO").ToString & """,")
-                            resb.Append("""TOTAL_IGV"" :" & """" & MiDataRow("TOTAL_IGV").ToString & """,")
-                            resb.Append("""IMPORTE_TOTAL"" :" & """" & MiDataRow("IMPORTE_TOTAL").ToString & """,")
-                            resb.Append("""FECHA_EMISION"" :" & """" & MiDataRow("FECHA_EMISION").ToString & """,")
-                            resb.Append("""TIPO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("TIPO_DOC_ADQUIRIENTE").ToString & """,")
-                            resb.Append("""NUMERO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("NUMERO_DOC_ADQUIRIENTE").ToString & """")
-                            resb.Append("}")
-                            resb.Append(",")
-                        Next
-                        resb.Append("{}")
-                        resb = resb.Replace(",{}", String.Empty)
-                        resb.Append("]")
-                    End If
-                    res = resb.ToString()
+                'Case "LPCQR" 'Parametros para el QR
+                '    context.Response.ContentType = "application/json; charset=utf-8"
+                '    dt = nvVenta.ListarParametrosQR(If(p_FVBVTAC_CODE = Nothing, "", p_FVBVTAC_CODE))
+                '    If Not (dt Is Nothing) Then
+                '        resb.Append("[")
+                '        For Each MiDataRow As DataRow In dt.Rows
+                '            resb.Append("{")
+                '            resb.Append("""RUC_EMISOR"" :" & """" & MiDataRow("RUC_EMISOR").ToString & """,")
+                '            resb.Append("""CODIGO_DOC"" :" & """" & MiDataRow("CODIGO_DOC").ToString & """,")
+                '            resb.Append("""SERIE"" :" & """" & MiDataRow("SERIE").ToString & """,")
+                '            resb.Append("""NUMERO"" :" & """" & MiDataRow("NUMERO").ToString & """,")
+                '            resb.Append("""TOTAL_IGV"" :" & """" & MiDataRow("TOTAL_IGV").ToString & """,")
+                '            resb.Append("""IMPORTE_TOTAL"" :" & """" & MiDataRow("IMPORTE_TOTAL").ToString & """,")
+                '            resb.Append("""FECHA_EMISION"" :" & """" & MiDataRow("FECHA_EMISION").ToString & """,")
+                '            resb.Append("""TIPO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("TIPO_DOC_ADQUIRIENTE").ToString & """,")
+                '            resb.Append("""NUMERO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("NUMERO_DOC_ADQUIRIENTE").ToString & """")
+                '            resb.Append("}")
+                '            resb.Append(",")
+                '        Next
+                '        resb.Append("{}")
+                '        resb = resb.Replace(",{}", String.Empty)
+                '        resb.Append("]")
+                '    End If
+                '    res = resb.ToString()
 
                 Case "GQR" 'Parametros para guardar el QR
-                    context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = nvVenta.GuardarCodigoQR(p_FVBVTAC_CODE, p_IMGQR)
-                    If Not (dt Is Nothing) Then
-                        resb.Append("[")
-                        For Each MiDataRow As DataRow In dt.Rows
-                            resb.Append("{")
-                            resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
-                            resb.Append("""QR"" :" & """" & MiDataRow("QR").ToString & """")
-                            resb.Append("}")
-                            resb.Append(",")
-                        Next
-                        resb.Append("{}")
-                        resb = resb.Replace(",{}", String.Empty)
-                        resb.Append("]")
-                    End If
-                    res = resb.ToString()
-
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    res = nvVenta.GuardarCodigoQR(p_FVBVTAC_CODE, p_IMGQR)
                 Case "LVRA" ' Obtiene tabla con documentos de venta
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = nvVenta.ListarDocVenta_Rap("", CLIENTE, NUM_DCTO, DCTO_CODE, VENDEDOR, ESTADO, PRODUCTO, SERIE_DCTO, Utilities.fechaLocal(DESDE), Utilities.fechaLocal(HASTA), CTLG_CODE, SCSL_CODE, p_COMPLETO_IND)
@@ -493,7 +478,7 @@ Public Class NVMDOVR : Implements IHttpHandler
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("ANULADO").ToString())
                 resb.AppendFormat("<td style='text-align:center;'>")
                 If dt.Rows(i)("COMPLETO").ToString() = "COMPLETO" Then
-                    resb.AppendFormat("<a class='btn blue' onclick=""imprimirDetalle('{0}','{1}','{2}')""><i class='icon-print'></i></a>", dt.Rows(i)("CODE").ToString(), dt.Rows(i)("NUM_DCTO").ToString(), dt.Rows(i)("TIPO_DCTO"))
+                    resb.AppendFormat("<a class='btn blue' onclick=""imprimirDetalle('{0}','{1}','{2}','{3}')""><i class='icon-print'></i></a>", dt.Rows(i)("CODE").ToString(), dt.Rows(i)("NUM_DCTO").ToString(), dt.Rows(i)("TIPO_DCTO"), dt.Rows(i)("ELECTRONICO_IND"))
                 Else
                     resb.AppendFormat("")
                 End If
@@ -722,6 +707,7 @@ Public Class NVMDOVR : Implements IHttpHandler
             Dim totalSinDscto As Decimal = 0
             Dim totalDsctoSinIgv As Decimal = 0
 
+            tabla.Append("<br>")
             tabla.Append("<br>")
             tabla.Append("<table border='0' style='width: 90%;' align='center'>")
             tabla.Append("<thead>")
@@ -1083,6 +1069,7 @@ Public Class NVMDOVR : Implements IHttpHandler
             tabla.Append("<tr>")
             tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Total a Pagar <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE"))
+            tabla.Append("<br>")
             tabla.Append("</tr>")
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
@@ -1096,14 +1083,14 @@ Public Class NVMDOVR : Implements IHttpHandler
             tabla.Append("</table>")
 
             'LUGAR DONDE SE VA A DIBUJAR EL QR EN EL PDF
-            tabla.Append("<br><table border='0' style='width: 90%;' align='center' font size=9pt>")
-            tabla.Append("<tr>")
-            'tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE"))
-            tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><link rel='stylesheet' type='text/css' href='data:image/png;base64,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'></td>")
-            tabla.Append("</tr>")
+            'tabla.Append("<br><table border='0' style='width: 90%;' align='center' font size=9pt>")
+            'tabla.Append("<tr>")
+            ''tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE"))
+            'tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><link rel='stylesheet' type='text/css' href='data:image/png;base64,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'></td>")
+            'tabla.Append("</tr>")
 
 
-            tabla.Append("</table>")
+            'tabla.Append("</table>")
         End If
         Return tabla.ToString()
     End Function

@@ -1495,10 +1495,10 @@ function CargarDatosSunat() {
     //$("#divBotones").slideDown();
 
 
-    $("#txtRazonSocial").val(DatosSunatCargados.nombre_o_razon_social);
-    $("#txtDireccionJ").val(DatosSunatCargados.direccion == ('-' || '') ? city : DatosSunatCargados.direccion);
+    $("#txtRazonSocial").val(eliminarDiacriticos(DatosSunatCargados.nombre_o_razon_social));
+    $("#txtDireccionJ").val(DatosSunatCargados.direccion == ('-' || '') ? city : eliminarDiacriticos(DatosSunatCargados.direccion));
     //$("#txtTelefonoJ").val(DatosSunatCargados.TELEFONO);
-    $("#txtNombreComercial").val(DatosSunatCargados.nombre_o_razon_social);
+    $("#txtNombreComercial").val(eliminarDiacriticos(DatosSunatCargados.nombre_o_razon_social));
     //$("#txtUbigeo").val((DatosSunatCargados.direccion == ('-' || '') ? "130101": DatosSunatCargados.ubigeo));
     $("#txtActividad").val("");
     //$("#txtActividad").siblings("ul").children("li").click();

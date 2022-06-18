@@ -1,5 +1,16 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NOMDOCC.ascx.vb" Inherits="vistas_NO_NOMDOCC" %>
 <style>
+    #divBuscarDoc {
+        margin-left: 0px !important;
+    }
+
+    @media (max-width:900px) {
+        #divBuscarDoc {
+            left: 5% !important;
+            width: 90% !important;
+        }
+    }
+
     .balanceado {
     color:green;
     font-weight:600;
@@ -1291,7 +1302,7 @@
     </div>
 </div>
 
-<div id="divBuscarDoc" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 50%;" aria-hidden="true">
+<div id="divBuscarDoc" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="left: 25%; width: 50%;" aria-hidden="true">
     <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
         <button type="button" class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
             <i class="icon-remove"></i>

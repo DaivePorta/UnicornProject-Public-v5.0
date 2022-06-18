@@ -388,50 +388,34 @@ Public Class NVMDOCV : Implements IHttpHandler
                     End If
                     res = resb.ToString()
 
-                Case "LPCQR" 'Parametros para el QR
-                    context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = nvVenta.ListarParametrosQR(If(p_FVBVTAC_CODE = Nothing, "", p_FVBVTAC_CODE))
-                    If Not (dt Is Nothing) Then
-                        resb.Append("[")
-                        For Each MiDataRow As DataRow In dt.Rows
-                            resb.Append("{")
-                            resb.Append("""RUC_EMISOR"" :" & """" & MiDataRow("RUC_EMISOR").ToString & """,")
-                            resb.Append("""CODIGO_DOC"" :" & """" & MiDataRow("CODIGO_DOC").ToString & """,")
-                            resb.Append("""SERIE"" :" & """" & MiDataRow("SERIE").ToString & """,")
-                            resb.Append("""NUMERO"" :" & """" & MiDataRow("NUMERO").ToString & """,")
-                            resb.Append("""TOTAL_IGV"" :" & """" & MiDataRow("TOTAL_IGV").ToString & """,")
-                            resb.Append("""IMPORTE_TOTAL"" :" & """" & MiDataRow("IMPORTE_TOTAL").ToString & """,")
-                            resb.Append("""FECHA_EMISION"" :" & """" & MiDataRow("FECHA_EMISION").ToString & """,")
-                            resb.Append("""TIPO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("TIPO_DOC_ADQUIRIENTE").ToString & """,")
-                            resb.Append("""NUMERO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("NUMERO_DOC_ADQUIRIENTE").ToString & """")
-                            resb.Append("}")
-                            resb.Append(",")
-                        Next
-                        resb.Append("{}")
-                        resb = resb.Replace(",{}", String.Empty)
-                        resb.Append("]")
-                    End If
-                    res = resb.ToString()
+                'Case "LPCQR" 'Parametros para el QR
+                '    context.Response.ContentType = "application/json; charset=utf-8"
+                '    dt = nvVenta.ListarParametrosQR(If(p_FVBVTAC_CODE = Nothing, "", p_FVBVTAC_CODE))
+                '    If Not (dt Is Nothing) Then
+                '        resb.Append("[")
+                '        For Each MiDataRow As DataRow In dt.Rows
+                '            resb.Append("{")
+                '            resb.Append("""RUC_EMISOR"" :" & """" & MiDataRow("RUC_EMISOR").ToString & """,")
+                '            resb.Append("""CODIGO_DOC"" :" & """" & MiDataRow("CODIGO_DOC").ToString & """,")
+                '            resb.Append("""SERIE"" :" & """" & MiDataRow("SERIE").ToString & """,")
+                '            resb.Append("""NUMERO"" :" & """" & MiDataRow("NUMERO").ToString & """,")
+                '            resb.Append("""TOTAL_IGV"" :" & """" & MiDataRow("TOTAL_IGV").ToString & """,")
+                '            resb.Append("""IMPORTE_TOTAL"" :" & """" & MiDataRow("IMPORTE_TOTAL").ToString & """,")
+                '            resb.Append("""FECHA_EMISION"" :" & """" & MiDataRow("FECHA_EMISION").ToString & """,")
+                '            resb.Append("""TIPO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("TIPO_DOC_ADQUIRIENTE").ToString & """,")
+                '            resb.Append("""NUMERO_DOC_ADQUIRIENTE"" :" & """" & MiDataRow("NUMERO_DOC_ADQUIRIENTE").ToString & """")
+                '            resb.Append("}")
+                '            resb.Append(",")
+                '        Next
+                '        resb.Append("{}")
+                '        resb = resb.Replace(",{}", String.Empty)
+                '        resb.Append("]")
+                '    End If
+                '    res = resb.ToString()
 
                 Case "GQR" 'Parametros para guardar el QR
-                    context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = nvVenta.GuardarCodigoQR(p_FVBVTAC_CODE, p_IMGQR)
-                    If Not (dt Is Nothing) Then
-                        resb.Append("[")
-                        For Each MiDataRow As DataRow In dt.Rows
-                            resb.Append("{")
-                            resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
-                            resb.Append("""QR"" :" & """" & MiDataRow("QR").ToString & """")
-                            resb.Append("}")
-                            resb.Append(",")
-                        Next
-                        resb.Append("{}")
-                        resb = resb.Replace(",{}", String.Empty)
-                        resb.Append("]")
-                    End If
-                    res = resb.ToString()
-
-
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    res = nvVenta.GuardarCodigoQR(p_FVBVTAC_CODE, p_IMGQR)
                 Case "4" 'Obtener precio producto             
                     context.Response.ContentType = "application/json; charset=utf-8"
                     'Dim naAlmacen As New Nomade.NA.NAConfAlmacenes("Bn")
@@ -642,7 +626,7 @@ Public Class NVMDOCV : Implements IHttpHandler
                 Case "GENERAR_PDF" 'DPORTA
                     Dim msgError As String = "OK"
                     Dim dtCabecera As New DataTable
-                    dtCabecera = nvVenta.ListarDocumentosVenta(p_CODE, "", "", "", "", "", "", "", "")
+                    dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "X")
                     If p_CODE.Length = 9 And dtCabecera.Rows(0)("COMPLETO_IND") = "S" Then
                         Try
                             GenerarPDF(p_CODE)
@@ -650,7 +634,7 @@ Public Class NVMDOCV : Implements IHttpHandler
                             msgError = "ERROR: " + ex.Message
                         End Try
                     Else
-                        msgError = "ERROR"
+                        msgError = "ERROR: El doc. de venta no está completado"
                     End If
                     res = msgError.ToString()
                 Case "FECHAX" ' Suma fecha de emision más plazo de pago
@@ -920,13 +904,46 @@ Public Class NVMDOCV : Implements IHttpHandler
                         resb.Append("]")
                     End If
                     res = resb.ToString()
+                Case "LISTA_DET_FAST" ' Listar Detalles de Documento Venta FVBVTAC -> FVRVTAD
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = nvVenta.ListarDetalleDocumentoVentaNVLDOCT_FAST(If(p_FVBVTAC_CODE = Nothing, "", p_FVBVTAC_CODE), "0", "")
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each row As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""TIPO"":""" & row("TIPO").ToString & """,")
+                            resb.Append("""ITEM"":""" & row("ITEM").ToString & """,")
+                            resb.Append("""NOMBRE_IMPRESION"":""" & row("NOMBRE_IMPRESION").ToString & """,")
+                            resb.Append("""DESC_UNIDAD"":""" & row("DESC_UNIDAD").ToString & """,")
+                            resb.Append("""CANTIDAD"":""" & row("CANTIDAD").ToString & """,")
+                            resb.Append("""PU"":""" & row("PU").ToString & """,")
+                            resb.Append("""DESCUENTO"":""" & row("DESCUENTO").ToString & """,")
+                            resb.Append("""TOTAL"":""" & row("TOTAL").ToString & """,")
+                            resb.Append("""CONVERT_PU"":""" & row("CONVERT_PU").ToString & """,")
+                            resb.Append("""CONVERT_DESCUENTO"":""" & row("CONVERT_DESCUENTO").ToString & """,")
+                            resb.Append("""CONVERT_TOTAL"":""" & row("CONVERT_TOTAL").ToString & """,")
 
+                            resb.Append("""DESC_ALMC"":""" & row("DESC_ALMC").ToString & """,")
+                            resb.Append("""ESTADO_DESP"":""" & row("ESTADO_DESP").ToString & """,")
+
+                            resb.Append("""DETRACCION"":""" & row("DETRACCION").ToString & """,")
+                            resb.Append("""ISC"":""" & row("ISC").ToString & """,")
+                            resb.Append("""CONVERT_DETRACCION"":""" & row("CONVERT_DETRACCION").ToString & """,")
+                            resb.Append("""CONVERT_ISC"":""" & row("CONVERT_ISC").ToString & """,")
+                            resb.Append("""PROD_CODIGO_ANTIGUO"":""" & row("PROD_CODIGO_ANTIGUO").ToString & """")
+                            resb.Append("},")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
                 Case "LVEND" ' LISTAR VENDEDORES POR ROL
 
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = nvVenta.ListarVendedorPorRol(CTLG, p_ESTADO_IND)
                     If Not (dt Is Nothing) Then
-                        dt = SortDataTableColumn(dt, "ESTADO", "ASC")
+                        'dt = SortDataTableColumn(dt, "ESTADO", "ASC")
                         resb.Append("[")
                         For Each row As DataRow In dt.Rows
                             resb.Append("{")
@@ -1832,16 +1849,26 @@ Public Class NVMDOCV : Implements IHttpHandler
         Dim dtDetalles As New DataTable
         Dim dtDetallesBonificacion As New DataTable
         Dim dtDetallesMuestra As New DataTable
-        Dim dtEmpresas As New DataTable
-        Dim dtParametroLogo As New DataTable
+        'Dim dtEmpresas As New DataTable
+        'Dim dtParametroLogo As New DataTable
 
         Dim dtParametroPiePagina As New DataTable
 
-        dtCabecera = nvVenta.ListarDocumentosVenta(p_CODE, "", "", "", "", "", "", "", "")
-        dtDetalles = nvVenta.ListarDetalleDocumentoVenta(p_CODE, "0", "")
-        dtDetallesBonificacion = nvVenta.ListarDetalleBonificacionDocumentoVenta(p_CODE, "0", "")
-        dtDetallesMuestra = nvVenta.ListarDetalleMuestraDocumentoVenta(p_CODE, "0", "")
-        dtParametroLogo = New Nomade.NC.NCParametros("Bn").ListarParametros("LOVE", "")
+        dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "I")
+        dtDetalles = nvVenta.ListarDetDctoVentaImpresion(p_CODE)
+
+        dtDetallesBonificacion = Nothing
+        dtDetallesMuestra = Nothing
+
+        If dtCabecera.Rows(0)("DET_BONI") <> 0 Then
+            dtDetallesBonificacion = nvVenta.ListarDetalleBonificacionDocumentoVenta(p_CODE, "0", "")
+        End If
+
+        If dtCabecera.Rows(0)("DET_MUES") <> 0 Then
+            dtDetallesMuestra = nvVenta.ListarDetalleMuestraDocumentoVenta(p_CODE, "0", "")
+        End If
+
+        'dtParametroLogo = New Nomade.NC.NCParametros("Bn").ListarParametros("LOVE", "")
 
         dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "")
 
@@ -1872,8 +1899,8 @@ Public Class NVMDOCV : Implements IHttpHandler
             Dim totalSinDscto As Decimal = 0
             Dim totalDsctoSinIgv As Decimal = 0
             'OBTENER LOGO
-            dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA"), "A", "")
-            rutaLogo = dtEmpresas(0)("RUTA_IMAGEN").ToString
+            'dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA"), "A", "")
+            rutaLogo = dtCabecera(0)("RUTA_IMAGEN").ToString
 
             'OBTENER EL TEXTO QUE VA A IR EN LA IMPRESION COMO PIE DE PAGINA
             pie_pagina = dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString
@@ -1889,24 +1916,24 @@ Public Class NVMDOCV : Implements IHttpHandler
                 tabla.AppendFormat("<tr><th colspan='4'>&nbsp;</th></tr>")
             End If
             'tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("DOCUMENTO")) 
-            If dtParametroLogo IsNot Nothing Then
-                If dtParametroLogo.Rows(0)("VALOR") = "S" Then
-                    If Not rutaLogo = "" Then
-                        tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
-                    End If
-                End If
-            Else
-                If Not rutaLogo = "" Then
-                    tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
-                End If
-            End If
+            'If dtParametroLogo IsNot Nothing Then
+            '    If dtParametroLogo.Rows(0)("VALOR") = "S" Then
+            '        If Not rutaLogo = "" Then
+            '            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
+            '        End If
+            '    End If
+            'Else
+            '    If Not rutaLogo = "" Then
+            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
+            '    End If
+            'End If
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
             If (dtCabecera.Rows(0)("RUC").substring(0, 2) = "10") Then 'DPORTA 10/12/2021
                 tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("DESC_CORTA_EMPRESA"))
                 tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>De: {0}</td></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
             Else
-                tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>De: {0}</td></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
+                tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
             End If
             tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>RUC {0}</th></tr>", dtCabecera.Rows(0)("RUC"))
             tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", dtCabecera.Rows(0)("DIRECCION"))
@@ -1915,7 +1942,7 @@ Public Class NVMDOCV : Implements IHttpHandler
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
             tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("DOCUMENTO"))
-            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("NUM_DCTO"), dtCabecera.Rows(0)("DOCUMENTO_MIN"))
+            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("NUM_DCTO"))
             tabla.Append("</thead>")
 
             tabla.Append("<tbody>")
@@ -1924,12 +1951,11 @@ Public Class NVMDOCV : Implements IHttpHandler
             tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Cliente<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("RAZON_SOCIAL"))
             tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>{0}<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{1}</td></tr>", dtCabecera.Rows(0)("CLIE_DCTO_DESC"), dtCabecera.Rows(0)("CLIE_DCTO_NRO"))
             tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Dirección<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DIRECCION_CLIENTE"))
-            If dtCabecera.Rows(0)("TIPO_DCTO") = "0012" Then
-                tabla.AppendFormat("<tr><td  style='vertical-align: top;'><strong>Nro Maq<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
-            Else
-                tabla.AppendFormat("<tr><td  style='vertical-align: top;'><strong>Autorización<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
-            End If
-
+            'If dtCabecera.Rows(0)("TIPO_DCTO") = "0012" Then
+            '    tabla.AppendFormat("<tr><td  style='vertical-align: top;'><strong>Nro Maq<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+            'Else
+            '    tabla.AppendFormat("<tr><td  style='vertical-align: top;'><strong>Autorización<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+            'End If
             tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Sucursal<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DESC_SUCURSAL"))
             If exoneradaInd = "S" Then
                 tabla.Append("<tr><td></td><td colspan='3'>(Exonerado)</td></tr>")
@@ -2347,26 +2373,22 @@ Public Class NVMDOCV : Implements IHttpHandler
     Sub HTMLToPDF(ByVal HTML As String, ByVal FilePath As String, ByVal p_CODE As String)
 
         Dim nc As New Nomade.NC.NCEmpresa("Bn")
-        Dim dtEmpre, dtCabecera As DataTable
-        dtEmpre = nc.ListarEmpresa(p_CTLG_CODE, "", "")
-        dtCabecera = nvVenta.ListarDocumentosVenta(p_CODE, "", "", "", "", "", "", "", "")
+        Dim dtCabecera As DataTable
+        dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "C")
 
-        Dim imgS, imgI, imgQR, elect As String
+        Dim imgS, imgI As String
 
-        Dim imgSuperior As String = dtEmpre.Rows(0)("IMG_SUPERIOR").ToString()
+        Dim imgSuperior As String = dtCabecera(0)("IMG_SUPERIOR").ToString
         imgS = imgSuperior.Replace("../../../", String.Empty)
         If Not My.Computer.FileSystem.FileExists(HttpContext.Current.Server.MapPath("~") & imgS) Then
             imgS = "\recursos\img\SIN_IMAGEN.png"
         End If
 
-        Dim imgInferior As String = dtEmpre.Rows(0)("IMG_INFERIOR").ToString()
+        Dim imgInferior As String = dtCabecera(0)("IMG_INFERIOR").ToString
         imgI = imgInferior.Replace("../../../", String.Empty)
         If Not My.Computer.FileSystem.FileExists(HttpContext.Current.Server.MapPath("~") & imgI) Then
             imgI = "\recursos\img\SIN_IMAGEN.png"
         End If
-
-        imgQR = "recursos/img/Imagenes/Encabezados/qrcode.png"
-        elect = dtCabecera.Rows(0)("ELECTRONICO_IND")
 
         Dim archivo, res As String
         res = "Archivos\" + FilePath
@@ -2381,23 +2403,56 @@ Public Class NVMDOCV : Implements IHttpHandler
         PdfWriter.GetInstance(document, New FileStream(archivo, FileMode.Create))
         document.Open()
 
-
         Dim styles As iTextSharp.text.html.simpleparser.StyleSheet = New iTextSharp.text.html.simpleparser.StyleSheet()
         styles.LoadStyle("border", "border-bottom", "2px")
 
         Dim hw As iTextSharp.text.html.simpleparser.HTMLWorker = New iTextSharp.text.html.simpleparser.HTMLWorker(document)
         hw.Parse(New StringReader(HTML.ToString))
         document.Close()
-        imgC(FilePath, imgS, imgI, imgQR, elect)
 
+        'dporta xmlworker
+        'Dim sr As New StringReader(HTML.ToString())
+        'Dim pdfDoc As New Document(PageSize.A4, 10.0F, 10.0F, 10.0F, 0F)
+        'Dim writer As PdfWriter = PdfWriter.GetInstance(pdfDoc, New FileStream(archivo, FileMode.Create))
+        'pdfDoc.Open()
 
+        'XMLWorkerHelper.GetInstance().ParseXHtml(writer, pdfDoc, sr)
+        'pdfDoc.Close()
+
+        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" Then 'DPORTA 20/05/2022
+            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(dtCabecera(0)("IMAGEN_QR").ToString)) 'SOLO PARA ´DOCS ELECTRÓNICOS
+        Else
+            imgC(FilePath, imgS, imgI)
+        End If
     End Sub
 
-    Function imgC(ByVal Archivo As String, ByVal imgs As String, ByVal imginf As String, ByVal imgQR As String, ByVal elect As String) As String
+    Function Base64ToImage(ByVal base64string As String) As System.Drawing.Image 'DPORTA 20/05/2022
+        'Configurar imagen y obtener flujo de datos juntos
+        Dim img As System.Drawing.Image
+        Dim MS As System.IO.MemoryStream = New System.IO.MemoryStream
+        Dim b64 As String
+        If base64string = "" Then
+            b64 = ""
+        Else
+            b64 = base64string.Split(",")(1).Replace(" ", "+") 'Con el split se Toma lo que corresponde al base64 y luego se reemplaza
+        End If
+
+        Dim b() As Byte
+
+        'Convierte el mensaje codificado en base64 en datos de imagen
+        b = Convert.FromBase64String(b64)
+        MS = New System.IO.MemoryStream(b)
+
+        'Crea la imagen
+        img = System.Drawing.Image.FromStream(MS)
+
+        Return img
+    End Function
+
+    Function imgCabConQR(ByVal Archivo As String, ByVal imgs As String, ByVal imginf As String, ByVal imgQR As System.Drawing.Image) As String 'DPORTA 20/05/2022
 
         Dim WatermarkLocation As String = HttpContext.Current.Server.MapPath("~") & imgs
         Dim WatermarkLocationI As String = HttpContext.Current.Server.MapPath("~") & imginf
-        Dim WatermarkLocationQ As String = HttpContext.Current.Server.MapPath("~") & imgQR
         Dim FileLocation As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & Archivo
         Dim filePath As String = HttpContext.Current.Server.MapPath("~") & "Archivos\ArchivosAux\" & Archivo
         Dim document As Document = New Document()
@@ -2410,10 +2465,54 @@ Public Class NVMDOCV : Implements IHttpHandler
         img.ScaleAbsoluteHeight(73)
         img.SetAbsolutePosition(25, 770) '0,770
 
-        Dim imgQ As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(WatermarkLocationQ)
+        Dim imgQ As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(imgQR, System.Drawing.Imaging.ImageFormat.Jpeg) 'Con esto se dibuja la imagen en el PDF
         imgQ.ScaleAbsoluteWidth(60)
         imgQ.ScaleAbsoluteHeight(60)
         imgQ.SetAbsolutePosition(515, 770)
+
+        Dim waterMark As PdfContentByte
+        For page As Integer = 1 To pdfReader.NumberOfPages
+            If page = 1 Then
+                waterMark = stamp.GetOverContent(page)
+                waterMark.AddImage(img)
+                'If elect = "S" Then
+                waterMark.AddImage(imgQ)
+                'End If
+            End If
+        Next
+
+        stamp.FormFlattening = True
+        stamp.Close()
+        pdfReader.Close()
+        document.Close()
+
+        My.Computer.FileSystem.DeleteFile(FileLocation)
+        My.Computer.FileSystem.MoveFile(filePath, FileLocation)
+        Return "ok"
+
+    End Function
+
+    Function imgC(ByVal Archivo As String, ByVal imgs As String, ByVal imginf As String) As String
+
+        Dim WatermarkLocation As String = HttpContext.Current.Server.MapPath("~") & imgs
+        Dim WatermarkLocationI As String = HttpContext.Current.Server.MapPath("~") & imginf
+        'Dim WatermarkLocationQ As String = HttpContext.Current.Server.MapPath("~") & imgQR
+        Dim FileLocation As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & Archivo
+        Dim filePath As String = HttpContext.Current.Server.MapPath("~") & "Archivos\ArchivosAux\" & Archivo
+        Dim document As Document = New Document()
+        Dim pdfReader As PdfReader = New PdfReader(FileLocation)
+        Dim stamp As PdfStamper = New PdfStamper(pdfReader, New FileStream(filePath, FileMode.Create))
+
+        Dim img As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(WatermarkLocation)
+
+        img.ScaleAbsoluteWidth(425) '600
+        img.ScaleAbsoluteHeight(73)
+        img.SetAbsolutePosition(25, 770) '0,770
+
+        'Dim imgQ As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(WatermarkLocationQ)
+        'imgQ.ScaleAbsoluteWidth(60)
+        'imgQ.ScaleAbsoluteHeight(60)
+        'imgQ.SetAbsolutePosition(515, 770)
 
 
         'Dim imgIn As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(WatermarkLocationI)
@@ -2427,9 +2526,9 @@ Public Class NVMDOCV : Implements IHttpHandler
             If page = 1 Then
                 waterMark = stamp.GetOverContent(page)
                 waterMark.AddImage(img)
-                If elect = "S" Then
-                    waterMark.AddImage(imgQ)
-                End If
+                'If elect = "S" Then
+                '    waterMark.AddImage(imgQ)
+                'End If
                 'waterMark.AddImage(imgIn)
             End If
         Next
@@ -2445,6 +2544,14 @@ Public Class NVMDOCV : Implements IHttpHandler
 
     End Function
 
+    Public Function getLinks(ByVal pie_pagina As String) As String 'DPORTA 31/05/2022
+        Dim cadena As String
+        cadena = "@»(http://([w.]+/?)S*)»"
+        Dim re As Regex = New Regex(cadena, RegexOptions.IgnoreCase Or RegexOptions.Compiled)
+        pie_pagina = re.Replace(pie_pagina, "«<a href=»$1″» target=»»_blank»»>$1</a>»»")
+        Return pie_pagina
+    End Function
+
     '----------------------------------------------------------
     '----------------------------------------------------------
     '----------------------------------------------------------
@@ -2457,13 +2564,24 @@ Public Class NVMDOCV : Implements IHttpHandler
         Dim dtDetalles As New DataTable
         Dim dtDetallesBonificacion As New DataTable
         Dim dtDetallesMuestra As New DataTable
-        Dim dtEmpresas As New DataTable
+        'Dim dtEmpresas As New DataTable
         Dim dtParametroPiePagina As New DataTable
 
-        dtCabecera = nvVenta.ListarDocumentosVenta(p_CODE, "", "", "", "", "", "", "", "")
-        dtDetalles = nvVenta.ListarDetalleDocumentoVenta(p_CODE, "0", "")
-        dtDetallesBonificacion = nvVenta.ListarDetalleBonificacionDocumentoVenta(p_CODE, "0", "")
-        dtDetallesMuestra = nvVenta.ListarDetalleMuestraDocumentoVenta(p_CODE, "0", "")
+        dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "C")
+        dtDetalles = nvVenta.ListarDetDctoVentaImpresion(p_CODE)
+
+        dtDetallesBonificacion = Nothing
+        dtDetallesMuestra = Nothing
+
+        If dtCabecera.Rows(0)("DET_BONI") <> 0 Then
+            dtDetallesBonificacion = nvVenta.ListarDetalleBonificacionDocumentoVenta(p_CODE, "0", "")
+        End If
+
+        If dtCabecera.Rows(0)("DET_MUES") <> 0 Then
+            dtDetallesMuestra = nvVenta.ListarDetalleMuestraDocumentoVenta(p_CODE, "0", "")
+        End If
+
+
         dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "")
 
         If dtCabecera IsNot Nothing Then
@@ -2479,7 +2597,7 @@ Public Class NVMDOCV : Implements IHttpHandler
             Dim rutaLogo As String = ""
             'OBTENER EL TEXTO QUE VA A IR EN LA IMPRESION COMO PIE DE PAGINA
             Dim pie_pagina As String = ""
-            pie_pagina = dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString
+            pie_pagina = getLinks(dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString)
             'VARIABLE PARA COLOCAR EL QR EN EL PDF
             ' Dim rutaQr As String = dtCabecera(0)("IMAGEN_QR").ToString
             Dim codeMoneda As String = dtCabecera.Rows(0)("MONEDA") 'Código de Moneda
@@ -2496,6 +2614,7 @@ Public Class NVMDOCV : Implements IHttpHandler
             Dim totalDsctoSinIgv As Decimal = 0
 
             tabla.Append("<br>")
+            tabla.Append("<br>")
             tabla.Append("<table border='0' style='width: 90%;' align='center'>")
             tabla.Append("<thead>")
             tabla.Append("<tr><th border='1' style='border-top:1px solid black;'></th></tr>")
@@ -2505,7 +2624,6 @@ Public Class NVMDOCV : Implements IHttpHandler
             tabla.Append("<tr><th border='1' style='border-top:1px solid black;'></th></tr>")
             tabla.Append("</thead>")
             tabla.Append("</table>")
-            tabla.Append("<br>")
 
             tabla.Append("<table border='0' style='width: 90%;' align='center' font size=9pt>")
             tabla.Append("<thead>")
@@ -2513,14 +2631,20 @@ Public Class NVMDOCV : Implements IHttpHandler
                 tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>{0}</th></tr>", dtCabecera.Rows(0)("DESC_CORTA_EMPRESA"))
                 tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>De: {0}</th></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
             Else
-                tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>De: {0}</th></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
+                tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>{0}</th></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
             End If
             tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>RUC {0}</th></tr>", dtCabecera.Rows(0)("RUC"))
             tabla.AppendFormat("<tr><th colspan='4' align='left' style='font-size:8pt;font-family:Arial,sans-serif'>{0}</th></tr>", dtCabecera.Rows(0)("DIRECCION"))
             tabla.Append("</thead>")
             tabla.Append("<tbody>")
             tabla.Append("<tr><td colspan='4' border='1' style='border-top:1px solid black;'></td></tr>")
-            tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Nro Maq</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+            If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" Then
+                If dtCabecera.Rows(0)("TIPO_DCTO") = "0012" Then
+                    tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Nro Maq </strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+                Else
+                    tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Autorizado mediante </strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+                End If
+            End If
             tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Local</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("DESC_SUCURSAL"))
             If exoneradaInd = "S" Then
                 tabla.Append("<tr><td></td><td colspan='3'>(Exonerado)</td></tr>")
@@ -2546,7 +2670,7 @@ Public Class NVMDOCV : Implements IHttpHandler
             tabla.Append("<br>")
 
             tabla.Append("<table border='1' style='width: 90%;border-collapse:collapse' align='center' font size=9pt ><tbody>")
-            tabla.Append("<tr>")
+            tabla.Append("<tr style='background-color: #D6EAF8;'>")
             tabla.Append("<td style='text-align: center;border:1pt solid windowtext;padding:0cm 3.5pt;height:33pt'><strong>Cant.</strong></td>")
             tabla.Append("<td style='text-align: center;border:1pt solid windowtext;padding:0cm 3.5pt;height:33pt'><strong>Und.</strong></td>")
             tabla.Append("<td style='text-align: center;padding-left:5px;border:1pt solid windowtext;padding:0cm 3.5pt;height:33pt' colspan='2'><strong>Descripción</strong></td>")
@@ -2875,6 +2999,7 @@ Public Class NVMDOCV : Implements IHttpHandler
             tabla.Append("<tr>")
             tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Neto a Pagar <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE"))
+            tabla.Append("<br>")
             tabla.Append("</tr>")
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
@@ -2901,14 +3026,14 @@ Public Class NVMDOCV : Implements IHttpHandler
             tabla.Append("</table>")
 
             'LUGAR DONDE SE VA A DIBUJAR EL QR EN EL PDF
-            tabla.Append("<br><table border='0' style='width: 90%;' align='center' font size=9pt>")
-            tabla.Append("<tr>")
-            'tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE"))
-            tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><link rel='stylesheet' type='text/css' href='data:image/png;base64,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'></td>")
-            tabla.Append("</tr>")
+            'tabla.Append("<br><table border='0' style='width: 90%;' align='center' font size=9pt>")
+            'tabla.Append("<tr>")
+            ''tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE"))
+            'tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><link rel='stylesheet' type='text/css' href='data:image/png;base64,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'></td>")
+            'tabla.Append("</tr>")
 
 
-            tabla.Append("</table>")
+            'tabla.Append("</table>")
         End If
         Return tabla.ToString()
     End Function

@@ -45,6 +45,10 @@
             font-family: Arial !important;
         }
 
+        #tblDocumento, .arial {
+            font-family: 'Arial' !important;
+        }
+
         .container-fluid {
             padding: 0px !important;
         }
@@ -64,6 +68,7 @@
                 <div class="actions">
                     <a class="btn black" onclick="javascript:imprimirListaDctosVenta();"><i class="icon-print"></i>&nbsp;Imprimir</a>
                     <a class="btn green" href="?f=nvmanti"><i class="icon-plus"></i>&nbsp;Nuevo</a>
+                    <a class="btn red" href="?f=nvlanti"><i class="icon-list"></i>&nbsp;Listar</a>
                 </div>
             </div>
 
@@ -83,7 +88,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="span2">
+                    <div class="span1">
                         <div class="control-group">
                             <label id="lblEstablecimiento" class="control-label" for="cboEstablecimiento">
                                 Establecimiento</label>
@@ -119,7 +124,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="span2">
+                    <div class="span1">
                         <div class="control-group">
                             <label class="control-label" for="txtSerie">
                                 Serie</label>
@@ -163,27 +168,55 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </div>            
 
-                    <div class="span2">
-                        <div class="control-group">
-                            <label class="control-label" for="cboCliente">
-                                Cliente</label>
-                        </div>
-                    </div>
-
-                    <div class="span4">
-                        <div class="control-group ">
-                            <div class="controls" id="divCboCliente">
-                                <select id="cboCliente" class="span12" data-placeholder="Cliente">
-                                    <option></option>
-                                </select>
+                    <div class="span1">
+                        <div class="control-group span2">
+                            <div class="controls">
+                                <a id="btnBuscarDoc" class="btn blue">BUSCAR</a>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div class="span2">
+                        <div class="control-group">
+                            <div class="controls">
+                                <button type="button" id="btnBusquedaAvanz" class="btn btn-link" data-ver="false"><i id="iconAvanz" class="icon-chevron-down"></i>  Busqueda Avanzada....</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+               <%-- <div class="row-fluid">                    
 
-                <div class="row-fluid">
+                    <div class="span2">
+                        <div class="control-group">
+                            <h4><p>Total Anticipos (S/.)</p></h4>
+                        </div>
+                    </div>
+
+                    <div class="span1">
+                        <div class="control-group">
+                            <div class="controls">
+                                <h4><p id="sumapantalla"></p></h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="span1">
+                        <div class="control-group">
+                            <div class="controls">
+                                <a id="btnBuscarDoc" class="btn blue pull-right">BUSCAR</a>
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="span2">
+                        <div class="control-group">
+                            <div class="controls">
+                                <button type="button" id="btnBusquedaAvanz" class="btn btn-link" data-ver="false"><i id="iconAvanz" class="icon-chevron-down"></i>  Busqueda Avanzada....</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>--%>
+                <div class="row-fluid bavanzado" style="display: none">
                     <div class="span1">
                         <div class="control-group">
                             <label class="control-label" for="cboEstadoDoc">
@@ -202,7 +235,25 @@
                             </div>
                         </div>
                     </div>
+                      <div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="cboCliente">
+                                Cliente</label>
+                        </div>
+                    </div>
 
+                    <div class="span4">
+                        <div class="control-group ">
+                            <div class="controls" id="divCboCliente">
+                                <select id="cboCliente" class="span12" data-placeholder="Cliente">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span1"></div>
                     <div class="span2">
                         <div class="control-group">
                             <h4><p>Total Anticipos (S/.)</p></h4>
@@ -216,20 +267,10 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="span3">
-                        <div class="control-group">
-                            <div class="controls">
-                                <a id="btnBuscarDoc" class="btn blue pull-right">BUSCAR</a>
-                            </div>
-                        </div>
-                    </div> 
-
                 </div>
-
                 <div class="row-fluid" style="margin-top: 10px;">
                     <div id="divDocumento">
-                        <table id="tblDocumento" class="display DTTT_selectable bordered dataTable no-footer" style="border: 1px solid #cbcbcb;">
+                        <%--<table id="tblDocumento" class="display DTTT_selectable bordered dataTable no-footer" style="border: 1px solid #cbcbcb;">
                         <thead class="fondoHeader">
                             <tr>
                                 <th>CÓDIGO</th>
@@ -248,7 +289,7 @@
                         </thead>
                         <tbody>
                         </tbody>
-                    </table>
+                    </table>--%>
                     </div>
                 </div>
 

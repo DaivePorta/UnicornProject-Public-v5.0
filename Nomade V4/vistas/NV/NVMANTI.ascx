@@ -1175,7 +1175,7 @@
                                 </div>
 
                                 <!-- CAMPOS PARA CREAR QR -->
-                                <div id="codigoQR"></div>  
+                                <div id="codigoQR" style="display: none"></div> 
 
                                 <div class="form-actions" id="acciones_generales" style="display: block;">
                                     <div class="span4">

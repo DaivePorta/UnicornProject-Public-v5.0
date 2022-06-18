@@ -805,63 +805,71 @@ var NVMCOTI = function () {
 
         //EnviarCorreo - enviarMail
         $('#btnMail').click(function (e) {
-            if ($("#txtNumDctoComp").val().trim() != "") {
-
-                e.preventDefault();
-
-                if ($("#txt_comentario").val() == '')
-                    $('#txtAsunto').val('COTIZACION CLIENTE');
-                else
-                    $('#txtAsunto').val($("#txt_comentario").val());                
-                $('#lblEmpresa').text($('#cbo_Empresa :selected').html());
-                $('#lblAsunto').text('COTIZACION CLIENTE- ' + $("#cbo_Sucursal :selected").html());
-                $('#lblEmision').text($('#txt_fec_emision').val());
-                $('#lblTransaccion').text($('#txt_fec_transaccion').val());
-
-                $('#lblCliente').text($('#txtClientes').val().trim());
-                if ($("#chkResponsablePago").is(":checked")) {
-                    $('#lblResponsablePago').text($('#txtResponsablePago').val().trim());
-                } else {
-                    $('#lblResponsablePago').text($('#txtClientes').val().trim());
-                }
-
-                // $('#lblAux').text(aux + ': ');
-                $('#lblRazSocial').text($('#txtrazsocial').val());
-                $('#lblTipoDoc').text($('#cboTipoDoc :selected').html());
-                $('#lblNumDoc').text($('#txtNroDctoCliente').val());
-                $('#lblDocRegistro').text($('#txtSerieCotizacion').val() + '-' + $('#txtNroCotizacion').val());
-                $('#lblGlosa').text(($('#txt_comentario').val() == "" ? "Cotización a cliente" : $('#txt_comentario').val()));
-
-                var data = new FormData();
-                data.append('p_CODE', $("#txtNumDctoComp").val());
-                Bloquear("ventana");
-                var jqxhr = $.ajax({
-                    type: "POST",
-                    url: "vistas/nv/ajax/nvmcoti.ashx?OPCION=IMPR",
-                    contentType: false,
-                    data: data,
-                    processData: false,
-                    cache: false,
-                    async: false
-                })
-               .success(function (datos) {
-                   Desbloquear("ventana");
-                   if (datos != null) {
-                       $("#lblTablaHtml").html(datos);
-                   }
-               })
-               .error(function () {
-                   Desbloquear("ventana");
-               });
-                //$('#lblTablaHtml').html(ObtenerTablaDetalles());
-                cargarCorreos();
-                $('#divMail').modal('show');
-            }
-            else {
-                alertCustom("El documento no puede enviarse sin antes ser completado");
-            }
-
+            $('#txtcontenido').attr('disabled', false);
+            $('#txtAsunto').val('COTIZACIÓN CLIENTE');
+            $('#txtcontenido').val("");
+            cargarCorreos();
+            $('#divMail').modal('show');
         });
+
+        //$('#btnMail').click(function (e) {
+        //    if ($("#txtNumDctoComp").val().trim() != "") {
+
+        //        e.preventDefault();
+
+        //        if ($("#txt_comentario").val() == '')
+        //            $('#txtAsunto').val('COTIZACION CLIENTE');
+        //        else
+        //            $('#txtAsunto').val($("#txt_comentario").val());                
+        //        $('#lblEmpresa').text($('#cbo_Empresa :selected').html());
+        //        $('#lblAsunto').text('COTIZACION CLIENTE- ' + $("#cbo_Sucursal :selected").html());
+        //        $('#lblEmision').text($('#txt_fec_emision').val());
+        //        $('#lblTransaccion').text($('#txt_fec_transaccion').val());
+
+        //        $('#lblCliente').text($('#txtClientes').val().trim());
+        //        if ($("#chkResponsablePago").is(":checked")) {
+        //            $('#lblResponsablePago').text($('#txtResponsablePago').val().trim());
+        //        } else {
+        //            $('#lblResponsablePago').text($('#txtClientes').val().trim());
+        //        }
+
+        //        // $('#lblAux').text(aux + ': ');
+        //        $('#lblRazSocial').text($('#txtrazsocial').val());
+        //        $('#lblTipoDoc').text($('#cboTipoDoc :selected').html());
+        //        $('#lblNumDoc').text($('#txtNroDctoCliente').val());
+        //        $('#lblDocRegistro').text($('#txtSerieCotizacion').val() + '-' + $('#txtNroCotizacion').val());
+        //        $('#lblGlosa').text(($('#txt_comentario').val() == "" ? "Cotización a cliente" : $('#txt_comentario').val()));
+
+        //        var data = new FormData();
+        //        data.append('p_CODE', $("#txtNumDctoComp").val());
+        //        Bloquear("ventana");
+        //        var jqxhr = $.ajax({
+        //            type: "POST",
+        //            url: "vistas/nv/ajax/nvmcoti.ashx?OPCION=IMPR",
+        //            contentType: false,
+        //            data: data,
+        //            processData: false,
+        //            cache: false,
+        //            async: false
+        //        })
+        //       .success(function (datos) {
+        //           Desbloquear("ventana");
+        //           if (datos != null) {
+        //               $("#lblTablaHtml").html(datos);
+        //           }
+        //       })
+        //       .error(function () {
+        //           Desbloquear("ventana");
+        //       });
+        //        //$('#lblTablaHtml').html(ObtenerTablaDetalles());
+        //        cargarCorreos();
+        //        $('#divMail').modal('show');
+        //    }
+        //    else {
+        //        alertCustom("El documento no puede enviarse sin antes ser completado");
+        //    }
+
+        //});
 
         $("#cbo_und_medida").on("change", function () {
 
@@ -5480,15 +5488,15 @@ var NuevaVenta = function () {
 
 }
 
-var cargarCorreos = function () {
+//EMAIL
+function cargarCorreos() {
     var REGEX_EMAIL = '([a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)';
     $.ajax({
         type: 'post',
         url: 'vistas/na/ajax/naminsa.ashx?OPCION=LMAILS',
         async: false
-    }).done(function (data) {        
+    }).done(function (data) {
         data = JSON.parse(data);
-        console.log(data);
         for (var u in data) {
             if (data[u].usuario === $('#ctl00_txtus').val()) {
                 $('#txtRemitente').val(data[u].email);
@@ -5507,7 +5515,7 @@ var cargarCorreos = function () {
                     return '<div>' +
                         (item.name ? '<span class="name">' + escape(item.name) + '</span>&nbsp;' : '') +
                         (item.email ? '<span class="email">' + escape(item.email) + '</span>' : '') +
-                    '</div>';
+                        '</div>';
                 },
                 option: function (item, escape) {
                     var label = item.name || item.email;
@@ -5515,7 +5523,7 @@ var cargarCorreos = function () {
                     return '<div style="padding: 2px">' +
                         '<span class="label" style="display: block; font-size: 14px; background-color: inherit; color: inherit; text-shadow: none">' + escape(label) + '</span>' +
                         (caption ? '<span class="caption" style="display: block; font-size: 12px; margin: 2px 5px">' + escape(caption) + '</span>' : '') +
-                    '</div>';
+                        '</div>';
                 }
             },
             createFilter: function (input) {
@@ -5555,111 +5563,116 @@ var cargarCorreos = function () {
     if ($("#txtRemitente").val() == "") {
         $("#txtRemitente").val($("#ctl00_lblusuario").html() + "@gmail.com");
     }
-
-
-    //$.ajax({
-    //    type: "post",
-    //    url: "vistas/na/ajax/naminsa.ashx?OPCION=LMAILS",
-    //    async: false,
-    //    success: function (datos) {
-    //        if (datos !== null && datos !== '') {
-    //            datos = JSON.parse(datos);
-
-    //            for (var i = 0; i < datos.length; i++) {
-    //                if (datos[i].Usuario == $('#ctl00_txtus').val()) {
-    //                    $('#txtRemitente').val(datos[i].Correo);
-    //                    $('#txtNRemitente').val(datos[i].Nombres);
-    //                }
-    //            }
-
-    //            $('#cboCorreos').tagsinput({
-    //                itemValue: 'Correo',
-    //                itemText: 'Etiqueta',
-    //                typeahead: {
-    //                    source: datos
-    //                },
-    //                freeInput: true,
-    //                maxChars: 70
-    //            });
-    //            $('#divMail .bootstrap-tagsinput').css('height', '60px').css('overflow-y', 'auto');
-    //        }
-    //    },
-    //    error: function (msg) {
-    //        alertCustom('Error al cargar direcciones de correo electrónico.');
-    //    }
-    //});
 };
 
-var enviarCorreo = function () {
+function enviarCorreo() {
     var destinos = $('#cboCorreos').val();
     if (vErrors(['cboCorreos', 'txtAsunto'])) {
 
-        var filas = "";    
-        for (var i = 0; i < detallesVenta.length; i++) { 
-            filas += detallesVenta[i].ITEM  +","
-            filas += detallesVenta[i].PROD_CODE_ANTIGUO + ","
-            filas += detallesVenta[i].NOMBRE_IMPRESION + ","
-            filas += detallesVenta[i].CANTIDAD + ","
-            filas += detallesVenta[i].DESC_UNIDAD + ","
-            filas += detallesVenta[i].PRECIO_DETALLE + ","
-            filas += detallesVenta[i].TOTAL_BRUTO + ","
-            filas += detallesVenta[i].MONTO_DESCUENTO + ","
-            filas += detallesVenta[i].TOTAL_NETO + ","
-            filas += detallesVenta[i].MONTO_ISC + ","
-            filas += detallesVenta[i].MONTO_DETRAC + ","
-            filas += detallesVenta[i].GLOSA + ""
-            if (i != detallesVenta.length - 1) {
-                filas += "|"
-            }
-        } 
-
-
         $('#btnEnviarCorreo').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
         destinos = destinos.toString();
+        $.ajax({
+            type: "post",
+            url: "vistas/nv/ajax/nvmcoti.ashx?OPCION=correo" +
+                "&p_CODE=" + $('#txtNumDctoComp').val() +
+                "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
+                "&REMITENTE=" + $('#txtRemitente').val() +
+                "&NREMITENTE=" + $('#txtRemitente').val() +
+                "&DESTINATARIOS=" + destinos +
+                "&ASUNTO=" + $('#txtAsunto').val() +
+                "&MENSAJE=" + $('#txtcontenido').val(),
+            contentType: "application/json;",
+            dataType: false,
+            success: function (datos) {
+                if (datos.indexOf("error") >= 0) {
+                    alertCustom("No se encontró el archivo adjunto. Correo no se envió correctamente.");
 
-        var continuar = true;
-        var cod = "";
-        if (ObtenerQueryString("codigo")!=undefined) {
-            cod = ObtenerQueryString("codigo");
-        } else {
-            if ($("#txtNumDctoComp").val()!="") {
-                cod = $("#txtNumDctoComp").val();
-            }
-        }
-        if (true) {
-            $.ajax({
-                type: "post",
-                url: "vistas/nv/ajax/nvmcoti.ashx?OPCION=SENDMAIL" +
-                    "&REMITENTE=" + $('#txtRemitente').val() +
-                    "&NREMITENTE=" + $('#txtNRemitente').val() + "&DESTINATARIOS=" + destinos +
-                    "&ASUNTO=" + $('#lblAsunto').html() + "&MENSAJE=" + $('#txtcontenido').val() +
-                    "&EMPRESA=" + $('#lblEmpresa').html() +
-                    "&SECUENCIA=" + $('#txtNumSec').val() + "&EMISION=" + $('#lblEmision').html() +
-                    "&TRANSACCION=" + $('#lblTransaccion').html() + "&CLIENTE=" + $('#lblCliente').html() +
-                    "&RESPONSABLE_PAGO=" + $('#lblResponsablePago').html() +
-                    "&DOC_REGISTRO=" + $('#lblDocRegistro').html() +
-                    "&GLOSA=" + $('#lblGlosa').html() +
-                    "&DETALLES=" + filas +
-                    "&codigo=" + cod +
-                    "&p_FECHA_VIGENCIA=" + $('#txtFechaVigencia').val(),
-                contentType: "application/json;",
-                dataType: false,
-                success: function (datos) {
+                } else {
                     exito();
-                    $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
-                    setTimeout(function () { $('#divMail').modal('hide'); }, 25);
-                },
-                error: function (msg) {
-                    alertCustom('Ocurrió un error en el servidor al intentar enviar el correo electrónico. Por favor, inténtelo nuevamente.');
-                    $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
                 }
-            });
-        } else {
-            alertInfo("El documento aún no puede ser enviado!");
-        }
+                $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+                setTimeout(function () { $('#divMail').modal('hide'); }, 25);
+
+            },
+            error: function (msg) {
+                alertCustom('Ocurrió un error en el servidor al intentar enviar el correo electrónico. Por favor, inténtelo nuevamente.');
+                $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+            }
+        });
 
     }
 };
+
+//var enviarCorreo = function () {
+//    var destinos = $('#cboCorreos').val();
+//    if (vErrors(['cboCorreos', 'txtAsunto'])) {
+
+//        var filas = "";    
+//        for (var i = 0; i < detallesVenta.length; i++) { 
+//            filas += detallesVenta[i].ITEM  +","
+//            filas += detallesVenta[i].PROD_CODE_ANTIGUO + ","
+//            filas += detallesVenta[i].NOMBRE_IMPRESION + ","
+//            filas += detallesVenta[i].CANTIDAD + ","
+//            filas += detallesVenta[i].DESC_UNIDAD + ","
+//            filas += detallesVenta[i].PRECIO_DETALLE + ","
+//            filas += detallesVenta[i].TOTAL_BRUTO + ","
+//            filas += detallesVenta[i].MONTO_DESCUENTO + ","
+//            filas += detallesVenta[i].TOTAL_NETO + ","
+//            filas += detallesVenta[i].MONTO_ISC + ","
+//            filas += detallesVenta[i].MONTO_DETRAC + ","
+//            filas += detallesVenta[i].GLOSA + ""
+//            if (i != detallesVenta.length - 1) {
+//                filas += "|"
+//            }
+//        } 
+
+
+//        $('#btnEnviarCorreo').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
+//        destinos = destinos.toString();
+
+//        var continuar = true;
+//        var cod = "";
+//        if (ObtenerQueryString("codigo")!=undefined) {
+//            cod = ObtenerQueryString("codigo");
+//        } else {
+//            if ($("#txtNumDctoComp").val()!="") {
+//                cod = $("#txtNumDctoComp").val();
+//            }
+//        }
+//        if (true) {
+//            $.ajax({
+//                type: "post",
+//                url: "vistas/nv/ajax/nvmcoti.ashx?OPCION=SENDMAIL" +
+//                    "&REMITENTE=" + $('#txtRemitente').val() +
+//                    "&NREMITENTE=" + $('#txtNRemitente').val() + "&DESTINATARIOS=" + destinos +
+//                    "&ASUNTO=" + $('#lblAsunto').html() + "&MENSAJE=" + $('#txtcontenido').val() +
+//                    "&EMPRESA=" + $('#lblEmpresa').html() +
+//                    "&SECUENCIA=" + $('#txtNumSec').val() + "&EMISION=" + $('#lblEmision').html() +
+//                    "&TRANSACCION=" + $('#lblTransaccion').html() + "&CLIENTE=" + $('#lblCliente').html() +
+//                    "&RESPONSABLE_PAGO=" + $('#lblResponsablePago').html() +
+//                    "&DOC_REGISTRO=" + $('#lblDocRegistro').html() +
+//                    "&GLOSA=" + $('#lblGlosa').html() +
+//                    "&DETALLES=" + filas +
+//                    "&codigo=" + cod +
+//                    "&p_FECHA_VIGENCIA=" + $('#txtFechaVigencia').val(),
+//                contentType: "application/json;",
+//                dataType: false,
+//                success: function (datos) {
+//                    exito();
+//                    $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+//                    setTimeout(function () { $('#divMail').modal('hide'); }, 25);
+//                },
+//                error: function (msg) {
+//                    alertCustom('Ocurrió un error en el servidor al intentar enviar el correo electrónico. Por favor, inténtelo nuevamente.');
+//                    $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+//                }
+//            });
+//        } else {
+//            alertInfo("El documento aún no puede ser enviado!");
+//        }
+
+//    }
+//};
 
 // -----------------------------------------------------------------------------------------
 /* //PERMITE OBTENER LA TABLA DE IMPRESION 
@@ -6096,6 +6109,13 @@ function BuscarDocumentoOrigen() {
                         }
                     }
                     $("#modalPlantilla").modal("show");
+
+                    if ($("#modalPlantilla").hasClass('in') == true) {
+                        $('#tblPlantillas_filter.dataTables_filter input[type=search]').focus();
+                    }
+                    $('#modalPlantilla').on('shown.bs.modal', function () {
+                        $('#tblPlantillas_filter.dataTables_filter input[type=search]').focus();
+                    });
 
                     oTable = $("#tblPlantillas").dataTable({
                         "oLanguage": {

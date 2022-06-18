@@ -224,13 +224,19 @@ var CALDEMO = function () {
                             $(td).html("");
                         } else {
                             if ((rowData.CODIGO_VENTA).toString().search("V") == 0) {
-                                var s="<td style='text-align:center;'>";
-                                s += "<span><a class='btn blue' onclick=\"imprimirDetalle('" + rowData.CODIGO + "')\"><i class='icon-print'></i></a></span>";
-                                s+="</td>";
+                                var s = "<td style='text-align:center;'>";
+                                s += "<span><a class='btn blue' onclick=\"imprimirDetalle('" + rowData.CODIGO_VENTA + "')\"><i class='icon-print'></i></a></span>";
+                                s += "</td>";
+                                $(td).html(s);
+                            } else if ((rowData.CODIGO_VENTA).toString().search("AP") == 0) {
+                                var s = "<td style='text-align:center;'>";
+                                s += "<span><a class='btn black' onclick=\"imprimirDetalle('" + rowData.CODIGO_VENTA + "')\"><i class='icon-print'></i></a></span>";
+                                s += "</td>";
                                 $(td).html(s);
                             } else {
                                 $(td).html("");
                             }
+
                         }
                     }
                 }
@@ -363,36 +369,92 @@ function datosMovimientoCaja () {
 
 function imprimirDetalle(codigo) {
     if ($("#styleImpresion").html() == undefined) {
-        var estilos = '<style id="styleImpresion">@media print {.chat-window {display: none !important;}.navbar-inner {display: none !important;}.page-sidebar {display: none  !important;}.footer {display: none  !important;}.page-content {margin-left: 0px  !important;}#contenedor{display: none  !important;}#contenedorBreadcrumb{ display: none  !important;}.page-container {margin-top: 0px  !important;}#divDctoImprimir {display: block  !important;width: 100%  !important;font-size: 10px  !important;line-height: 11px  !important;font-family:"Lucida Console" !important;}.container-fluid {padding: 0px  !important;}}</style>';
+        var estilos = '<style id="styleImpresion">@media print {.chat-window {display: none !important;}.navbar-inner {display: none !important;}.page-sidebar {display: none  !important;}.footer {display: none  !important;}.page-content {margin-left: 0px  !important;}#contenedor{display: none  !important;}#contenedorBreadcrumb{ display: none  !important;}.page-container {margin-top: 0px  !important;}#divDctoImprimir {display: block  !important;width: 100%  !important;font-size: 10px  !important;line-height: 11px  !important;}.container-fluid {padding: 0px  !important;}}</style>';
         $("#ventana").append(estilos);
     }
 
-    var data = new FormData();
-    data.append('OPCION', '4');
-    data.append('p_CODE_DET_MOVI', codigo);
-    Bloquear('ventana');
-    var jqxhr = $.ajax({
-        type: "POST",
-        url: "vistas/ca/ajax/caldemo.ASHX",
-        contentType: false,
-        data: data,
-        processData: false,
-        cache: false,
-        async: false
-    }).success(function (datos) {
-        if (datos != null) {
-            $("#divDctoImprimir").html(datos);
-            setTimeout(function () {
-                window.print();
-            }, 200)
-        } else {
-            noexito();
-        }
-        Desbloquear("ventana");
-    }).error(function (msg) {
-        Desbloquear("ventana");
-        alertCustom("Error al generar detalles. Por favor intente nuevamente.");
-    });
+    //var data = new FormData();
+    //data.append('OPCION', '4');
+    //data.append('p_CODE_DET_MOVI', codigo);
+    //Bloquear('ventana');
+    //var jqxhr = $.ajax({
+    //    type: "POST",
+    //    url: "vistas/ca/ajax/caldemo.ASHX",
+    //    contentType: false,
+    //    data: data,
+    //    processData: false,
+    //    cache: false,
+    //    async: false
+    //}).success(function (datos) {
+    //    if (datos != null) {
+    //        $("#divDctoImprimir").html(datos);
+    //        setTimeout(function () {
+    //            window.print();
+    //        }, 0.0000000000000001)
+    //    } else {
+    //        noexito();
+    //    }
+    //    Desbloquear("ventana");
+    //}).error(function (msg) {
+    //    Desbloquear("ventana");
+    //    alertCustom("Error al generar detalles. Por favor intente nuevamente.");
+    //});
+    if (codigo.toString().search("V") == 0) {
+        var data = new FormData();
+        data.append('p_CODE', codigo);
+        data.append('USAR_IGV_IND', '')
+        var jqxhr = $.ajax({
+            type: "POST",
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
+            contentType: false,
+            data: data,
+            processData: false,
+            async: false,
+            cache: false
+        })
+            .success(function (datos) {
+                if (datos != null) {
+
+                    $("#divDctoImprimir").html(datos);
+                    setTimeout(function () {
+                        window.print();
+                    }, 0.0000000000000001)
+
+                } else {
+                    noexito();
+                }
+            })
+            .error(function () {
+                noexito();
+            });
+    } else if (codigo.toString().search("AP") == 0){
+        var data = new FormData();
+        data.append('p_CODE', codigo);
+        data.append('USAR_IGV_IND', '')
+        var jqxhr = $.ajax({
+            type: "POST",
+            url: "vistas/nv/ajax/NVMANTI.ashx?OPCION=IMPR",
+            contentType: false,
+            data: data,
+            processData: false,
+            async: false,
+            cache: false
+        })
+            .success(function (datos) {
+                if (datos != null) {
+                    $("#divDctoImprimir").html(datos);
+                    setTimeout(function () {
+                        window.print();
+                    }, 0.0000000000000001)
+
+                } else {
+                    noexito();
+                }
+            })
+            .error(function () {
+                noexito();
+            });
+    }    
 }
 
 var reporte = function () {

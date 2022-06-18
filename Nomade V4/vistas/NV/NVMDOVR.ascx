@@ -1581,7 +1581,7 @@
                                         </div>
 
                                         <!-- CAMPOS PARA CREAR QR -->
-                                       <div id="codigoQR"></div>  
+                                       <div id="codigoQR" style="display: none"></div>  
 
                                          <!-- Adicional de Venta -->
                                         <div class="span12" id="p_DatVuelto" style="margin-left: 0">

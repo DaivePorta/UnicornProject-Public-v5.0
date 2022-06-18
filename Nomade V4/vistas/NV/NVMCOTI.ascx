@@ -1375,12 +1375,12 @@
     </div>
 </div>
 
-<div id="divMail" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 60%;left:20%;" aria-hidden="true">
+<div id="divMail" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 60%; left: 20%" aria-hidden="true">
     <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
         <button type="button" class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
             <i class="icon-remove"></i>
         </button>
-        <h4 id="divMail_title"><i class="icon-search" style="line-height: initial;"></i>&nbsp;Redactar correo electrónico</h4>
+        <h4 id="divMail_title"><i class="icon-pencil" style="line-height: initial;"></i>&nbsp;Redactar correo electrónico</h4>
     </div>
     <div class="modal-body">
         <div class="row-fluid">
@@ -1430,16 +1430,6 @@
                 <div class="row-fluid">
                     <div class="span12" style="padding: 10px; border: thin inset">
                         <textarea style="border: none; width: 99%; height: 80px" placeholder="Escriba aquí su mensaje" id="txtcontenido"></textarea><hr style="margin: 8px 0px;">
-                        <h4 id="lblEmpresa"></h4>
-                        <h5 id="lblAsunto"></h5>
-                        <h6><strong>EMISION:</strong>&nbsp;<span id="lblEmision"></span>&nbsp;&nbsp;&nbsp;<strong>TRANSACCION:</strong>&nbsp;<span id="lblTransaccion"></span></h6>
-                        <h6><strong>CLIENTE:</strong>&nbsp;<span id="lblCliente"></span>&nbsp;&nbsp;&nbsp;<strong>RESPONSABLE PAGO:</strong>&nbsp;<span id="lblResponsablePago"></span></h6>
-                        <h6><strong id="lblAux"></strong><span id="lblRazSocial"></span>&nbsp;&nbsp;&nbsp;<strong id="lblTipoDoc"></strong>&nbsp;<span id="lblNumDoc"></span></h6>
-                        <h6><strong>DOC. REGISTRO:</strong>&nbsp;<span id="lblDocRegistro"></span></h6>
-                        <h6><strong>GLOSA:</strong>&nbsp;<span id="lblGlosa"></span></h6>
-                        <div class="row-fluid">
-                            <div class="span12" id="lblTablaHtml"></div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1497,7 +1487,7 @@
     </div>
 </div>
 
-<div id="modalPlantilla" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 50%;left:20%;" aria-hidden="true">
+<div id="modalPlantilla" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 50%;left:25%;" aria-hidden="true">
     <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
         <button type="button" class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
             <i class="icon-remove"></i>
@@ -1513,7 +1503,7 @@
                     <th style="text-align: center">CÓDIGO</th>
                     <th style="text-align: center">FECHA TRANSACCIÓN</th>
                     <th style="text-align: center">DESCRIPCIÓN</th>
-                    <th style="text-align: center">#</th>
+                    <th style="text-align: center">OPCIONES</th>
                 </tr>
             </thead>
             <tbody></tbody>

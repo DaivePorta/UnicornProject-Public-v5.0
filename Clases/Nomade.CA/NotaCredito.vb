@@ -312,7 +312,7 @@
                                       p_DESPACHADO_IND As String, p_COBRADO_IND As String,
                                       Optional ByVal p_AUTOAMORTIZAR As String = "S", Optional ByVal p_AJUSTE As Decimal = 0.0) As Array
         Try
-            Dim msg(3) As String
+            Dim msg(4) As String
             Dim cmd As IDbCommand
 
             cmd = cn.GetNewCommand("PFB_CREAR_NOTA_CREDITO_POR_MOTIVOS", CommandType.StoredProcedure)
@@ -355,12 +355,13 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESPACHADO_IND", p_DESPACHADO_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_COBRADO_IND", p_COBRADO_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_ERROR_IND", String.Empty, ParameterDirection.Output, 253))
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NCC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
 
             cmd = cn.Ejecuta_parms(cmd)
             msg(0) = cmd.Parameters("@p_NOCC_CODE").Value
-            msg(1) = cmd.Parameters("@p_NOCC_NUM_SEQ_DOC").Value
-            msg(2) = cmd.Parameters("@p_ERROR_IND").Value
+            msg(1) = cmd.Parameters("@p_NCC_DATOS_QR").Value
+            msg(2) = cmd.Parameters("@p_NOCC_NUM_SEQ_DOC").Value
+            msg(3) = cmd.Parameters("@p_ERROR_IND").Value
 
             Return msg
 
@@ -514,6 +515,43 @@
             Throw (ex)
         End Try
     End Function
+    Public Function ListarCabNotaCreditoImpresion(ByVal p_NOCC_CODE As String) As DataTable
+        Try
+
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFB_LISTAR_CAB_NOTA_CREDITO_IMPRESION", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NOCC_CODE", p_NOCC_CODE, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function ListarDetNotaCreditoImpresion(ByVal p_NOCC_CODE As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFB_LISTAR_DET_NOTA_CREDITO_IMPRESION", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NOCC_CODE", p_NOCC_CODE, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 
     Public Function ListarDetallesNotaCreditoNaminsa(ByVal p_NOCC_CODE As String, ByVal p_COMPRA_VENTA_IND As String) As DataTable
         Try
@@ -656,7 +694,7 @@
   ByVal p_MONTO_USABLE As String, ByVal p_MES_PERIODO As String, ByVal p_ANIO_PERIODO As String, ByVal p_DEVOLVER_DINERO As String,
   ByVal p_COD_AUT As String, ByVal p_DETALLES As String
  ) As Array
-        Dim msg(2) As String
+        Dim msg(3) As String
         Try
             Dim cmd As IDbCommand
             cmd = cn.GetNewCommand("PFB_CREAR_NOTA_CREDITO_GENERICA_2", CommandType.StoredProcedure)
@@ -690,17 +728,20 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SERIE_NRO", String.Empty, ParameterDirection.Output, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NCG_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESPUESTA", String.Empty, ParameterDirection.Output, 253))
 
             cmd = cn.Ejecuta_parms(cmd)
             msg(0) = cmd.Parameters("@p_CODE").Value
             msg(1) = cmd.Parameters("@p_SERIE_NRO").Value
-            msg(2) = cmd.Parameters("@p_RESPUESTA").Value
+            msg(2) = cmd.Parameters("@p_NCG_DATOS_QR").Value
+            msg(3) = cmd.Parameters("@p_RESPUESTA").Value
 
         Catch ex As Exception
             msg(0) = ex.Message
             msg(1) = ""
             msg(2) = ""
+            msg(3) = ""
         End Try
 
         Return msg

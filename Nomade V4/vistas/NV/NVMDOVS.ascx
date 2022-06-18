@@ -1,11 +1,11 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NVMDOVS.ascx.vb" Inherits="vistas_NV_NVMDOVS" %>
 <style type="text/css">
-    #divMail, #divWhatsapp, #_buscarDocumento, #divAnticipos, #mapaModal {
+    #divMail, #_buscarDocumento, #divAnticipos, #mapaModal {
         margin-left: 0px !important;
     }
 
     @media (max-width:900px) {
-        #divMail, #divWhatsapp #_buscarDocumento, #divAnticipos, #mapaModal {
+        #divMail, #_buscarDocumento, #divAnticipos, #mapaModal {
             left: 5% !important;
             width: 90% !important;
         }
@@ -113,7 +113,6 @@
             <div class="portlet-title">
                 <h4><i class="icon-reorder"></i>VENTA RÁPIDA SERVICIOS</h4>
                 <div class="actions">
-                    <a class="btn green hidden" id="btnWhatsapp"><i class="icon-phone"></i>&nbsp;Whatsapp</a>
                     <a class="btn purple hidden" id="btnMail"><i class="icon-envelope"></i>&nbsp;Enviar Mail</a>                    
                     <a class="btn black btnImprimir" href="javascript:ImprimirDctoVenta();" style="display: none;"><i class="icon-print"></i>&nbsp;Imprimir</a>
                     <a class="btn green" onclick="javascript:NuevaVenta();"><i class="icon-plus"></i>&nbsp;Nuevo</a>
@@ -1463,7 +1462,7 @@
                                         </div>
 
                                         <!-- CAMPOS PARA CREAR QR -->
-                                       <div id="codigoQR"></div>  
+                                       <div id="codigoQR" style="display: none"></div>   
 
                                          <!-- Adicional de Venta -->
                                         <div class="span12" id="p_DatVuelto" style="margin-left: 0">
@@ -1549,8 +1548,9 @@
                                         <a class="btn" href="javascript:Cancelar();"><i class="icon-remove"></i>&nbsp;Cancelar</a>
                                         <a class="btn" id="btnLimpiarCobro"><i class="icon-file"></i>&nbsp;Limpiar Datos Cobro</a>
                                     </div>
-                                    <div class="span2">
-                                        <a id="btnImprimir" class="btn black" href="javascript:ImprimirDctoVenta();" style="display: none; margin-top: 5px;"><i class="icon-print"></i>&nbsp;Imprimir</a>                                       
+                                    <div class="span4">
+                                        <a id="btnImprimir" class="btn black" href="javascript:ImprimirDctoVenta();" style="display: none; margin-top: 5px;"><i class="icon-print"></i>&nbsp;Imprimir</a>
+                                        <a id="btnImprimirST" class="btn black" href="javascript:ImprimirDctoVentaTicket();" style="display: none; margin-top: 5px;"><i class="icon-print"></i>&nbsp;Imprimir Ticket</a>
                                         <label id="lblCopia" class="control-label" for="chkCopia" style="display: none; margin-right: 15px; margin-bottom: 0px;">
                                             <input type="checkbox" id="chkCopia" name="chkCopia" style="display: inline-block;" />
                                             Copia</label>
@@ -1994,58 +1994,6 @@
     <input id="txtPrecioUnitInicio" class="span12" type="hidden" onkeypress=" return ValidaDecimales(event,this,2)" />
     <div class="modal-footer">
         <button class="btn green" type="button" onclick="enviarCorreo()" id="btnEnviarCorreo"><i class="icon-plane"></i>&nbsp;Enviar</button>
-    </div>
-</div>
-
-<div id="divWhatsapp" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 60%; left: 20%;" aria-hidden="true">
-    <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
-        <button type="button" class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
-            <i class="icon-remove"></i>
-        </button>
-        <h4 id="divWhatsapp_title"><i class="icon-pencil" style="line-height: initial;"></i>&nbsp;Redactar Whatsapp</h4>
-    </div>
-    <div class="modal-body">
-        <div class="row-fluid">
-            <div class="span12" id="divWhatsapp_body">
-                <div class="row-fluid">
-                    <div class="span2">
-                        <div class="control-group">
-                            <label class="control-label">De:</label>
-                        </div>
-                    </div>
-                    <div class="span10">
-                        <div class="control-group">
-                            <div class="controls">
-                                <input type="text" id="txtRemitenteWhatsapp" class="span12" disabled><input id="txtNRemitenteWhatsapp" type="hidden">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span2">
-                        <div class="control-group">
-                            <label class="control-label">Para:</label>
-                        </div>
-                    </div>
-                    <div class="span10">
-                        <div class="control-group">
-                            <div class="controls">
-                                <select multiple class="span12" id="cboClienteWhatsapp"></select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span12" style="padding: 10px; border: thin inset">
-                        <textarea style="border: none; width: 99%; height: 80px" placeholder="Escriba aquí su mensaje" id="txtcontenidoWhatsapp"></textarea><hr style="margin: 8px 0px;">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <input id="txtPrecioUnitInicioWhatsapp" class="span12" type="hidden" onkeypress=" return ValidaDecimales(event,this,2)" />
-    <div class="modal-footer">
-        <button class="btn green" type="button" onclick="enviarCorreo()" id="btnEnviarWhatsapp"><i class="icon-plane"></i>&nbsp;Enviar</button>
     </div>
 </div>
 
