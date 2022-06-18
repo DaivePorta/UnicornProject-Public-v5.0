@@ -104,7 +104,7 @@ var NALAPES = function () {
             $('#txtCostoTransporte').val(obj.COSTO_TRANSPORTE);
             $('#hfCOSTO_TOTAL').val(obj.IMPORTE_BIEN);
             $('#hfPESO_TOTAL').val(obj.PESO_TOTAL);
-
+            $('#hfElectronicoInd').val(obj.ELECTRONICO_IND);
             // Lista Asiento en Carga Inicial
             if (prmtACON == "SI") {
                 sCodAlmacen = $("#txtNumDctoAlmc").val();
@@ -136,37 +136,48 @@ var NALAPES = function () {
                         async: false,
                         data: { ISAC_CODE: $('#txtNumDctoAlmc').val() }
                     }).success(function (data) {
-                        if (data === 'OK') {
-                            $('#btnAprobar').html('<i class="icon-ok-circle"></i>&nbsp;Completo').prop('disabled', true);
-                            exito();
-                            //Asiento al completar
-                            if (prmtACON == "SI") {
-                                var sCodAlmc = $("#txtNumDctoAlmc").val();
-                                sCodAlmc = $.trim(sCodAlmc);
-                                var oDocAlmc = fnGetDocAlmacen(sCodAlmc);
-                                vAsientoContable.sCodDoc = sCodAlmc;
-                                vAsientoContable.objDoc = oDocAlmc;
+                        if (data != null && data.length > 0) {
+                            if (data[0].p_RPTA === 'OK') {
+                                $('#btnAprobar').html('<i class="icon-ok-circle"></i>&nbsp;Completo').prop('disabled', true);
+                                exito();
+                                //Asiento al completar
+                                if (prmtACON == "SI") {
+                                    var sCodAlmc = $("#txtNumDctoAlmc").val();
+                                    sCodAlmc = $.trim(sCodAlmc);
+                                    var oDocAlmc = fnGetDocAlmacen(sCodAlmc);
+                                    vAsientoContable.sCodDoc = sCodAlmc;
+                                    vAsientoContable.objDoc = oDocAlmc;
 
-                                $('#btnGenerarAsiento').click();
+                                    $('#btnGenerarAsiento').click();
+                                }
+                                if ($('#hfElectronicoInd').val() == 'S') {
+                                    $("#hfCodigoNaminsa").val($('#txtNumDctoAlmc').val());
+                                    var miCodigoQR = new QRCode("codigoQR");
+                                    miCodigoQR.makeCode(data[0].DATOS_QR);
+                                    setTimeout(guardarQR, 0.0000000000000001);
+                                }    
+                                listarMovimientos();
+                                $("#divDetalles").modal('hide');
                             }
-                            listarMovimientos();
-                        }
-                        else if (data.split("-")[0] === "X_SEPAR") {
-                            infoCustom2("El producto " + data.split("-")[1] + " no cuenta con separados suficientes para despachar.")
-                        }
-                        else if (data.split("-")[0] === "X_STOCK") {
-                            infoCustom2("El producto " + data.split("-")[1] + " no cuenta con el stock suficiente. Revise su stock disponible.")
-                        }
-                        else {
-                            alertCustom("El doc. no se completó, porque la serie " + data + " ya se encuentra registrada en el almacén.")
-                            //infoCustom2("La serie " + data + " ya se encuentra registrada en el almacén.")
-                        }
+                            else if (data[0].p_RPTA.split("-")[0] === "X_SEPAR") {
+                                infoCustom2("El producto " + data[0].p_RPTA.split("-")[1] + " no cuenta con separados suficientes para despachar.")
+                            }
+                            else if (datos[0].p_RPTA.split("-")[0] === "X_STOCK") {
+                                infoCustom2("El producto " + data[0].p_RPTA.split("-")[1] + " no cuenta con el stock suficiente. Revise su stock disponible.")
+                            }
+                            else {
+                                alertCustom("El doc. no se completó, porque la serie " + data[0].p_RPTA + " ya se encuentra registrada en el almacén.")
+                                //infoCustom2("La serie " + data + " ya se encuentra registrada en el almacén.")
+                            }
+                        } else {
+                            noexito();
+                        }                        
                         Desbloquear('divCuerpo');
                     }).error(function (msg) {
                         alertCustom(msg.statusText);
                         Desbloquear('divCuerpo');
                     });
-                }, 1000);
+                }, 50);
             } else {
                 alertCustom('El movimiento no tiene detalles de productos.');
             }
@@ -377,6 +388,37 @@ var NALAPES = function () {
         }
     };
 }();
+
+function guardarQR() {
+    //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 
+    var NombreQR = $('#codigoQR img').attr('src');
+
+    var qrData = new FormData();
+    qrData.append('p_IMGQR', NombreQR);
+
+    $.ajax({
+        type: "post",
+        url: "vistas/na/ajax/naminsa.ashx?OPCION=GQR&ISAC_CODE=" + $("#hfCodigoNaminsa").val(), //CUANDO SE PRESIONA EL BOTON COMPLETAR
+        data: qrData,
+        async: false,
+        contentType: false,
+        processData: false,
+        success: function (res) {
+            if (res != null) {
+                if (res == "OK") {
+                    //exito();
+                } else {
+                    noexito();
+                }
+            } else {
+                noexito();
+            }
+        },
+        error: function () {
+            alertCustom("No se guardaron correctamente los datos!")
+        }
+    });
+}
 
 //DPORTA
 function cargarParametrosSistema() {

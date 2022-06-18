@@ -106,7 +106,8 @@
         Bloquear("divCboCliente");
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            //url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.5&p_CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: true,
@@ -447,7 +448,7 @@
                         } else {
                             infoCustom("El documento no pudo ser enviado.");
                         }*/
-                        
+
                         //fnSubirArchivoEfact(datos.replace(".xml", ".zip"));    
                         $("#divConfirmacion").modal('hide');
                     },
@@ -462,54 +463,121 @@
                         }
                     }
                 });
-            } else {
-                if (sCodTipoDoc == '0008') {   // NOTA DE DEBITO
-                    var sOpcion = 'FACT';
-                    var sCodVenta = documento;
-                    let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
+            } else if (sCodTipoDoc == '0008') { // NOTA DE DEBITO
+                var sOpcion = 'FACT';
+                var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
 
-                    $.ajax({
-                        type: "post",
-                        url: sRuta,
-                        contenttype: "application/json;",
-                        datatype: "json",
-                        async: true,
-                        beforeSend: function () { Bloquear("contenedor") },
-                        success: function (datos) {
-                            if (isEmpty(datos)) {
-                                alertCustom("Error al Enviar Documento Eletrónico");
-                                return;
-                            }
-                            let iIndice = datos.indexOf("[Advertencia]");
-                            if (iIndice >= 0) {
-                                alertCustom(datos);
-                                return;
-                            }
-                            if (datos.indexOf("[Error]") >= 0) {
-                                alertCustom(datos);
-                                return;
-                            }
+                $.ajax({
+                    type: "post",
+                    url: sRuta,
+                    contenttype: "application/json;",
+                    datatype: "json",
+                    async: true,
+                    beforeSend: function () { Bloquear("contenedor") },
+                    success: function (datos) {
 
-                            if (datos === "") {
-                                exitoCustom("La verificación se completó con éxito. El documento se envio correctamente.");
-                            } else {
-                                infoCustom("El documento no pudo ser enviado.");
-                            }
-                            //fnSubirArchivoEfact(datos.replace(".xml", ".zip"));    
-                            $("#divConfirmacion").modal('hide');
-                        },
-                        error: function (msg) {
-                            noexito();
-                        },
-                        complete: function () {
-                            Desbloquear("contenedor");
-                            if (bUltimo) {
-                                bUltimo = false;
-                                $('#btnFiltrarFactElec').click();
-                            }
+                        if (isEmpty(datos)) {
+                            alertCustom("Error al Enviar Documento Eletrónico");
+                            return;
                         }
-                    });
-                }
+                        let iIndice = datos.indexOf("[Advertencia]");
+                        if (iIndice >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+                        if (datos.indexOf("[Error]") >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+
+
+                        if (datos === "ENVIADO_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            exitoCustom("La verificación se completó con éxito. El documento se envio correctamente.");
+                        } else if (datos == "EXITO_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            exitoCustom("El documento fue aceptado correctamente por SUNAT.");
+                        } else if (datos == "PENDIENTE_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            infoCustom("El documento está pendiente a enviar a SUNAT. Vuelva a verificar en unos minutos.");
+                        } else {
+                            infoCustom("El documento no pudo ser enviado.");
+                        }
+
+                        //fnSubirArchivoEfact(datos.replace(".xml", ".zip"));                    
+
+                        $("#divConfirmacion").modal('hide');
+                    },
+                    error: function (msg) {
+                        noexito();
+                    },
+                    complete: function () {
+                        Desbloquear("contenedor");
+                        if (bUltimo) {
+                            bUltimo = false;
+                            $('#btnFiltrarFactElec').click();
+                        }
+                    }
+                });
+            } else if (sCodTipoDoc == '0009') { //GUIA DE REMISION
+                var sOpcion = 'FACT';
+                var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VGUIA_REMI_ELEC&sCodEmpresa=" + sCodEmpresa + "&sCodGuiaRemision=" + sCodVenta
+
+                $.ajax({
+                    type: "post",
+                    url: sRuta,
+                    contenttype: "application/json;",
+                    datatype: "json",
+                    async: true,
+                    beforeSend: function () { Bloquear("contenedor"); },
+                    success: function (datos) {
+
+
+                        if (isEmpty(datos)) {
+                            alertCustom("Error al Enviar Documento Eletrónico");
+                            return;
+                        }
+                        let iIndice = datos.indexOf("[Advertencia]");
+                        if (iIndice >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+                        if (datos.indexOf("[Error]") >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+
+
+                        if (datos === "ENVIADO_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            exitoCustom("La verificación se completó con éxito. El documento se envio correctamente.");
+                        } else if (datos == "EXITO_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            exitoCustom("El documento fue aceptado correctamente por SUNAT.");
+                        } else if (datos == "PENDIENTE_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            infoCustom("El documento está pendiente a enviar a SUNAT. Vuelva a verificar en unos minutos.");
+                        } else {
+                            infoCustom("El documento no pudo ser enviado.");
+                        }
+
+                        //fnSubirArchivoEfact(datos.replace(".xml", ".zip"));                    
+
+                        $("#divConfirmacion").modal('hide');
+                    },
+                    error: function (msg) {
+                        noexito();
+                    },
+                    complete: function () {
+                        Desbloquear("contenedor");
+                        if (bUltimo) {
+                            bUltimo = false;
+                            $('#btnFiltrarFactElec').click();
+                        }
+                    }
+                });
             }
         }
     };
@@ -545,7 +613,7 @@
                 contenttype: "application/json;",
                 datatype: "json",
                 async: true,
-                beforeSend: function () { Bloquear("contenedor"); },
+                beforeSend: function () { Bloquear($("#contenedor"), "Verificando documentos ...") },
                 success: function (datos) {
 
 
@@ -602,7 +670,7 @@
                     contenttype: "application/json;",
                     datatype: "json",
                     async: true,
-                    beforeSend: function () { Bloquear("contenedor") },
+                    beforeSend: function () { Bloquear($("#contenedor"), "Verificando documentos ...") },
                     success: function (datos) {
                         if (isEmpty(datos)) {
                             alertCustom("Error al Enviar Documento Eletrónico");
@@ -651,54 +719,122 @@
                         }
                     }
                 });
-            } else {
-                if (sCodTipoDoc == '0008') {   // NOTA DE DEBITO
-                    var sOpcion = 'FACT';
-                    var sCodVenta = documento;
-                    let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
+            } else if (sCodTipoDoc == '0008') { // NOTA DE DEBITO
+                var sOpcion = 'FACT';
+                var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
 
-                    $.ajax({
-                        type: "post",
-                        url: sRuta,
-                        contenttype: "application/json;",
-                        datatype: "json",
-                        async: true,
-                        beforeSend: function () { Bloquear("contenedor") },
-                        success: function (datos) {
-                            if (isEmpty(datos)) {
-                                alertCustom("Error al Enviar Documento Eletrónico");
-                                return;
-                            }
-                            let iIndice = datos.indexOf("[Advertencia]");
-                            if (iIndice >= 0) {
-                                alertCustom(datos);
-                                return;
-                            }
-                            if (datos.indexOf("[Error]") >= 0) {
-                                alertCustom(datos);
-                                return;
-                            }
-
-                            if (datos === "OK") {
-                                exitoCustom("La verificación se completó con éxito. El documento se envio correctamente.");
-                            } else {
-                                infoCustom("El documento no pudo ser enviado.");
-                            }
-                            //fnSubirArchivoEfact(datos.replace(".xml", ".zip"));    
-                            $("#divConfirmacion").modal('hide');
-                        },
-                        error: function (msg) {
-                            noexito();
-                        },
-                        complete: function () {
-                            Desbloquear("contenedor");
-                            if (bUltimo) {
-                                bUltimo = false;
-                                $('#btnFiltrarFactElec').click();
-                            }
+                $.ajax({
+                    type: "post",
+                    url: sRuta,
+                    contenttype: "application/json;",
+                    datatype: "json",
+                    async: true,
+                    beforeSend: function () { Bloquear($("#contenedor"), "Verificando documentos ...") },
+                    success: function (datos) {
+                        if (isEmpty(datos)) {
+                            alertCustom("Error al Enviar Documento Eletrónico");
+                            return;
                         }
-                    });
-                }
+                        let iIndice = datos.indexOf("[Advertencia]");
+                        if (iIndice >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+                        if (datos.indexOf("[Error]") >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+
+                        if (datos === "ENVIADO_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            exitoCustom("La verificación se completó con éxito. El documento se envio correctamente.");
+                        } else if (datos == "EXITO_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            exitoCustom("El documento fue aceptado correctamente por SUNAT.");
+                        } else if (datos == "PENDIENTE_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            exitoCustom("Se generaron los archivos correctamente. El documento está pendiente a enviar a SUNAT.");
+                        } else {
+                            infoCustom("El documento no pudo ser enviado.");
+                        }
+
+                        /*if (datos === "OK") {
+                            exitoCustom("La verificación se completó con éxito. El documento se envio correctamente.");
+                        } else {
+                            infoCustom("El documento no pudo ser enviado.");
+                        }*/
+
+                        //fnSubirArchivoEfact(datos.replace(".xml", ".zip"));    
+                        $("#divConfirmacion").modal('hide');
+                    },
+                    error: function (msg) {
+                        noexito();
+                    },
+                    complete: function () {
+                        Desbloquear("contenedor");
+                        if (bUltimo) {
+                            bUltimo = false;
+                            $('#btnFiltrarFactElec').click();
+                        }
+                    }
+                });
+            } else if (sCodTipoDoc == '0009') {
+                var sOpcion = 'FACT';
+                var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VGUIA_REMI_ELEC&sCodEmpresa=" + sCodEmpresa + "&sCodGuiaRemision=" + sCodVenta
+                $.ajax({
+                    type: "post",
+                    url: sRuta,
+                    contenttype: "application/json;",
+                    datatype: "json",
+                    async: true,
+                    beforeSend: function () { Bloquear($("#contenedor"), "Verificando documentos ...") },
+                    success: function (datos) {
+
+
+                        if (isEmpty(datos)) {
+                            alertCustom("Error al Enviar Documento Eletrónico");
+                            return;
+                        }
+                        let iIndice = datos.indexOf("[Advertencia]");
+                        if (iIndice >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+                        if (datos.indexOf("[Error]") >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+
+                        if (datos === "ENVIADO_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            exitoCustom("La verificación se completó con éxito. El documento se envio correctamente.");
+                        } else if (datos == "EXITO_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            exitoCustom("El documento fue aceptado correctamente por SUNAT.");
+                        } else if (datos == "PENDIENTE_SUNAT") {
+                            $('#btnFiltrarFactElec').click();
+                            exitoCustom("Se generaron los archivos correctamente. El documento está pendiente a enviar a SUNAT.");
+                        } else {
+                            infoCustom("El documento no pudo ser enviado.");
+                        }
+
+                        //fnSubirArchivoEfact(datos.replace(".xml", ".zip"));                    
+
+                        $("#divConfirmacion").modal('hide');
+                    },
+                    error: function (msg) {
+                        noexito();
+                    },
+                    complete: function () {
+                        Desbloquear("contenedor");
+                        if (bUltimo) {
+                            bUltimo = false;
+                            $('#btnFiltrarFactElec').click();
+                        }
+                    }
+                });
             }
         }
     };
@@ -957,7 +1093,7 @@
                         }
 
                         fnVerificarDocOrbitum(documento);
-                     
+
                         $("#divConfirmacion").modal('hide');
                     },
                     error: function (msg) {
@@ -966,50 +1102,89 @@
                     },
                     complete: function () {
                         Desbloquear("divConfirmacion");
-                    
+
                     }
                 });
-            } else {
-                if (sCodTipoDoc == '0008') {   // NOTA DE DEBITO
-                    var sOpcion = 'FACT';
-                    var sCodVenta = documento;
-                    let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=ND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
+            } else if (sCodTipoDoc == '0008') {   // NOTA DE DEBITO
+                //var sOpcion = 'FACT';
+                var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=ND_ORBI&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
 
-                    $.ajax({
-                        type: "post",
-                        url: sRuta,
-                        contenttype: "application/json;",
-                        datatype: "json",
-                        async: true,
-                        beforeSend: function () { Bloquear("divConfirmacion") },
-                        success: function (datos) {
-                            if (isEmpty(datos)) {
-                                alertCustom("Error al Enviar Documento Eletrónico");
-                                return;
-                            }
-                            let iIndice = datos.indexOf("[Advertencia]");
-                            if (iIndice >= 0) {
-                                alertCustom(datos);
-                                return;
-                            }
-                            if (datos.indexOf("[Error]") >= 0) {
-                                alertCustom(datos);
-                                return;
-                            }
-
-                            fnVerificarDoc(documento);                            
-                            $("#divConfirmacion").modal('hide');
-                        },
-                        error: function (msg) {
-                            Desbloquear("divConfirmacion");
-                            noexito();
-                        },
-                        complete: function () {
-                            Desbloquear("divConfirmacion");
-                         
+                $.ajax({
+                    type: "post",
+                    url: sRuta,
+                    contenttype: "application/json;",
+                    datatype: "json",
+                    async: true,
+                    beforeSend: function () { Bloquear("divConfirmacion") },
+                    success: function (datos) {
+                        if (isEmpty(datos)) {
+                            alertCustom("Error al Enviar Documento Eletrónico");
+                            return;
                         }
-                    });
-                }
+                        let iIndice = datos.indexOf("[Advertencia]");
+                        if (iIndice >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+                        if (datos.indexOf("[Error]") >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+
+                        fnVerificarDocOrbitum(documento);
+                        $("#divConfirmacion").modal('hide');
+
+                    },
+                    error: function (msg) {
+                        Desbloquear("divConfirmacion");
+                        noexito();
+                    },
+                    complete: function () {
+                        Desbloquear("divConfirmacion");
+
+                    }
+                });
+            } else if (sCodTipoDoc == '0009') { // GUIA DE REMISION
+                //var sOpcion = 'FACT';
+                var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=GUIA_REMI_ORBI&sCodEmpresa=" + sCodEmpresa + "&sCodGuiaRemision=" + sCodVenta
+
+                $.ajax({
+                    type: "post",
+                    url: sRuta,
+                    contenttype: "application/json;",
+                    datatype: "json",
+                    async: true,
+                    beforeSend: function () { Bloquear("divConfirmacion") },
+                    success: function (datos) {
+                        if (isEmpty(datos)) {
+                            alertCustom("Error al Enviar Documento Eletrónico");
+                            return;
+                        }
+                        let iIndice = datos.indexOf("[Advertencia]");
+                        if (iIndice >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+                        if (datos.indexOf("[Error]") >= 0) {
+                            alertCustom(datos);
+                            return;
+                        }
+
+                        fnVerificarDocOrbitum(documento);
+                        $("#divConfirmacion").modal('hide');
+
+                    },
+                    error: function (msg) {
+                        Desbloquear("divConfirmacion");
+                        noexito();
+                    },
+                    complete: function () {
+                        Desbloquear("divConfirmacion");
+
+                    }
+                });
             }
         }
     };
@@ -1358,7 +1533,7 @@
                     contenttype: "application/json;",
                     datatype: "json",
                     async: true,
-                    beforeSend: function () { Bloquear("divDocumento") },
+                    beforeSend: function () { Bloquear($("#divDocumento"), "Cargando documentos ...") }, //{ Bloquear("divDocumento") },
                     success: function (datos) {
                         oTable.fnClearTable();
                         if (datos.length > 0) {

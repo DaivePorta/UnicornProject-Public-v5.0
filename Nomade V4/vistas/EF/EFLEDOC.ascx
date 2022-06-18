@@ -149,7 +149,7 @@
                             <a id="btnFiltrarFactElec" class="btn blue"><i class="icon-filter"></i>&nbsp;FILTRAR</a>
                         </div>
                     </div>
-                    <div  class="span4">
+                    <div  class="span4" id="lblMensaje">
                        <%--<p style="font-style: italic; color: blue; text-align: justify" class="span12">
                                             <span id="divAdvertencia">* Si el documento ya ha sido procesado y aceptado por SUNAT, estarán disponibles para descargar sus archivos relacionados.</span><br />
                                         </p>--%>
@@ -292,7 +292,7 @@
                             <label class="control-label" style="text-align:center; color:red; font-size:16px;"><strong>MENSAJE DE CONFIRMACIÓN</strong></label>
                         </div>
                         <div class="control-group">
-                            <label id="txtMensajeConfirmar" class="control-label" style="text-align:center; font-size:12px;"><strong>Descargar documentos de la venta: </strong></label>
+                            <label id="txtMensajeConfirmar" class="control-label" style="text-align:center; font-size:12px;"><strong>Descargar documentos de: </strong></label>
                         </div>
                     </div>    
                     
@@ -304,12 +304,12 @@
         <div id="divBotones1">
         <asp:Button class="btn green" ID="btnDescargarXML" CssClass="btnDescargar btn blue span2" runat="server" Text="Descargar XML" />
         <asp:Button class="btn red" ID="btnDescargarCDR" CssClass="btnDescargar btn green span2" runat="server" Text="Descargar CDR" />
-        <a class="btn red" id="btnGenerarPDF"><i class="icon-book"></i>&nbsp; Generar PDF</a>
+        <a class="btn red" id="btnGenerarPDF"><i class="icon-book"></i>&nbsp; Descargar PDF</a>
         </div>
         <div id="divBotones2" style="display: none;">
-        <asp:Button class="btn green" ID="Button1" CssClass="btnDescargar btn blue span2" runat="server" Text="Descargar XML" />
-        <asp:Button class="btn red" ID="Button2" CssClass="btnDescargar btn green span2" runat="server" Text="Descargar CDR" />
-        <asp:Button class="btn red" ID="btnLibroPDF" CssClass="btnDescargar btn red span2" runat="server" Text="Descargar PDF" />
+        <%--<asp:Button class="btn green" ID="Button1" CssClass="btnDescargar btn blue span2" runat="server" Text="Descargar XML" />
+        <asp:Button class="btn red" ID="Button2" CssClass="btnDescargar btn green span2" runat="server" Text="Descargar CDR" />--%>
+        <asp:Button class="btn red" ID="btnLibroPDF" CssClass="btnDescargar btn red span2" runat="server" Text="Descargar PDF" OnClick="btnPdf_Click"/>
         </div>
     </div>
 </div>

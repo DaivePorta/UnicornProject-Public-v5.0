@@ -9,7 +9,8 @@ Partial Class vistas_EF_EFLEXML
         Dim filep As String
         Dim filen, ruta, ruc As String
         Dim rutaServer, rutaServer1, rutaServer2, rutaServer3, rutaServer4, rutaServer5, rutaServer6,
-            rutaServer7, rutaServer8, rutaServer9, rutaServer10, rutaServer11, rutaServer12, rutaServer13 As String
+            rutaServer7, rutaServer8, rutaServer9, rutaServer10, rutaServer11, rutaServer12, rutaServer13,
+            rutaServerGR1 As String
 
         ruc = Me.hddRuc.Value
         rutaServer1 = ConfigurationManager.AppSettings("path_fac_empresa1").ToString()
@@ -25,6 +26,8 @@ Partial Class vistas_EF_EFLEXML
         rutaServer11 = ConfigurationManager.AppSettings("path_fac_empresa11").ToString()
         rutaServer12 = ConfigurationManager.AppSettings("path_fac_empresa12").ToString()
         rutaServer13 = ConfigurationManager.AppSettings("path_fac_empresa13").ToString()
+
+        rutaServerGR1 = ConfigurationManager.AppSettings("path_fac_empresa_gr_1").ToString()
 
         If ruc = "20560208295" Then 'Clinica San Isidro 
             rutaServer = rutaServer1
@@ -51,7 +54,11 @@ Partial Class vistas_EF_EFLEXML
         ElseIf ruc = "20600059760" Then 'System Computer
             rutaServer = rutaServer12
         ElseIf ruc = "20355747191" Then 'Vanes
-            rutaServer = rutaServer13
+            If Me.hddCodDoc.Value = "09" Then 'Guia de Remisión Electrónica
+                rutaServer = rutaServerGR1
+            Else
+                rutaServer = rutaServer13
+            End If
         Else
             ScriptManager.RegisterStartupScript(Me.hddRuc, Me.GetType(), "Script", "<script language='javascript'>infoCustom2('El RUC Emisor no es el correcto.');</script>", False)
             Exit Sub
@@ -89,7 +96,8 @@ Partial Class vistas_EF_EFLEXML
         Dim filep As String
         Dim filen, ruta, ruc As String
         Dim rutaServer, rutaServer1, rutaServer2, rutaServer3, rutaServer4, rutaServer5, rutaServer6,
-            rutaServer7, rutaServer8, rutaServer9, rutaServer10, rutaServer11, rutaServer12, rutaServer13 As String
+            rutaServer7, rutaServer8, rutaServer9, rutaServer10, rutaServer11, rutaServer12, rutaServer13,
+            rutaServerGR1 As String
 
         ruc = Me.hddRuc.Value
         rutaServer1 = ConfigurationManager.AppSettings("path_fac_empresa1").ToString()
@@ -105,6 +113,8 @@ Partial Class vistas_EF_EFLEXML
         rutaServer11 = ConfigurationManager.AppSettings("path_fac_empresa11").ToString()
         rutaServer12 = ConfigurationManager.AppSettings("path_fac_empresa12").ToString()
         rutaServer13 = ConfigurationManager.AppSettings("path_fac_empresa13").ToString()
+
+        rutaServerGR1 = ConfigurationManager.AppSettings("path_fac_empresa_gr_1").ToString()
 
         If ruc = "20560208295" Then 'Clinica San Isidro 
             rutaServer = rutaServer1
@@ -131,7 +141,11 @@ Partial Class vistas_EF_EFLEXML
         ElseIf ruc = "20600059760" Then 'System Computer
             rutaServer = rutaServer12
         ElseIf ruc = "20355747191" Then 'Vanes
-            rutaServer = rutaServer13
+            If Me.hddCodDoc.Value = "09" Then 'Guia de Remisión Electrónica
+                rutaServer = rutaServerGR1
+            Else
+                rutaServer = rutaServer13
+            End If
         Else
             ScriptManager.RegisterStartupScript(Me.hddRuc, Me.GetType(), "Script", "<script language='javascript'>infoCustom2('El RUC Emisor no es el correcto.');</script>", False)
             Exit Sub

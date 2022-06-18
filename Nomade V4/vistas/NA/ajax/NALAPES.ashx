@@ -83,6 +83,7 @@ Public Class NALAPES : Implements IHttpHandler
                             resb.Append("""EMPRESA"":""" & row("EMPRESA").ToString & """,")
                             resb.Append("""ALMC_CODE"":""" & row("ALMC_CODE").ToString & """,")
                             resb.Append("""MOVCONT_CODE"":""" & row("MOVCONT_CODE").ToString & """,")
+                            resb.Append("""ELECTRONICO_IND"":""" & row("ELECTRONICO_IND").ToString & """,")
                             resb.Append("""COSTO_TRANSPORTE"":""" & row("COSTO_TRANSPORTE").ToString & """")
                             resb.Append("},")
                             'End If
@@ -169,11 +170,26 @@ Public Class NALAPES : Implements IHttpHandler
                         res = New Nomade.NA.NATipoMovimiento("BN").COMPLETAR_DCTO_ALMACEN(ISAC_CODE)
                     End If
                 Case "COMPLETAR_VALI"
-                    context.Response.ContentType = "text/plain"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    Dim caTipoMov As New Nomade.NA.NATipoMovimiento("Bn")
+                    Dim array As Array
                     ISAC_CODE = context.Request("ISAC_CODE")
-                    res = New Nomade.NA.NATipoMovimiento("BN").VERIFICAR_SERIES(ISAC_CODE) 'DPORTA- VERIFICA SOLO EL INGRESO TRANSF. DE ENTRADA DE PROD. SERIADOS PARA EVITAR DUPLICIDAD EN LAS SERIES
+                    res = caTipoMov.VERIFICAR_SERIES(ISAC_CODE) 'DPORTA- VERIFICA SOLO EL INGRESO TRANSF. DE ENTRADA DE PROD. SERIADOS PARA EVITAR DUPLICIDAD EN LAS SERIES
                     If res = "OK" Then
-                        res = New Nomade.NA.NATipoMovimiento("BN").COMPLETAR_DCTO_ALMACEN_VALI(ISAC_CODE)
+                        array = caTipoMov.COMPLETAR_DCTO_ALMACEN_VALI(ISAC_CODE)
+                        If Not (array Is Nothing) Then
+                            resb.Append("[{")
+                            resb.Append("""p_RPTA"" :" & """" & array(0).ToString & """,")
+                            resb.Append("""DATOS_QR"" :" & """" & array(1).ToString & """")
+                            resb.Append("}]")
+                        End If
+                        res = resb.ToString()
+                    Else
+                        resb.Append("[{")
+                        resb.Append("""p_RPTA"" :" & """" & res.ToString() & """,")
+                        resb.Append("""ERROR_SERIES"" :" & """" & "ERROR_SERIES" & """")
+                        resb.Append("}]")
+                        res = resb.ToString()
                     End If
             End Select
             context.Response.Write(res)

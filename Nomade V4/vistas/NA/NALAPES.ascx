@@ -314,35 +314,23 @@
                         <div class="tab-pane" id="asientos_contables" style="overflow-x: scroll">
                         </div>
                         <!-- FIN DE ASUENTOS CONTABLES-->
-
-
-
-
                     </div>
                 </div>
             </div>
-
-
-
-
-
-     
-   
-
-
-
         </div>
         <div class="modal-footer">
             <button type="button" id="btnAprobar" class="btn green right"><i class="icon-ok-sign"></i>&nbsp;Aprobar y Completar</button>
         </div>
     </div>
 </div>
-
+<!-- CAMPOS PARA CREAR QR -->
+<div id="codigoQR" style="display: none"></div>  
+<input id="hfElectronicoInd" type="hidden"/>
 <input id="hfCOSTO_TOTAL" type="hidden" value="0.00" />
 <input id="hfPESO_TOTAL" type="hidden" value="0.00" />
-
+<input id="hfCodigoNaminsa" type="hidden" />
 <script type="text/javascript" src="../vistas/NA/js/NALAPES.js"></script>
-
+<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>
 <script>
     jQuery(document).ready(function () {
         NALAPES.init();

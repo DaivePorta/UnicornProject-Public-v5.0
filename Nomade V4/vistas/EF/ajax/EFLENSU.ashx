@@ -12,6 +12,7 @@ Public Class EFACTEL : Implements IHttpHandler
     Private sCodVenta As String
     Private sCodNC As String
     Private sCodND As String
+    Private sCodGuiaRemision As String
     Dim sRuta, sNroDoc As String
 
     Dim resb As New StringBuilder
@@ -32,7 +33,7 @@ Public Class EFACTEL : Implements IHttpHandler
             sNroDoc = context.Request("sNroDoc")
             sDesde = context.Request("sDesde")
             sHasta = context.Request("sHasta")
-
+            sCodGuiaRemision = context.Request("sCodGuiaRemision")
             Select Case sOpcion
                 Case "FACT" 'GENERAR FACTURA ELECTRONICA EFAC
                     Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
@@ -55,48 +56,65 @@ Public Class EFACTEL : Implements IHttpHandler
                     sResponse = "OK"
 
                 ' CREAR DOCUMENTOS
-                Case "FACT_ORBI" 'GENERAR FACTURA ELECTRONICA ORBITUM FACTURADOR V1.2
+                Case "FACT_ORBI" 'GENERAR FACTURA ELECTRONICA ORBITUM FACTURADOR V1.4
                     Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
                     onEFFactura.fnGetFacturaOrbitum(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
 
-                Case "BOL_ORBI" 'GENERAR BOLETA ELECTRONICA ORBITUM FACTURADOR V1.2
+                Case "BOL_ORBI" 'GENERAR BOLETA ELECTRONICA ORBITUM FACTURADOR V1.4
                     Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
                     onEFBoleta.fnGetBoletaOrbitum(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
 
-                Case "BOL_ANTI_ORBI" 'GENERAR ANTICIPO - BOLETA ELECTRONICA ORBITUM V1.2
+                Case "BOL_ANTI_ORBI" 'GENERAR ANTICIPO - BOLETA ELECTRONICA ORBITUM V1.4
                     Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
                     onEFBoleta.fnGetBoletaAnticipoOrbitum(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
 
-                Case "FACT_ANTI_ORBI" 'GENERAR ANTICIPO - FACTURA ELECTRONICA ORBITUM V1.2
+                Case "FACT_ANTI_ORBI" 'GENERAR ANTICIPO - FACTURA ELECTRONICA ORBITUM V1.4
                     Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
                     onEFFactura.fnGetFacturaAnticipoOrbitum(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
-                Case "NC_ORBI" 'GENERAR NOTA DE CREDITO ELECTRONICA FACTURADOR V1.2
+
+                Case "NC_ORBI" 'GENERAR NOTA DE CREDITO ELECTRONICA FACTURADOR V1.4
                     Dim onEFNC As New Nomade.Efact.LogNegocio.nEFNC()
                     onEFNC.fnGetNCOrbitum(sCodEmpresa, sCodNC)
                     sResponse = "OK"
 
+                Case "ND_ORBI" 'GENERAR NOTA DE DEBITO ORBITUM FACTURADOR V1.4
+                    Dim onEFND As New Nomade.Efact.LogNegocio.nEFND()
+                    onEFND.fnGetND(sCodEmpresa, sCodND)
+                    sResponse = "OK"
+
+                Case "GUIA_REMI_ORBI" 'GENERAR GUIA DE REMISION ELECTRONICA ORBITUM FACTURADOR V1.4
+                    Dim onEFGuiaRemision As New Nomade.Efact.LogNegocio.nEFGuiaRemision()
+                    onEFGuiaRemision.fnGetGuiaRemisionOrbitum(sCodEmpresa, sCodGuiaRemision)
+                    sResponse = "OK"
+
                 ' VERIFICAR DOCUMENTOS
-                Case "VFACTELEC" 'VALIDAR FACTURA ORBITUM FACTURADOR  V1.2
+                Case "VFACTELEC" 'VALIDAR FACTURA ORBITUM FACTURADOR  V1.4
                     Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
                     sResponse = onEFFactura.fnVerificarDocOrbitum(sCodEmpresa, sCodVenta)
 
-                Case "VBOLELEC" 'VALIDAR BOLETA ORBITUM FACTURADOR V1.2
+                Case "VBOLELEC" 'VALIDAR BOLETA ORBITUM FACTURADOR V1.4
                     Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
                     sResponse = onEFBoleta.fnVerificarDocOrbitum(sCodEmpresa, sCodVenta)
 
-                Case "VFACT_ANTI_ORBI" 'VALIDAR ANTICIPO FACTURA ORBITUM FACTURADOR V1.2
+                Case "VFACT_ANTI_ORBI" 'VALIDAR ANTICIPO FACTURA ORBITUM FACTURADOR V1.4
                     Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
                     sResponse = onEFFactura.fnVerificarDocOrbitum(sCodEmpresa, sCodVenta)
 
-                Case "VBOL_ANTI_ORBI" 'VALIDAR ANTICIPO BOLETA ORBITUM FACTURADOR V1.2
+                Case "VBOL_ANTI_ORBI" 'VALIDAR ANTICIPO BOLETA ORBITUM FACTURADOR V1.4
                     Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
                     sResponse = onEFBoleta.fnVerificarDocOrbitum(sCodEmpresa, sCodVenta)
 
+                Case "VNCORB" 'VALIDAR NOTA DE CREDITO ORBITUM FACTURADOR V1.4
+                    Dim onEFNC As New Nomade.Efact.LogNegocio.nEFNC()
+                    sResponse = onEFNC.fnVerificarDocOrbitum(sCodEmpresa, sCodNC)
 
+                Case "VGUIA_REMI_ELEC" 'VALIDAR GUIA DE REMISION ORBITUM FACTURADOR V1.4
+                    Dim onEFGuiaRemision As New Nomade.Efact.LogNegocio.nEFGuiaRemision()
+                    sResponse = onEFGuiaRemision.fnVerificarDocOrbitum(sCodEmpresa, sCodGuiaRemision)
 
                 Case "BFACT"
                     Dim onDEFFactura As New Nomade.Efact.LogNegocio.nEFBajaFactura()
@@ -106,7 +124,6 @@ Public Class EFACTEL : Implements IHttpHandler
                     Else
                         sResponse = onDEFFactura.fnGetFacturaOrbitum(sCodEmpresa, sCodVenta)
                     End If
-
 
                 Case "VBAJAFACT"
                     Dim onEFFactura As New NOMADE.Efact.LogNegocio.nEFBajaFactura()
@@ -121,9 +138,6 @@ Public Class EFACTEL : Implements IHttpHandler
                         sResponse = onBEFBoleta.fnGetBoletaOrbitum(sCodEmpresa, sCodVenta)
                     End If
 
-
-
-
                 Case "VBAJABOL"
                     Dim onEFBoleta As New NOMADE.Efact.LogNegocio.nEFBajaBoleta()
                     sResponse = onEFBoleta.fnVerificarBajaDocOrbitum(sCodEmpresa, sCodVenta)
@@ -134,11 +148,6 @@ Public Class EFACTEL : Implements IHttpHandler
                 Case "VNC"
                     Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFNC()
                     sResponse = onEFNC.fnVerificarDoc(sCodEmpresa, sCodNC)
-
-                Case "VNCORB" 'VALIDAR NOTA DE CREDITO ORBITUM
-                    Dim onEFNC As New Nomade.Efact.LogNegocio.nEFNC()
-                    sResponse = onEFNC.fnVerificarDocOrbitum(sCodEmpresa, sCodNC)
-
 
                 Case "VBAJANC"
                     Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFBajaNC()

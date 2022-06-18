@@ -231,14 +231,15 @@
     End Function
 
     Public Function actualizar_dcto_almacen(ByVal p_ISAC_CODE As String, ByVal p_CTLG_CODE As String, ByVal p_ALMC_CODE As String, ByVal p_FECHA_EMISION As String, ByVal p_FECHA_TRANS As String,
-                                          ByVal p_NUM_DCTO As String, ByVal p_PIDM_SOLICITANTE As String, ByVal p_REQC_CODE As String, ByVal p_REQC_NUM_SEQ_DOC As String,
-                                          ByVal p_ORGN_CODE As String, ByVal p_RETORNO_IND As String, ByVal p_PIDM_ENTREGAR_A As String, ByVal p_TMOV_CODE As String,
-                                          ByVal p_CMNT_DCTO As String, ByVal p_USUA_ID As String, ByVal p_TIPO_DOC_RAZON_DEST As String, ByVal p_RAZON_DEST As String, ByVal p_RAZON_TRANS As String,
-                                          ByVal p_LICENCIA As String, ByVal p_CHOFER As String, ByVal p_DIRECCION As String, ByVal p_CERTIFICADO As String,
-                                          ByVal p_PLACA As String, ByVal p_TIPO_DCTO As String, ByVal p_SERIE_DCTO As String, ByVal p_TIPO_DCTO_ORG As String,
-                                           ByVal p_ALMC_DEST As String, ByVal p_MONTO As String, ByVal p_MONTO_ALTERNO As String, ByVal p_MONEDA As String, ByVal p_NUM_SEQ_DOC As String,
-                                           ByVal p_ELECTRONICO As String, ByVal p_TIPO_TRANS As String, ByVal p_TIPO_ENVIO As String, ByVal p_DIR_TRANS As String,
-                                           ByVal p_DESC_VEHICULO As String, ByVal p_MARCA_FACT As String, ByVal p_PLACA_FACT As String, ByVal p_PIDM_TRANSP As String, ByVal p_TIPO_DOC_TRANS As String, ByVal p_COSTO_TRANSPORTE As String) As String
+                                            ByVal p_NUM_DCTO As String, ByVal p_PIDM_SOLICITANTE As String, ByVal p_REQC_CODE As String, ByVal p_REQC_NUM_SEQ_DOC As String,
+                                            ByVal p_ORGN_CODE As String, ByVal p_RETORNO_IND As String, ByVal p_PIDM_ENTREGAR_A As String, ByVal p_TMOV_CODE As String,
+                                            ByVal p_CMNT_DCTO As String, ByVal p_USUA_ID As String, ByVal p_TIPO_DOC_RAZON_DEST As String, ByVal p_RAZON_DEST As String, ByVal p_RAZON_TRANS As String,
+                                            ByVal p_LICENCIA As String, ByVal p_CHOFER As String, ByVal p_DIRECCION As String, ByVal p_CERTIFICADO As String,
+                                            ByVal p_PLACA As String, ByVal p_TIPO_DCTO As String, ByVal p_SERIE_DCTO As String, ByVal p_TIPO_DCTO_ORG As String,
+                                            ByVal p_ALMC_DEST As String, ByVal p_MONTO As String, ByVal p_MONTO_ALTERNO As String, ByVal p_MONEDA As String, ByVal p_NUM_SEQ_DOC As String,
+                                            ByVal p_ELECTRONICO As String, ByVal p_TIPO_TRANS As String, ByVal p_TIPO_ENVIO As String, ByVal p_DIR_TRANS As String,
+                                            ByVal p_DESC_VEHICULO As String, ByVal p_MARCA_FACT As String, ByVal p_PLACA_FACT As String, ByVal p_PIDM_TRANSP As String, ByVal p_TIPO_DOC_TRANS As String,
+                                            ByVal p_COSTO_TRANSPORTE As String, ByVal p_UBIGEO_DESTINO As String, ByVal p_DIREC_DESTINO As String) As String
         Try
             Dim msg As String
             Dim cmd As IDbCommand
@@ -285,6 +286,8 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM_TRANSP", p_PIDM_TRANSP, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_DOC_TRANS", p_TIPO_DOC_TRANS, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_COSTO_TRANSPORTE", p_COSTO_TRANSPORTE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_UBIGEO_DESTINO", p_UBIGEO_DESTINO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DIREC_DESTINO", p_DIREC_DESTINO, ParameterDirection.Input, 253))
             cmd = cn.Ejecuta_parms(cmd)
             msg = "OK"
 
@@ -677,21 +680,25 @@
     End Function
 
     'DPORTA 08/02/2022 PROBANDO LA APRBACION DE NAMINSA VALIDANDO EL STOCK DE PRODUCTOS ANTES DE PROCESARLOS EN EL SP
-    Public Function COMPLETAR_DCTO_ALMACEN_VALI(p_ISAC_CODE As String, Optional p_TRANSAC_MYSQL As String = "S") As String
+    Public Function COMPLETAR_DCTO_ALMACEN_VALI(p_ISAC_CODE As String, Optional p_TRANSAC_MYSQL As String = "S") As Array
+        Dim msg(2) As String
         Try
-            Dim msg As String
             Dim cmd As IDbCommand
             cmd = cn.GetNewCommand("PFS_COMPLETAR_DCTO_ALMACEN_VALI", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_ISAC_CODE", p_ISAC_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_TRANSAC_MYSQL", p_TRANSAC_MYSQL, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RPTA", String.Empty, ParameterDirection.Output, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
             cmd = cn.Ejecuta_parms(cmd)
-            msg = cmd.Parameters("@p_RPTA").Value
-            Return msg
+
+            msg(0) = cmd.Parameters("@p_RPTA").Value
+            msg(1) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
             'Return "OK"
         Catch ex As Exception
-            Return "ERROR"
+            msg(0) = ex.Message
+            msg(1) = ""
         End Try
+        Return msg
     End Function
 
     Public Function ELIMINAR_DCTO_ALMACEN(ByVal p_ISAC_CODE As String) As String

@@ -1,12 +1,123 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NALINSA.ascx.vb" Inherits="vistas_NA_NALINSA" %>
 
 <style>
-    tbody td {
-        padding: 5px 4px !important;
+    #divMail {
+        margin-left: 0px !important;
+    }
+
+    @media (max-width:900px) {
+        #divMail {
+            left: 5% !important;
+            width: 90% !important;
+        }
+    }
+
+    a.btn-det > img {
+        max-width: 27%;
+        padding-left: 14px;
+        padding-bottom: 4px;
+    }
+
+    a.btn-det {
+        font-size: 30px;
+        border: solid 2px;
+    }
+
+    a.azul {
+        background-color: #2678E6;
+        border-color: #2878EB;
+    }
+
+    a.naranja {
+        background-color: #D14624;
+        border-color: #D14624;
+    }
+
+    a.morado {
+        background-color: #A000A7;
+        border-color: #A000A7;
+    }
+
+    a.verde {
+        background-color: #01A300;
+        border-color: #01A300;
+    }
+
+    tbody {
+        /*font-family: calibri;*/
+        font-size: 11px;
+    }
+
+    p.totales {
+        left: 47%;
+        position: absolute;
+        font-weight: 600;
+        transform: translateX(-50%);
+    }
+
+    @media print {
+        .modal, .modal-backdrop {
+            display: none !important;
+        }
+
+        .navbar-inner {
+            display: none !important;
+        }
+
+        .page-sidebar {
+            display: none !important;
+        }
+
+        .footer {
+            display: none !important;
+        }
+
+        .page-content {
+            margin-left: 0px !important;
+        }
+
+        #gritter-notice-wrapper {
+            display: none !important;
+        }
+        /*#ventana parent {*/
+        #contenedor {
+            display: none !important;
+        }
+
+        /*.breadcrumb parent{*/
+        #contenedorBreadcrumb {
+            display: none !important;
+        }
+
+        .page-container {
+            margin-top: 0px !important;
+        }
+
+        #divDctoImprimir {
+            display: block !important;
+            width: 100% !important;
+            font-size: 10px !important;
+            line-height: 11px !important;
+            /*font-family: 'Lucida Console'  !important;*/
+            font-family: Arial !important;
+        }
+
+        #tblDocumento, .arial {
+            font-family: 'Arial' !important;
+        }
+
+        .container-fluid {
+            padding: 0px !important;
+        }
+
+        .chat-window {
+            display: none;
+            margin: 0px !important;
+        }
     }
 </style>
 
-<div class="row-fluid">
+<div class="row-fluid" id="contenedor">
     <div class="span12 ">
         <!-- INICIA CUADRO PARA LA FORMA -->
         <div class="portlet box blue" id="ventana">
@@ -14,7 +125,7 @@
                 <h4>
                     <i class="icon-reorder"></i>LISTA  ENTRADA / SALIDA  ALMACEN</h4>
                 <div class="actions">
-                    <a class="btn black printlist"><i class="icon-print"></i>&nbsp;Imprimir</a>
+                    <%--<a class="btn black printlist"><i class="icon-print"></i>&nbsp;Imprimir</a>--%>
                     <a href="?f=naminsa" class="btn green"><i class="icon-plus"></i>&nbsp;Nuevo</a>
                     <a href="?f=nalinsa" class="btn red"><i class="icon-list"></i>&nbsp;Listar</a>
                 </div>
@@ -110,12 +221,12 @@
                                     <th></th>
                                     <th>CODIGO</th>
                                     <th style="text-align: left">FLUJO</th>
-                                    <th style="text-align: left">OPERACION</th>
+                                    <th style="text-align: left">OPERACIÓN</th>
                                     <th style="text-align: center">MONEDA</th>
-                                    <th>ALMACEN</th>
-                                    <th style="text-align: left">ORIGEN / DESTINO</th>
-                                    <th>DIRECCION</th>
-                                    <th>EMISION</th>
+                                    <th>ORIGEN</th>
+                                    <th style="text-align: left">DESTINO</th>
+                                    <th>DIRECCIÓN DESTINO</th>
+                                    <th>EMISIÓN</th>
                                     <th>DCTO REGISTRO</th>
                                     <th>SERIE</th>
                                     <th>NRO</th>
@@ -123,9 +234,9 @@
                                     <th>REALIZADO POR</th>
                                     <th>ASIENTO CONTABLE</th>
                                     <th>GLOSA</th>
-                                    <th>PESO T. Kg.</th>
-                                    <th>COSTO T. S/.</th>
-                                    <th>ACCION</th>
+                                    <th>PESO TOTAL (Kg)</th>
+                                    <th>COSTO TOTAL (S/)</th>
+                                    <th>ACCIÓN</th>
                                 </tr>
                             </thead>
                             <tbody style="cursor: pointer"></tbody>
@@ -171,7 +282,7 @@
         <button class="btn red" type="button" id="modGNo"><i class="icon-remove"></i>&nbsp;No</button>
     </div>
 </div>
-
+<div id="divDctoImprimir" style="display: none;"></div>
 <!-- IMPORTAMOS LOS PLUGINS QUE SE USARAN-->
 <script type="text/javascript" src="../vistas/NA/js/NAMINSA.js"></script>
 

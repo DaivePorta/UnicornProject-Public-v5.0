@@ -4,15 +4,26 @@
     Protected Sub btnDescargarXML_Click(sender As Object, e As EventArgs) Handles btnDescargarXML.Click
         'DPORTA 11/03/2022
         Dim filep As String
-        Dim filen, ruta, ctlg As String
+        Dim filen, ruta, ctlg, serie, codDoc As String
         Dim rutaServer, rutaServer1, rutaServer2, rutaServer3, rutaServer4, rutaServer5 As String
 
         ctlg = Me.hddCtlg.Value
-        rutaServer1 = ConfigurationManager.AppSettings("path_fac_empresa1").ToString()
-        rutaServer2 = ConfigurationManager.AppSettings("path_fac_empresa2").ToString()
-        rutaServer3 = ConfigurationManager.AppSettings("path_fac_empresa3").ToString()
-        rutaServer4 = ConfigurationManager.AppSettings("path_fac_empresa4").ToString()
-        rutaServer5 = ConfigurationManager.AppSettings("path_fac_empresa5").ToString()
+        serie = Me.hddSerie.Value
+        codDoc = Me.hddSerie.Value
+
+        If (serie.Substring(0, 1) = "T" And codDoc = "09") Then 'Guia de Remisión Electrónica
+            rutaServer1 = ConfigurationManager.AppSettings("path_fac_empresa_gr_1").ToString()
+            rutaServer2 = ConfigurationManager.AppSettings("path_fac_empresa_gr_2").ToString()
+            rutaServer3 = ConfigurationManager.AppSettings("path_fac_empresa_gr_3").ToString()
+            rutaServer4 = ConfigurationManager.AppSettings("path_fac_empresa_gr_4").ToString()
+            rutaServer5 = ConfigurationManager.AppSettings("path_fac_empresa_gr_5").ToString()
+        Else
+            rutaServer1 = ConfigurationManager.AppSettings("path_fac_empresa1").ToString()
+            rutaServer2 = ConfigurationManager.AppSettings("path_fac_empresa2").ToString()
+            rutaServer3 = ConfigurationManager.AppSettings("path_fac_empresa3").ToString()
+            rutaServer4 = ConfigurationManager.AppSettings("path_fac_empresa4").ToString()
+            rutaServer5 = ConfigurationManager.AppSettings("path_fac_empresa5").ToString()
+        End If
 
         If ctlg = "N" Then
             rutaServer = rutaServer1
@@ -57,15 +68,26 @@
     Protected Sub btnDescargarCDR_Click(sender As Object, e As EventArgs) Handles btnDescargarCDR.Click
         'DPORTA 11/03/2022
         Dim filep As String
-        Dim filen, ruta, ctlg As String
+        Dim filen, ruta, ctlg, serie, codDoc As String
         Dim rutaServer, rutaServer1, rutaServer2, rutaServer3, rutaServer4, rutaServer5 As String
 
         ctlg = Me.hddCtlg.Value
-        rutaServer1 = ConfigurationManager.AppSettings("path_fac_empresa1").ToString()
-        rutaServer2 = ConfigurationManager.AppSettings("path_fac_empresa2").ToString()
-        rutaServer3 = ConfigurationManager.AppSettings("path_fac_empresa3").ToString()
-        rutaServer4 = ConfigurationManager.AppSettings("path_fac_empresa4").ToString()
-        rutaServer5 = ConfigurationManager.AppSettings("path_fac_empresa5").ToString()
+        serie = Me.hddSerie.Value
+        codDoc = Me.hddSerie.Value
+
+        If (serie.Substring(0, 1) = "T" And codDoc = "09") Then 'Guia de Remisión Electrónica
+            rutaServer1 = ConfigurationManager.AppSettings("path_fac_empresa_gr_1").ToString()
+            rutaServer2 = ConfigurationManager.AppSettings("path_fac_empresa_gr_2").ToString()
+            rutaServer3 = ConfigurationManager.AppSettings("path_fac_empresa_gr_3").ToString()
+            rutaServer4 = ConfigurationManager.AppSettings("path_fac_empresa_gr_4").ToString()
+            rutaServer5 = ConfigurationManager.AppSettings("path_fac_empresa_gr_5").ToString()
+        Else
+            rutaServer1 = ConfigurationManager.AppSettings("path_fac_empresa1").ToString()
+            rutaServer2 = ConfigurationManager.AppSettings("path_fac_empresa2").ToString()
+            rutaServer3 = ConfigurationManager.AppSettings("path_fac_empresa3").ToString()
+            rutaServer4 = ConfigurationManager.AppSettings("path_fac_empresa4").ToString()
+            rutaServer5 = ConfigurationManager.AppSettings("path_fac_empresa5").ToString()
+        End If
 
         If ctlg = "N" Then
             rutaServer = rutaServer1

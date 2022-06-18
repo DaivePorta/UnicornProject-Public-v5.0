@@ -73,15 +73,15 @@ var NALINSA = function () {
                 { data: "RETORNO", createdCell: function (cell) { $(cell).css('text-align', 'center'); }},
                 { data: "TIPO_MOVIMIENTO", createdCell: function (cell) { $(cell).css('text-align', 'center'); }},
                 { data: 'MONEDA', createdCell: function (cell) { $(cell).css('text-align', 'center'); } },
-                { data: "ALMACEN" },
-                { data: "RAZON_DEST", width: '10%' },
-                { data: "DIRECCION", width: '10%' },
+                { data: "ALMACEN", createdCell: function (cell) { $(cell).css('text-align', 'center'); } },
+                { data: "RAZON_DEST", createdCell: function (cell) { $(cell).css('text-align', 'center'); } },
+                { data: "DIRECCION", width: '50%' },
                 { data: "FECHA_EMISION", createdCell: function (cell) { $(cell).css('text-align', 'center'); }, type: "fecha" },
                 { data: "TIPO_DCTO", createdCell: function (cell) { $(cell).css('text-align', 'center'); } },
                 { data: "REQC_NUM_SEQ_DOC", createdCell: function (cell) { $(cell).css('text-align', 'center'); } },
                 { data: "REQC_CODE", createdCell: function (cell) { $(cell).css('text-align', 'center'); } },
                 { data: "TRANSPORTISTA" },
-                { data: "NOMBRE_USUARIO" },
+                { data: "NOMBRE_USUARIO", createdCell: function (cell) { $(cell).css('text-align', 'center'); } },
                 { data: "ASIENTO" ,createdCell: function (cell) { $(cell).css('text-align', 'center'); }},
                 { data: "CMNT_DCTO" },
                 { data: "PESO_TOTAL", createdCell: function (cell) { $(cell).css('text-align', 'center'); } },
@@ -95,6 +95,9 @@ var NALINSA = function () {
                         }
                         if (row.COMPLETO != 'COMPLETO') {
                             $(cell).append('<a class="btn red delete" style="margin: 1pc;"><i class="icon-trash"></i></a>');
+                        }
+                        if (row.COMPLETO == "COMPLETO" && row.TIPO_DOCU == "0009" && row.ELECTRONICO_IND == 'S') {// PARA QUE APAREZCA EL ICONO DE IMPRIMIR SOLO EN GUIA DE REMISION ELECTRÓNICA
+                            $(cell).append("<a class='btn blue' style='margin: 1pc;' onclick=\"ImprimirGuiaRemisionElectonicaNalinsa('" + row.CODIGO + "','" + row.CTLG_CODE + "')\"><i class='icon-print'></i></a>");
                         }
                         $(cell).css('text-align', 'center');
                     }
@@ -671,7 +674,7 @@ var NAMINSA = function () {
         });
 
         $('#cboAlmacenTransferencia').on('change', function () {
-            $('#txtDireccionTransferencia').val($('#cboAlmacenTransferencia :selected').attr('direccion'));
+            $('#txtDireccionTransferencia').val($('#cboAlmacenTransferencia :selected').attr('direccion'));          
         });
 
         $("#rbEntrada").click(function () {
@@ -718,6 +721,10 @@ var NAMINSA = function () {
                     $('#cboAlmacen').select2('val', (almc_code === undefined) ? '' : almc_code).change();
                 }
             }
+            $('#rdPrivado').click();
+            $('#rdPrivado').parent().addClass('checked');
+            $('#rdPublico').parent().removeClass('checked');
+            $('#rdOtro').parent().removeClass('checked');
         });
 
         $("#rbSalida").click(function () {
@@ -767,6 +774,10 @@ var NAMINSA = function () {
                     $('#cboAlmacen').select2('val', (almc_code === undefined) ? '' : almc_code).change();
                 }
             }
+            $('#rdPrivado').click();
+            $('#rdPrivado').parent().addClass('checked');
+            $('#rdPublico').parent().removeClass('checked');
+            $('#rdOtro').parent().removeClass('checked');
         });
 
         $("#rbTEntrada").click(function () {
@@ -818,7 +829,10 @@ var NAMINSA = function () {
             //        $('#cboAlmacen').select2('val', (almc_code === undefined) ? '' : almc_code).change();
             //    }
             //}
-            
+            $('#rdPrivado').click();
+            $('#rdPrivado').parent().addClass('checked');
+            $('#rdPublico').parent().removeClass('checked');
+            $('#rdOtro').parent().removeClass('checked');
         });
 
         $("#rbTSalida").click(function () {
@@ -894,7 +908,10 @@ var NAMINSA = function () {
                     $('#cboAlmacen').select2('val', (almc_code === undefined) ? '' : almc_code).change();
                 }
             }
-
+            $('#rdPrivado').click();
+            $('#rdPrivado').parent().addClass('checked');
+            $('#rdPublico').parent().removeClass('checked');
+            $('#rdOtro').parent().removeClass('checked');
         });
 
         $('#slcEmpresa').on('change', function () {
@@ -1195,6 +1212,10 @@ var NAMINSA = function () {
                     //$('#txtNroDctoRegistro').val("");
                     $('#txtSerieDctoRegistro').attr('disabled', false);
                     $('#txtNroDctoRegistro').attr('disabled', false);
+                    if ($('#rbEntrada').is(':checked') && $("#cboOperacion").val() == '0002' && $("#cboRegistro").val() == '0009' && $("#chkNuestraGuia").is(':checked')) {
+                        $('#txtSerieDctoRegistro').attr('disabled', true);
+                        $('#txtNroDctoRegistro').attr('disabled', true);
+                    }
                 } else {
                     $('#txtSerieDctoRegistro').attr('disabled', true);
                     $('#txtNroDctoRegistro').attr('disabled', true);
@@ -1248,6 +1269,13 @@ var NAMINSA = function () {
                 $('#txtNroDctoRegistro').prop('disabled', true);
             }
 
+            $('#rdPrivado').click();
+            $('#rdPrivado').parent().addClass('checked');
+            $('#rdPublico').parent().removeClass('checked');
+            $('#rdOtro').parent().removeClass('checked');
+            $("#rdPublico, #rdPrivado, #rdOtro,#txtDireccionTransferencia").attr("disabled", false);
+            $("#txtVehiculoFact,#txtMarca,#txtPlaca,#txtCertificadoInscripcion,#txtvehiculo,#txtchofer,#txtLicConducir,#txtNroVueltas").attr("disabled", false);
+            $("#txtCertificadoInscripcion, #txtLicConducir").val("");
         });
 
         $("#btnRecargarDestino").on("click", function () {
@@ -1378,9 +1406,9 @@ var NAMINSA = function () {
                     var data = JSON.parse(this.response);
                     if (data.success == true) {
                         if (data.estado_del_contribuyente == "ACTIVO" && data.condicion_de_domicilio == "HABIDO") {
-                            $('#txtDireccionOrigen').val(data.direccion);
-                            $('#txtDireccionOrigen').append("<option value=\"" + data.direccion + "\">" + data.direccion  + "</option>")
-                            $('#txtDireccionOrigen').select2("val", data.direccion);
+                            $('#txtDireccionOrigen').val(eliminarDiacriticos(data.direccion));
+                            $('#txtDireccionOrigen').append("<option value=\"" + eliminarDiacriticos(data.direccion) + "\">" + eliminarDiacriticos(data.direccion) + "</option>")
+                            $('#txtDireccionOrigen').select2("val", eliminarDiacriticos(data.direccion));
                         }
                     } else {
                         alertCustom("Servicio SUNAT no disponible en estos momentos.");
@@ -1618,7 +1646,8 @@ var NAMINSA = function () {
             $('#txtMarca').val('');
             $('#txtPlaca').val('');
             autocompletarEmpresaTransporte('#txtEmpresaTransporte', '');
-            $('#txtnumdocemptrans').prop('disabled', false);
+            //$('#txtnumdocemptrans').prop('disabled', false);
+            $("#cbotipoDoctrans").attr("disabled", false)
             $('#cbotipoDoctrans').select2('val', '').change();
             $('#txtvehiculo').parent().html('<input id="txtvehiculo" class="span12" type="text" style="text-transform: uppercase" />');
             $('#divTxtChofer').html('<input id="txtchofer" class="span12" type="text" style="text-transform: uppercase">');
@@ -1662,7 +1691,8 @@ var NAMINSA = function () {
             $("#cboVehiculo").on("change", function () {
                 $("#txtvehiculo").show().val(this.selectedOptions[0].textContent);
                 if (this.value != "") {
-                    $("#txtCertificadoInscripcion").val(this.selectedOptions[0].getAttribute("cert"));
+                    //$("#txtCertificadoInscripcion").val(this.selectedOptions[0].getAttribute("cert"));
+                    $("#txtCertificadoInscripcion").val("");
                     $("#txtVehiculoFact").val(this.selectedOptions[0].getAttribute("vehiculo"));
                     $("#txtMarca").val(this.selectedOptions[0].getAttribute("modelo"));
                     $("#txtPlaca").val(this.selectedOptions[0].getAttribute("placa"));
@@ -1719,7 +1749,7 @@ var NAMINSA = function () {
             $('#txtVehiculoFact').val('');
             $('#txtMarca').val('');
             $('#txtPlaca').val('');
-            $('#txtnumdocemptrans').prop('disabled', false);
+            //$('#txtnumdocemptrans').prop('disabled', false);
             $('#cbotipoDoctrans').select2('val', '').change();
             $('#txtvehiculo').parent().html('<input id="txtvehiculo" class="span12" type="text" style="text-transform: uppercase" />');
             $('#divTxtChofer').html('<input id="txtchofer" class="span12" type="text" style="text-transform: uppercase">');
@@ -1744,40 +1774,50 @@ var NAMINSA = function () {
                 if (($('#rbSalida').is(':checked') || $('#rbTSalida').is(':checked')) && $(this).val() !== '') {
                     cargarCorrelativo();
                     establecerCorrelativo('F');
+                    if ($(this).val() == '0009') {//GUIA DE REMISIÓN
+                        $('#txtSerieDctoRegistro').prop('disabled', true);
+                        $('#txtNroDctoRegistro').prop('disabled', true);
+                        $('#divElec').removeClass('hidden');
+                    }
                 } else {
-                    console.log($(this).val());
+                    //console.log($(this).val());
                     if ($(this).val() == '0051') {
                         $('#txtSerieDctoRegistro').val($("#txtSerieRegistroInterno").val());
                         $('#txtNroDctoRegistro').val($("#txtNroRegistroInterno").val());
                         $('#txtSerieDctoRegistro').prop('disabled', true);
                         $('#txtNroDctoRegistro').prop('disabled', true);    
-                        
-                        
                     } else {
+                        if ($('#rbEntrada').is(':checked') && $("#cboOperacion").val() == '0002' && $(this).val() == '0009') {//SOLO PARA ENTRADA Y COMPRA NACIONAL
+                            $("#divNuestraGuia").attr("style", "display:inline");
+                        } else {
+                            $("#divNuestraGuia").attr("style", "display:none");
+                            $('#chkNuestraGuia').prop('checked', false);
+                            $('#chkNuestraGuia').parent().removeClass('checked');
+                        }
                         $('#txtSerieDctoRegistro').val("");
                         $('#txtNroDctoRegistro').val("");
 
                         $('#txtSerieDctoRegistro').prop('disabled', false);
                         $('#txtNroDctoRegistro').prop('disabled', false);                       
                     }
-                    
-                }
-                var fechaelec = $('#cboRegistro :selected').attr('fecha-elec');
-                if (fechaelec == '0000-00-00') {
                     $('#divElec').addClass('hidden');
-                } else {
-                    if (new Date(fechaelec) <= new Date()) {
-                        if (contieneFormatoEnCorrelativo('E')) {
-                            $('#divElec').removeClass('hidden');
-                        } else {
-                            $('#divElec').addClass('hidden');
-                        }
-                    } else {
-                        $('#divElec').addClass('hidden');
-                    }
                 }
-                $('#chkElectronico').prop('checked', false);
-                $('#chkElectronico').parent().removeClass('checked');
+                //var fechaelec = $('#cboRegistro :selected').attr('fecha-elec');
+                //if (fechaelec == '0000-00-00') {
+                //    $('#divElec').addClass('hidden');
+                //} else {
+                //    if (new Date(fechaelec) <= new Date()) {
+                //        if (contieneFormatoEnCorrelativo('E')) {
+                //            $('#divElec').removeClass('hidden');
+                //        } else {
+                //            $('#divElec').addClass('hidden');
+                //        }
+                //    } else {
+                //        $('#divElec').addClass('hidden');
+                //    }
+                //}
+                //$('#chkElectronico').prop('checked', false);
+                //$('#chkElectronico').parent().removeClass('checked');
             } else {
                 console.log($(this).val());                
                 $('#txtSerieDctoRegistro').val($('#txtSerieDctoOrigen_0').val());
@@ -1793,11 +1833,39 @@ var NAMINSA = function () {
                 $('#txtSerieDctoRegistro').prop('disabled', true);
                 $('#txtNroDctoRegistro').prop('disabled', true);
             }
+            $('#chkElectronico').prop('checked', false);
+            $('#chkElectronico').parent().removeClass('checked');
         });
 
         $('#chkElectronico').click(function () {
             var formato = $(this).is(':checked') ? 'E' : 'F';
             establecerCorrelativo(formato);
+            if ($('#rbEntrada').is(':checked') && $("#cboOperacion").val() == '0002' && $("#cboRegistro").val() == '0009' && formato == 'E') {
+                establecerCorrelativo(formato);
+                //if ($(this).val() == '0009') {//GUIA DE REMISIÓN
+                    $('#txtSerieDctoRegistro').prop('disabled', true);
+                    $('#txtNroDctoRegistro').prop('disabled', true);
+                    //$('#divElec').removeClass('hidden');
+                //}
+            } else if ($('#rbEntrada').is(':checked') && $("#cboOperacion").val() == '0002' && $("#cboRegistro").val() == '0009' && formato == 'F'){
+                establecerCorrelativo(formato);
+            }            
+        });
+
+        $('#chkNuestraGuia').click(function () {
+            if ($(this).is(':checked')) {
+                cargarCorrelativo();
+                establecerCorrelativo('F');
+                $('#txtSerieDctoRegistro').prop('disabled', true);
+                $('#txtNroDctoRegistro').prop('disabled', true);
+                $('#divElec').removeClass('hidden');
+            } else {
+                $('#divElec').addClass('hidden');
+                $('#txtSerieDctoRegistro').val('');
+                $('#txtNroDctoRegistro').val('');
+                $('#txtSerieDctoRegistro').prop('disabled', false);
+                $('#txtNroDctoRegistro').prop('disabled', false);
+            }
         });
 
         $('#txtDireccionOrigen').on('keyup', function () {
@@ -1826,9 +1894,9 @@ var NAMINSA = function () {
 
         });
 
-        $('#cboAlmacenTransferencia').change(function () {
-            $('#txtDireccionTransferencia').val($('#cboAlmacenTransferencia :selected').attr('direccion'));
-        });
+        //$('#cboAlmacenTransferencia').change(function () {
+        //    $('#txtDireccionTransferencia').val($('#cboAlmacenTransferencia :selected').attr('direccion'));
+        //});
 
         $('#cboTipoEnvio').change(function () {
             $('#txtDireccionTransportista').select2('val', '').prop('disabled', true);
@@ -2006,8 +2074,16 @@ var NAMINSA = function () {
             ValidarSerieNumeroEmpresa(RAZON_DEST, TIP_DCTO, DCTO_ORGN_SERIE, DCTO_ORGN, true, ISAC_CODE)
         });
 
-        $('#btnImprimirGuia').click(function () {
-            crearImpresion($("#txtNumDctoAlmc").val());
+        $('#btnImprimirGuia, #btnImprimir').click(function () {
+            let documento_registro = $('#cboRegistro').val();
+            let serie_documento_registro = $('#txtSerieDctoRegistro').val()
+
+            if (documento_registro == '0009' && serie_documento_registro.substring(0, 1) == 'T') { //Si es una Guía Electrónica
+                ImprimirGuiaRemisionElectonica($("#txtNumDctoAlmc").val());
+            } else {
+                crearImpresion($("#txtNumDctoAlmc").val());
+            }
+            
             /*  $("#tblImprGuias tbody").html('');
                var ind_inicio = 1;
                var ind_fin = 0;
@@ -2420,7 +2496,7 @@ var NAMINSA = function () {
                 $('#cboAlmacenTransferencia').html('<option></option>');
                 if (datos[0].CODIGO !== "" && datos[0].DESCRIPCION !== "") {
                     for (var i = 0; i < datos.length; i++) {
-                        $('#cboAlmacenTransferencia').append('<option value="' + datos[i].CODIGO + '" direccion="' + datos[i].DIRECCION + '">' + datos[i].DESCRIPCION + '</option>');
+                        $('#cboAlmacenTransferencia').append('<option value="' + datos[i].CODIGO + '" direccion="' + datos[i].DIRECCION + '"data-ubigeo="' + datos[i].UBIGEO +  '">' + datos[i].DESCRIPCION + '</option>');
                     }
                 }
             },
@@ -2921,64 +2997,64 @@ var NAMINSA = function () {
 
  
 
-    var listarAlmacenesListado = function (ctlg) {
-        $.ajax({
-            type: "post",
-            url: "vistas/na/ajax/naminsa.ashx?OPCION=LALM&CTLG_CODE=" + $('#slcEmpresa').val() + "&USUA_ID=" + $('#ctl00_txtus').val(),
-            contenttype: "application/json;",
-            datatype: "json",
-            async: false,
-            success: function (datos) {
-                if (datos !== '' && datos !== null) {
-                    $('#cbo_Almc').html('<option></option>');
-                    if (datos != null) {
-                        if (datos[0].CODIGO != "" && datos[0].DESCRIPCION != "") {
-                            for (var i = 0; i < datos.length; i++) {
-                                $('#cbo_Almc').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
-                            }
-                            $('#cbo_Almc').val(datos[0].CODIGO);
-                        }
-                        cargarAlmacenesTransferencia(ctlg, datos[0].CODIGO);
-                    }
-                }
-            },
-            error: function (msg) {
-                alertCustom('Error al listar almacenes.');
-            }
-        });
-    };
+    //var listarAlmacenesListado = function (ctlg) {
+    //    $.ajax({
+    //        type: "post",
+    //        url: "vistas/na/ajax/naminsa.ashx?OPCION=LALM&CTLG_CODE=" + $('#slcEmpresa').val() + "&USUA_ID=" + $('#ctl00_txtus').val(),
+    //        contenttype: "application/json;",
+    //        datatype: "json",
+    //        async: false,
+    //        success: function (datos) {
+    //            if (datos !== '' && datos !== null) {
+    //                $('#cbo_Almc').html('<option></option>');
+    //                if (datos != null) {
+    //                    if (datos[0].CODIGO != "" && datos[0].DESCRIPCION != "") {
+    //                        for (var i = 0; i < datos.length; i++) {
+    //                            $('#cbo_Almc').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+    //                        }
+    //                        $('#cbo_Almc').val(datos[0].CODIGO);
+    //                    }
+    //                    cargarAlmacenesTransferencia(ctlg, datos[0].CODIGO);
+    //                }
+    //            }
+    //        },
+    //        error: function (msg) {
+    //            alertCustom('Error al listar almacenes.');
+    //        }
+    //    });
+    //};
 
-    function cargarCentroCosto(pCodProducto) {
-        var CODE_PROD = pCodProducto;
-        var TIPO_MOV = $("#cboOperacion").val();
-        $.ajax({
-            type: "post",
-            url: "vistas/na/ajax/naminsa.ashx?OPCION=LISTAR_PRODUCTO_CECO&CTLG_CODE=" + $('#ctl00_hddctlg').val() + "&CODE_PROD=" + CODE_PROD+ "&TIPO_MOV=" + TIPO_MOV,
-            contenttype: "application/json;",
-            datatype: "json",
-            async: false,
-            success: function (datos) {
+    //function cargarCentroCosto(pCodProducto) {
+    //    var CODE_PROD = pCodProducto;
+    //    var TIPO_MOV = $("#cboOperacion").val();
+    //    $.ajax({
+    //        type: "post",
+    //        url: "vistas/na/ajax/naminsa.ashx?OPCION=LISTAR_PRODUCTO_CECO&CTLG_CODE=" + $('#ctl00_hddctlg').val() + "&CODE_PROD=" + CODE_PROD+ "&TIPO_MOV=" + TIPO_MOV,
+    //        contenttype: "application/json;",
+    //        datatype: "json",
+    //        async: false,
+    //        success: function (datos) {
               
-                if (datos != null) {
-                    var sCentroCostoDescr = datos[0].DES_CORTA;
-                    var sCodCentroCosCab = datos[0].CECC;
-                    var sCodCentroCosto = datos[0].CECD;
+    //            if (datos != null) {
+    //                var sCentroCostoDescr = datos[0].DES_CORTA;
+    //                var sCodCentroCosCab = datos[0].CECC;
+    //                var sCodCentroCosto = datos[0].CECD;
 
-                    $("#txtCentroCostos").val(sCentroCostoDescr);
-                    $("#txtCentroCostos").data("CodCentroCostoCab", sCodCentroCosCab);
-                    $("#txtCentroCostos").data("CodCentroCosto", sCodCentroCosto);
-                } else {
-                    return;
-                }
+    //                $("#txtCentroCostos").val(sCentroCostoDescr);
+    //                $("#txtCentroCostos").data("CodCentroCostoCab", sCodCentroCosCab);
+    //                $("#txtCentroCostos").data("CodCentroCosto", sCodCentroCosto);
+    //            } else {
+    //                return;
+    //            }
                 
 
 
-            },
-            error: function (msg) {
-                alertCustom('Error al listar unidades de medida.');
-            }
-        });
-    }
+    //        },
+    //        error: function (msg) {
+    //            alertCustom('Error al listar unidades de medida.');
+    //        }
+    //    });
+    //}
     //nuevo    
 
     //function cargarUnidadesMedida(codUniMed) {
@@ -3842,6 +3918,8 @@ var NAMINSA = function () {
                         if (data[0].TIPO_TRANS === 'PUB') {
                             $('#rdPublico').click();
                             $('#rdPublico').parent().addClass('checked');
+                            $('#rdPrivado').parent().removeClass('checked');
+                            $('#rdOtro').parent().removeClass('checked');
                             $("#txtPIDM_EmpresaTransporte").val(data[0].PIDMTRANS);
                             $("#hfDNI_EMPTRANS").val(data[0].NRO_DOC_DNI_TRANS);
                             $("#hfRUC_EMPTRANS").val(data[0].NRO_DOC_RUC_TRANS);
@@ -3865,12 +3943,31 @@ var NAMINSA = function () {
                             //$("#txtPIDM_EmpresaTransporte").val(data[0].PIDM_TRANSPORTISTA);
                         }
 
+                        if (data[0].ELETRONICO_IND == "S" && data[0].COMPLETO === "N" && data[0].RETORNO_IND !== "I") {
+                            establecerCorrelativo("E");
+                            $('#chkElectronico').prop('checked', true);
+                            $('#chkElectronico').parent().addClass('checked');
+                        }
+
+                        if (data[0].ELETRONICO_IND == "S" && data[0].COMPLETO === "N" && data[0].RETORNO_IND === "I" && data[0].TIPO_DCTO === '0009' && data[0].TMOV_CODE === '0002') {
+                            $('#txtSerieDctoRegistro').prop('disabled', true);
+                            $('#txtNroDctoRegistro').prop('disabled', true);
+                        }
 
                         $('#txtDireccionTransportista').select2('val', data[0].DIRECCION_TRANSPORTISTA).change();
                         $("#txtchofer").val(data[0].CHOFER);
                         $("#txtLicConducir").val(data[0].LICENCIA_NRO);
                         $("#txtCertificadoInscripcion").val(data[0].CERTIFICADO_NRO);
-                        $("#txtvehiculo").val(data[0].VEHICULO_MARCA_PLACA);
+                        if (data[0].TIPO_TRANS === 'PRI') {
+                            $("#txtvehiculo").val(data[0].VEHICULO_MARCA_PLACA);
+                        } else {
+                            $("#txtVehiculoFact").val(data[0].VEHICULO_MARCA_PLACA.split("||")[0]);
+                            $("#txtMarca").val(data[0].VEHICULO_MARCA_PLACA.split("||")[1]);
+                            $("#txtPlaca").val(data[0].VEHICULO_MARCA_PLACA.split("||")[2]);
+                            if (data[0].COMPLETO === "S") {
+                                $("#txtVehiculoFact,#txtMarca,#txtPlaca").attr("disabled", true);
+                            }                            
+                        }                       
 
                         $("#txtNroVueltas").val(data[0].NRO_VUELTAS);
 
@@ -4628,6 +4725,111 @@ function cargarParametrosSistema() {
     });
 }
 
+//Imprimir dcto venta
+function ImprimirGuiaRemisionElectonica(NumDctoAlmc) {
+    //Bloquear("ventana");    
+    /*if (documento_registro == '0009' && serie_documento_registro.substring(0,1) == 'T') {*/
+        //if (verificarFormatoTicket($("#cboDocumentoVenta").val()) == '[{"FORMATO_TICKET" :"SI"}]') {
+    var data = new FormData();
+    data.append('CTLG_CODE', $("#slcEmpresa").val());
+    data.append('p_CODE', NumDctoAlmc);
+    //data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    //data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+    var jqxhr = $.ajax({
+        type: "POST",
+        url: "vistas/na/ajax/NAMINSA.ashx?OPCION=IMPR",
+        contentType: false,
+        data: data,
+        processData: false,
+        async: false,
+        cache: false
+    })
+        .success(function (datos) {
+            if (datos != null) {
+
+                $("#divDctoImprimir").html(datos);
+                setTimeout(function () {
+                    window.print();
+                }, 0.0000000000000001)
+
+            } else {
+                noexito();
+            }
+        })
+        .error(function () {
+            noexito();
+        });
+        //ImprimirDctoVentaTicket();
+    /*} else {*/
+        //if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0) {
+        //    var data = new FormData();
+        //    data.append('p_CODE', $("#txtNumDctoComp").val());
+        //    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+        //    //data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+        //    var jqxhr = $.ajax({
+        //        type: "POST",
+        //        url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
+        //        contentType: false,
+        //        data: data,
+        //        processData: false,
+        //        async: false,
+        //        cache: false
+        //    })
+        //        .success(function (datos) {
+        //            if (datos != null) {
+
+
+        //                $("#divDctoImprimir").html(datos);
+        //                setTimeout(function () {
+        //                    window.print();
+        //                }, 0.0000000000000001)
+
+        //            } else {
+        //                noexito();
+        //            }
+        //        })
+        //        .error(function () {
+        //            noexito();
+        //        });
+        //    //ImprimirDctoVentaTicket();
+        //} else {
+        /*crearImpresion($("#txtNumDctoAlmc").val());*/
+        /*}*/
+    /*}*/
+}
+
+function ImprimirGuiaRemisionElectonicaNalinsa(NumDctoAlmc, CtlgCode) {
+    //Bloquear("ventana");    
+    /*if (documento_registro == '0009' && serie_documento_registro.substring(0,1) == 'T') {*/
+    //if (verificarFormatoTicket($("#cboDocumentoVenta").val()) == '[{"FORMATO_TICKET" :"SI"}]') {
+    var data = new FormData();
+    data.append('CTLG_CODE', CtlgCode);
+    data.append('p_CODE', NumDctoAlmc);
+    var jqxhr = $.ajax({
+        type: "POST",
+        url: "vistas/na/ajax/NAMINSA.ashx?OPCION=IMPR",
+        contentType: false,
+        data: data,
+        processData: false,
+        async: false,
+        cache: false
+    })
+        .success(function (datos) {
+            if (datos != null) {
+
+                $("#divDctoImprimir").html(datos);
+                setTimeout(function () {
+                    window.print();
+                }, 0.0000000000000001)
+
+            } else {
+                noexito();
+            }
+        })
+        .error(function () {
+            noexito();
+        });
+}
 
 //DPORTA - validaDecimales
 function solonumbef(string) {//Solo numeros
@@ -4833,14 +5035,14 @@ var buscarDocumento = function (btnBuscar) {
                                 if (datos[i].TOTAL != undefined && datos[i].TOTAL !== "") {
                                     total = datos[i].TOTAL;
                                 }
-                                if (flujo == "TI") {//DPORTA 12/08/2021
-                                    tbody.append('<tr><td style="text-align: center">' + datos[i].CODIGO + '</td><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].PROVEEDOR + '</td><td style="text-align: center">' + datos[i].DESC_CORTA_MONEDA + '</td><td style="text-align: center">' + parseFloat(total).toFixed(2) + '</td><td style="text-align: center">' + datos[i].EMISION + '</td><td style="text-align: center">' + despachado + '</td><td style="text-align: center; display:none">' + datos[i].ALMC_CODE_ORIGEN + '</td><td style="text-align: center; display:none">' + datos[i].ALMC_CODE_DESTINO + '</td></tr>');
+                                if (flujo == "TI") {//DPORTA 10/06/2022
+                                    tbody.append('<tr><td style="text-align: center">' + datos[i].CODIGO + '</td><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].PROVEEDOR + '</td><td style="text-align: center">' + datos[i].DESC_CORTA_MONEDA + '</td><td style="text-align: center">' + parseFloat(total).toFixed(2) + '</td><td style="text-align: center">' + datos[i].EMISION + '</td><td style="text-align: center">' + despachado + '</td><td style="text-align: center">' + datos[i].ALMC_CODE_ORIGEN + '</td><td style="text-align: center">' + datos[i].ALMC_CODE_DESTINO + '</td><td style="text-align: center">' + datos[i].DESC_ALMC_ORIGEN + '</td><td style="text-align: center">' + datos[i].DESC_ALMC_DESTINO + '</td></tr>');
                                 } else {
-                                    tbody.append('<tr><td style="text-align: center">' + datos[i].CODIGO + '</td><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].PROVEEDOR + '</td><td style="text-align: center">' + datos[i].DESC_CORTA_MONEDA + '</td><td style="text-align: center">' + parseFloat(total).toFixed(2) + '</td><td style="text-align: center">' + datos[i].EMISION + '</td><td style="text-align: center">' + despachado + '</td><td style="text-align: center; display:none">' + "" + '</td><td style="text-align: center; display:none">' + "" + '</td></tr>');
+                                    tbody.append('<tr><td style="text-align: center">' + datos[i].CODIGO + '</td><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].PROVEEDOR + '</td><td style="text-align: center">' + datos[i].DESC_CORTA_MONEDA + '</td><td style="text-align: center">' + parseFloat(total).toFixed(2) + '</td><td style="text-align: center">' + datos[i].EMISION + '</td><td style="text-align: center">' + despachado + '</td><td style="text-align: center">' + "-" + '</td><td style="text-align: center">' + "-" + '</td><td style="text-align: center">' + "-" + '</td><td style="text-align: center">' + "-" + '</td></tr>');
                                 }
                             }
                             else {
-                                tbody.append('<tr><td style="text-align: center">' + datos[i].CODIGO + '</td><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].PROVEEDOR + '</td><td style="text-align: center">' + datos[i].DESC_CORTA_MONEDA + '</td><td style="text-align: center">' + parseFloat(datos[i].TOTAL).toFixed(2) + '</td><td style="text-align: center">' + datos[i].EMISION + '</td><td style="text-align: center">' + despachado + '</td><td style="text-align: center; display:none">' + "" + '</td><td style="text-align: center; display:none">' + "" + '</td></tr>');
+                                tbody.append('<tr><td style="text-align: center">' + datos[i].CODIGO + '</td><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].PROVEEDOR + '</td><td style="text-align: center">' + datos[i].DESC_CORTA_MONEDA + '</td><td style="text-align: center">' + parseFloat(datos[i].TOTAL).toFixed(2) + '</td><td style="text-align: center">' + datos[i].EMISION + '</td><td style="text-align: center">' + despachado + '</td><td style="text-align: center">' + "-" + '</td><td style="text-align: center">' + "-" + '</td><td style="text-align: center">' + "-" + '</td><td style="text-align: center">' + "-" + '</td></tr>');
                             }
                         }
                     }
@@ -4849,16 +5051,83 @@ var buscarDocumento = function (btnBuscar) {
                     $(tbody).css('cursor', 'pointer');
                     $('#tblDocumentos_wrapper').find(':last').remove();
                     $('#divBuscarDoc').modal('show');
+
+                    if ($("#divBuscarDoc").hasClass('in') == true) {
+                        $('#tblDocumentos_filter.dataTables_filter input[type=search]').focus();
+                    }
+                    $('#divBuscarDoc').on('shown.bs.modal', function () {
+                        $('#tblDocumentos_filter.dataTables_filter input[type=search]').focus();
+                    });
+
                     tbody.unbind('click');
                     tbody.on('click', 'tr', function () {
                         $(this).addClass('selected');
                         var fila = tabla.row(this).data();
                         var cod_doc = fila[0];
 
-                        if (flujo == "TI") { //DPORTA 12/08/2021
+                        if (flujo == "TI") { //DPORTA 10/06/2022
                             $('#cboAlmacen').select2('val', fila[8]).change(); // ALMACÉN DESTINO
                             $("#cboAlmacenTransferencia").select2("val", fila[7]).change(); // ALMACÉN ORIGEN
                             $('#cboAlmacen, #cboAlmacenTransferencia').attr("disabled", true);
+
+                            $.ajax({
+                                type: "POST",
+                                url: "vistas/na/ajax/naminsa.ashx?OPCION=S&codigo=" + cod_doc,
+                                contentType: "application/json;",
+                                dataType: "json"
+                            })
+                                .done(function (data) {
+                                    if (data !== null) {
+                                        if (data[0].TIPO_TRANS === 'PUB') {
+                                            $('#rdPublico').click();
+                                            $('#rdPublico').parent().addClass('checked');
+                                            $('#rdPrivado').parent().removeClass('checked');
+                                            $('#rdOtro').parent().removeClass('checked');
+                                            $("#txtPIDM_EmpresaTransporte").val(data[0].PIDMTRANS);
+                                            $("#hfDNI_EMPTRANS").val(data[0].NRO_DOC_DNI_TRANS);
+                                            $("#hfRUC_EMPTRANS").val(data[0].NRO_DOC_RUC_TRANS);
+                                            $("#txtnumdocemptrans").val(data[0].NRO_DOC_RUC_TRANS);
+
+                                            $("#txtEmpresaTransporte").val(data[0].RAZON_TRANS.trim()).keyup().siblings("ul").children('li').click();
+
+                                        } else if (data[0].TIPO_TRANS === 'PRI') {
+                                            $('#rdPrivado').click();
+                                            $('#rdPrivado').parent().addClass('checked');
+                                            $('#rdPublico').parent().removeClass('checked');
+                                            $('#rdOtro').parent().removeClass('checked');
+                                        }
+                                        else if (data[0].TIPO_TRANS === 'OTR') {
+                                            $('#rdOtro').click();
+                                            $('#rdOtro').parent().addClass('checked');
+                                            $('#rdPublico').parent().removeClass('checked');
+                                            $('#rdPrivado').parent().removeClass('checked');
+                                            $("#txtEmpresaTransporte").val(data[0].RAZON_TRANS.trim()).keyup().siblings("ul").children('li').click();
+                                        }
+
+                                        $('#txtDireccionTransportista').select2('val', data[0].DIRECCION_TRANSPORTISTA).change();
+                                        $("#txtchofer").val(data[0].CHOFER);
+                                        $("#txtLicConducir").val(data[0].LICENCIA_NRO);
+                                        $("#txtCertificadoInscripcion").val(data[0].CERTIFICADO_NRO);
+                                        if (data[0].TIPO_TRANS === 'PRI') {
+                                            $("#txtvehiculo").val(data[0].VEHICULO_MARCA_PLACA);
+                                        } else {
+                                            $("#txtVehiculoFact").val(data[0].VEHICULO_MARCA_PLACA.split("||")[0]);
+                                            $("#txtMarca").val(data[0].VEHICULO_MARCA_PLACA.split("||")[1]);
+                                            $("#txtPlaca").val(data[0].VEHICULO_MARCA_PLACA.split("||")[2]);
+                                        }
+                                        $("#txtNroVueltas").val(data[0].NRO_VUELTAS);
+                                        if ($("#txtEmpresaTransporte").val() !== "") {
+                                            $("#rdPublico, #rdPrivado, #rdOtro,#txtDireccionTransferencia").attr("disabled", true);
+                                            $("#txtEmpresaTransporte,#txtVehiculoFact,#txtMarca,#txtPlaca,#txtCertificadoInscripcion,#txtvehiculo,#txtchofer,#txtLicConducir,#txtNroVueltas").attr("disabled", true);
+                                        }
+                                        if (data[0].TIPO_TRANS === 'PRI') {
+                                            ($("#txtvehiculo").val() !== '' ? $("#txtvehiculo").attr("disabled", true) : $("#txtvehiculo").attr("disabled", false));
+                                            ($("#txtCertificadoInscripcion").val() !== '' ? $("#txtCertificadoInscripcion").attr("disabled", true) : $("#txtCertificadoInscripcion").attr("disabled", false));
+                                            ($("#txtLicConducir").val() !== '' ? $("#txtLicConducir").attr("disabled", true) : $("#txtLicConducir").attr("disabled", false));
+                                            ($("#txtchofer").val() !== '' ? $("#txtchofer").attr("disabled", true) : $("#txtchofer").attr("disabled", false));                                            
+                                        }
+                                    }                                                                        
+                                })
                         }
 
                         if (!documentoSeleccionado(cod_doc)) {
@@ -5005,6 +5274,10 @@ function CambiarTextoCabeceraDctosOrigen(tabla) {
     var th = tabla.column(2).header();
     var th2 = tabla.column(6).header();
     var cMonto = tabla.column(3);
+    var cOrigen = tabla.column(7);
+    var cDestino = tabla.column(8);
+    var cAlmcOrigen = tabla.column(9);
+    var cAlmcDestino = tabla.column(10);
     if ($('#cboOrigen').val() === '0028' || $('#cboOrigen').val() === '0052') {
         $(th).text('SOLICITANTE');
         $(th2).text('COMPLETADO');
@@ -5019,9 +5292,23 @@ function CambiarTextoCabeceraDctosOrigen(tabla) {
         } else {
             if ($('#cboOrigen').val() == '0009') {
                 $(th).text('PROVEEDOR');
-                $(th2).text('COMLETADO');
+                $(th2).text('COMPLETADO');
             }
         }
+    }
+
+    if ($("#rbTEntrada").is(':checked')) { //|| $("#rbTSalida").is(':checked')
+        $(th).text('EMPRESA');
+        $(th2).text('INGRESADO');
+        cOrigen.visible(false);
+        cDestino.visible(false);
+        cAlmcOrigen.visible(true);
+        cAlmcDestino.visible(true);
+    } else {
+        cOrigen.visible(false);
+        cDestino.visible(false);
+        cAlmcOrigen.visible(false);
+        cAlmcDestino.visible(false);
     }
 }
 var fnGetCodUbigeoSunat = function (sCodUbigSist) {
@@ -6327,7 +6614,7 @@ var bloquearElementos = function () {
     $("#txtCertificadoInscripcion, #txtvehiculo, #cboTipoEnvio, #txtchofer, #txtGlosa, #txtDireccionOrigen").attr("disabled", true);
     $("#txtnumdocemptrans, #txtsecuencia, #txtEmpresaTransporte, #cboRegistro, #cboOrigen").attr("disabled", true);
     $("#txtNroDcto, #cboTipoDcto, #cbotipoDoctrans, #txtSerieDctoOrigen_0, #txtNroDctoRegistro").attr("disabled", true);
-    $("#txtNroDctoOrigen_0, #txtSerieDctoRegistro, #rdPublico, #rdPrivado,#txtNroVueltas").attr("disabled", true);
+    $("#txtNroDctoOrigen_0, #txtSerieDctoRegistro, #rdPublico, #rdPrivado,#rdOtro,#txtNroVueltas").attr("disabled", true);
     $("#grabar").attr("disabled", true);
     $("#txtCostoTransporte").attr("disabled", true);
     $("#grabar").off();
@@ -6612,26 +6899,47 @@ var Grabar = function () {
 
                 data.append('UBIGEO_ORIGEN', $('#txtUbigeoOrigen').val());
 
-                if ($('#txtCodubigeo').val() == undefined)
-                    data.append('UBIGEO_DESTINO', '');
-                else
-                    data.append('UBIGEO_DESTINO', $('#txtCodubigeo').val());
-
-                //data.append('UBIGEO_DESTINO', $('#slcdist option:selected').attr('codigoUb'));
-                data.append('DIREC_ORIGEN', $('#txtDirecOrigen').val());
-                data.append('DIREC_DESTINO', $('#txtDireccionOrigen').val());
-                data.append('URBANIZACION_ORIGEN', $('#txtUrbOrigen').val());
+                if ($("#rbTEntrada").is(':checked') || $("#rbTSalida").is(':checked')) {
+                    data.append('UBIGEO_DESTINO', $('#cboAlmacenTransferencia :selected').attr('data-ubigeo'));
+                    data.append('DIREC_DESTINO', $('#cboAlmacenTransferencia :selected').attr('direccion'));
 
 
-                data.append('URBANIZACION_DESTINO', $('#txtUrbanizacionDestino').val());
-                data.append('PIDM_TRANSP', $('#txtPIDM_EmpresaTransporte').val());
-
-                data.append('TIPO_DOC_TRANS', tipodoc2);
-
-                data.append('COSTO_TRANSPORTE', $('#txtCostoTransporte').val());
+                    //data.append('UBIGEO_DESTINO', $('#slcdist option:selected').attr('codigoUb'));
+                    data.append('DIREC_ORIGEN', $('#txtDirecOrigen').val());
+                    data.append('URBANIZACION_ORIGEN', $('#txtUrbOrigen').val());
 
 
-                data.append('NRO_VUELTAS', $('#txtNroVueltas').val());
+                    data.append('URBANIZACION_DESTINO', $('#txtUrbanizacionDestino').val());
+                    data.append('PIDM_TRANSP', $('#txtPIDM_EmpresaTransporte').val());
+
+                    data.append('TIPO_DOC_TRANS', tipodoc2);
+
+                    data.append('COSTO_TRANSPORTE', $('#txtCostoTransporte').val());
+
+
+                    data.append('NRO_VUELTAS', $('#txtNroVueltas').val());
+                } else {
+                    if ($('#txtCodubigeo').val() == undefined)
+                        data.append('UBIGEO_DESTINO', '');
+                    else
+                        data.append('UBIGEO_DESTINO', $('#txtCodubigeo').val());
+
+                    //data.append('UBIGEO_DESTINO', $('#slcdist option:selected').attr('codigoUb'));
+                    data.append('DIREC_ORIGEN', $('#txtDirecOrigen').val());
+                    data.append('DIREC_DESTINO', $('#txtDireccionOrigen').val());
+                    data.append('URBANIZACION_ORIGEN', $('#txtUrbOrigen').val());
+
+
+                    data.append('URBANIZACION_DESTINO', $('#txtUrbanizacionDestino').val());
+                    data.append('PIDM_TRANSP', $('#txtPIDM_EmpresaTransporte').val());
+
+                    data.append('TIPO_DOC_TRANS', tipodoc2);
+
+                    data.append('COSTO_TRANSPORTE', $('#txtCostoTransporte').val());
+
+
+                    data.append('NRO_VUELTAS', $('#txtNroVueltas').val());
+                }     
 
                 if ($('#hfPIDM').val() != "") {
 
@@ -6909,6 +7217,12 @@ var Actualizar = function () {
             data.append('PIDM_TRANSP', $('#txtPIDM_EmpresaTransporte').val());
             data.append('COSTO_TRANSPORTE', $('#txtCostoTransporte').val());
 
+            if ($("#rbTEntrada").is(':checked') || $("#rbTSalida").is(':checked')) {
+                data.append('UBIGEO_DESTINO', $('#cboAlmacenTransferencia :selected').attr('data-ubigeo'));
+                data.append('DIREC_DESTINO', $('#cboAlmacenTransferencia :selected').attr('direccion'));
+
+            }
+
             if ($('#hfPIDM').val() != "") {
                 ValidarSerieNumeroEmpresa($('#hfPIDM').val(), $("#cboRegistro").val(), $("#txtSerieDctoRegistro").val(), $("#txtNroDctoRegistro").val(), false, $("#txtNumDctoAlmc").val())
             }
@@ -6971,45 +7285,55 @@ var CompletarDcto = function () {
                         async: false,
                         data: { ISAC_CODE: ObtenerQueryString('codigo') },
                         success: function (datos) {
-                            if (datos === "OK") {
-                                listarDetallesCompletado();
-                                listarTotales(ObtenerQueryString('codigo'));
-                                //$("#lblValorizadoTotal").html(api.data()[0].SIMBOLO_MONEDA);
-                                exito();
-                                bloquearElementos();
-                                $("#tabDatosGenerales").click();
-                                generarImpresion();
-                                $('#btnMail, #btnImprimir').removeClass('hidden');
-                                if ($("#rbSalida").is(':checked')) {
-                                    if ($("#cboRegistro").val() == "0009") {
-                                        json_datos_imp = datos;
-                                        $('#btnImprimirGuia').css('display', 'inline');
+                            if (datos != null && datos.length > 0) {
+                                if (datos[0].p_RPTA === "OK") {
+                                    listarDetallesCompletado();
+                                    listarTotales(ObtenerQueryString('codigo'));
+                                    //$("#lblValorizadoTotal").html(api.data()[0].SIMBOLO_MONEDA);
+                                    exito();
+                                    bloquearElementos();
+                                    $("#tabDatosGenerales").click();
+                                    generarImpresion();
+                                    $('#btnMail, #btnImprimir').removeClass('hidden');
+                                    if ($("#rbSalida").is(':checked')) {
+                                        if ($("#cboRegistro").val() == "0009") {
+                                            //json_datos_imp = datos;
+                                            $('#btnImprimirGuia').css('display', 'inline');
+                                        }
                                     }
+                                    $('#advs').addClass('hidden');
+
+                                    if (prmtACON == "SI") {
+                                        //Asiento al completar
+                                        var sCodAlmc = $("#txtNumDctoAlmc").val();
+                                        sCodAlmc = $.trim(sCodAlmc);
+                                        var oDocAlmc = fnGetDocAlmacen(sCodAlmc);
+                                        vAsientoContable.sCodDoc = sCodAlmc;
+                                        vAsientoContable.objDoc = oDocAlmc;
+
+                                        $('#btnGenerarAsiento').click();
+                                    }
+                                    if ($('#chkElectronico').is(':checked')) {
+                                        $("#hfCodigoNaminsa").val(ObtenerQueryString('codigo'));
+                                        var miCodigoQR = new QRCode("codigoQR");
+                                        miCodigoQR.makeCode(datos[0].DATOS_QR);
+                                        setTimeout(guardarQR, 0.0000000000000001);
+                                    }                                    
                                 }
-                                $('#advs').addClass('hidden');
-
-                                if (prmtACON == "SI") {
-                                    //Asiento al completar
-                                    var sCodAlmc = $("#txtNumDctoAlmc").val();
-                                    sCodAlmc = $.trim(sCodAlmc);
-                                    var oDocAlmc = fnGetDocAlmacen(sCodAlmc);
-                                    vAsientoContable.sCodDoc = sCodAlmc;
-                                    vAsientoContable.objDoc = oDocAlmc;
-
-                                    $('#btnGenerarAsiento').click();
+                                else if (atos[0].p_RPTA.split("-")[0] === "X_SEPAR") {
+                                    infoCustom2("El producto " + atos[0].p_RPTA.split("-")[1] + " no cuenta con separados suficientes para despachar.")
                                 }
-
+                                else if (atos[0].p_RPTA.split("-")[0] === "X_STOCK") {
+                                    infoCustom2("El producto " + atos[0].p_RPTA.split("-")[1] + " no cuenta con el stock suficiente. Revise su stock disponible.")
+                                }
+                                else {
+                                    alertCustom("El doc. no se completó, porque la serie " + atos[0].p_RPTA + " ya se encuentra registrada en el almacén.")
+                                    //infoCustom2("La serie " + data + " ya se encuentra registrada en el almacén.")
+                                }
+                            } else {
+                                noexito();
                             }
-                            else if (datos.split("-")[0] === "X_SEPAR") {
-                                infoCustom2("El producto " + datos.split("-")[1] + " no cuenta con separados suficientes para despachar.")
-                            }
-                            else if (datos.split("-")[0] === "X_STOCK") {
-                                infoCustom2("El producto " + datos.split("-")[1] + " no cuenta con el stock suficiente. Revise su stock disponible.")
-                            }
-                            else {
-                                alertCustom("El doc. no se completó, porque la serie " + datos + " ya se encuentra registrada en el almacén.")
-                                //infoCustom2("La serie " + data + " ya se encuentra registrada en el almacén.")
-                            }
+                            
                             Desbloquear('detallemov');
                         },
                         error: function (msg) {
@@ -7023,6 +7347,37 @@ var CompletarDcto = function () {
         } else { alertCustom('Por favor, ingrese una serie para cada producto seriado.'); }
     } else { alertCustom('El documento no tiene detalles, por lo tanto no se puede completar la operación.'); }
 };
+
+function guardarQR() {
+    //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 
+    var NombreQR = $('#codigoQR img').attr('src');
+
+    var qrData = new FormData();
+    qrData.append('p_IMGQR', NombreQR);
+
+    $.ajax({
+        type: "post",
+        url: "vistas/na/ajax/naminsa.ashx?OPCION=GQR&ISAC_CODE=" + $("#hfCodigoNaminsa").val(), //CUANDO SE PRESIONA EL BOTON COMPLETAR
+        data: qrData,
+        async: false,
+        contentType: false,
+        processData: false,
+        success: function (res) {
+            if (res != null) {
+                if (res == "OK") {
+                    //exito();
+                } else {
+                    noexito();
+                }
+            } else {
+                noexito();
+            }
+        },
+        error: function () {
+            alertCustom("No se guardaron correctamente los datos!")
+        }
+    });
+}
 
 //VALIDACIONES DETALLES
 var detallesCorrectos = function () {

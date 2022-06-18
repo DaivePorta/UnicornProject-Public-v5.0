@@ -143,29 +143,98 @@ var EFLEDOC = function () {
         data.append("OPCION", "GENERAR_PDF");
         data.append("p_CODE", sCodVenta);
         data.append("p_CTLG_CODE", $("#cboEmpresa").val());
-        $.ajax({
-            type: "POST",
-            url: "vistas/nv/ajax/nvmdocv.ashx",
-            contentType: false,
-            data: data,
-            processData: false,
-            async: false,
-            success: function (data) {
-                //Desbloquear("ventana");
-                if (data == "OK") {
-                    exito();
-                    $("#divBotones1").hide();
-                    $("#divBotones2").show();
-                } else {
-                    noexito();
-                    return;
+
+        if (sCodVenta.substring(0, 2) == "AP") {//ANTICIPO
+            $.ajax({
+                type: "POST",
+                url: "vistas/nv/ajax/nvmanti.ashx",
+                contentType: false,
+                data: data,
+                processData: false,
+                async: false,
+                success: function (data) {
+                    //Desbloquear("ventana");
+                    if (data == "OK") {
+                        $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+                    } else {
+                        noexito();
+                        return;
+                    }
+                },
+                error: function (msg) {
+                    //Desbloquear("ventana");
+                    noexitoCustom("No se pudo generar el PDF.");
                 }
-            },
-            error: function (msg) {
-                //Desbloquear("ventana");
-                noexitoCustom("No se pudo generar el PDF.");
-            }
-        });
+            });
+        } else if (sCodVenta.substring(0, 1) == "V") {//VENTA
+            $.ajax({
+                type: "POST",
+                url: "vistas/nv/ajax/nvmdocv.ashx",
+                contentType: false,
+                data: data,
+                processData: false,
+                async: false,
+                success: function (data) {
+                    //Desbloquear("ventana");
+                    if (data == "OK") {
+                        $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+                    } else {
+                        noexito();
+                        return;
+                    }
+                },
+                error: function (msg) {
+                    //Desbloquear("ventana");
+                    noexitoCustom("No se pudo generar el PDF.");
+                }
+            });
+        } else if (sCodVenta.substring(0, 2) == "BG"){//NOTA DE CRÉDITO GENÉRICA
+            $.ajax({
+                type: "POST",
+                url: "vistas/CA/ajax/CAMNGCL.ashx",
+                contentType: false,
+                data: data,
+                processData: false,
+                async: false,
+                success: function (data) {
+                    //Desbloquear("ventana");
+                    if (data == "OK") {
+                        $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+                    } else {
+                        noexito();
+                        return;
+                    }
+                },
+                error: function (msg) {
+                    //Desbloquear("ventana");
+                    noexitoCustom("No se pudo generar el PDF.");
+                }
+            });
+        } else if (sCodVenta.substring(0, 1) == "B") {//NOTA DE CRÉDITO CLIENTE
+            $.ajax({
+                type: "POST",
+                url: "vistas/CA/ajax/CAMNOCL.ashx",
+                contentType: false,
+                data: data,
+                processData: false,
+                async: false,
+                success: function (data) {
+                    //Desbloquear("ventana");
+                    if (data == "OK") {
+                        $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+                    } else {
+                        noexito();
+                        return;
+                    }
+                },
+                error: function (msg) {
+                    //Desbloquear("ventana");
+                    noexitoCustom("No se pudo generar el PDF.");
+                }
+            });
+        } else if (sCodVenta.substring(0, 1) == "A"){//GUIA DE REMISION
+            noexitoCustom("No se pudo generar el PDF.");
+        }
         //Desbloquear("ventana");
     };
 
@@ -343,7 +412,15 @@ var EFLEDOC = function () {
                     $('#btnConfirmarEnviarTodos').hide();
                     $('#btnConfirmarVerificarTodos').hide();
                     $('#btnEnviarBaja').hide();
-                    $('#div_title').html('Descargar documentos de la venta: ' + row.COD_DOCUMENTO);
+                    if (row.COD_DOCUMENTO.substring(0, 2) == "AP") {
+                        $('#div_title').html('Descargar documentos del anticipo: ' + row.COD_DOCUMENTO);
+                    } else if (row.COD_DOCUMENTO.substring(0, 1) == "V") {
+                        $('#div_title').html('Descargar documentos de la venta: ' + row.COD_DOCUMENTO);
+                    } else if (row.COD_DOCUMENTO.substring(0, 1) == "B") {
+                        $('#div_title').html('Descargar documentos de la nota de crédito: ' + row.COD_DOCUMENTO);
+                    } else if (row.COD_DOCUMENTO.substring(0, 1) == "A") {
+                        $('#div_title').html('Descargar documentos de la guía de remisión: ' + row.COD_DOCUMENTO);
+                    }                    
                     $('#lblDocumento').html(row.DOCUMENTO);
                     $('#lblCliente').html(row.CLIENTE);
                     $('#lblFecha').html(row.FECHA_EMISION);
@@ -1398,6 +1475,12 @@ var EFLEDOC = function () {
                         oTable.fnClearTable();
                         if (datos.length > 0) {
                             oTable.fnAddData(datos);
+                            $("#lblMensaje").pulsate({
+                                color: "#0000FF",
+                                reach: 20,
+                                repeat: 3,
+                                glow: true
+                            });
                             oTable.fnSort([[3, "desc"]]);
                             $(".btnTbl").tooltip();
                         } else {

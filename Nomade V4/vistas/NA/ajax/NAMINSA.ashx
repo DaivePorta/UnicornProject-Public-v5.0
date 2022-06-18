@@ -32,6 +32,9 @@ Public Class NAMINSA : Implements IHttpHandler
 
     Dim COSTO_TRANSPORTE, MONTO_MAS_COSTO_TRANSPORTE, PESO_UNIT, PESO_TOTAL, doc_origen As String
 
+    'QR
+    Dim p_IMGQR As String
+
     Dim dt As DataTable
 
     Dim res, cod, msg As String
@@ -45,7 +48,7 @@ Public Class NAMINSA : Implements IHttpHandler
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
 
         'Capturamos los valores que nos envia el formulario
-
+        p_IMGQR = context.Request("p_IMGQR")
         codrec = context.Request("codigo")
         '-------------------------------'
         OPCION = context.Request("OPCION")
@@ -150,6 +153,7 @@ Public Class NAMINSA : Implements IHttpHandler
                     resb.Append("""NRO_VUELTAS"" :" & """" & dt.Rows(0)("NRO_VUELTAS") & """,")
                     resb.Append("""APROBADO_IND"" :" & """" & dt.Rows(0)("APROBADO_IND") & """,")
                     resb.Append("""COSTO_TRANSPORTE"" :" & """" & dt.Rows(0)("COSTO_TRANSPORTE") & """,")
+                    resb.Append("""ELETRONICO_IND"" :" & """" & dt.Rows(0)("ELETRONICO_IND") & """,")
                     resb.Append("""MOVCONT_CODE"" :" & """" & dt.Rows(0)("MOVCONT_CODE") & """")
                     resb.Append("}")
                     resb.Append("]")
@@ -275,6 +279,7 @@ Public Class NAMINSA : Implements IHttpHandler
                             resb.Append("{")
                             resb.Append("""CODIGO"" :" & """" & row("CODIGO").ToString & """,")
                             resb.Append("""DESCRIPCION"" :" & """" & row("DESCRIPCION").ToString & """,")
+                            resb.Append("""UBIGEO"" :" & """" & row("UBIGEO").ToString & """,")
                             resb.Append("""DIRECCION"" :" & """" & row("DIRECCION").ToString & """")
                             resb.Append("}")
                             resb.Append(",")
@@ -943,12 +948,30 @@ Public Class NAMINSA : Implements IHttpHandler
                     End If
                     res = msg.ToString()
                 Case "COMPLETAR_VALI" 'COMPLETA I/S DE ALMACEN
-                    context.Response.ContentType = "text/html"
-                    msg = New Nomade.NA.NATipoMovimiento("BN").VERIFICAR_SERIES(ISAC_CODE) 'DPORTA- VERIFICA SOLO EL INGRESO TRANSF. DE ENTRADA DE PROD. SERIADOS PARA EVITAR DUPLICIDAD EN LAS SERIES 
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    Dim caTipoMov As New Nomade.NA.NATipoMovimiento("Bn")
+                    Dim array As Array
+                    msg = caTipoMov.VERIFICAR_SERIES(ISAC_CODE) 'DPORTA- VERIFICA SOLO EL INGRESO TRANSF. DE ENTRADA DE PROD. SERIADOS PARA EVITAR DUPLICIDAD EN LAS SERIES 
                     If msg = "OK" Then
-                        msg = New Nomade.NA.NATipoMovimiento("Bn").COMPLETAR_DCTO_ALMACEN_VALI(ISAC_CODE)
+                        array = caTipoMov.COMPLETAR_DCTO_ALMACEN_VALI(ISAC_CODE)
+                        If Not (array Is Nothing) Then
+                            resb.Append("[{")
+                            resb.Append("""p_RPTA"" :" & """" & array(0).ToString & """,")
+                            resb.Append("""DATOS_QR"" :" & """" & array(1).ToString & """")
+                            resb.Append("}]")
+                        End If
+                        res = resb.ToString()
+                    Else
+                        resb.Append("[{")
+                        resb.Append("""p_RPTA"" :" & """" & msg.ToString() & """,")
+                        resb.Append("""ERROR_SERIES"" :" & """" & "ERROR_SERIES" & """")
+                        resb.Append("}]")
+                        res = resb.ToString()
                     End If
-                    res = msg.ToString()
+                Case "GQR" 'Parametros para guardar el QR
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    Dim nvVenta As New Nomade.NV.NVVenta("Bn")
+                    res = nvVenta.GuardarCodigoQR(ISAC_CODE, p_IMGQR)
                 Case "G"
                     context.Response.ContentType = "application/json; charset=utf-8"
                     PIDM_SOLICITANTE = context.Request("PIDM_SOLICITANTE")
@@ -1157,7 +1180,8 @@ Public Class NAMINSA : Implements IHttpHandler
                     PIDM_TRANSP = context.Request("PIDM_TRANSP")
                     TIPO_DOC_TRANS = context.Request("TIPO_DOC_TRANS")
                     COSTO_TRANSPORTE = context.Request("COSTO_TRANSPORTE")
-
+                    UBIGEO_DESTINO = context.Request("UBIGEO_DESTINO")
+                    DIREC_DESTINO = context.Request("DIREC_DESTINO")
 
                     Dim arr, arr2 As Array
                     Dim lstaux, lstfinal As New List(Of String)
@@ -1188,9 +1212,10 @@ Public Class NAMINSA : Implements IHttpHandler
                         resb.Append("]")
                     Else
                         cod = ActualizarDctoAlmc(ISAC_CODE, CTLG_CODE, COD_ALMC, Utilities.fechaLocal(FEC_EMISION), Utilities.fechaLocal(FEC_TRANS), DCTO_REG, PIDM_SOLICITANTE,
-                                                 DCTO_ORGN, DCTO_ORGN_SERIE, DOCS_CODE, TIPO_MOV, PIDM_ENTREGAR_A, TIPO_OPE, CMMNT_DCTO,
-                                          USUA_ID, TIPO_DOC_RAZON_DEST, RAZON_DEST, RAZON_TRANS, LIC_CONDUCIR, CHOFER, DIRE.ToUpper, CERTIFICADO, PLACA, TIP_DCTO, SERIE_DCTO, TIP_DCTO_ORG, ALMC_DEST, "0.00", "0.00", "", p_NUM_SEQ_DOC,
-                                          ELECTRONICO, TIPO_TRANS, TIPO_ENVIO, DIRECCION_TRANSPORTISTA, DESC_VEHICULO, MARCA_FACT, PLACA_FACT, PIDM_TRANSP, TIPO_DOC_TRANS, COSTO_TRANSPORTE)
+                                                DCTO_ORGN, DCTO_ORGN_SERIE, DOCS_CODE, TIPO_MOV, PIDM_ENTREGAR_A, TIPO_OPE, CMMNT_DCTO,
+                                                USUA_ID, TIPO_DOC_RAZON_DEST, RAZON_DEST, RAZON_TRANS, LIC_CONDUCIR, CHOFER, DIRE.ToUpper, CERTIFICADO, PLACA, TIP_DCTO, SERIE_DCTO, TIP_DCTO_ORG,
+                                                ALMC_DEST, "0.00", "0.00", "", p_NUM_SEQ_DOC, ELECTRONICO, TIPO_TRANS, TIPO_ENVIO, DIRECCION_TRANSPORTISTA, DESC_VEHICULO, MARCA_FACT, PLACA_FACT,
+                                                PIDM_TRANSP, TIPO_DOC_TRANS, COSTO_TRANSPORTE, UBIGEO_DESTINO, DIREC_DESTINO)
                         If (cod <> "") Then
                             Dim Mov As New Nomade.NA.NATipoMovimiento("Bn")
                             msg = Mov.actualizarSalidaAlmacen(ISAC_CODE, NRO_VUELTAS)
@@ -1862,7 +1887,8 @@ Public Class NAMINSA : Implements IHttpHandler
                                     resb.Append("]")
                                 End If
                             Case "0026"
-                                dt = New Nomade.CO.CORegistroCompras("BN").LISTAR_LISTA_ORDEN_COMPRA(CTLG_CODE, SCSL_CODE, PIDM, "N")
+                                'dt = New Nomade.CO.CORegistroCompras("BN").LISTAR_LISTA_ORDEN_COMPRA(CTLG_CODE, SCSL_CODE, PIDM, "N")
+                                dt = New Nomade.CO.CORegistroCompras("BN").LISTAR_LISTA_ORDEN_COMPRA(CTLG_CODE, COD_ALMC, PIDM, "N")
                                 If Not (dt Is Nothing) Then
                                     resb.Append("[")
                                     For Each row As DataRow In dt.Rows
@@ -1874,7 +1900,7 @@ Public Class NAMINSA : Implements IHttpHandler
                                             resb.Append("""PROVEEDOR"" :" & """" & row("P_NOMBRE").ToString & """,")
                                             resb.Append("""EMISION"" :" & """" & row("FECHA_ENTREGA").ToString & """,")
                                             resb.Append("""DESPACHADO_IND"" :" & """" & row("COMPLETO").ToString & """,")
-                                            'resb.Append("""DESPACHADO"" :" & """" & row("DESPACHADO").ToString & """,")
+                                            resb.Append("""DESPACHADO"" :" & """" & row("DESPACHADO").ToString & """,")
                                             resb.Append("""TOTAL"" :" & """" & row("PAGAR").ToString & """")
                                             resb.Append("}")
                                             resb.Append(",")
@@ -1914,33 +1940,35 @@ Public Class NAMINSA : Implements IHttpHandler
                         Select Case TIPO_DCTO
                             Case "0009", "0050"
                                 'ALMC_DEST = context.Request("ALMC_DEST")
-                                dt = New Nomade.NA.NATipoMovimiento("BN").lista_dcto_almacen("", "", "", "", "", "TS", CTLG_CODE, "", PIDM, TIPO_DCTO)
+                                dt = New Nomade.NA.NATipoMovimiento("BN").lista_dcto_almacen("", "", "TI", "", "", "TS", CTLG_CODE, "", PIDM, TIPO_DCTO)
                                 If Not (dt Is Nothing) Then
                                     resb.Append("[")
                                     For Each row As DataRow In dt.Rows
-                                        If row("COMPLETO").ToString = "COMPLETO" Then
-                                            'resb.Append("{")
-                                            'resb.Append("""CODIGO"" :" & """" & row("CODIGO").ToString & """,")
-                                            'resb.Append("""NRO_DOCUMENTO"" :" & """" & row("REQC_NUM_SEQ_DOC").ToString & "-" & row("REQC_CODE").ToString & """,")
-                                            'resb.Append("""PROVEEDOR"" :" & """" & row("RAZON_DEST").ToString & """,")
-                                            'resb.Append("""TOTAL"" :" & """" & row("IMPORTE_BIEN").ToString & """")
-                                            'resb.Append("}")
-                                            'resb.Append(",")
+                                        'If row("COMPLETO").ToString = "COMPLETO" Then
+                                        'resb.Append("{")
+                                        'resb.Append("""CODIGO"" :" & """" & row("CODIGO").ToString & """,")
+                                        'resb.Append("""NRO_DOCUMENTO"" :" & """" & row("REQC_NUM_SEQ_DOC").ToString & "-" & row("REQC_CODE").ToString & """,")
+                                        'resb.Append("""PROVEEDOR"" :" & """" & row("RAZON_DEST").ToString & """,")
+                                        'resb.Append("""TOTAL"" :" & """" & row("IMPORTE_BIEN").ToString & """")
+                                        'resb.Append("}")
+                                        'resb.Append(",")
 
-                                            resb.Append("{")
-                                            resb.Append("""CODIGO"" :" & """" & row("CODIGO").ToString & """,")
-                                            resb.Append("""NRO_DOCUMENTO"" :" & """" & row("REQC_NUM_SEQ_DOC").ToString & "-" & row("REQC_CODE").ToString & """,")
-                                            resb.Append("""PROVEEDOR"" :" & """" & row("RAZON_DEST").ToString & """,")
-                                            resb.Append("""DESC_CORTA_MONEDA"" :" & """" & row("DESC_CORTA_MONEDA").ToString & """,")
-                                            resb.Append("""EMISION"" :" & """" & row("FECHA_EMISION").ToString & """,")
-                                            resb.Append("""DESPACHADO_IND"" :" & """" & row("COMPLETO").ToString & """,")
-                                            resb.Append("""DESPACHADO"" :" & """" & row("DESPACHADO").ToString & """,")
-                                            resb.Append("""ALMC_CODE_ORIGEN"" :" & """" & row("ALMC_CODE").ToString & """,")
-                                            resb.Append("""ALMC_CODE_DESTINO"" :" & """" & row("ALMACEN_CODE_DESTINO").ToString & """,")
-                                            resb.Append("""TOTAL"" :" & """" & row("IMPORTE_BIEN").ToString & """")
-                                            resb.Append("}")
-                                            resb.Append(",")
-                                        End If
+                                        resb.Append("{")
+                                        resb.Append("""CODIGO"" :" & """" & row("CODIGO").ToString & """,")
+                                        resb.Append("""NRO_DOCUMENTO"" :" & """" & row("REQC_NUM_SEQ_DOC").ToString & "-" & row("REQC_CODE").ToString & """,")
+                                        resb.Append("""PROVEEDOR"" :" & """" & row("RAZON_DEST").ToString & """,")
+                                        resb.Append("""DESC_CORTA_MONEDA"" :" & """" & row("DESC_CORTA_MONEDA").ToString & """,")
+                                        resb.Append("""EMISION"" :" & """" & row("FECHA_EMISION").ToString & """,")
+                                        resb.Append("""DESPACHADO_IND"" :" & """" & row("COMPLETO").ToString & """,")
+                                        resb.Append("""DESPACHADO"" :" & """" & row("DESPACHADO").ToString & """,")
+                                        resb.Append("""ALMC_CODE_ORIGEN"" :" & """" & row("ALMC_CODE_ORIGEN").ToString & """,")
+                                        resb.Append("""ALMC_CODE_DESTINO"" :" & """" & row("ALMACEN_CODE_DESTINO").ToString & """,")
+                                        resb.Append("""DESC_ALMC_ORIGEN"" :" & """" & row("DESC_ALMC_ORIGEN").ToString & """,")
+                                        resb.Append("""DESC_ALMC_DESTINO"" :" & """" & row("DESC_ALMC_DESTINO").ToString & """,")
+                                        resb.Append("""TOTAL"" :" & """" & row("IMPORTE_BIEN").ToString & """")
+                                        resb.Append("}")
+                                        resb.Append(",")
+                                        'End If
                                     Next
                                     resb.Append("{}")
                                     resb = resb.Replace(",{}", String.Empty)
@@ -2461,17 +2489,14 @@ Public Class NAMINSA : Implements IHttpHandler
                         Catch ex As Exception
                             res = "ERROR AL IMPRIMIR"
                         End Try
-
-
-
-
-
-
-
                     Catch ex As Exception
                         res = "ERROR"
                     End Try
-
+                Case "IMPR"
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    'USAR_IGV_IND = context.Request("USAR_IGV_IND") ' Si es nothing se usará el de la tabla
+                    'COPIA_IND = context.Request("COPIA_IND") ' Si es nothing se imprimirá como si no fuera copia                        
+                    res = GenerarDctoImprimir(CTLG_CODE, p_CODE)
                 Case Else
 
             End Select
@@ -2581,13 +2606,15 @@ Public Class NAMINSA : Implements IHttpHandler
                                           ByVal p_PLACA As String, ByVal p_TIPO_DCTO As String, ByVal p_SERIE_DCTO As String, ByVal p_TIPO_DCTO_ORG As String,
                                           ByVal p_ALMC_DEST As String, ByVal p_MONTO As String, ByVal p_MONTO_ALTERNO As String, ByVal p_MONEDA As String, ByVal p_NUM_SEQ_DOC As String,
                                           ByVal p_ELECTRONICO As String, ByVal p_TIPO_TRANS As String, ByVal p_TIPO_ENVIO As String, ByVal p_DIR_TRANS As String,
-                                          ByVal p_DESC_VEHICULO As String, ByVal p_MARCA_FACT As String, ByVal p_PLACA_FACT As String, ByVal p_PIDM_TRANSP As String, p_TIPO_DOC_TRANS As String, p_COSTO_TRANSPORTE As String) As String
+                                          ByVal p_DESC_VEHICULO As String, ByVal p_MARCA_FACT As String, ByVal p_PLACA_FACT As String, ByVal p_PIDM_TRANSP As String, ByVal p_TIPO_DOC_TRANS As String,
+                                          ByVal p_COSTO_TRANSPORTE As String, ByVal p_UBIGEO_DESTINO As String, ByVal p_DIREC_DESTINO As String) As String
         Dim dato As String
         dato = New Nomade.NA.NATipoMovimiento("Bn").actualizar_dcto_almacen(p_ISAC_CODE, p_CTLG_CODE, p_ALMC_CODE, p_FECHA_EMISION, p_FECHA_TRANS, p_NUM_DCTO, p_PIDM_SOLICITANTE,
                                                                             p_REQC_CODE, p_REQC_NUM_SEQ_DOC,
                                            p_ORGN_CODE, p_RETORNO_IND, p_PIDM_ENTREGAR_A, p_TMOV_CODE, p_CMNT_DCTO, p_USUA_ID, p_TIPO_DOC_RAZON_DEST, p_RAZON_DEST, p_RAZON_TRANS,
                                            p_LICENCIA, p_CHOFER, p_DIRECCION, p_CERTIFICADO, p_PLACA, p_TIPO_DCTO, p_SERIE_DCTO, p_TIPO_DCTO_ORG, p_ALMC_DEST,
-                                           p_MONTO, p_MONTO_ALTERNO, p_MONEDA, p_NUM_SEQ_DOC, p_ELECTRONICO, p_TIPO_TRANS, p_TIPO_ENVIO, p_DIR_TRANS, p_DESC_VEHICULO, p_MARCA_FACT, p_PLACA_FACT, p_PIDM_TRANSP, p_TIPO_DOC_TRANS, p_COSTO_TRANSPORTE)
+                                           p_MONTO, p_MONTO_ALTERNO, p_MONEDA, p_NUM_SEQ_DOC, p_ELECTRONICO, p_TIPO_TRANS, p_TIPO_ENVIO, p_DIR_TRANS, p_DESC_VEHICULO, p_MARCA_FACT, p_PLACA_FACT, p_PIDM_TRANSP, p_TIPO_DOC_TRANS,
+                                           p_COSTO_TRANSPORTE, p_UBIGEO_DESTINO, p_DIREC_DESTINO)
 
 
         Return dato
@@ -2668,5 +2695,214 @@ Public Class NAMINSA : Implements IHttpHandler
         Return resb.ToString
     End Function
 
+    Public Function GenerarDctoImprimir(ByVal CTLG_CODE As String, ByVal p_CODE As String) As String
+        Dim tabla As New StringBuilder
+
+        Dim dtCabecera As New DataTable
+        Dim dtDetalles As New DataTable
+        Dim dtEmpresas As New DataTable
+        'Dim dtParametroLogo As New DataTable
+
+        Dim dtParametroPiePagina As New DataTable
+        Dim onGuiaRemision As New Nomade.NA.NATransferenciaAlmacen("Bn")
+        'Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
+
+        dtCabecera = onGuiaRemision.ListarDatosCabeceraGuiaRemision(CTLG_CODE, p_CODE)
+        dtDetalles = onGuiaRemision.ListarDatosDetalleGuiaRemision(CTLG_CODE, p_CODE)
+        'dtParametroLogo = New Nomade.NC.NCParametros("Bn").ListarParametros("LOVE", "")
+
+        'dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "")
+
+        If dtCabecera IsNot Nothing Then
+            Dim rutaLogo As String = ""
+
+            'VARIABLE PARA COLOCAR EL QR EN EL PDF
+            Dim rutaQr As String = ""
+
+            'PIE DE PAGINA EDITABLE
+            Dim pie_pagina As String = ""
+
+            Dim mon As String = dtCabecera.Rows(0)("SIMBOLO_MONEDA") 'Simbolo de moneda     
+            Dim descMon As String = dtCabecera.Rows(0)("DESC_MONEDA") 'Descripcion de moneda   
+
+            Dim codeMoneda As String = dtCabecera.Rows(0)("MONEDA") 'Código de Moneda
+
+            Dim totalSinDscto As Decimal = 0
+            Dim totalPeso As Decimal = 0
+            'OBTENER LOGO
+            'dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA"), "A", "")
+            rutaLogo = dtCabecera.Rows(0)("RUTA_IMAGEN").ToString
+
+            'OBTENER EL TEXTO QUE VA A IR EN LA IMPRESION COMO PIE DE PAGINA
+            'pie_pagina = dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString
+
+            'LA RUTA QUE VA A TENER
+            rutaQr = dtCabecera(0)("IMAGEN_QR").ToString
+
+            tabla.Append("<table id='tblDctoImprimir' border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'>")
+            tabla.Append("<thead>")
+            If dtCabecera.Rows(0)("ANULADO") = "SI" Then
+                tabla.AppendFormat("<tr><th colspan='4'>&nbsp;</th></tr>")
+                tabla.AppendFormat("<tr><th style='text-align: center;border-top: 1px dashed black;border-bottom: 1px dashed black; color:gray;' colspan='4'>ANULADO</th> </tr>")
+                tabla.AppendFormat("<tr><th colspan='4'>&nbsp;</th></tr>")
+            End If
+            'If dtParametroLogo IsNot Nothing Then
+            '    If dtParametroLogo.Rows(0)("VALOR") = "S" Then
+            '        If Not rutaLogo = "" Then
+            '            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
+            '        End If
+            '    End If
+            'Else
+            '    If Not rutaLogo = "" Then
+            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
+            '    End If
+            'End If
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            If (dtCabecera.Rows(0)("RUC_EMPRESA").substring(0, 2) = "10") Then 'DPORTA 10/12/2021
+                tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("DESC_CORTA_EMPRESA"))
+                tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>De: {0}</td></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
+            Else
+                tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>De: {0}</td></tr>", dtCabecera.Rows(0)("DESC_EMPRESA"))
+            End If
+            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>RUC {0}</th></tr>", dtCabecera.Rows(0)("RUC_EMPRESA"))
+            tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", dtCabecera.Rows(0)("DIRECCION"))
+            tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>TELEF: {0}</td></tr>", dtCabecera.Rows(0)("TELEFONO"))
+            tabla.Append("</thead>")
+
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("DOCUMENTO"))
+            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("serNumDocGuia"))
+            tabla.Append("</thead>")
+
+            tabla.Append("<tbody>")
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Cliente<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("rznSocialDestinatario"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>{0}<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{1}</td></tr>", dtCabecera.Rows(0)("CLIE_DCTO_DESC"), dtCabecera.Rows(0)("numDocDestinatario"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Dirección Destino <span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("dirLlegada"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Dirección Origen<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("dirPartida"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Motivo Traslado<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("desMotivoTrasladoDatosEnvio"))
+            If dtCabecera.Rows(0)("tipDocGuia") = "0012" Then
+                tabla.AppendFormat("<tr><td  style='vertical-align: top;'><strong>Nro Maq<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+            Else
+                tabla.AppendFormat("<tr><td  style='vertical-align: top;'><strong>Autorización<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+            End If
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Sucursal<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DESC_SUCURSAL"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Vendedor<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("VENDEDOR_USUA_ID")) 'VENDEDOR
+            'tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Condición pago<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DESC_MODO_PAGO")) 'Modo de pago
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Fecha Emisión<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("EMISION")) 'Feha y Hora
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Fecha Movimiento.<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("MOVIMIENTO")) 'Feha Vencimiento
+            'If dtCabecera.Rows(0)("MOPA") = "0002" Then
+            '    tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Cuotas<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("CUOTAS")) 'Cuotas
+            'End If
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Glosa<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("GLOSA")) 'GLOSA
+
+            tabla.Append("</tbody></table>")
+
+            tabla.Append("<table border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'><tbody>")
+            tabla.Append("<tr style='border-top: 1px dashed black;border-bottom: 1px dashed black;'>")
+            tabla.Append("<td style='text-align: left;'><strong>Cant.</strong></td><td style='text-align: left;'><strong>U.m.</strong></td><td style='text-align: left;padding-left:5px;' colspan='2'><strong>Descripción</strong></td><td style='text-align: right;'><strong>Peso (Kg)</strong></td>")
+            tabla.Append("</tr>")
+
+            For Each row In dtDetalles.Rows
+                tabla.Append("<tr>")
+                tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", Math.Round(Decimal.Parse(row("canItem")), 2).ToString())
+                tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", row("descUnidadMedida").ToString())
+                tabla.AppendFormat("<td style='text-align: left;padding-right:10px;padding-left:5px;' colspan='2'><span style='word-break:break-all;'>{0}</span></td>", row("desItem"))
+                tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", Math.Round(Decimal.Parse(row("pesoItem")), 2).ToString())
+                tabla.Append("</tr>")
+                totalPeso += Decimal.Parse(row("pesoItem"))
+            Next
+            tabla.Append("</tbody></table>")
+            tabla.Append("<table border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'><tbody>")
+            tabla.Append("<tr style='border-top: 1px dashed black;'>")
+            tabla.AppendFormat("<td colspan='3'><strong>Peso total (Kg)</strong></td>")
+            tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", totalPeso)
+            tabla.Append("</tr>")
+
+
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            tabla.Append("<tr style='border-top: 1px dashed black;'>")
+            tabla.Append("<td colspan='4' style='text-align: center;'><strong></strong></td>")
+            tabla.Append("</tr>")
+
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+
+            tabla.AppendFormat("<td colspan='4'><strong>DATOS DEL TRANSPORTISTA</strong></td>")
+
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            tabla.Append("<tr style='border-top: 1px dashed black;'>")
+            tabla.Append("<td colspan='4' style='text-align: center;'><strong></strong></td>")
+            tabla.Append("</tr>")
+
+            tabla.Append("<tbody>")
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Tipo de Transporte<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("descModTrasladoDatosEnvio"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Transportista<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("nomTransportista"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Vehículo, Marca, Placa<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("VEHICULO_MARCA_PLACA"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Certificado de Inscripción<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("NRO_CERTIFICADO"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Chofer<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("nomConductorTransPrivado"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Licencia de Conducir<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("LICENCIA"))
+
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            tabla.Append("<tr style='border-top: 1px dashed black;'>")
+            tabla.Append("<td colspan='4' style='text-align: center;'><strong></strong></td>")
+            tabla.Append("</tr>")
+            tabla.Append("</tbody></table>")
+
+            tabla.Append("<table border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'><tbody>")
+            If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" Then
+                'LUGAR DONDE SE VA A DIBUJAR EL QR EN EL PDF
+                tabla.Append("<table' border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'>")
+                tabla.Append("<thead>")
+                tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaQr)
+                tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+                tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><strong>Representación impresa de la <span style='float:right'></span></strong>{0}</th></tr>", dtCabecera.Rows(0)("DOCUMENTO"))
+                If dtCabecera.Rows(0)("tipDocGuia") = "0012" Then
+                    tabla.AppendFormat("<tr><td  style='vertical-align: top;'><strong>Nro Maq<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+                Else
+                    tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><strong>Autorizado mediante <span style='float:right'></span></strong>{0}</th></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
+                End If
+            End If
+
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            'tabla.Append("<tr style='border-top: 1px dashed black;'>")
+            'tabla.Append("<td colspan='4' style='text-align: center;'>Escribanos al correo: <strong>informes@orbitum.org</strong></td>")
+            'If dtParametroPiePagina IsNot Nothing Then 'PIE DE PAGINA 
+            If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" Then
+                'If Not pie_pagina = "" Then
+                tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", "Para consultar el documento ingrese a http://52.41.93.228:1115, debe estar disponible dentro de las próximas 48 hrs. a partir de la fecha de emisión.")
+                'tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><span style='float:right'></span>{0}</th></tr>", pie_pagina)
+                'End If
+            Else
+                tabla.Append("<td colspan='4' style='text-align: center;'>GRACIAS POR SU PREFERENCIA</td>")
+            End If
+        End If
+        tabla.Append("</tr>")
+        tabla.Append("</thead>")
+        tabla.Append("</thead>")
+        tabla.Append("<br>")
+        tabla.Append("</table>")
+
+        'End If
+
+        'End If
+        Return tabla.ToString()
+    End Function
+
+    Public Function vDesc(ByVal valor As String) As String
+        Dim res As String
+        Try
+            If Decimal.Parse(valor) = 0 Then
+                res = ""
+            Else
+                res = valor + "-"
+            End If
+        Catch ex As Exception
+            res = ""
+        End Try
+        Return res
+    End Function
 
 End Class

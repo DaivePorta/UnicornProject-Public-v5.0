@@ -192,5 +192,49 @@
             Return Nothing
         End Try
     End Function
+    Public Function ListarDatosCabeceraGuiaRemision(ByVal p_CTLG_CODE As String, ByVal p_VTAC_CODE As String) As DataTable
+        Try
+
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("CABECERA_GUIA_REMISION_DATOSDOC", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            'Throw (ex)
+            Return Nothing
+        End Try
+    End Function
+
+    Public Function ListarDatosDetalleGuiaRemision(ByVal p_CTLG_CODE As String, ByVal p_VTAC_CODE As String) As DataTable
+        Try
+
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("DETALLE_GUIA_REMISION_DATOSDOC", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            'Throw (ex)
+            Return Nothing
+        End Try
+    End Function
+
 
 End Class

@@ -30,11 +30,66 @@
     .nomostrar {
         z-index: -1 !important;
     }
+
+    @media print {
+
+        .navbar-inner {
+            display: none !important;
+        }
+
+        .page-sidebar {
+            display: none !important;
+        }
+
+        .footer {
+            display: none !important;
+        }
+
+        .page-content {
+            margin-left: 0px !important;
+        }
+
+        #gritter-notice-wrapper {
+            display: none !important;
+        }
+
+        /*#ventana parent {*/
+        #contenedor {
+            display: none !important;
+        }
+
+        /*.breadcrumb parent{*/
+        #contenedorBreadcrumb {
+            display: none !important;
+        }
+
+        .page-container {
+            margin-top: 0px !important;
+        }
+
+        #divDctoImprimir {
+            display: block !important;
+            width: 100% !important;
+            font-size: 10px !important;
+            line-height: 11px !important;
+            /*font-family: 'Lucida Console' !important;*/
+            font-family: Arial !important;
+        }
+
+        .container-fluid {
+            padding: 0px !important;
+        }
+
+        .chat-window {
+            display: none;
+            margin: 0px !important;
+        }
+    }
 </style>
 <script type="text/javascript" src="../../recursos/plugins/selectize/js/standalone/selectize.js"></script>
 <link rel="stylesheet" href="../../recursos/plugins/selectize/css/selectize.css" />
 <link rel="stylesheet" href="../../recursos/plugins/selectize/css/selectize.bootstrap2.css" />
-<div class="row-fluid">
+<div class="row-fluid" id="contenedor">
     <div class="span12">
         <!-- INICIA CUADRO PARA LA FORMA -->
         <div id="ventana" class="portlet box blue">
@@ -42,7 +97,8 @@
                 <h4><i class="icon-reorder"></i>&nbsp;ENTRADA / SALIDA  ALMACENES</h4>
                 <div class="actions">
                     <a class="btn purple hidden" id="btnMail"><i class="icon-envelope"></i>&nbsp;Enviar Mail</a>
-                    <a class="btn black hidden" id="btnImprimir" href="javascript:imprimirDiv2(['divContenido']);"><i class="icon-print"></i>&nbsp;Imprimir</a>
+                    <%--<a class="btn black hidden" id="btnImprimir" href="javascript:imprimirDiv2(['divContenido']);"><i class="icon-print"></i>&nbsp;Imprimir</a>--%>
+                    <%--<a class="btn black hidden" id="btnImprimir"><i class="icon-print"></i>&nbsp;Imprimir</a>--%>
                     <a class="btn green" href="?f=naminsa"><i class="icon-plus"></i>&nbsp;Nuevo</a>
                     <a class="btn red" href="?f=nalinsa"><i class="icon-list"></i>&nbsp;Listar</a>
                 </div>
@@ -585,7 +641,7 @@
                                                         Dcto. Registro</label>
                                                 </div>
                                             </div>
-                                            <div class="span4">
+                                            <div class="span3">
                                                 <div class="control-group">
                                                     <div class="controls">
                                                         <select id="cboRegistro" class="span12" data-placeholder="Documento Registro"></select>
@@ -612,7 +668,20 @@
                                                     <div class="controls" style="height: 30px;">
                                                         <label class="control-label" for="chkElectronico">
                                                             <input id="chkElectronico" type="checkbox" class="span12" style="opacity: 0;">
-                                                            F. Electrónico
+                                                            G. Electrónica
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid" id="divNuestraGuia" style="display: none;">
+                                            <div class="span2"></div>
+                                            <div class="span2">
+                                                <div class="control-group">
+                                                    <div class="controls" style="height: 20px;">
+                                                        <label class="control-label" for="chkNuestraGuia">
+                                                            <input id="chkNuestraGuia" type="checkbox" class="span12" style="opacity: 0;">
+                                                            Nuestra Guía
                                                         </label>
                                                     </div>
                                                 </div>
@@ -625,7 +694,7 @@
                                                         Dcto. Interno de Registro</label>
                                                 </div>
                                             </div>
-                                            <div class="span4">
+                                            <div class="span3">
                                                 <div class="control-group">
                                                     <div class="controls">
                                                         <select id="cboRegistroInterno" class="span12" data-placeholder="Doc. Registro Interno" disabled></select>
@@ -1187,6 +1256,7 @@
                                 <div id="btnCompletar" class="form-actions">
                                     <a class="btn green" href="javascript:CompletarDcto();" style="display: none"><i class="icon-ok-sign"></i>&nbsp;Completar</a>
                                     <a id="btnImprimirGuia" class="btn black" style="display: none"><i class="icon-print"></i>&nbsp;Imprimir Guia</a>
+                                    <%--<a id="btnImprimirGuia" class="btn black" href="javascript:ImprimirGuiaRemisionElectonica();" style="display: none"><i class="icon-print"></i>&nbsp;Imprimir Guia</a>--%>
                                     <p style="font-style: italic; color: blue; float: right" id="p_info">* Doble clic para modificar serie, centro de costos o cantidad.</p><br><br>
                                     <p style="font-style: italic; color: blue; float: right; display:none" id="p_info2">* Los valores que se muestran son los costos de KARDEX.</p>
                                 </div>
@@ -1333,8 +1403,10 @@
                             <th style="text-align: center">MONTO TOTAL</th>
                             <th style="text-align: center">F. EMISIÓN</th>
                             <th style="text-align: center">COMPLETADO</th>
-                            <th style="text-align: center; display:none">ORIGEN</th>
-                            <th style="text-align: center; display:none">DESTINO</th>
+                            <th style="text-align: center">ORIGEN</th>
+                            <th style="text-align: center">DESTINO</th>
+                            <th style="text-align: center">ALMACÉN ORIGEN</th>
+                            <th style="text-align: center">ALMACÉN DESTINO</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -1546,6 +1618,9 @@
         <h5 class="text-right">Clic en un documento para seleccionarlo</h5>
     </div>
 </div>
+<!-- CAMPOS PARA CREAR QR -->
+<div id="codigoQR" style="display: none"></div>  
+<div id="divDctoImprimir" style="display: none;"></div>
 
 <input id="hfCOSTO_CON_FLETE" type="hidden" value="0.00" />
 <input id="hfPESO_TOTAL" type="hidden" value="0.00" />
@@ -1575,10 +1650,10 @@
 <input id="hfTIPO_APLI_VALORES" type="hidden" />
 <input id="hfCOD_AUT" type="hidden" />
 <input id="hfCOD_AUT_INTERNO" type="hidden" />
-
+<input id="hfCodigoNaminsa" type="hidden" />
 <script type="text/javascript" src="../../recursos/plugins/bootstrap-treeview/bootstrap-treeview.js"></script>
 <script type="text/javascript" src="../vistas/NA/js/NAMINSA.js"></script>
-
+<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>
 <script>
     jQuery(document).ready(function () {
         // Se Inicializa el modulo de javascript para esta forma.
