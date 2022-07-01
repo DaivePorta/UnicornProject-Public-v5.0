@@ -85,4 +85,24 @@ Public Class NomadeMail
         End Try
     End Function
 
+    Public Function ListarTelefonos(ByVal p_PIDM As Integer, ByVal p_NUM_SEQ As Integer, ByVal p_ESTADO As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("PPP_LISTAR_TELEFONO", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SEQ", p_NUM_SEQ, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", p_ESTADO, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
 End Class

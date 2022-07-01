@@ -1252,6 +1252,28 @@ Public Class NAMINSA : Implements IHttpHandler
                         resb.Replace("[{}]", "[]")
                     End If
                     res = resb.ToString()
+                Case "LTELEFONOS"
+                    context.Request.ContentType = "application/json; charset=utf-8"
+                    Dim tel As New Nomade.Mail.NomadeMail("BN")
+                    dt = tel.ListarTelefonos(0, 0, "A")
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each row As DataRow In dt.Rows
+                            If row("Numero").ToString <> "" Then
+                                resb.Append("{")
+                                resb.Append("""telefono"" :" & """" & row("Numero").ToString & """,")
+                                resb.Append("""name"" :" & """" & row("Nombres").ToString & """,")
+                                resb.Append("""codigo"" :" & """" & row("Codigo").ToString & """")
+                                resb.Append("}")
+                                resb.Append(",")
+                            End If
+                        Next
+                        resb.Append("{}")
+                        resb.Replace(",{}", "")
+                        resb.Append("]")
+                        resb.Replace("[{}]", "[]")
+                    End If
+                    res = resb.ToString()
                 Case "DETALLES_ORIGEN_LISTA" ' Devuelve todos los detalles de los documentos de origen para visualizacion
                     context.Request.ContentType = "text/plain"
                     res = GenerarTablaDetallesOrigen()

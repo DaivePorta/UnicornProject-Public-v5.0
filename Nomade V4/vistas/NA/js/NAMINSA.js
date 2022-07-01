@@ -1841,13 +1841,12 @@ var NAMINSA = function () {
             var formato = $(this).is(':checked') ? 'E' : 'F';
             establecerCorrelativo(formato);
             if ($('#rbEntrada').is(':checked') && $("#cboOperacion").val() == '0002' && $("#cboRegistro").val() == '0009' && formato == 'E') {
+                cargarCorrelativo();
                 establecerCorrelativo(formato);
-                //if ($(this).val() == '0009') {//GUIA DE REMISIÓN
-                    $('#txtSerieDctoRegistro').prop('disabled', true);
-                    $('#txtNroDctoRegistro').prop('disabled', true);
-                    //$('#divElec').removeClass('hidden');
-                //}
-            } else if ($('#rbEntrada').is(':checked') && $("#cboOperacion").val() == '0002' && $("#cboRegistro").val() == '0009' && formato == 'F'){
+                $('#txtSerieDctoRegistro').prop('disabled', true);
+                $('#txtNroDctoRegistro').prop('disabled', true);
+            } else if ($('#rbEntrada').is(':checked') && $("#cboOperacion").val() == '0002' && $("#cboRegistro").val() == '0009' && formato == 'F') {
+                cargarCorrelativo();
                 establecerCorrelativo(formato);
             }            
         });
@@ -3952,7 +3951,18 @@ var NAMINSA = function () {
                         if (data[0].ELETRONICO_IND == "S" && data[0].COMPLETO === "N" && data[0].RETORNO_IND === "I" && data[0].TIPO_DCTO === '0009' && data[0].TMOV_CODE === '0002') {
                             $('#txtSerieDctoRegistro').prop('disabled', true);
                             $('#txtNroDctoRegistro').prop('disabled', true);
+                            if ($('#txtSerieDctoRegistro').is(':disabled')) { //textbox is disabled }
+                                $('#divElec').removeClass('hidden');
+                                $('#chkElectronico').prop('checked', true);
+                                $('#chkElectronico').parent().addClass('checked');
+                                $("#divNuestraGuia").attr("style", "display:inline");
+                                $('#chkNuestraGuia').prop('checked', true);
+                                $('#chkNuestraGuia').parent().addClass('checked');
+                            }
+                        } else if (data[0].ELETRONICO_IND == "N" && data[0].COMPLETO === "N" && data[0].RETORNO_IND === "I" && data[0].TIPO_DCTO === '0009' && data[0].TMOV_CODE === '0002') {
+                            $("#divNuestraGuia").attr("style", "display:inline");
                         }
+
 
                         $('#txtDireccionTransportista').select2('val', data[0].DIRECCION_TRANSPORTISTA).change();
                         $("#txtchofer").val(data[0].CHOFER);
@@ -6479,7 +6489,7 @@ var listarDetallesCompletado = function () {
     }).done(function (datos) {
         if (datos !== "No se encontraron datos!!!") {
 
-            if ($("#rbSalida").is(':checked') || $("#rbTSalida").is(':checked')) {
+            if ($("#rbSalida").is(':checked') || $("#rbTSalida").is(':checked') || ($("#rbEntrada").is(':checked') && $("#cboOperacion").val() == '0002' && $("#txtSerieDctoRegistro").val().substring(0,2) == 'TE')) {
                 if ($("#cboRegistro").val() == "0009") {
                     json_datos_imp = datos;
                     $('#btnImprimirGuia').css('display', 'inline');
@@ -7295,7 +7305,7 @@ var CompletarDcto = function () {
                                     $("#tabDatosGenerales").click();
                                     generarImpresion();
                                     $('#btnMail, #btnImprimir').removeClass('hidden');
-                                    if ($("#rbSalida").is(':checked')) {
+                                    if ($("#rbSalida").is(':checked') || ($("#rbEntrada").is(':checked') && $("#cboOperacion").val() == '0002' && $("#txtSerieDctoRegistro").val().substring(0, 2) == 'TE')) {
                                         if ($("#cboRegistro").val() == "0009") {
                                             //json_datos_imp = datos;
                                             $('#btnImprimirGuia').css('display', 'inline');

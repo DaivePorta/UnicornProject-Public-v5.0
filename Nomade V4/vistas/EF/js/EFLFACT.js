@@ -305,7 +305,7 @@
                 beforeSend: function () { Bloquear("contenedor"); },
                 success: function (datos) {
                     if (isEmpty(datos)) {
-                        alertCustom("Error al Enviar Documento Eletrónico");
+                        alertCustom("Error al Enviar Documento Electrónico");
                         return;
                     }
                     let iIndice = datos.indexOf("[Advertencia]");
@@ -617,7 +617,7 @@
                 beforeSend: function () { Bloquear("divConfirmacion") },
                 success: function (datos) {
                     if (isEmpty(datos)) {
-                        alertCustom("Error al Enviar Documento Eletrónico");
+                        alertCustom("Error al Enviar Documento Electrónico");
                         return;
                     }
                     let iIndice = datos.indexOf("[Advertencia]");

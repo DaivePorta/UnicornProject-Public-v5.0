@@ -1414,13 +1414,13 @@ function pagar() {
                 switch ($("#cboMedioPago").val()) {
                     case "0003": //transferencia
 
-                        det_desc = depositos_Masivos?"*PAGO DETRACCIONES LOTE ":"*DETRACCION PROVEEDOR";
+                        det_desc = "*TRANSFERENCIA/PAGO DETRACCION PROVEEDOR";
 
                         break;
 
                     case "0001": // DEPOSITO
 
-                        det_desc = "*P/DEPOSITO DETRACCIONES";
+                        det_desc = "*DEPOSITO/PAGO DETRACCION PROVEEDOR";
 
                         break;
 
@@ -1437,7 +1437,7 @@ function pagar() {
 
             }
 
-            var descripcion = ind_tipo == "C" ? "PAGO DETRACCIONES" : det_desc;
+            var descripcion = ind_tipo == "C" ? "*EFECTIVO/PAGO DETRACCION" : det_desc;
 
             /*
             if (depositos_Masivos) {

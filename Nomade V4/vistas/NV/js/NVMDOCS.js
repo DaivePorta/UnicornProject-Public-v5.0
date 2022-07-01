@@ -768,40 +768,40 @@ var NVMDOCS = function () {
                 $("#lblExonerado").html("");
             }
 
-            if ($("#cbo_Sucursal").val() != "") {
-                if ($("#cbo_Sucursal option:selected").attr("data-exonerado") == "SI") {
-                    $("#hfIMPUESTO").val("0");
-                    if (ObtenerQueryString("codigo") == undefined) {
-                        infoCustom2("Se considerará IGV: " + $('#hfIMPUESTO').val() + "%");
-                    }
-                } else {
-                    //OBTENER IMPUESTO GENERAL A LAS VENTAS
-                    $.ajax({
-                        type: "post",
-                        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=0021",
-                        contenttype: "application/json;",
-                        datatype: "json",
-                        async: false,
-                        success: function (datos) {
-                            if (datos != null) {
-                                if (!isNaN(parseFloat(datos[0].VALOR))) {
-                                    $('#hfIMPUESTO').val(parseFloat(datos[0].VALOR) * 100);
-                                    if (ObtenerQueryString("codigo") == undefined) {
-                                        infoCustom2("Se considerará IGV: " + $('#hfIMPUESTO').val() + "%");
-                                    }
-                                } else {
-                                    infoCustom2("El parámetro de Impuesto(0021) no es válido. Se considerará IGV 18%")
-                                    $('#hfIMPUESTO').val("18");
-                                }
-                            }
-                            else { alertCustom("No se recuperó el Impuesto General a la Ventas correctamente!"); }
-                        },
-                        error: function (msg) {
-                            alertCustom("No se recuperó el Impuesto General a la Ventas correctamente!");
-                        }
-                    });
-                }
-            }
+            //if ($("#cbo_Sucursal").val() != "") {
+            //    if ($("#cbo_Sucursal option:selected").attr("data-exonerado") == "SI") {
+            //        $("#hfIMPUESTO").val("0");
+            //        if (ObtenerQueryString("codigo") == undefined) {
+            //            infoCustom2("Se considerará IGV: " + $('#hfIMPUESTO').val() + "%");
+            //        }
+            //    } else {
+            //        //OBTENER IMPUESTO GENERAL A LAS VENTAS
+            //        $.ajax({
+            //            type: "post",
+            //            url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=0021",
+            //            contenttype: "application/json;",
+            //            datatype: "json",
+            //            async: false,
+            //            success: function (datos) {
+            //                if (datos != null) {
+            //                    if (!isNaN(parseFloat(datos[0].VALOR))) {
+            //                        $('#hfIMPUESTO').val(parseFloat(datos[0].VALOR) * 100);
+            //                        if (ObtenerQueryString("codigo") == undefined) {
+            //                            infoCustom2("Se considerará IGV: " + $('#hfIMPUESTO').val() + "%");
+            //                        }
+            //                    } else {
+            //                        infoCustom2("El parámetro de Impuesto(0021) no es válido. Se considerará IGV 18%")
+            //                        $('#hfIMPUESTO').val("18");
+            //                    }
+            //                }
+            //                else { alertCustom("No se recuperó el Impuesto General a la Ventas correctamente!"); }
+            //            },
+            //            error: function (msg) {
+            //                alertCustom("No se recuperó el Impuesto General a la Ventas correctamente!");
+            //            }
+            //        });
+            //    }
+            //}
         });
 
         $('#btn_act_direccion').on('click', function () {
@@ -3940,7 +3940,7 @@ function sortTable() {//ORDENA LA TABLA ASCENDENTEMENTE POR EL ITEM (DPORTA)
 }
 
 function cargarParametrosSistema() {
-    let filtro = "DIGP,REDN,DETR,RETN,RETR,IMRE,BFDV,ADET,ACON,CURS,MIGO"; //Aquí van los parámetros que se van a utilizar en la pantalla y luego se le hace su case
+    let filtro = "DIGP,REDN,DETR,RETN,RETR,IMRE,BFDV,ADET,ACON,CURS,MIGO,0021"; //Aquí van los parámetros que se van a utilizar en la pantalla y luego se le hace su case
     //Se hizo así para que en una sola consulta traiga los datos necesarios y no esté solicitando uno por uno
     //TODOS LOS PARAMETROS -- DPORTA 11/03/2022    
     $.ajax({
@@ -3953,9 +3953,17 @@ function cargarParametrosSistema() {
             if (datos != null) {
                 for (var i = 0; i < datos.length; i++) {
                     switch (datos[i].CODIGO) {
-                        //case "DIGC":
-                        //    prmtDIGC = datos[i].VALOR;
-                        //    break;
+                        case "0021":
+                            if (!isNaN(parseFloat(datos[i].VALOR))) {
+                                $('#hfIMPUESTO').val(parseFloat(datos[i].VALOR) * 100);
+                                if (ObtenerQueryString("codigo") == undefined) {
+                                    infoCustom2("Se considerará IGV: " + $('#hfIMPUESTO').val() + "%");
+                                }
+                            } else {
+                                infoCustom2("El parámetro de Impuesto(0021) no es válido. Se considerará IGV 18%")
+                                $('#hfIMPUESTO').val("18");
+                            }
+                            break;
                         case "DIGP":
                             prmtDIGP = datos[i].VALOR;
                             break;

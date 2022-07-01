@@ -13,26 +13,24 @@ namespace Nomade.Efact.Conexion
 	{		
 		public string sRutaSubida = @"/In";
 
-		private string username = "20487686019";
-		private ConnectionInfo conexion;
-		private List<AuthenticationMethod> listMetodos = new List<AuthenticationMethod>();
-
-		//private static PrivateKeyFile keyFile = new PrivateKeyFile(ConfigurationSettings.AppSettings["PathKeyEfact"].ToString() + "finalkey.ppk");
-		//private PrivateKeyFile[] keyFiles = new[] { keyFile };
+		private readonly string Username = ConfigurationManager.AppSettings["UserEfact"];
+		private readonly string Host = ConfigurationManager.AppSettings["HostEfact"];
+		private readonly ConnectionInfo ConexionSFTP;
+		private readonly List<AuthenticationMethod> ListMetodos = new List<AuthenticationMethod>();
 		
-		private PrivateKeyFile[] keyFiles = new[] { new PrivateKeyFile(ConfigurationManager.AppSettings["PathKeyEfact"].ToString() + "finalkey.ppk") };
+		private readonly PrivateKeyFile[] KeyFiles = new[] { new PrivateKeyFile(ConfigurationManager.AppSettings["PathKeyEfact"].ToString() + "finalkey.ppk") };
 
 		public Conexion(){
 			//this.listMetodos.Add(new PasswordAuthenticationMethod(this.username, "2d0798d0f41acc49"));  TESTING
-			this.listMetodos.Add(new PasswordAuthenticationMethod(this.username, "edec1be07ee8428b"));
+			//this.listMetodos.Add(new PasswordAuthenticationMethod(this.Username, "edec1be07ee8428b"));
 			
-			this.listMetodos.Add(new PrivateKeyAuthenticationMethod(this.username, this.keyFiles));
+			this.ListMetodos.Add(new PrivateKeyAuthenticationMethod(this.Username, this.KeyFiles));
 			//this.conexion = new ConnectionInfo("dev-gw.efact.pe", 22, this.username, this.listMetodos.ToArray());
-			this.conexion = new ConnectionInfo("prd-gw3.efact.pe", 22, this.username, this.listMetodos.ToArray());
+			this.ConexionSFTP = new ConnectionInfo(this.Host, 22, this.Username, this.ListMetodos.ToArray());
 			
 		}
 
-		public string fnDescargaArchivo(string sRutaArchivo) {
+		public string FnDescargaArchivo(string sRutaArchivo) {
 			try
 			{
 				var sDescargado = "";
@@ -42,7 +40,7 @@ namespace Nomade.Efact.Conexion
 				if (!File.Exists(localPath + sNombreArchivo + ".pdf")) // si no esta descargado aun en el servidor
 				{
 
-					using (var client = new SftpClient(conexion))
+					using (var client = new SftpClient(ConexionSFTP))
 					{
 						client.Connect();
 						var files = client.ListDirectory(@"/Out");
@@ -78,11 +76,11 @@ namespace Nomade.Efact.Conexion
 			}
 		}
 
-		public string fnSubirArchivo(string sRutaArchivo)
+		public string FnSubirArchivo(string sRutaArchivo)
 		{
 			try
 			{
-				using (var client = new SftpClient(conexion))
+				using (var client = new SftpClient(ConexionSFTP))
 				{
 					client.Connect();
 					if (client.IsConnected)
@@ -104,11 +102,11 @@ namespace Nomade.Efact.Conexion
 			}
 		}
 
-		public void fnTestConexionFTP()
+		public void FnTestConexionFTP()
 		{
 			try
 			{
-				using (var client = new SftpClient(conexion))
+				using (var client = new SftpClient(ConexionSFTP))
 				{
 					client.Connect();
 					if (client.IsConnected)

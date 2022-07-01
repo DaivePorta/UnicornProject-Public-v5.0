@@ -401,7 +401,7 @@ namespace Nomade.Efact.LogNegocio
 					try
 					{
 						Nomade.Efact.Conexion.Conexion oConexion = new Nomade.Efact.Conexion.Conexion();
-						oConexion.fnSubirArchivo(sRutaArchivo);
+						oConexion.FnSubirArchivo(sRutaArchivo);
 						bUpLoadOk = true;
 					}
 					catch (Exception)

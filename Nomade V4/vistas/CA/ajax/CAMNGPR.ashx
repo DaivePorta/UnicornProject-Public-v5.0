@@ -9,7 +9,7 @@ Public Class CAMNGPR : Implements IHttpHandler
     Dim USUA_ID As String
 
     Dim p_CODE, p_CTLG_CODE, p_SCSL_CODE, p_SCSL_EXONERADA_IND, p_PERS_PIDM As String
-    Dim p_MOTIVO_CODE, p_MOTIVO_DESC, p_MOTIVO_ADICIONAL, p_FECHA_EMISION,
+    Dim p_MOTIVO_CODE, p_MOTIVO_DESC, p_MOTIVO_ADICIONAL, p_FECHA_EMISION, p_FECHA_TRANSACCION, p_ESTADO_IND,
         p_MONE_CODE, p_DETALLES, p_MONTO_IGV, p_SERIE, p_NUMERO, p_CODIGO_CORRELATIVO, p_TIPO_IND As String
 
     Dim p_IMPORTE_EXO, p_IMPORTE_INA, p_IMPORTE_GRA, p_IGV, p_IMPORTE_TOTAL, p_PCTJ_IGV As String
@@ -28,8 +28,9 @@ Public Class CAMNGPR : Implements IHttpHandler
     Dim ncCliente As New Nomade.NC.NCECliente("Bn")
     Dim caNotaCredito As New Nomade.CA.NotaCredito("Bn")
     Dim caNotaDebito As New Nomade.CA.CANotaDebito("Bn")
+    Dim oCPCuentaPorPagar As New Nomade.CP.CPCuentaPorPagar("Bn")
 
-    Dim dt As DataTable
+    Dim dt, dt_gasto As DataTable
     Dim res, cod, msg As String
     Dim resb As New StringBuilder
     Dim resArray As Array
@@ -45,6 +46,7 @@ Public Class CAMNGPR : Implements IHttpHandler
         p_SCSL_EXONERADA_IND = context.Request("p_SCSL_EXONERADA_IND")
         p_PERS_PIDM = context.Request("p_PERS_PIDM")
         p_FECHA_EMISION = context.Request("p_FECHA_EMISION")
+        p_FECHA_TRANSACCION = context.Request("p_FECHA_TRANSACCION")
         p_SERIE = context.Request("p_SERIE")
         p_NUMERO = context.Request("p_NUMERO")
         p_MOTIVO_CODE = context.Request("p_MOTIVO_CODE")
@@ -89,6 +91,7 @@ Public Class CAMNGPR : Implements IHttpHandler
                 Case "1" ' LISTAR DOCUMENTOS DE VENTA - DOCUMENTOS DE REFERENCIA
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = caNotaCredito.ListarDocumentosCompra("", "", "", "", "", p_CTLG_CODE, p_SCSL_CODE, p_DCTO_REF_TIPO_CODE, USUA_ID)
+                    dt_gasto = oCPCuentaPorPagar.fnListarGasto(p_CTLG_CODE, p_SCSL_CODE, If(p_CODE Is Nothing, "", p_CODE), "0000-00-00", Utilities.fechaLocal(p_FECHA_TRANSACCION), 2)
                     res = GenerarTablaDocumentos()
 
                 Case "2" 'LISTAR DOCUMENTOS
@@ -267,6 +270,39 @@ Public Class CAMNGPR : Implements IHttpHandler
                             resb.AppendFormat("</tr>")
                         End If
 
+                    End If
+                End If
+            Next
+        End If
+
+        If Not (dt_gasto Is Nothing) Then
+            For i As Integer = 0 To dt_gasto.Rows.Count - 1
+                Dim doc_ref_code As String() = New String(3) {"0001", "0002", "0003", "0014"}
+                If doc_ref_code.Contains(dt_gasto.Rows(i)("DCTO_CODE").ToString) Then
+                    If dt_gasto.Rows(i)("DCTO_CODE").ToString = p_DCTO_REF_TIPO_CODE Or p_DCTO_REF_TIPO_CODE = "" Then
+                        'VALIDA QUE LA FECHA DE EMISION DE LA NOTA DE CREDITO SEA MENOR O IGUAL AL DOCUMENTO DE ORIGEN
+                        Dim continuar As Boolean = False
+                        If p_FECHA_EMISION <> "" And dt_gasto.Rows(i)("FECHA_EMISION").ToString() <> "" Then
+                            Dim fechaConsultada As Integer = Integer.Parse(ObtenerFecha(p_FECHA_EMISION))
+                            Dim fechaEvaluar As Integer = Integer.Parse(ObtenerFecha(dt_gasto.Rows(i)("FECHA_EMISION").ToString()))
+                            If fechaConsultada >= fechaEvaluar Then
+                                continuar = True
+                            End If
+                        End If
+                        If continuar Then
+                            Dim serie_numero As String() = dt_gasto.Rows(i)("SERIE_NRO_DOC").ToString().Split(New Char() {"-"})
+                            Dim fechaEmision As String = If(dt_gasto.Rows(i)("FECHA_EMISION").ToString() = "", "", dt_gasto.Rows(i)("FECHA_EMISION").ToString().Substring(0, 10))
+                            resb.AppendFormat("<tr class='doc_fila' onclick=""setSeleccionDocumento('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}')"" id='doc_fila_{0}_{1}'>", dt_gasto.Rows(i)("CODIGO").ToString(), "", serie_numero(0), serie_numero(1), dt_gasto.Rows(i)("DCTO").ToString(), dt_gasto.Rows(i)("MONTO").ToString(), dt_gasto.Rows(i)("MONEDA").ToString(), dt_gasto.Rows(i)("MONE_SIMB").ToString(), "", fechaEmision)
+                            resb.AppendFormat("<td align='center' >{0}</td>", dt_gasto.Rows(i)("CODIGO").ToString())
+                            resb.AppendFormat("<td align='center' >{0}</td>", serie_numero(0))
+                            resb.AppendFormat("<td align='center' >{0}</td>", serie_numero(1))
+                            resb.AppendFormat("<td align='center' >{0}</td>", fechaEmision)
+                            resb.AppendFormat("<td align='center' >{0}</td>", dt_gasto.Rows(i)("DCTO").ToString())
+                            resb.AppendFormat("<td align='center' >{0}</td>", "")
+                            'MUESTRA EL SIMBOLO DE MONEDA Y EL MONTO EN EL MODAL 
+                            resb.AppendFormat("<td align='center' style='text-align:center;' >{0}</td>", dt_gasto.Rows(i)("MONE_SIMB").ToString() + " " + dt_gasto.Rows(i)("MONTO").ToString())
+                            resb.AppendFormat("</tr>")
+                        End If
                     End If
                 End If
             Next

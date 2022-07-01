@@ -12,7 +12,9 @@ namespace Nomade.Efact.LogNegocio
 {
     public class nEFFactura
     {
-        private string sPath = ConfigurationManager.AppSettings["path_efact"];
+        private readonly string In_LocalPathEfact = ConfigurationManager.AppSettings["LocalPathEfact"] + @"in\invoice\";
+        private readonly string Out_LocalPathEfact = ConfigurationManager.AppSettings["LocalPathEfact"] + @"out\invoice\";
+        private readonly string Error_LocalPathEfact = ConfigurationManager.AppSettings["LocalPathEfact"] + @"err\invoice\";
         //private string sPath_Orbitum = ConfigurationSettings.AppSettings["path_fac_orbi"];
         private string sPath_Orbitum1 = ConfigurationManager.AppSettings["path_fac_empresa1"];
         private string sPath_Orbitum2 = ConfigurationManager.AppSettings["path_fac_empresa2"];
@@ -21,11 +23,16 @@ namespace Nomade.Efact.LogNegocio
         private string sPath_Orbitum5 = ConfigurationManager.AppSettings["path_fac_empresa5"];
         private string sPath_Orbitum = "";
 
+        private readonly string sDelimitador = "FF00FF";
+
         public nEFFactura()
         {
+            if (!Directory.Exists(In_LocalPathEfact)) Directory.CreateDirectory(In_LocalPathEfact);
+            if (!Directory.Exists(Out_LocalPathEfact)) Directory.CreateDirectory(Out_LocalPathEfact);
+            if (!Directory.Exists(Error_LocalPathEfact)) Directory.CreateDirectory(Error_LocalPathEfact);
         }
 
-        public void fnGetFactura(string p_CTLG_CODE, string p_VTAC_CODE)
+        public void FnGetFactura(string p_CTLG_CODE, string p_VTAC_CODE)
         {
             try
             {
@@ -63,10 +70,9 @@ namespace Nomade.Efact.LogNegocio
                     throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento fué comunicado para baja.");
                 }
                 
-
                 string sMoneda = "";
 
-                // Inicio - Datos del Documento
+                // Inicio: FILA 1 - DATOS DEL DOCUMENTO
                 DataTable oDT_DatosDoc = ocEFFactura.fnListarDatosDocumento(p_CTLG_CODE, p_VTAC_CODE);
 
                 if (oDT_DatosDoc == null)
@@ -77,14 +83,13 @@ namespace Nomade.Efact.LogNegocio
                 DataRow oDR_DatosDoc = oDT_DatosDoc.NewRow();
                 oDR_DatosDoc = oDT_DatosDoc.Rows[0];
 
-
                 string s1A = oDR_DatosDoc["1A"].ToString(); // Fecha de Emisión
                 string s1B = oDR_DatosDoc["1B"].ToString(); // Serie y Nro del Documento
                 string s1C = oDR_DatosDoc["1C"].ToString(); // Código Sunat del Tipo de Documento
                 string s1D = oDR_DatosDoc["1D"].ToString(); // Tipo de Moneda (PEN, USD)
                 sMoneda = (s1D.Equals("PEN") ? "SOLES" : "DOLARES");
-                string s1E = oDR_DatosDoc["1E"].ToString(); // Monto Total IGV
-                string s1F = oDR_DatosDoc["1F"].ToString(); // Monto Total IGV
+                string s1E = oDR_DatosDoc["1E"].ToString(); // Sumatoria monto base IGV o IVAP
+                string s1F = oDR_DatosDoc["1F"].ToString(); // Total IGV o IVAP
                 string s1G = oDR_DatosDoc["1G"].ToString(); // Tipo de Moneda (PEN, USD)
 
                 string s1H = ""; // Monto Total ISC
@@ -95,14 +100,15 @@ namespace Nomade.Efact.LogNegocio
                 string s1M = ""; // Tipo de Moneda (PEN, USD)
 
                 string s1N = oDR_DatosDoc["1N"].ToString(); // Monto Total de la Venta
-                string s1O = oDR_DatosDoc["1O"].ToString(); // Monto Total de Descuentos
+                string s1O = oDR_DatosDoc["1O"].ToString(); // Forma de pago
+                string s1P = oDR_DatosDoc["1P"].ToString(); // Monto pendiente de pago
+                string s1Q = oDR_DatosDoc["1Q"].ToString(); // Tipo de Operación Sunat
 
-                string s1P = ""; // Monto Total Otros Cargos
-                string s1Q = ""; // Tipo de Operación Sunat
-                string s1R = ""; // Tipo de Moneda (PEN, USD)
-                string s1S = ""; // Monto Total Anticipos
-                string s1T = ""; // Tipo de Documento del Anticipo
-                string s1U = ""; // Serie y Nro del Anticipo
+                string s1R = ""; // Campo gris, en blanco
+
+                string s1S = ""; // Sumatoria monto total ICBPER
+                string s1T = ""; // Sumatoria de impuestos de operaciones gratuitas
+                string s1U = ""; // Total operaciones Exportación
 
                 decimal nMontoGrav = Convert.ToDecimal(oDR_DatosDoc["1V"]);
                 string s1V = "";
@@ -111,7 +117,7 @@ namespace Nomade.Efact.LogNegocio
 
                 decimal nMontoInaf = Convert.ToDecimal(oDR_DatosDoc["1W"]);
                 string s1W = "";
-                if (nMontoGrav != 0)
+                if (nMontoInaf != 0)
                     s1W = oDR_DatosDoc["1W"].ToString(); // Monto Total Inafectas
 
                 decimal nMontoExon = Convert.ToDecimal(oDR_DatosDoc["1X"]);
@@ -124,7 +130,7 @@ namespace Nomade.Efact.LogNegocio
                 if (nMontoGrat != 0)
                     s1Y = oDR_DatosDoc["1Y"].ToString(); // Monto Total Gratuitas
 
-                string s1Z = oDR_DatosDoc["1Z"].ToString(); // Sub Total del Valor de la Venta
+                string s1Z = ""; // Campo gris, en blanco
 
                 decimal nBasePercep = Convert.ToDecimal(oDR_DatosDoc["1AA"]);
                 string s1AA = "";
@@ -137,12 +143,12 @@ namespace Nomade.Efact.LogNegocio
                 if (nBasePercep != 0)
                     s1AC = oDR_DatosDoc["1AC"].ToString(); // Monto Total Cobrado de la Percepción
 
-                decimal nMontoReten = Convert.ToDecimal(oDR_DatosDoc["1AD"]);
-                string s1AD = "";
-                if (nMontoReten != 0)
-                    s1AD = oDR_DatosDoc["1AD"].ToString(); // Monto Total de la Retención
-
                 decimal nMontoDetrac = Convert.ToDecimal(oDR_DatosDoc["1AE"]);
+
+                string s1AD = "";
+                if (nMontoDetrac != 0)
+                    s1AD = oDR_DatosDoc["1AD"].ToString(); // Código de bien o servicio de la detracción
+
                 string s1AE = "";
                 if (nMontoDetrac != 0)
                     s1AE = oDR_DatosDoc["1AE"].ToString(); // Monto Total de la Detracción                
@@ -156,18 +162,44 @@ namespace Nomade.Efact.LogNegocio
                 if (nMontoDetrac != 0)
                     s1AH = oDR_DatosDoc["1AH"].ToString(); // Monto (Total de Venta - Monto Total de la Detracción)
 
-                string s1AI = ""; // Monto Total de Bonificaciones
-                string s1AJ = ""; // Monto Total de los Descuentos
-                string s1AK = ""; // Monto FISE (Fondo de Inclusión Social Energético)
+                string s1AI = ""; // Monto base retención del IGV                
+                string s1AJ = ""; // Factor retención del IGV
+                string s1AK = ""; // Monto total retención del IGV
+                string s1AL = "1"; // Cantidad de Líneas del documento
+                string s1AM = ""; // Código del régimen de la percepción
+                string s1AN = ""; // Cantidad guías, otros documentos y pago único o cuotas relacionadas
+                string s1AO = ""; // Cantidad de anticipos asociados
+                string s1AP = ""; // Total anticipos
+                string s1AQ = ""; // Cantidad de punto de partida y llegada
+                string s1AR = ""; // Monto descuento global AB
+                string s1AS = ""; // Monto descuento global no AB
+                string s1AT = ""; // Monto anticipo gravado IGV o IVAP
+                string s1AU = ""; // Monto anticipo exonerado
+                string s1AV = ""; // Monto anticipo inafecto
+                string s1AW = ""; // Monto base FISE
+                string s1AX = ""; // Monto total FISE
+                string s1AY = ""; // Recargo al consumo y/o propinas
+                string s1AZ = ""; // Monto cargo global AB
+                string s1BA = ""; // Monto cargo global no AB
+                string s1BB = oDR_DatosDoc["1BB"].ToString(); // Monto total de impuestos
+                string s1BC = oDR_DatosDoc["1BC"].ToString(); // Total Valor de Venta
+                string s1BD = oDR_DatosDoc["1BD"].ToString(); // Total precio de venta
+                string s1BE = ""; // Total descuentos no AB
+                string s1BF = ""; // Total cargos no AB
+                string s1BG = ""; // Monto para Redondeo del Importe Total
+                string s1BH = ""; // Total descuentos AB
 
-               string sDatosDoc = s1A + "," + s1B + "," + s1C + "," + s1D + "," + s1E + "," + s1F + "," + s1G + "," +
+                string fila1_DatosDoc = s1A + "," + s1B + "," + s1C + "," + s1D + "," + s1E + "," + s1F + "," + s1G + "," +
                     s1H + "," + s1I + "," + s1J + "," + s1K + "," + s1L + "," + s1M + "," + s1N + "," + s1O + "," +
                     s1P + "," + s1Q + "," + s1R + "," + s1S + "," + s1T + "," + s1U + "," + s1V + "," + s1W + "," +
                     s1X + "," + s1Y + "," + s1Z + "," + s1AA + "," + s1AB + "," + s1AC + "," + s1AD + "," + s1AE + "," +
-                    s1AF + "," + s1AG + "," + s1AH + "," + s1AI + "," + s1AJ + "," + s1AK;
-                // Fin - Datos del Documento
+                    s1AF + "," + s1AG + "," + s1AH + "," + s1AI + "," + s1AJ + "," + s1AK + "," + s1AL + "," + s1AM + "," +
+                    s1AN + "," + s1AO + "," + s1AP + "," + s1AQ + "," + s1AR + "," + s1AS + "," + s1AT + "," + s1AU + "," +
+                    s1AV + "," + s1AW + "," + s1AX + "," + s1AY + "," + s1AZ + "," + s1BA + "," + s1BB + "," + s1BC + "," +
+                    s1BD + "," + s1BE + "," + s1BF + "," + s1BG + "," + s1BH;
+                // Fin: FILA 1 - DATOS DEL DOCUMENTO
 
-                // Inicio - Punto de Partida
+                // Inicio: FILA 2 - SUSTENTO DE TRASLADO DE MERCADERÍA (Dato exclusivo para la Factura Guía Remitente)
                 DataTable oDT_PuntoPartida = ocEFFactura.fnListarPuntoPartida(p_CTLG_CODE, p_VTAC_CODE);
                 
                 string s2A = "";
@@ -194,13 +226,25 @@ namespace Nomade.Efact.LogNegocio
                 string s2S = "";
                 string s2T = "";
                 string s2U = "";
+                string s2V = "";
+                string s2W = "";
+                string s2X = "";
+                string s2Y = "";
+                string s2Z = "";
+                string s2AA = "";
+                string s2AB = "";
+                string s2AC = "";
+                string s2AD = "";
+                string s2AE = "";
+                string s2AF = "";
+
                 if (oDT_PuntoPartida != null)
                 {
                     DataRow oDR_PtoPartida = oDT_PuntoPartida.NewRow();
                     oDR_PtoPartida = oDT_PuntoPartida.Rows[0];
 
                     s2A = oDR_PtoPartida["2A"].ToString(); // Código de Ubigeo del Punto de Partida
-                    s2A = fnCortarCadena(s2A, 100);
+                    s2A = fnCortarCadena(s2A, 6);
 
                     s2B = oDR_PtoPartida["2B"].ToString(); // Dirección Completa del Punto de Partida
                     s2B = fnCortarCadena(s2B, 100);
@@ -221,7 +265,7 @@ namespace Nomade.Efact.LogNegocio
 
 
                     s2H = oDR_PtoPartida["2H"].ToString(); // Código de Ubigeo del Punto de Llegada
-                    s2H = fnCortarCadena(s2H, 100);
+                    s2H = fnCortarCadena(s2H, 6);
 
                     s2I = oDR_PtoPartida["2I"].ToString(); // Dirección Completa del Punto de Llegada
                     s2I = fnCortarCadena(s2I, 100);
@@ -244,56 +288,71 @@ namespace Nomade.Efact.LogNegocio
                     s2O = oDR_PtoPartida["2O"].ToString(); // Placa del Vehículo
                     s2O = fnCortarCadena(s2O, 10);
 
-                    s2P = oDR_PtoPartida["2P"].ToString(); ; // Número de Autorización del Vehículo
+                    s2P = oDR_PtoPartida["2P"].ToString(); // Número de Autorización del Vehículo
                     s2P = fnCortarCadena(s2P, 100);
 
-                    s2Q = oDR_PtoPartida["2Q"].ToString(); ; // Marca del Vehículo
+                    s2Q = oDR_PtoPartida["2Q"].ToString(); // Marca del Vehículo
                     s2Q = fnCortarCadena(s2Q, 50);
 
-                    s2R = oDR_PtoPartida["2R"].ToString(); ; // Número de Licencia del Conductor
+                    s2R = oDR_PtoPartida["2R"].ToString(); // Número de Licencia del Conductor
                     s2R = fnCortarCadena(s2R, 30);
 
-                    s2S = oDR_PtoPartida["2S"].ToString(); ; // Número de RUC del Transportista
+                    s2S = oDR_PtoPartida["2S"].ToString(); // Número de RUC del Transportista
 
-                    s2T = oDR_PtoPartida["2T"].ToString(); ; // Tipo de Documento de Identidad del Transportista
+                    s2T = oDR_PtoPartida["2T"].ToString(); // Tipo de Documento de Identidad del Transportista
 
-                    s2U = oDR_PtoPartida["2U"].ToString(); ; // Razón Social del Transportista
+                    s2U = oDR_PtoPartida["2U"].ToString(); // Razón Social del Transportista
                     s2U = fnCortarCadena(s2U, 100);
 
+                    s2V = oDR_PtoPartida["2V"].ToString(); // Registro MTC del transportista
+                    s2V = fnCortarCadena(s2V, 20);
+
+                    s2W = oDR_PtoPartida["2W"].ToString(); // Código de motivo de traslado
+                    s2W = fnCortarCadena(s2W, 20);
+
+                    s2X = oDR_PtoPartida["2X"].ToString(); // Descripcion motivo de traslado
+                    s2X = fnCortarCadena(s2X, 100);
+
+                    s2Y = oDR_PtoPartida["2Y"].ToString(); // Peso bruto total
+
+                    s2Z = oDR_PtoPartida["2Z"].ToString(); // Código modalidad de transporte
+                    s2Z = fnCortarCadena(s2Z, 100);
+
+                    s2AA = oDR_PtoPartida["2AA"].ToString(); // Descripción modalidad de transporte
+                    s2AA = fnCortarCadena(s2AA, 100);
+
+                    s2AB = oDR_PtoPartida["2AB"].ToString(); // Fecha de inicio del traslado o fecha de entrega de bienes al transportista
+                    s2AB = fnCortarCadena(s2AB, 10);
+
+                    s2AC = oDR_PtoPartida["2AC"].ToString(); // Número de documento del conductor
+                    s2AC = fnCortarCadena(s2AC, 15);
+
+                    s2AD = oDR_PtoPartida["2AD"].ToString(); // Tipo de documento del conductor
+                    s2AD = fnCortarCadena(s2AD, 2);
+
+                    s2AE = oDR_PtoPartida["2AE"].ToString(); // Nombres y apellidos del conductor
+                    s2AE = fnCortarCadena(s2AE, 100);
+
+                    s2AF = oDR_PtoPartida["2AF"].ToString(); // Indicador de subcontratación
                 }
-                string sPuntoPartida = s2A + "," + s2B + "," + s2C + "," + s2D + "," + s2E + "," + s2F + "," + s2G + "," +
+                string fila2_SustentoTrasladoMercaderia = s2A + "," + s2B + "," + s2C + "," + s2D + "," + s2E + "," + s2F + "," + s2G + "," +
                     s2H + "," + s2I + "," + s2J + "," + s2K + "," + s2L + "," + s2M + "," + s2N + "," + s2O + "," +
-                    s2P + "," + s2Q + "," + s2R + "," + s2S + "," + s2T + "," + s2U;
-                // Fin - Punto de Partida
+                    s2P + "," + s2Q + "," + s2R + "," + s2S + "," + s2T + "," + s2U + "," + s2V + "," + s2W + "," + 
+                    s2X + "," + s2Y + "," + s2Z + "," + s2AA + "," + s2AB + "," + s2AC + "," + s2AD + "," + s2AE + "," + s2AF;
+                // Fin: FILA 2 - SUSTENTO DE TRASLADO DE MERCADERÍA (Dato exclusivo para la Factura Guía Remitente)
 
-                // Inicio - Guía de Remisión
-                DataTable oDT_GuiaRemision = ocEFFactura.fnListarGuiaRemision(p_CTLG_CODE, p_VTAC_CODE);
-
+                // Inicio: FILA 3 - INFORMACIÓN ANTICIPOS ASOCIADOS
                 string s3A = "";
                 string s3B = "";
                 string s3C = "";
                 string s3D = "";
                 string s3E = "";
-                if (oDT_GuiaRemision != null)
-                {
-                    DataRow oDR_GuiaRemision = oDT_GuiaRemision.NewRow();
-                    oDR_GuiaRemision = oDT_GuiaRemision.Rows[0];
+                string s3F = "";
+                string fila3_InformacionAnticipos = s3A + "," + s3B + "," + s3C + "," + s3D + "," + s3E + "," + s3F;
+                // Fin: FILA 3 - INFORMACIÓN ANTICIPOS ASOCIADOS
 
-                    s3A = oDR_GuiaRemision["3A"].ToString(); // Número de la Guía de Remisión
-
-                    s3B = oDR_GuiaRemision["3B"].ToString(); // Código Sunat del Tipo Documento (Guía de Remisión)
-
-                    s3C = oDR_GuiaRemision["3C"].ToString(); // Número de Documento de Referencia
-
-                    s3D = oDR_GuiaRemision["3D"].ToString(); // Código del Tipo de Operación
-
-                    s3E = oDR_GuiaRemision["3E"].ToString(); // Documento Adjunto
-                }
-                string sGuiaRemision = s3A + "," + s3B + "," + s3C + "," + s3D + "," + s3E;
-                // Fin - Guía de Remisión
-
-                // Inicio - Datos de la Empresa
-                DataTable oDT_DatosEmpresa = ocEFFactura.fnListarDatosEmpresa(p_CTLG_CODE);
+                // Inicio: FILA 4 - INFORMACION GUIAS, OTROS DOCUMENTOS Y PAGO ÚNICO O CUOTAS RELACIONADOS
+                DataTable oDT_GuiaRemision = ocEFFactura.fnListarGuiaRemision(p_CTLG_CODE, p_VTAC_CODE);
 
                 string s4A = "";
                 string s4B = "";
@@ -302,49 +361,33 @@ namespace Nomade.Efact.LogNegocio
                 string s4E = "";
                 string s4F = "";
                 string s4G = "";
-
                 string s4H = "";
-                string s4I = "";
-                string s4J = "";
-                string s4K = "";
-                string s4L = "";
-                if (oDT_DatosEmpresa != null)
+                if (oDT_GuiaRemision != null)
                 {
-                    DataRow oDR_DatosEmpresa = oDT_DatosEmpresa.NewRow();
-                    oDR_DatosEmpresa = oDT_DatosEmpresa.Rows[0];
+                    DataRow oDR_GuiaRemision = oDT_GuiaRemision.NewRow();
+                    oDR_GuiaRemision = oDT_GuiaRemision.Rows[0];
 
-                    s4A = oDR_DatosEmpresa["4A"].ToString(); // Razón Social de la Empresa
-                    s4A = fnCortarCadena(s4A, 100);
+                    s4A = oDR_GuiaRemision["4A"].ToString(); // Número de la Guía de Remisión
 
-                    s4B = oDR_DatosEmpresa["4B"].ToString(); // Nombre Comercial de la Empresa
-                    s4B = fnCortarCadena(s4B, 100);
+                    s4B = oDR_GuiaRemision["4B"].ToString(); // Código Sunat del Tipo Documento (Guía de Remisión)
 
-                    s4C = oDR_DatosEmpresa["4C"].ToString(); // Nro de RUC de la Empresa
+                    s4C = oDR_GuiaRemision["4C"].ToString(); // Número de Documento de Referencia
 
-                    s4D = oDR_DatosEmpresa["4D"].ToString(); // Código Ubigeo de la Empresa
+                    s4D = oDR_GuiaRemision["4D"].ToString(); // Código del Tipo otro documento
 
-                    s4E = oDR_DatosEmpresa["4E"].ToString(); // Dirección de la Empresa
+                    s4E = oDR_GuiaRemision["4E"].ToString(); // Identificador de las cuotas
 
-                    s4F = oDR_DatosEmpresa["4F"].ToString(); // Urbanización de la Empresa
+                    s4F = oDR_GuiaRemision["4F"].ToString(); // Monto del pago único o cuotas
 
-                    s4G = oDR_DatosEmpresa["4G"].ToString(); // Departamento de la Empresa
+                    s4G = oDR_GuiaRemision["4G"].ToString(); // Fecha del pago único o cuotas
 
-                    s4H = oDR_DatosEmpresa["4H"].ToString(); // Provincia de la Empresa
-
-                    s4I = oDR_DatosEmpresa["4I"].ToString(); // Distrito de la Empresa
-
-                    s4J = oDR_DatosEmpresa["4J"].ToString(); // Código País de la Empresa
-
-                    s4K = oDR_DatosEmpresa["4K"].ToString(); // Usuario SOL de la Empresa
-
-                    s4L = oDR_DatosEmpresa["4L"].ToString(); // Clave SOL de la Empresa
+                    s4H = oDR_GuiaRemision["4H"].ToString(); // ATTACH_DOC
                 }
-                string sDatosEmpresa = s4A + "," + s4B + "," + s4C + "," + s4D + "," + s4E + "," + s4F + "," + s4G + "," + 
-                    s4H + "," + s4I + "," + s4J + "," + s4K + "," + s4L;
-                // Fin - Datos de la Empresa
+                string fila4_InformacionGuias = s4A + "," + s4B + "," + s4C + "," + s4D + "," + s4E + "," + s4F + "," + s4G + "," + s4H;
+                // Fin: FILA 4 - INFORMACION GUIAS, OTROS DOCUMENTOS Y PAGO ÚNICO O CUOTAS RELACIONADOS
 
-                // Inicio - Datos del Cliente
-                DataTable oDT_DatosCliente = ocEFFactura.fnListarDatosCliente(p_CTLG_CODE, p_VTAC_CODE);
+                // Inicio: FILA 5 - INFORMACIÓN DEL EMISOR
+                DataTable oDT_DatosEmpresa = ocEFFactura.fnListarDatosEmpresa(p_CTLG_CODE);
 
                 string s5A = "";
                 string s5B = "";
@@ -353,54 +396,47 @@ namespace Nomade.Efact.LogNegocio
                 string s5E = "";
                 string s5F = "";
                 string s5G = "";
-
                 string s5H = "";
                 string s5I = "";
                 string s5J = "";
                 string s5K = "";
-                string s5L = "";
-                if (oDT_DatosCliente != null)
+                if (oDT_DatosEmpresa != null)
                 {
-                    DataRow oDR_DatosCliente = oDT_DatosCliente.NewRow();
-                    oDR_DatosCliente = oDT_DatosCliente.Rows[0];
+                    DataRow oDR_DatosEmpresa = oDT_DatosEmpresa.NewRow();
+                    oDR_DatosEmpresa = oDT_DatosEmpresa.Rows[0];
 
-                    s5A = oDR_DatosCliente["5A"].ToString(); // Nro de RUC del Cliente
-                    s5A = fnCortarCadena(s5A, 15);
+                    s5A = oDR_DatosEmpresa["5A"].ToString(); // Razón Social de la Empresa
+                    s5A = fnCortarCadena(s5A, 1500);
 
-                    s5B = oDR_DatosCliente["5B"].ToString(); // Tipo Documento del Cliente
+                    s5B = oDR_DatosEmpresa["5B"].ToString(); // Nombre Comercial de la Empresa
+                    s5B = fnCortarCadena(s5B, 1500);
 
-                    s5C = oDR_DatosCliente["5C"].ToString(); // Razón Social del Cliente
+                    s5C = oDR_DatosEmpresa["5C"].ToString(); // Nro de RUC de la Empresa
 
-                    s5D = oDR_DatosCliente["5D"].ToString(); // Nombre Comercial del Cliente
+                    s5D = oDR_DatosEmpresa["5D"].ToString(); // Código Ubigeo de la Empresa
 
-                    s5E = oDR_DatosCliente["5E"].ToString(); // Código Ubigeo del Cliente
+                    s5E = oDR_DatosEmpresa["5E"].ToString(); // Dirección de la Empresa
 
-                    s5F = oDR_DatosCliente["5F"].ToString(); // Dirección del Cliente
+                    s5F = oDR_DatosEmpresa["5F"].ToString(); // Urbanización de la Empresa
 
-                    s5G = ""; // Urbanización del Cliente
+                    s5G = oDR_DatosEmpresa["5G"].ToString(); // Departamento de la Empresa
 
-                    s5H = oDR_DatosCliente["5H"].ToString(); // Departamento del Cliente
+                    s5H = oDR_DatosEmpresa["5H"].ToString(); // Provincia de la Empresa
 
-                    s5I = oDR_DatosCliente["5I"].ToString(); // Provincia del Cliente
+                    s5I = oDR_DatosEmpresa["5I"].ToString(); // Distrito de la Empresa
 
-                    s5J = oDR_DatosCliente["5J"].ToString(); // Distrito del Cliente
+                    s5J = oDR_DatosEmpresa["5J"].ToString(); // Código País de la Empresa
 
-                    s5K = oDR_DatosCliente["5K"].ToString(); // País del Cliente
-
-                    s5L = oDR_DatosCliente["5L"].ToString(); // Correo del Cliente
+                    s5K = oDR_DatosEmpresa["5K"].ToString(); // El código del establecimiento del emisor según SUNAT
                 }
-                string sDatosCliente = s5A + "," + s5B + "," + s5C + "," + s5D + "," + s5E + "," + s5F + "," + s5G + "," +
-                    s5H + "," + s5I + "," + s5J + "," + s5K + "," + s5L;
-                // Fin - Datos del Cliente
+                string fila5_InformacionEmisor = s5A + "," + s5B + "," + s5C + "," + s5D + "," + s5E + "," + s5F + "," + s5G + "," + 
+                    s5H + "," + s5I + "," + s5J + "," + s5K;
+                // Fin: FILA 5 - INFORMACIÓN DEL EMISOR
 
-                // Inicio - Leyenda Sunat
-                Numalet oNumalet = new Numalet(false, "00/100", "con", true);
-                decimal nTotalVenta = Convert.ToDecimal(s1N);
-                string sNumalet = oNumalet.ToCustomCardinal(nTotalVenta) + " " + sMoneda;
-                sNumalet = sNumalet.ToUpper();
+                // Inicio: FILA 6 - INFORMACIÓN DEL RECEPTOR
+                DataTable oDT_DatosCliente = ocEFFactura.fnListarDatosCliente(p_CTLG_CODE, p_VTAC_CODE);
 
-                string s6A = sNumalet; // Monto en Letras
-                s6A = fnCortarCadena(s6A, 100);
+                string s6A = "";
                 string s6B = "";
                 string s6C = "";
                 string s6D = "";
@@ -413,96 +449,70 @@ namespace Nomade.Efact.LogNegocio
                 string s6J = "";
                 string s6K = "";
                 string s6L = "";
-                string s6M = "";
+                if (oDT_DatosCliente != null)
+                {
+                    DataRow oDR_DatosCliente = oDT_DatosCliente.NewRow();
+                    oDR_DatosCliente = oDT_DatosCliente.Rows[0];
 
-                string s6N = "";
-                string s6O = "";
+                    s6A = oDR_DatosCliente["6A"].ToString(); // Nro de RUC del Cliente
+                    s6A = fnCortarCadena(s6A, 15);
 
-                string s6P = "";
-                string s6Q = "";
-                string s6R = "";
-                string s6S = "";
-                string s6T = "";
-                string s6U = "";
+                    s6B = oDR_DatosCliente["6B"].ToString(); // Tipo Documento del Cliente
 
-                string s6V = "";
-                string s6W = "";
-                string s6X = "";
-                string s6Y = "";
-                string s6Z = "";
+                    s6C = oDR_DatosCliente["6C"].ToString(); // Razón Social del Cliente
+                    s6C = fnCortarCadena(s6C, 1500);
 
-                string s6AA = "";
-                string s6AB = "";
-                string s6AC = "";
-                string s6AD = "";
-                string s6AE = "";
-                string s6AF = "";
-                string s6AG = "";
-                string s6AH = "";
-                string s6AI = "";
-                string s6AJ = "";
-                string s6AK = "";
+                    s6D = oDR_DatosCliente["6D"].ToString(); // Nombre Comercial del Cliente
+                    s6D = fnCortarCadena(s6D, 1500);
 
-                string sLeyendaSunat = s6A + "," + s6B + "," + s6C + "," + s6D + "," + s6E + "," + s6F + "," + s6G + "," +
-                     s6H + "," + s6I + "," + s6J + "," + s6K + "," + s6L + "," + s6M + "," + s6N + "," + s6O + "," +
-                     s6P + "," + s6Q + "," + s6R + "," + s6S + "," + s6T + "," + s6U + "," + s6V + "," + s6W + "," +
-                     s6X + "," + s6Y + "," + s6Z + "," + s6AA + "," + s6AB + "," + s6AC + "," + s6AD + "," + s6AE + "," +
-                     s6AF + "," + s6AG + "," + s6AH + "," + s6AI + "," + s6AJ + "," + s6AK;
-                // Fin - Leyenda Sunat
+                    s6E = oDR_DatosCliente["6E"].ToString(); // Código Ubigeo del Cliente
 
-                // Inicio - Información Adicional
-                string s7A = "";
+                    s6F = oDR_DatosCliente["6F"].ToString(); // Dirección del Cliente
+
+                    s6G = ""; // Urbanización del Cliente
+
+                    s6H = oDR_DatosCliente["6H"].ToString(); // Departamento del Cliente
+
+                    s6I = oDR_DatosCliente["6I"].ToString(); // Provincia del Cliente
+
+                    s6J = oDR_DatosCliente["6J"].ToString(); // Distrito del Cliente
+
+                    s6K = oDR_DatosCliente["6K"].ToString(); // País del Cliente
+
+                    s6L = oDR_DatosCliente["6L"].ToString(); // Correo del Cliente
+                }
+                string fila6_InformacionReceptor = s6A + "," + s6B + "," + s6C + "," + s6D + "," + s6E + "," + s6F + "," + s6G + "," +
+                    s6H + "," + s6I + "," + s6J + "," + s6K + "," + s6L;
+                // Fin: FILA 6 - INFORMACIÓN DEL RECEPTOR
+
+                // Inicio - FILA 7 - LEYENDAS
+                Numalet oNumalet = new Numalet(false, "00/100", "con", true);
+                decimal nTotalVenta = Convert.ToDecimal(s1N);
+                string sNumalet = oNumalet.ToCustomCardinal(nTotalVenta) + " " + sMoneda;
+                sNumalet = sNumalet.ToUpper();
+
+                string s7A = sNumalet; // Monto en Letras
+                s7A = fnCortarCadena(s7A, 100);
                 string s7B = "";
                 string s7C = "";
                 string s7D = "";
                 string s7E = "";
                 string s7F = "";
                 string s7G = "";
-
                 string s7H = "";
                 string s7I = "";
+                if (nMontoDetrac != 0)
+                    s7I = "Operación sujeta a detracción";
                 string s7J = "";
                 string s7K = "";
                 string s7L = "";
                 string s7M = "";
 
-                string s7N = "";
-                string s7O = "";
+                string fila7_Leyendas = s7A + "," + s7B + "," + s7C + "," + s7D + "," + s7E + "," + s7F + "," + s7G + "," +
+                     s7H + "," + s7I + "," + s7J + "," + s7K + "," + s7L + "," + s7M;
+                // Fin - FILA 7 - LEYENDAS
 
-                string s7P = "";
-                string s7Q = "";
-                string s7R = "";
-                string s7S = "";
-                string s7T = "";
-                string s7U = "";
-
-                string s7V = "";
-                string s7W = "";
-                string s7X = "";
-                string s7Y = "";
-                string s7Z = "";
-
-                string s7AA = "";
-                string s7AB = "";
-                string s7AC = "";
-                string s7AD = "";
-
-                string sInfAdicional = s7A + "," + s7B + "," + s7C + "," + s7D + "," + s7E + "," + s7F + "," + s7G + "," +
-                     s7H + "," + s7I + "," + s7J + "," + s7K + "," + s7L + "," + s7M + "," + s7N + "," + s7O + "," +
-                     s7P + "," + s7Q + "," + s7R + "," + s7S + "," + s7T + "," + s7U + "," + s7V + "," + s7W + "," +
-                     s7X + "," + s7Y + "," + s7Z + "," + s7AA + "," + s7AB + "," + s7AC + "," + s7AD;
-                // Fin - Información Adicional
-
-                // Inicio - Datos del Producto
-                DataTable oDT_DatosProd = ocEFFactura.fnListarDatosProducto(p_CTLG_CODE, p_VTAC_CODE);
-
-                if (oDT_DatosProd == null)
-                {
-                    throw new ArgumentException("[Advertencia]: No se encontró el detalle de Productos del Documento");
-                }
-
-                bool bIndicador = false;
-
+                // Inicio - FILA 8 - ADICIONALES GLOBALES
                 string s8A = "";
                 string s8B = "";
                 string s8C = "";
@@ -533,6 +543,7 @@ namespace Nomade.Efact.LogNegocio
                 string s8X = "";
                 string s8Y = "";
                 string s8Z = "";
+
                 string s8AA = "";
                 string s8AB = "";
                 string s8AC = "";
@@ -540,83 +551,462 @@ namespace Nomade.Efact.LogNegocio
                 string s8AE = "";
                 string s8AF = "";
                 string s8AG = "";
+                string s8AH = "";
+                string s8AI = "";
+                string s8AJ = "";
+                string s8AK = "";
+                string s8AL = "";
+                string s8AM = "";
+                string s8AN = "";
+                string s8AO = "";
+                string s8AP = "";
+                string s8AQ = "";
+                string s8AR = "";
+                string s8AS = "";
+                string s8AT = "";
+                string s8AU = "";
+                string s8AV = "";
+                string s8AW = "";
+                string s8AX = "";
+                string s8AY = "";
+                string s8AZ = "";
 
-                string sProductoDet = "";
+                string s8BA = "";
+                string s8BB = "";
+                string s8BC = "";
+                string s8BD = "";
+                string s8BE = "";
+                string s8BF = "";
+                string s8BG = "";
+                string s8BH = "";
+                string s8BI = "";
+                string s8BJ = "";
+                string s8BK = "";
+                string s8BL = "";
+                string s8BM = "";
+                string s8BN = "";
+                string s8BO = "";
+                string s8BP = "";
+                string s8BQ = "";
+                string s8BR = "";
+                string s8BS = "";
+                string s8BT = "";
+                string s8BU = "";
+                string s8BV = "";
+                string s8BW = "";
+                string s8BX = "";
+                string s8BY = "";
+                string s8BZ = "";
+
+                string s8CA = "";
+                string s8CB = "";
+                string s8CC = "";
+                string s8CD = "";
+                string s8CE = "";
+                string s8CF = "";
+                string s8CG = "";
+                string s8CH = "";
+                string s8CI = "";
+
+                string fila8_AdicionalesGlobales = s8A + "," + s8B + "," + s8C + "," + s8D + "," + s8E + "," + s8F + "," + s8G + "," + s8H + "," + 
+                    s8I + "," + s8J + "," + s8K + "," + s8L + "," + s8M + "," + s8N + "," + s8O + "," + s8P + "," + s8Q + "," + 
+                    s8R + "," + s8S + "," + s8T + "," + s8U + "," + s8V + "," + s8W + "," +s8X + "," + s8Y + "," + s8Z + ","  + 
+
+                    s8AA + "," + s8AB + "," + s8AC + "," + s8AD + "," + s8AE + "," + s8AF + "," + s8AG + "," + s8AH + "," +
+                    s8AI + "," + s8AJ + "," + s8AK + "," + s8AL + "," + s8AM + "," + s8AN + "," + s8AO + "," + s8AP + "," + s8AQ + "," +
+                    s8AR + "," + s8AS + "," + s8AT + "," + s8AU + "," + s8AV + "," + s8AW + "," + s8AX + "," + s8AY + "," + s8AZ + "," +
+
+                    s8BA + "," + s8BB + "," + s8BC + "," + s8BD + "," + s8BE + "," + s8BF + "," + s8BG + "," + s8BH + "," +
+                    s8BI + "," + s8BJ + "," + s8BK + "," + s8BL + "," + s8BM + "," + s8BN + "," + s8BO + "," + s8BP + "," + s8BQ + "," +
+                    s8BR + "," + s8BS + "," + s8BT + "," + s8BU + "," + s8BV + "," + s8BW + "," + s8BX + "," + s8BY + "," + s8BZ + "," +
+
+                    s8CA + "," + s8CB + "," + s8CC + "," + s8CD + "," + s8CE + "," + s8CF + "," + s8CG + "," + s8CH + "," + s8CI;
+                // Fin - FILA 8 - ADICIONALES GLOBALES
+
+                // Inicio: FILA 9 - DATOS DE LA LÍNEA
+                DataTable oDT_DatosProd = ocEFFactura.fnListarDatosProducto(p_CTLG_CODE, p_VTAC_CODE);
+
+                if (oDT_DatosProd == null)
+                {
+                    throw new ArgumentException("[Advertencia]: No se encontró el detalle de Productos del Documento");
+                }
+
+                bool bIndicador = false;
+
+                string s9A = "";
+                string s9B = "";
+                string s9C = "";
+                string s9D = "";
+                string s9E = "";
+                string s9F = "";
+                string s9G = "";
+                string s9H = "";
+                string s9I = "";
+                string s9J = "";
+                string s9K = "";
+                string s9L = "";
+                string s9M = "";
+                string s9N = "";
+                string s9O = "";
+                string s9P = "";
+                string s9Q = "";
+                string s9R = "";
+                string s9S = "";
+                string s9T = "";
+                string s9U = "";
+                string s9V = "";
+                string s9W = "";
+                string s9X = "";
+                string s9Y = "";
+                string s9Z = "";
+
+                string s9AA = "";
+                string s9AB = "";
+                string s9AC = "";
+                string s9AD = "";
+                string s9AE = "";
+                string s9AF = "";
+                string s9AG = "";
+                string s9AH = "";
+                string s9AI = "";
+                string s9AJ = "";
+                string s9AK = "";
+                string s9AL = "";
+                string s9AM = "";
+                string s9AN = "";
+                string s9AO = "";
+                string s9AP = "";
+                string s9AQ = "";
+                string s9AR = "";
+                string s9AS = "";
+                string s9AT = "";
+                string s9AU = "";
+                string s9AV = "";
+                string s9AW = "";
+                string s9AX = "";
+                string s9AY = "";
+                string s9AZ = "";
+
+                string s9BA = "";
+                string s9BB = "";
+                string s9BC = "";
+                string s9BD = "";
+                string s9BE = "";
+                string s9BF = "";
+                string s9BG = "";
+                string s9BH = "";
+                string s9BI = "";
+                string s9BJ = "";
+                string s9BK = "";
+                string s9BL = "";
+                string s9BM = "";
+                string s9BN = "";
+                string s9BO = "";
+                string s9BP = "";
+                string s9BQ = "";
+                string s9BR = "";
+                string s9BS = "";
+                string s9BT = "";
+                string s9BU = "";
+                string s9BV = "";
+                string s9BW = "";
+                string s9BX = "";
+                string s9BY = "";
+                string s9BZ = "";
+
+                string s9CA = "";
+                string s9CB = "";
+                string s9CC = "";
+                string s9CD = "";
+                string s9CE = "";
+                string s9CF = "";
+                string s9CG = "";
+                string s9CH = "";
+                string s9CI = "";
+                string s9CJ = "";
+                string s9CK = "";
+                string s9CL = "";
+                string s9CM = "";
+                string s9CN = "";
+                string s9CO = "";
+                string s9CP = "";
+                string s9CQ = "";
+                string s9CR = "";
+                string s9CS = "";
+                string s9CT = "";
+                string s9CU = "";
+                string s9CV = "";
+                string s9CW = "";
+                string s9CX = "";
+                string s9CY = "";
+                string s9CZ = "";
+
+                string s9DA = "";
+                string s9DB = "";
+                string s9DC = "";
+                string s9DD = "";
+                string s9DE = "";
+                string s9DF = "";
+                string s9DG = "";
+                string s9DH = "";
+                string s9DI = "";
+                string s9DJ = "";
+                string s9DK = "";
+                string s9DL = "";
+                string s9DM = "";
+                string s9DN = "";
+                string s9DO = "";
+                string s9DP = "";
+                string s9DQ = "";
+                string s9DR = "";
+                string s9DS = "";
+                string s9DT = "";
+                string s9DU = "";
+                string s9DV = "";
+                string s9DW = "";
+                string s9DX = "";
+                string s9DY = "";
+                string s9DZ = "";
+
+                string s9EA = "";
+                string s9EB = "";
+                string s9EC = "";
+                string s9ED = "";
+                string s9EE = "";
+                string s9EF = "";
+                string s9EG = "";
+                string s9EH = "";
+                string s9EI = "";
+                string s9EJ = "";
+                string s9EK = "";
+                string s9EL = "";
+                string s9EM = "";
+                string s9EN = "";
+                string s9EO = "";
+                string s9EP = "";
+                string s9EQ = "";
+                string s9ER = "";
+                string s9ES = "";
+                string s9ET = "";
+                string s9EU = "";
+                string s9EV = "";
+                string s9EW = "";
+
+                string fila9_DatosLinea = "";
                 foreach(DataRow oDR in oDT_DatosProd.Rows)
                 {
-                    if (bIndicador)
-                        sProductoDet += ((char)10);
+                    if (bIndicador) fila9_DatosLinea += ((char)10);
 
-                    s8A = oDR["8A"].ToString(); // Número de Item
+                    s9A = oDR["9A"].ToString(); // Número de orden
+                    s9B = oDR["9B"].ToString(); // Código de unidad de medida
+                    s9B = fnCortarCadena(s9B, 3);
+                    s9C = oDR["9C"].ToString(); // Cantidad de unidades
+                    s9D = oDR["9D"].ToString(); // Descripción del Producto
+                    s9D = fnCortarCadena(s9D, 500);
+                    s9E = oDR["9E"].ToString(); // Precio de Venta del Item
+                    s9F = oDR["9F"].ToString(); // Código Precio de Venta del Item
+                    s9G = oDR["9G"].ToString(); // Precio de Venta del Item (Referencial)
+                    s9H = oDR["9H"].ToString(); // Código Precio de Venta del Item (Referencial)
+                    s9I = oDR["9I"].ToString(); // Monto Total IGV del Item
+                    s9J = oDR["9J"].ToString(); // Monto Total IGV del Item
+                    s9K = oDR["9K"].ToString(); // Tipo de Afectación del IGV
+                    s9L = oDR["9L"].ToString(); // Tipo de Tributo
+                    s9M = oDR["9M"].ToString(); // Porcentaje del IGV
+                    s9N = oDR["9N"].ToString(); // Monto base ISC
+                    s9O = oDR["9O"].ToString(); // Monto total ISC
+                    s9P = oDR["9P"].ToString(); // Código de tipos de sistema de cálculo ISC
+                    s9Q = oDR["9Q"].ToString(); // Código tributo ISC
+                    s9R = oDR["9R"].ToString(); // Código de Producto SUNAT
+                    s9S = oDR["9S"].ToString(); // Código Interno del Producto
+                    s9S = fnCortarCadena(s9S, 30);
+                    s9T = oDR["9T"].ToString(); // Costo de una unidad sin IGV
+                    s9U = oDR["9U"].ToString(); // Valor Venta del Item
+                    s9V = oDR["9V"].ToString(); // Monto base Otros tributos
+                    s9W = oDR["9W"].ToString(); // Porcentaje Otros tributos
+                    s9X = oDR["9X"].ToString(); // Monto total Otros tributos
+                    s9Y = oDR["9Y"].ToString(); // Monto base descuento AB
+                    s9Z = oDR["9Z"].ToString(); // Factor descuento AB
 
-                    s8B = oDR["8B"].ToString(); // Descripción de la Unidad
-                    s8B = fnCortarCadena(s8B, 100);
+                    s9AA = oDR["9AA"].ToString(); // Monto total descuento AB
+                    s9AB = oDR["9AB"].ToString(); // Monto base descuento no AB
+                    s9AC = oDR["9AC"].ToString(); // Factor descuento no AB
+                    s9AD = oDR["9AD"].ToString(); // Monto total descuento no AB
+                    s9AE = oDR["9AE"].ToString(); // Monto base del cargo AB
+                    s9AF = oDR["9AF"].ToString(); // Factor del cargo AB
+                    s9AG = oDR["9AG"].ToString(); // Monto total del cargo AB
+                    s9AH = oDR["9AH"].ToString(); // Monto base del cargo no AB
+                    s9AI = oDR["9AI"].ToString(); // Factor del cargo no AB
+                    s9AJ = oDR["9AJ"].ToString(); // Monto total del cargo no AB
+                    s9AK = oDR["9AK"].ToString(); // Monto total impuestos
+                    s9AL = oDR["9AL"].ToString(); // Total de la Línea
+                    s9AM = oDR["9AM"].ToString(); // Número de placa del vehículo
+                    s9AN = oDR["9AN"].ToString(); // Cantidad Und Emp
+                    s9AO = oDR["9AO"].ToString(); // Cantidad total und
+                    s9AP = oDR["9AP"].ToString(); // Descuento %
+                    s9AQ = oDR["9AQ"].ToString(); // Descuento importe
+                    s9AR = oDR["9AR"].ToString(); // Descuento 1
+                    s9AS = oDR["9AS"].ToString(); // Descuento 2
+                    s9AT = oDR["9AT"].ToString(); // Descuento 3
+                    s9AU = oDR["9AU"].ToString(); // Código cliente
+                    s9AV = oDR["9AV"].ToString(); // Lote
+                    s9AW = oDR["9AW"].ToString(); // Peso total
+                    s9AX = oDR["9AX"].ToString(); // Numero guia
+                    s9AY = oDR["9AY"].ToString(); // Campo adicional
+                    s9AZ = oDR["9AZ"].ToString(); // Código país de residencia del sujeto no domiciliado
 
-                    s8C = oDR["8C"].ToString(); // Cantidad de Producto del Item
+                    s9BA = oDR["9BA"].ToString(); // Fecha ingreso al país
+                    s9BB = oDR["9BB"].ToString(); // Fecha ingreso al establecimiento
+                    s9BC = oDR["9BC"].ToString(); // Fecha salida del establecimiento
+                    s9BD = oDR["9BD"].ToString(); // Número de días de permanencia
+                    s9BE = oDR["9BE"].ToString(); // Fecha de consumo
+                    s9BF = oDR["9BF"].ToString(); // Código país de emisión del pasaporte
+                    s9BG = oDR["9BG"].ToString(); // Apellidos y nombres o razón social del huésped
+                    s9BH = oDR["9BH"].ToString(); // Tipo de documento del huésped
+                    s9BI = oDR["9BI"].ToString(); // Número documento del huésped
+                    s9BJ = oDR["9BJ"].ToString(); // N° de expediente: Ventas sector público
+                    s9BK = oDR["9BK"].ToString(); // Código unidad ejecutora: Ventas sector público
+                    s9BL = oDR["9BL"].ToString(); // N° de contrato: Ventas sector público
+                    s9BM = oDR["9BM"].ToString(); // N° de proceso de selección: Ventas sector público
+                    s9BN = oDR["9BN"].ToString(); // N° de contrato: Ventas sector público
+                    s9BO = oDR["9BO"].ToString(); // Fecha de otorgamiento del crédito
+                    s9BP = oDR["9BP"].ToString(); // Código del tipo de préstamo
+                    s9BQ = oDR["9BQ"].ToString(); // Número de la partida registral
+                    s9BR = oDR["9BR"].ToString(); // Código de indicador de primera vivienda
+                    s9BS = oDR["9BS"].ToString(); // Predio: Código de ubigeo
+                    s9BT = oDR["9BT"].ToString(); // Predio: Dirección completa y detallada
+                    s9BU = oDR["9BU"].ToString(); // Predio: Urbanización
+                    s9BV = oDR["9BV"].ToString(); // Predio: Provincia
+                    s9BW = oDR["9BW"].ToString(); // Predio: Distrito
+                    s9BX = oDR["9BX"].ToString(); // Predio: Departamento
+                    s9BY = oDR["9BY"].ToString(); // Origen código ubigeo
+                    s9BZ = oDR["9BZ"].ToString(); // Origen dirección
 
-                    s8D = oDR["8D"].ToString(); // Descripción del Producto
-                    s8D = fnCortarCadena(s8D, 250);
+                    s9CA = oDR["9CA"].ToString(); // Destino código ubigeo
+                    s9CB = oDR["9CB"].ToString(); // Destino dirección
+                    s9CC = oDR["9CC"].ToString(); // Pasajero: Apellidos y nombres
+                    s9CD = oDR["9CD"].ToString(); // Pasajero: Numero documentos identidad
+                    s9CE = oDR["9CE"].ToString(); // Pasajero: Tipo documento identidad
+                    s9CF = oDR["9CF"].ToString(); // Origen código ubigeo
+                    s9CG = oDR["9CG"].ToString(); // Origen dirección
+                    s9CH = oDR["9CH"].ToString(); // Destino código ubigeo
+                    s9CI = oDR["9CI"].ToString(); // Destino dirección
+                    s9CJ = oDR["9CJ"].ToString(); // Servicio de transporte: Número de asiento
+                    s9CK = oDR["9CK"].ToString(); // Servicio de transporte: Fecha programada de inicio de viaje
+                    s9CL = oDR["9CL"].ToString(); // Servicio de transporte: Hora programada de inicio de viaje
+                    s9CM = oDR["9CM"].ToString(); // Decreto supremo de aprobación del contrato
+                    s9CN = oDR["9CN"].ToString(); // Área de contrato - Lote
+                    s9CO = oDR["9CO"].ToString(); // Periodo de pago Fecha de inicio
+                    s9CP = oDR["9CP"].ToString(); // Periodo de pago Fecha de fin
+                    s9CQ = oDR["9CQ"].ToString(); // Partida arancelaria
+                    s9CR = oDR["9CR"].ToString(); // Número de placa
+                    s9CS = oDR["9CS"].ToString(); // Categoría
+                    s9CT = oDR["9CT"].ToString(); // Marca
+                    s9CU = oDR["9CU"].ToString(); // Modelo
+                    s9CV = oDR["9CV"].ToString(); // Color
+                    s9CW = oDR["9CW"].ToString(); // Motor
+                    s9CX = oDR["9CX"].ToString(); // Combustible
+                    s9CY = oDR["9CY"].ToString(); // Form. Rodante
+                    s9CZ = oDR["9CZ"].ToString(); // VIN
 
-                    s8E = oDR["8E"].ToString(); // Precio de Venta del Item
+                    s9DA = oDR["9DA"].ToString(); // Serie / Chasis
+                    s9DB = oDR["9DB"].ToString(); // Año de fabricación
+                    s9DC = oDR["9DC"].ToString(); // Año modelo
+                    s9DD = oDR["9DD"].ToString(); // Versión
+                    s9DE = oDR["9DE"].ToString(); // Ejes
+                    s9DF = oDR["9DF"].ToString(); // Asientos
+                    s9DG = oDR["9DG"].ToString(); // Pasajeros
+                    s9DH = oDR["9DH"].ToString(); // Ruedas
+                    s9DI = oDR["9DI"].ToString(); // Carrocería
+                    s9DJ = oDR["9DJ"].ToString(); // Potencia
+                    s9DK = oDR["9DK"].ToString(); // Cilindros
+                    s9DL = oDR["9DL"].ToString(); // Cilindrada
+                    s9DM = oDR["9DM"].ToString(); // Peso bruto
+                    s9DN = oDR["9DN"].ToString(); // Peso Neto
+                    s9DO = oDR["9DO"].ToString(); // Carga útil
+                    s9DP = oDR["9DP"].ToString(); // Longitud
+                    s9DQ = oDR["9DQ"].ToString(); // Altura
+                    s9DR = oDR["9DR"].ToString(); // Ancho
+                    s9DS = oDR["9DS"].ToString(); // Número de asiento
+                    s9DT = oDR["9DT"].ToString(); // Información del manifiesto de pasajeros
+                    s9DU = oDR["9DU"].ToString(); // Número de documento del pasajero
+                    s9DV = oDR["9DV"].ToString(); // Tipo de documento del pasajero
+                    s9DW = oDR["9DW"].ToString(); // Nombres y apellidos del pasajero
+                    s9DX = oDR["9DX"].ToString(); // Código de ubigeo origen del pasajero
+                    s9DY = oDR["9DY"].ToString(); // Dirección de origen del pasajero
+                    s9DZ = oDR["9DZ"].ToString(); // Código de ubigeo destino del pasajero
 
-                    s8F = oDR["8F"].ToString(); // Código Precio de Venta del Item
+                    s9EA = oDR["9EA"].ToString(); // Dirección del destino del pasajero
+                    s9EB = oDR["9EB"].ToString(); // Fecha inicio programado
+                    s9EC = oDR["9EC"].ToString(); // Hora de inicio programado
+                    s9ED = oDR["9ED"].ToString(); // Detracción: Matrícula de la embarcación pesquera
+                    s9EE = oDR["9EE"].ToString(); // Detracción: Nombre de la embarcación pesquera
+                    s9EF = oDR["9EF"].ToString(); // Detracción: Descripción del tipo de la especie vendida
+                    s9EG = oDR["9EG"].ToString(); // Detracción: Lugar de descarga
+                    s9EH = oDR["9EH"].ToString(); // Detracción: Cantidad de la especie vendida
+                    s9EI = oDR["9EI"].ToString(); // Detracción: Fecha de descarga
+                    s9EJ = oDR["9EJ"].ToString(); // Detracción: Código ubigeo origen
+                    s9EK = oDR["9EK"].ToString(); // Detracción: Dirección de origen
+                    s9EL = oDR["9EL"].ToString(); // Detracción: Código ubigeo destino
+                    s9EM = oDR["9EM"].ToString(); // Detracción: Dirección de destino
+                    s9EN = oDR["9EN"].ToString(); // Detracción: Detalle del viaje
+                    s9EO = oDR["9EO"].ToString(); // Detracción: Valor referencia del servicio de transporte
+                    s9EP = oDR["9EP"].ToString(); // Detracción: Valor referencial sobre la carga afectiva
+                    s9EQ = oDR["9EQ"].ToString(); // Detracción: Valor referencial sobre la carga útil nominal
+                    s9ER = oDR["9ER"].ToString(); // Código de producto GS1
+                    s9ES = oDR["9ES"].ToString(); // Tipo de estructura GTIN del código de producto GS1
+                    s9ET = oDR["9ET"].ToString(); // Porcentaje del ISC
+                    s9EU = oDR["9EU"].ToString(); // Cantidad de bolsas plastico
+                    s9EV = oDR["9EV"].ToString(); // Monto unitario de la bolsa de plástico
+                    s9EW = oDR["9EW"].ToString(); // Monto total ICBPER
 
-                    s8G = ""; // Precio de Venta del Item (Referencial)
-                    s8H = ""; // Código Precio de Venta del Item (Referencial)
+                    fila9_DatosLinea += s9A + "," + s9B + "," + s9C + "," + s9D + "," + s9E + "," + s9F + "," + s9G + "," + s9H + "," + 
+                        s9I + "," + s9J + "," + s9K + "," + s9L + "," + s9M + "," + s9N + "," + s9O + "," + s9P + "," + s9Q + "," + 
+                        s9R + "," + s9S + "," + s9T + "," + s9U + "," + s9V + "," + s9W + "," + s9X + "," + s9Y + "," + s9Z + "," +
 
-                    s8I = oDR["8I"].ToString(); // Monto Total IGV del Item
-                    s8J = oDR["8J"].ToString(); // Monto Total IGV del Item
-                    s8K = oDR["8K"].ToString(); // Tipo de Afectación del IGV
-                    s8L = oDR["8L"].ToString(); // Tipo de Tributo
-                    s8M = oDR["8M"].ToString(); // Porcentaje del IGV
+                        s9AA + "," + s9AB + "," + s9AC + "," + s9AD + "," + s9AE + "," + s9AF + "," + s9AG + "," + s9AH + "," +
+                        s9AI + "," + s9AJ + "," + s9AK + "," + s9AL + "," + s9AM + "," + s9AN + "," + s9AO + "," + s9AP + "," + s9AQ + "," +
+                        s9AR + "," + s9AS + "," + s9AT + "," + s9AU + "," + s9AV + "," + s9AW + "," + s9AX + "," + s9AY + "," + s9AZ + "," +
 
-                    s8N = ""; // oDR["8N"].ToString(); // Monto Total del ISC
-                    s8O = ""; // oDR["8O"].ToString(); // Monto Total del ISC
-                    s8P = ""; // oDR["8P"].ToString(); // Tipo de Cálculo del ISC
-                    s8Q = ""; // oDR["8Q"].ToString(); // Tipo Tributo ISC
-                    s8R = ""; // oDR["8R"].ToString(); // Precio Sugerido ISC
-                    s8S = oDR["8S"].ToString(); // Código Interno del Producto
-                    s8S = fnCortarCadena(s8S, 30);
-                    s8T = oDR["8T"].ToString(); // Costo de una unidad sin IGV
-                    s8U = oDR["8U"].ToString(); // Valor Venta del Item
+                        s9BA + "," + s9BB + "," + s9BC + "," + s9BD + "," + s9BE + "," + s9BF + "," + s9BG + "," + s9BH + "," +
+                        s9BI + "," + s9BJ + "," + s9BK + "," + s9BL + "," + s9BM + "," + s9BN + "," + s9BO + "," + s9BP + "," + s9BQ + "," +
+                        s9BR + "," + s9BS + "," + s9BT + "," + s9BU + "," + s9BV + "," + s9BW + "," + s9BX + "," + s9BY + "," + s9BZ + "," +
 
-                    decimal nDescuento = Convert.ToDecimal(oDR["8V"]);
-                    s8V = (nDescuento == 0 ? "" : nDescuento.ToString()); // Descuento del Item
-                    s8W = oDR["8W"].ToString(); // Monto Total Item
+                        s9CA + "," + s9CB + "," + s9CC + "," + s9CD + "," + s9CE + "," + s9CF + "," + s9CG + "," + s9CH + "," +
+                        s9CI + "," + s9CJ + "," + s9CK + "," + s9CL + "," + s9CM + "," + s9CN + "," + s9CO + "," + s9CP + "," + s9CQ + "," +
+                        s9CR + "," + s9CS + "," + s9CT + "," + s9CU + "," + s9CV + "," + s9CW + "," + s9CX + "," + s9CY + "," + s9CZ + "," +
 
-                    s8X = oDR["8X"].ToString(); // Valor Adicional
-                    s8Y = oDR["8Y"].ToString(); // Valor Adicional
-                    s8Z = oDR["8Z"].ToString(); // Valor Adicional
-                    s8AA = oDR["8AA"].ToString(); // Valor Adicional
-                    s8AB = oDR["8AB"].ToString(); // Valor Adicional
-                    s8AC = oDR["8AC"].ToString(); // Valor Adicional
-                    s8AD = oDR["8AD"].ToString(); // Valor Adicional
-                    s8AE = oDR["8AE"].ToString(); // Valor Adicional
-                    s8AF = oDR["8AF"].ToString(); // Valor Adicional
-                    s8AG = oDR["8AG"].ToString(); // Valor Adicional
+                        s9DA + "," + s9DB + "," + s9DC + "," + s9DD + "," + s9DE + "," + s9DF + "," + s9DG + "," + s9DH + "," +
+                        s9DI + "," + s9DJ + "," + s9DK + "," + s9DL + "," + s9DM + "," + s9DN + "," + s9DO + "," + s9DP + "," + s9DQ + "," +
+                        s9DR + "," + s9DS + "," + s9DT + "," + s9DU + "," + s9DV + "," + s9DW + "," + s9DX + "," + s9DY + "," + s9DZ + "," +
 
-                    sProductoDet += s8A + "," + s8B + "," + s8C + "," + s8D + "," + s8E + "," + s8F + "," + s8G + "," +
-                         s8H + "," + s8I + "," + s8J + "," + s8K + "," + s8L + "," + s8M + "," + s8N + "," + s8O + "," +
-                         s8P + "," + s8Q + "," + s8R + "," + s8S + "," + s8T + "," + s8U + "," + s8V + "," + s8W + "," +
-                         s8X + "," + s8Y + "," + s8Z + "," + s8AA + "," + s8AB + "," + s8AC + "," + s8AD + "," + s8AE + "," +
-                         s8AF + "," + s8AG;
+                        s9EA + "," + s9EB + "," + s9EC + "," + s9ED + "," + s9EE + "," + s9EF + "," + s9EG + "," + s9EH + "," +
+                        s9EI + "," + s9EJ + "," + s9EK + "," + s9EL + "," + s9EM + "," + s9EN + "," + s9EO + "," + s9EP + "," + s9EQ + "," +
+                        s9ER + "," + s9ES + "," + s9ET + "," + s9EU + "," + s9EV + "," + s9EW;
 
                     bIndicador = true;
                 }
-                // Fin - Datos del Producto
-                
-                string sNombreArchivo = sPath + @"in\invoice\" + "01" +s1B + ".csv";
+                // Fin: FILA 9 - DATOS DE LA LÍNEA
+
+                //string sNombreArchivo = directory + s4C + "-" + "01" + "-" + s1B + ".csv";
+                string sNombreArchivo = In_LocalPathEfact + FnGetNombreArchivo(p_CTLG_CODE, "01", s1B, "csv");
+
                 // verificar si existe archivo
                 if (File.Exists(sNombreArchivo))
                 {
                     File.Delete(sNombreArchivo);
                 }
 
-                string sDelimitador = "FF00FF";
-
-                string sInfoDoc = sDatosDoc + ((char)10) + sPuntoPartida + ((char)10) + sGuiaRemision + ((char)10) + sDatosEmpresa +
-                    ((char)10) + sDatosCliente + ((char)10) + sLeyendaSunat + ((char)10) + sInfAdicional + ((char)10) + sProductoDet + 
-                    ((char)10) + sDelimitador;
+                string sInfoDoc = 
+                    fila1_DatosDoc + ((char)10) + 
+                    fila2_SustentoTrasladoMercaderia + ((char)10) + 
+                    fila3_InformacionAnticipos + ((char)10) + 
+                    fila4_InformacionGuias + ((char)10) + 
+                    fila5_InformacionEmisor + ((char)10) + 
+                    fila6_InformacionReceptor + ((char)10) + 
+                    fila7_Leyendas + ((char)10) + 
+                    fila8_AdicionalesGlobales + ((char)10) + 
+                    fila9_DatosLinea + ((char)10) + 
+                    sDelimitador;
 
 
                 // Crear el archivo
@@ -634,6 +1024,21 @@ namespace Nomade.Efact.LogNegocio
             {
                 throw(ex);
             }
+        }
+
+        private string FnGetNombreArchivo(string p_CTLG_CODE, string p_Tipo_Doc, string p_Serie_Y_Numero, string p_Extension_Sin_Punto)
+        {
+            cEFFactura ocEFFactura = new cEFFactura("Bn");
+            DataTable oDT_DatosEmpresa = ocEFFactura.fnListarDatosEmpresa(p_CTLG_CODE);
+            string rucEmpresa = "";
+            if(oDT_DatosEmpresa != null)
+            {
+                DataRow oDR_DatosEmpresa = oDT_DatosEmpresa.NewRow();
+                oDR_DatosEmpresa = oDT_DatosEmpresa.Rows[0];
+                rucEmpresa = oDR_DatosEmpresa["5C"].ToString(); // Nro de RUC de la Empresa   
+            }
+
+            return rucEmpresa + "-" + p_Tipo_Doc + "-" + p_Serie_Y_Numero + "." + p_Extension_Sin_Punto;
         }
 
 
@@ -1410,9 +1815,10 @@ namespace Nomade.Efact.LogNegocio
                 DataRow oDR_DatosDoc = oDT_Doc.NewRow();
                 oDR_DatosDoc = oDT_Doc.Rows[0];
                 string sSerieNroDoc = oDR_DatosDoc["NroSerieDoc"].ToString(); // Serie y Nro del Documento
-               
 
-                string sNombreArchivo = sPath + @"out\invoice\" + "01" + sSerieNroDoc + ".xml";
+                //string sNombreArchivo = directory + "01" + sSerieNroDoc + ".xml";
+                string sNombreArchivo = Out_LocalPathEfact + FnGetNombreArchivo(p_CTLG_CODE, "01", sSerieNroDoc, "xml");
+
                 if (File.Exists(sNombreArchivo))
 				{
 					string sRutaArchivo = sNombreArchivo;
@@ -1421,7 +1827,7 @@ namespace Nomade.Efact.LogNegocio
 					try
 					{
 						Nomade.Efact.Conexion.Conexion oConexion = new Nomade.Efact.Conexion.Conexion();
-						oConexion.fnSubirArchivo(sRutaArchivo);
+						oConexion.FnSubirArchivo(sRutaArchivo);
 						bUpLoadOk = true;
 					}
 					catch (Exception)
@@ -1440,14 +1846,18 @@ namespace Nomade.Efact.LogNegocio
 				}
                 else
                 {
-                    sNombreArchivo = sPath + @"in\invoice\" + "01" + sSerieNroDoc + ".csv";
+
+                    sNombreArchivo = In_LocalPathEfact + FnGetNombreArchivo(p_CTLG_CODE, "01", sSerieNroDoc, "csv");
+                    //sNombreArchivo = directory + "01" + sSerieNroDoc + ".csv";
+
                     if (File.Exists(sNombreArchivo))
                     {
                         sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "P");
                     }
                     else
                     {
-                        sNombreArchivo = sPath + @"err\invoice\" + "01" + sSerieNroDoc + ".csv";
+                        sNombreArchivo = Error_LocalPathEfact + FnGetNombreArchivo(p_CTLG_CODE, "01", sSerieNroDoc, "csv");
+                        //sNombreArchivo = LocalPathEfact + @"err\invoice\" + "01" + sSerieNroDoc + ".csv";
                         if (File.Exists(sNombreArchivo))
                         {
                             sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "X");

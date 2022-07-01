@@ -666,7 +666,7 @@ var NPMEMCO = function () {
         });
 
         $('#cbo_Empresa').on('change', function () {
-            fillCboEmpleado("A");
+            fillCboEmpleado(""); //Cuando pasa de NPLEMCO a NPMEMCO debe permitir ambos estados "A" e "I" para que pueda cargar todos los contratos, incluso los concluidos
         });
 
         $('#cboEmpresaAlerta').on('change', function () {
@@ -776,6 +776,12 @@ var NPMEMCO = function () {
                 $('#hfBIO').val('')
                 $('#DatosEmp').slideUp();
                 LimpiaDatosEmp();
+                if ($('#chkReingreso').is(':checked')) {
+                    fillCboEmpleado("I");
+                }
+                else {
+                    fillCboEmpleado("A");
+                } //Para que la lista se restaure a su estado por defecto.
             }
         });
 

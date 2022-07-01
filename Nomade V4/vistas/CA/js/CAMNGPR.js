@@ -21,7 +21,12 @@ var tipoCambioInterno = 1;
 var bCargaIgv = false;
 var bCargaTC = false;
 //------
+
 function fillTblDocumentos() {
+    var CODE = ObtenerQueryString("codigo");
+    if (CODE == undefined) {
+        CODE = "";
+    }
     Bloquear("ventana")
     $.ajax({
         type: "post",
@@ -31,6 +36,8 @@ function fillTblDocumentos() {
             "&USUA_ID=" + $("#hfPIDM").val() +
             "&p_DCTO_REF_TIPO_CODE=" + $("#cboTipoDocumento").val() +
             "&p_FECHA_EMISION=" + $("#txtFechaEmision").val() +
+            "&p_CODE=" + CODE +
+            "&p_FECHA_TRANSACCION=" + $("#txtFechaTransaccion").val() +
             "&p_MONE_CODE=" + $("#cboMoneda").val(),
         async: true,
         success: function (datos) {

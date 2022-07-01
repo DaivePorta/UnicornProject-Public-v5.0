@@ -393,40 +393,40 @@ var NVMDOVS = function () {
                     $("#lblExonerado").html("");
                 }
 
-                if ($("#cbo_Sucursal").val() != "") {
-                    if ($("#cbo_Sucursal option:selected").attr("data-exonerado") == "SI") {
-                        $("#hfIMPUESTO").val("0");
-                        if (ObtenerQueryString("codigo") == undefined) {
-                            infoCustom2("Se considerará IGV: " + $('#hfIMPUESTO').val() + "%");
-                        }
-                    } else {
-                        //OBTENER IMPUESTO GENERAL A LAS VENTAS
-                        $.ajax({
-                            type: "post",
-                            url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=0021",
-                            contenttype: "application/json;",
-                            datatype: "json",
-                            async: false,
-                            success: function (datos) {
-                                if (datos != null) {
-                                    if (!isNaN(parseFloat(datos[0].VALOR))) {
-                                        $('#hfIMPUESTO').val(parseFloat(datos[0].VALOR) * 100);
-                                        if (ObtenerQueryString("codigo") == undefined) {
-                                            infoCustom2("Se considerará IGV: " + $('#hfIMPUESTO').val() + "%");
-                                        }
-                                    } else {
-                                        infoCustom2("El parámetro de Impuesto(0021) no es válido. Se considerará IGV 18%")
-                                        $('#hfIMPUESTO').val("18");
-                                    }
-                                }
-                                else { alertCustom("No se recuperó el Impuesto General a la Ventas correctamente!"); }
-                            },
-                            error: function (msg) {
-                                alertCustom("No se recuperó el Impuesto General a la Ventas correctamente!");
-                            }
-                        });
-                    }
-                }
+                //if ($("#cbo_Sucursal").val() != "") {
+                //    if ($("#cbo_Sucursal option:selected").attr("data-exonerado") == "SI") {
+                //        $("#hfIMPUESTO").val("0");
+                //        if (ObtenerQueryString("codigo") == undefined) {
+                //            infoCustom2("Se considerará IGV: " + $('#hfIMPUESTO').val() + "%");
+                //        }
+                //    } else {
+                //        //OBTENER IMPUESTO GENERAL A LAS VENTAS
+                //        $.ajax({
+                //            type: "post",
+                //            url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=0021",
+                //            contenttype: "application/json;",
+                //            datatype: "json",
+                //            async: false,
+                //            success: function (datos) {
+                //                if (datos != null) {
+                //                    if (!isNaN(parseFloat(datos[0].VALOR))) {
+                //                        $('#hfIMPUESTO').val(parseFloat(datos[0].VALOR) * 100);
+                //                        if (ObtenerQueryString("codigo") == undefined) {
+                //                            infoCustom2("Se considerará IGV: " + $('#hfIMPUESTO').val() + "%");
+                //                        }
+                //                    } else {
+                //                        infoCustom2("El parámetro de Impuesto(0021) no es válido. Se considerará IGV 18%")
+                //                        $('#hfIMPUESTO').val("18");
+                //                    }
+                //                }
+                //                else { alertCustom("No se recuperó el Impuesto General a la Ventas correctamente!"); }
+                //            },
+                //            error: function (msg) {
+                //                alertCustom("No se recuperó el Impuesto General a la Ventas correctamente!");
+                //            }
+                //        });
+                //    }
+                //}
             }
         });
 
@@ -868,6 +868,11 @@ var NVMDOVS = function () {
             if ($("#p_DatCobro2 .portlet-title i").hasClass("icon-chevron-down")) {
                 $("#p_DatCobro2 .portlet-title i").removeClass("icon-chevron-down");
                 $("#p_DatCobro2 .portlet-title i").addClass("icon-chevron-up");
+                //24/06/2022
+                //$('#cbo_OrigenPago2').select2("val", "Caja").change();
+                //if ($("#cbo_Det_Origen2 option").length > 0) {
+                //    $("#cbo_Det_Origen2").select2("val", $($("#cbo_Det_Origen2 option")[1]).val()).change();
+                //}
                 //adicional 21/02
                 if ($("#cboMedioPago2 option").length > 0) {
                     $("#cboMedioPago2").select2("val", "");
@@ -894,6 +899,12 @@ var NVMDOVS = function () {
             if ($("#p_DatCobro3 .portlet-title i").hasClass("icon-chevron-down")) {
                 $("#p_DatCobro3 .portlet-title i").removeClass("icon-chevron-down");
                 $("#p_DatCobro3 .portlet-title i").addClass("icon-chevron-up");
+                //24/06/2022
+                $('#cbo_OrigenPago3').select2("val", "Caja").change();
+                if ($("#cbo_Det_Origen3 option").length > 0) {
+                    //var cbo = $("#cbo_Det_Origen3 option");
+                    $("#cbo_Det_Origen3").select2("val", $($("#cbo_Det_Origen3 option")[1]).val()).change();
+                }
                 //adicional 21/02
                 if ($("#cboMedioPago3 option").length > 0) {
                     $("#cboMedioPago3").select2("val", "");
@@ -970,6 +981,14 @@ var NVMDOVS = function () {
             $('#txtAsunto').val($('#txt_comentario').val());
             cargarCorreos();
             $('#divMail').modal('show');
+        });
+
+        //WHATSAPP
+        $('#btnWhatsapp').click(function (e) {
+            $('#txtcontenidoWhatsapp').attr('disabled', false);
+            $('#txtcontenidoWhatsapp').val("");
+            cargarTelefonos();
+            $('#divWhatsapp').modal('show');
         });
 
         $("#btnHabido").on("click", function () {
@@ -1423,6 +1442,7 @@ var NVMDOVS = function () {
                         $("#btnImprimir").html("<i class='icon-print'></i> Imprimir Doc.");
                         $(".btnImprimir").show();
                         $('#btnMail').removeClass('hidden');
+                        $('#btnWhatsapp').removeClass('hidden');
 
                         $("#lblCopia").css("display", "inline-block");
                         $("#divBtnsMantenimiento").attr("style", "display:none");
@@ -2236,7 +2256,7 @@ function ValidarTotales3() {//21/02
 }
 
 function cargarParametrosSistema() {
-    let filtro = "DIGP,REDN,DETR,RETN,RETR,IMRE,BFDV,ODON,ADET,ACON,CURS,MIGO"; //Aquí van los parámetros que se van a utilizar en la pantalla y luego se le hace su case
+    let filtro = "DIGP,REDN,DETR,RETN,RETR,IMRE,BFDV,ODON,ADET,ACON,CURS,MIGO,0021"; //Aquí van los parámetros que se van a utilizar en la pantalla y luego se le hace su case
     //Se hizo así para que en una sola consulta traiga los datos necesarios y no esté solicitando uno por uno
     //TODOS LOS PARAMETROS -- DPORTA 11/03/2022
     $.ajax({
@@ -2249,9 +2269,17 @@ function cargarParametrosSistema() {
             if (datos != null) {
                 for (var i = 0; i < datos.length; i++) {
                     switch (datos[i].CODIGO) {
-                        //case "DIGC":
-                        //    prmtDIGC = datos[i].VALOR;
-                        //    break;
+                        case "0021":
+                            if (!isNaN(parseFloat(datos[i].VALOR))) {
+                                $('#hfIMPUESTO').val(parseFloat(datos[i].VALOR) * 100);
+                                if (ObtenerQueryString("codigo") == undefined) {
+                                    infoCustom2("Se considerará IGV: " + $('#hfIMPUESTO').val() + "%");
+                                }
+                            } else {
+                                infoCustom2("El parámetro de Impuesto(0021) no es válido. Se considerará IGV 18%")
+                                $('#hfIMPUESTO').val("18");
+                            }
+                            break;
                         case "DIGP":
                             prmtDIGP = datos[i].VALOR;
                             break;
@@ -7136,361 +7164,363 @@ function CargarDatosCobro() {
 
             var MedioActual = $(this).val();
 
-            $(".cbocta").parent().html(html_txtDestino);
-            $("#txtNroOpe").removeClass("personas").attr("disabled", false);
-            $("#txtDestino").val("");
-            $("#txtDestino").attr("disabled", false).off("change").attr("placeholder", "");
-            $("#txtNroOpe").val("");
+            if (MedioActual != null) {
+                $(".cbocta").parent().html(html_txtDestino);
+                $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                $("#txtDestino").val("");
+                $("#txtDestino").attr("disabled", false).off("change").attr("placeholder", "");
+                $("#txtNroOpe").val("");
 
-            $("#pos,#tarjeta,#bco").remove();
-            $(".mPersona").css("display", "none");
-            offObjectEvents("txtNroOpe");
+                $("#pos,#tarjeta,#bco").remove();
+                $(".mPersona").css("display", "none");
+                offObjectEvents("txtNroOpe");
 
-            $("#txtNroOpe").removeClass("personas").attr("disabled", false);
-            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
-            switch (MedioActual) {
-                case "0001"://DEPOSITO BANCARIO
+                $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
+                switch (MedioActual) {
+                    case "0001"://DEPOSITO BANCARIO
 
-                    $("#lbl_detalle3").html("Origen de Pago");
-                    $("#lbl_detalle4").html("Nro. Operación");
-                    $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
-                    $("#cbDestino").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
-
-                    $(".mPersona").css("display", "none");
-                    offObjectEvents("txtNroOpe");
-                    $("#txtNroOpe").removeClass("personas").attr("disabled", false);
-                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
-                    $("#txtMonto").attr("disabled", true);
-                    $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
-                    $("#txtEfectivo").val("");
-                    $("#id_Vuelto").hide();
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-                    break;
-
-                case "0008": //EFECTIVO
-
-                    $("#lbl_detalle3").html("Destino");
-                    $("#lbl_detalle4").html("Persona Recibe");
-
-                    $("#txtDestino").val("ENTREGA DIRECTA").attr("disabled", true);
-                    $(".mPersona").css("display", "block");
-                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
-                    $("#txtNroOpe").addClass("personas").attr("disabled", false);
-                    cargarInputsPersona();
-
-                    $("#cbo_moneda").attr("disabled", false);
-                    $("#txtMonto").attr("disabled", true);
-
-                    $("#txtEfectivo").attr('disabled', false);
-                    $("#id_Vuelto").show();
-                    $("#txtEfectivo").val("");
-                    $("#txtVuelto").val("0.00");
-                    $("#txtVuelto").attr("disabled", true);
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-
-                case "0003": //transferencia
-
-                    $("#lbl_detalle3").html("Origen");
-                    $("#lbl_detalle4").html("Nro. Operación");
-
-                    $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
-                    $("#cbDestino").select2();
-                    $.ajaxSetup({ async: false });
-
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
-                        function (res) {
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                $("#cbDestino").html(res).select2();
-                            } else {
-                                $("#cbDestino").html("<option></option>").select2();
-                            }
-
-                        });
-                    $.ajaxSetup({ async: true });
-                    $.ajaxSetup({ async: false });
-
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6, banco: $("#cbo_Det_Origen :selected").attr("banco"), moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
-                        function (res) {
-                            if (res != null && res != "" < 0) {
-                                $("#cbDestino option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
-                                if (res != "error") {
-                                    $("#cbDestino").append(res.split("<option></option")[1]);
-                                }
-                            } else {
-                                $("#cbDestino").html("<option></option>").change();
-                            }
-
-                        });
-                    $.ajaxSetup({ async: true });
-
-                    $("#cbDestino").attr("disabled", false).change();
-                    $("#cbo_moneda").attr("disabled", true);
-                    $("#txtMonto").attr("disabled", true);
-                    //$("#txtNroOpe").attr("disabled", false);
-                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
-                    $("#txtEfectivo").val("");
-                    $("#id_Vuelto").hide();
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-                    break;
-
-                case "0013": //cheques bancarios
-
-                    $("#lbl_detalle3").html("N° Cheque");
-                    $("#lbl_detalle4").html("Girado a");
-                    $("#txtDestino").attr("disabled", false);
-                    //$("#txtNroOpe").attr("disabled", false);
-                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
-                    $("#txtMonto").attr("disabled", true);
-                    $("#txtEfectivo").val("");
-                    $("#id_Vuelto").hide();
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-                    break;
-
-                case "0006": //tarjeta de credito
-
-                    $("#cbo_moneda").attr("disabled", false);
-                    $("#lbl_detalle3").html("N° Tarjeta");
-                    $("#lbl_detalle4").html("Cod. Autorización");
-                    $("#txtNroOpe").attr("disabled", false);
-                    $("#txtMonto").attr("disabled", true);
-                    $("#txtDestino").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
-                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
-                    mascespecial("txtDestino", "************", 16);
-
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos" class="span12"><option></option></select></div></div>');
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta" class="span12"><option></option></select></div></div>')
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco" class="span12"><option></option></select></div></div>')
-
-                    $("#slcPos, #slcTarjeta, #slcBco").select2();
-                    $("#slcPos, #slcBco,#slcTarjeta").attr("disabled", true);
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
-                        function (res) {
-                            Bloquear($($("#slcBco").siblings("div")).attr("id"));
-                            $("#slcBco").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                $("#slcBco").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcBco").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcBco").siblings("div")).attr("id")); });
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
-                        function (res) {
-                            Bloquear($($("#slcTarjeta").siblings("div")).attr("id"));
-                            $("#slcTarjeta").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                listaTarjetas = res;
-                                $("#slcTarjeta").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcTarjeta").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcTarjeta").siblings("div")).attr("id")); });;
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen :selected").attr("stbl") }, 
-                        function (res) {
-                            Bloquear($($("#slcPos").siblings("div")).attr("id"));
-                            $("#slcPos").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-
-                                $("#slcPos").addClass("obligatorio").html(res).change(function () {
-
-                                    var mone_pos = $("#slcPos :selected").attr("moneda");
-
-                                    if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
-                                        $("#slcPos").select2("val", "");
-                                        infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
-                                    }
-
-                                    var tarj_pos = $("#slcPos :selected").attr("tarjetas");
-                                    $("#slcTarjeta").html(listaTarjetas).select2("val", "");
-                                    $("#slcTarjeta option").filter(function (e, d) {
-                                        var val0r = $(d).val();
-                                        if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta option[value=" + val0r + "]").remove(); }
-
-                                    });
-                                    $("#slcTarjeta").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
-                                });
-
-                            } else {
-                                $("#slcPos").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () //DPORTA 24/06/2021
-                        {
-                            Desbloquear($($("#slcPos").siblings("div")).attr("id"));
-                            $.ajax({
-                                type: "post",
-                                url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen :selected").attr("stbl"),
-                                contenttype: "application/json;",
-                                datatype: "json",
-                                async: false,
-                                success: function (datos) {
-                                    if (datos != null) {
-                                        $("#slcPos").val(datos);
-                                        $("#slcPos").change();
-                                    }
-                                },
-                                error: function (msg) {
-                                    alertCustom("Monedas no se listaron correctamente.");
-                                }
-                            });
-                            
-                        });
-                    $("#txtEfectivo").val("");
-                    $("#id_Vuelto").hide();
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-                    break;
-                case "0005": // tarjeta de debito
-
-                    $("#lbl_detalle3").html("N° Tarjeta");
-                    $("#lbl_detalle4").html("Cod. Autorización");
-
-                    $("#txtNroOpe").attr("disabled", false);
-                    $("#txtMonto").attr("disabled", true);
-
-                    $("#txtDestino").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
-                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
-                    mascespecial("txtDestino", "************", 16);
-
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos" class="span12"><option></option></select></div></div>');
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta" class="span12"><option></option></select></div></div>')
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco" class="span12"><option></option></select></div></div>')
-
-                    $("#slcPos, #slcTarjeta, #slcBco").select2();
-                    $("#slcPos, #slcBco,#slcTarjeta").attr("disabled", true);
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
-                        function (res) {
-                            Bloquear($($("#slcBco").siblings("div")).attr("id"));
-                            $("#slcBco").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                $("#slcBco").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcBco").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcBco").siblings("div")).attr("id")); });
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
-                        function (res) {
-                            Bloquear($($("#slcTarjeta").siblings("div")).attr("id"));
-                            $("#slcTarjeta").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                listaTarjetas = res;
-                                $("#slcTarjeta").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcTarjeta").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcTarjeta").siblings("div")).attr("id")); });;
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen :selected").attr("stbl") },
-                        function (res) {
-                            Bloquear($($("#slcPos").siblings("div")).attr("id"));
-                            $("#slcPos").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-
-                                $("#slcPos").addClass("obligatorio").html(res).change(function () {
-
-                                    var mone_pos = $("#slcPos :selected").attr("moneda");
-
-                                    if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
-                                        $("#slcPos").select2("val", "");
-                                        infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
-                                    }
-
-                                    var tarj_pos = $("#slcPos :selected").attr("tarjetas");
-                                    $("#slcTarjeta").html(listaTarjetas).select2("val", "");
-                                    $("#slcTarjeta option").filter(function (e, d) {
-                                        var val0r = $(d).val();
-                                        if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta option[value=" + val0r + "]").remove(); }
-                                    });
-                                    $("#slcTarjeta").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
-                                });
-
-                            } else {
-                                $("#slcPos").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () //DPORTA 24/06/2021
-                        {
-                            Desbloquear($($("#slcPos").siblings("div")).attr("id"));
-                            $.ajax({
-                                type: "post",
-                                url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen :selected").attr("stbl"),
-                                contenttype: "application/json;",
-                                datatype: "json",
-                                async: false,
-                                success: function (datos) {
-                                    if (datos != null) {
-                                        $("#slcPos").val(datos);
-                                        $("#slcPos").change();
-                                    }
-                                },
-                                error: function (msg) {
-                                    alertCustom("Monedas no se listaron correctamente.");
-                                }
-                            });
-
-                        });
-                    $("#txtEfectivo").val("");
-                    $("#id_Vuelto").hide();
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-                    break;
-                case "0020"://OTROS: YAPE, PLIN, TUNKI, ETC BILLETERA DIG.
-
-                    let billetera_dig = $("#cbo_Det_Origen :selected").attr("billetera_dig");
-
-                    if (billetera_dig == 'S') {
                         $("#lbl_detalle3").html("Origen de Pago");
-                        //$("#lbl_detalle4").html("Nro. Op.");
-                        $("#lbl_detalle4").html("App - Nro. Celular");
+                        $("#lbl_detalle4").html("Nro. Operación");
                         $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
-                        $("#cbDestino").html("<option>BILLETERA DIGITAL</option>").attr("disabled", true).select2();
+                        $("#cbDestino").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
 
                         $(".mPersona").css("display", "none");
                         offObjectEvents("txtNroOpe");
                         $("#txtNroOpe").removeClass("personas").attr("disabled", false);
-                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de billetera digital");
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                         $("#txtMonto").attr("disabled", true);
                         $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
-
-                        //$("#txtVuelto").hide();
                         $("#txtEfectivo").val("");
-                        //$("#txtVuelto").val("");
                         $("#id_Vuelto").hide();
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+                        break;
 
-                        let nombre_cuenta = $("#cbo_Det_Origen :selected").html(); //DPORTA 09/12/2021
+                    case "0008": //EFECTIVO
 
-                        if (nombre_cuenta.indexOf('BCP') > 0) {
-                            //$("#txtNroOpe").val("YAPE  -");
-                            mascespecial("txtNroOpe", "YAPE  -", 16);
-                        } else if (nombre_cuenta.indexOf('BBVA') > 0) {
-                            //$("#txtNroOpe").val("LUKITA-");
-                            mascespecial("txtNroOpe", "LUKITA-", 16);
-                        } else if (nombre_cuenta.indexOf('IBK') > 0) {
-                            //$("#txtNroOpe").val("TUNKI -");
-                            mascespecial("txtNroOpe", "TUNKI -", 16);
-                        } else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
-                            //$("#txtNroOpe").val("PLIN  -");
-                            mascespecial("txtNroOpe", "PLIN  -", 16);
+                        $("#lbl_detalle3").html("Destino");
+                        $("#lbl_detalle4").html("Persona Recibe");
+
+                        $("#txtDestino").val("ENTREGA DIRECTA").attr("disabled", true);
+                        $(".mPersona").css("display", "block");
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
+                        $("#txtNroOpe").addClass("personas").attr("disabled", false);
+                        cargarInputsPersona();
+
+                        $("#cbo_moneda").attr("disabled", false);
+                        $("#txtMonto").attr("disabled", true);
+
+                        $("#txtEfectivo").attr('disabled', false);
+                        $("#id_Vuelto").show();
+                        $("#txtEfectivo").val("");
+                        $("#txtVuelto").val("0.00");
+                        $("#txtVuelto").attr("disabled", true);
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+
+                        break;
+
+                    case "0003": //transferencia
+
+                        $("#lbl_detalle3").html("Origen");
+                        $("#lbl_detalle4").html("Nro. Operación");
+
+                        $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
+                        $("#cbDestino").select2();
+                        $.ajaxSetup({ async: false });
+
+                        $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
+                            function (res) {
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    $("#cbDestino").html(res).select2();
+                                } else {
+                                    $("#cbDestino").html("<option></option>").select2();
+                                }
+
+                            });
+                        $.ajaxSetup({ async: true });
+                        $.ajaxSetup({ async: false });
+
+                        $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6, banco: $("#cbo_Det_Origen :selected").attr("banco"), moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
+                            function (res) {
+                                if (res != null && res != "" < 0) {
+                                    $("#cbDestino option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
+                                    if (res != "error") {
+                                        $("#cbDestino").append(res.split("<option></option")[1]);
+                                    }
+                                } else {
+                                    $("#cbDestino").html("<option></option>").change();
+                                }
+
+                            });
+                        $.ajaxSetup({ async: true });
+
+                        $("#cbDestino").attr("disabled", false).change();
+                        $("#cbo_moneda").attr("disabled", true);
+                        $("#txtMonto").attr("disabled", true);
+                        //$("#txtNroOpe").attr("disabled", false);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
+                        $("#txtEfectivo").val("");
+                        $("#id_Vuelto").hide();
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+                        break;
+
+                    case "0013": //cheques bancarios
+
+                        $("#lbl_detalle3").html("N° Cheque");
+                        $("#lbl_detalle4").html("Girado a");
+                        $("#txtDestino").attr("disabled", false);
+                        //$("#txtNroOpe").attr("disabled", false);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
+                        $("#txtMonto").attr("disabled", true);
+                        $("#txtEfectivo").val("");
+                        $("#id_Vuelto").hide();
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+                        break;
+
+                    case "0006": //tarjeta de credito
+
+                        $("#cbo_moneda").attr("disabled", false);
+                        $("#lbl_detalle3").html("N° Tarjeta");
+                        $("#lbl_detalle4").html("Cod. Autorización");
+                        $("#txtNroOpe").attr("disabled", false);
+                        $("#txtMonto").attr("disabled", true);
+                        $("#txtDestino").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
+                        mascespecial("txtDestino", "************", 16);
+
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos" class="span12"><option></option></select></div></div>');
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta" class="span12"><option></option></select></div></div>')
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco" class="span12"><option></option></select></div></div>')
+
+                        $("#slcPos, #slcTarjeta, #slcBco").select2();
+                        $("#slcPos, #slcBco,#slcTarjeta").attr("disabled", true);
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
+                            function (res) {
+                                Bloquear($($("#slcBco").siblings("div")).attr("id"));
+                                $("#slcBco").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    $("#slcBco").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcBco").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcBco").siblings("div")).attr("id")); });
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
+                            function (res) {
+                                Bloquear($($("#slcTarjeta").siblings("div")).attr("id"));
+                                $("#slcTarjeta").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    listaTarjetas = res;
+                                    $("#slcTarjeta").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcTarjeta").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcTarjeta").siblings("div")).attr("id")); });;
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen :selected").attr("stbl") },
+                            function (res) {
+                                Bloquear($($("#slcPos").siblings("div")).attr("id"));
+                                $("#slcPos").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+
+                                    $("#slcPos").addClass("obligatorio").html(res).change(function () {
+
+                                        var mone_pos = $("#slcPos :selected").attr("moneda");
+
+                                        if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
+                                            $("#slcPos").select2("val", "");
+                                            infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
+                                        }
+
+                                        var tarj_pos = $("#slcPos :selected").attr("tarjetas");
+                                        $("#slcTarjeta").html(listaTarjetas).select2("val", "");
+                                        $("#slcTarjeta option").filter(function (e, d) {
+                                            var val0r = $(d).val();
+                                            if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta option[value=" + val0r + "]").remove(); }
+
+                                        });
+                                        $("#slcTarjeta").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
+                                    });
+
+                                } else {
+                                    $("#slcPos").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () //DPORTA 24/06/2021
+                            {
+                                Desbloquear($($("#slcPos").siblings("div")).attr("id"));
+                                $.ajax({
+                                    type: "post",
+                                    url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen :selected").attr("stbl"),
+                                    contenttype: "application/json;",
+                                    datatype: "json",
+                                    async: false,
+                                    success: function (datos) {
+                                        if (datos != null) {
+                                            $("#slcPos").val(datos);
+                                            $("#slcPos").change();
+                                        }
+                                    },
+                                    error: function (msg) {
+                                        alertCustom("Monedas no se listaron correctamente.");
+                                    }
+                                });
+
+                            });
+                        $("#txtEfectivo").val("");
+                        $("#id_Vuelto").hide();
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+                        break;
+                    case "0005": // tarjeta de debito
+
+                        $("#lbl_detalle3").html("N° Tarjeta");
+                        $("#lbl_detalle4").html("Cod. Autorización");
+
+                        $("#txtNroOpe").attr("disabled", false);
+                        $("#txtMonto").attr("disabled", true);
+
+                        $("#txtDestino").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
+                        mascespecial("txtDestino", "************", 16);
+
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos" class="span12"><option></option></select></div></div>');
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta" class="span12"><option></option></select></div></div>')
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco" class="span12"><option></option></select></div></div>')
+
+                        $("#slcPos, #slcTarjeta, #slcBco").select2();
+                        $("#slcPos, #slcBco,#slcTarjeta").attr("disabled", true);
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
+                            function (res) {
+                                Bloquear($($("#slcBco").siblings("div")).attr("id"));
+                                $("#slcBco").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    $("#slcBco").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcBco").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcBco").siblings("div")).attr("id")); });
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
+                            function (res) {
+                                Bloquear($($("#slcTarjeta").siblings("div")).attr("id"));
+                                $("#slcTarjeta").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    listaTarjetas = res;
+                                    $("#slcTarjeta").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcTarjeta").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcTarjeta").siblings("div")).attr("id")); });;
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen :selected").attr("stbl") },
+                            function (res) {
+                                Bloquear($($("#slcPos").siblings("div")).attr("id"));
+                                $("#slcPos").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+
+                                    $("#slcPos").addClass("obligatorio").html(res).change(function () {
+
+                                        var mone_pos = $("#slcPos :selected").attr("moneda");
+
+                                        if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
+                                            $("#slcPos").select2("val", "");
+                                            infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
+                                        }
+
+                                        var tarj_pos = $("#slcPos :selected").attr("tarjetas");
+                                        $("#slcTarjeta").html(listaTarjetas).select2("val", "");
+                                        $("#slcTarjeta option").filter(function (e, d) {
+                                            var val0r = $(d).val();
+                                            if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta option[value=" + val0r + "]").remove(); }
+                                        });
+                                        $("#slcTarjeta").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
+                                    });
+
+                                } else {
+                                    $("#slcPos").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () //DPORTA 24/06/2021
+                            {
+                                Desbloquear($($("#slcPos").siblings("div")).attr("id"));
+                                $.ajax({
+                                    type: "post",
+                                    url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen :selected").attr("stbl"),
+                                    contenttype: "application/json;",
+                                    datatype: "json",
+                                    async: false,
+                                    success: function (datos) {
+                                        if (datos != null) {
+                                            $("#slcPos").val(datos);
+                                            $("#slcPos").change();
+                                        }
+                                    },
+                                    error: function (msg) {
+                                        alertCustom("Monedas no se listaron correctamente.");
+                                    }
+                                });
+
+                            });
+                        $("#txtEfectivo").val("");
+                        $("#id_Vuelto").hide();
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+                        break;
+                    case "0020"://OTROS: YAPE, PLIN, TUNKI, ETC BILLETERA DIG.
+
+                        let billetera_dig = $("#cbo_Det_Origen :selected").attr("billetera_dig");
+
+                        if (billetera_dig == 'S') {
+                            $("#lbl_detalle3").html("Origen de Pago");
+                            //$("#lbl_detalle4").html("Nro. Op.");
+                            $("#lbl_detalle4").html("App - Nro. Celular");
+                            $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
+                            $("#cbDestino").html("<option>BILLETERA DIGITAL</option>").attr("disabled", true).select2();
+
+                            $(".mPersona").css("display", "none");
+                            offObjectEvents("txtNroOpe");
+                            $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de billetera digital");
+                            $("#txtMonto").attr("disabled", true);
+                            $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
+
+                            //$("#txtVuelto").hide();
+                            $("#txtEfectivo").val("");
+                            //$("#txtVuelto").val("");
+                            $("#id_Vuelto").hide();
+
+                            let nombre_cuenta = $("#cbo_Det_Origen :selected").html(); //DPORTA 09/12/2021
+
+                            if (nombre_cuenta.indexOf('BCP') > 0) {
+                                //$("#txtNroOpe").val("YAPE  -");
+                                mascespecial("txtNroOpe", "YAPE  -", 16);
+                            } else if (nombre_cuenta.indexOf('BBVA') > 0) {
+                                //$("#txtNroOpe").val("LUKITA-");
+                                mascespecial("txtNroOpe", "LUKITA-", 16);
+                            } else if (nombre_cuenta.indexOf('IBK') > 0) {
+                                //$("#txtNroOpe").val("TUNKI -");
+                                mascespecial("txtNroOpe", "TUNKI -", 16);
+                            } else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
+                                //$("#txtNroOpe").val("PLIN  -");
+                                mascespecial("txtNroOpe", "PLIN  -", 16);
+                            }
+
+                            ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+                        } else {
+                            infoCustom2("La cuenta destino seleccionada no tiene asociada una Billetera digital");
                         }
 
-                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-                    } else {
-                        infoCustom2("La cuenta destino seleccionada no tiene asociada una Billetera digital");
-                    }
-
-                    break;
+                        break;
+                }
             }
         });
 
@@ -7499,339 +7529,341 @@ function CargarDatosCobro() {
 
             var MedioActual2 = $(this).val();
 
-            $(".cbocta2").parent().html(html_txtDestino2);
-            $("#txtNroOpe2").removeClass("personas").attr("disabled", false);
-            $("#txtDestino2").val("");
-            $("#txtDestino2").attr("disabled", false).off("change").attr("placeholder", "");
-            $("#txtNroOpe2").val("");
+            if (MedioActual2 != null) {
+                $(".cbocta2").parent().html(html_txtDestino2);
+                $("#txtNroOpe2").removeClass("personas").attr("disabled", false);
+                $("#txtDestino2").val("");
+                $("#txtDestino2").attr("disabled", false).off("change").attr("placeholder", "");
+                $("#txtNroOpe2").val("");
 
-            $("#pos2,#tarjeta2,#bco2").remove();
-            $(".mPersona2").css("display", "none");
-            offObjectEvents("txtNroOpe2");
+                $("#pos2,#tarjeta2,#bco2").remove();
+                $(".mPersona2").css("display", "none");
+                offObjectEvents("txtNroOpe2");
 
-            $("#txtNroOpe2").removeClass("personas").attr("disabled", false);
-            $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "");
-            switch (MedioActual2) {
-                case "0001"://DEPOSITO BANCARIO
+                $("#txtNroOpe2").removeClass("personas").attr("disabled", false);
+                $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "");
+                switch (MedioActual2) {
+                    case "0001"://DEPOSITO BANCARIO
 
-                    $("#lbl_detalle3_2").html("Origen de Pago");
-                    $("#lbl_detalle4_2").html("Nro. Operación");
-                    $("#txtDestino2").parent().html("<select id='cbDestino2' class='obligatorio span12 cbocta2' data-placeholder='CUENTA DE CLIENTE'></select>");
-                    $("#cbDestino2").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
-
-                    $(".mPersona2").css("display", "none");
-                    offObjectEvents("txtNroOpe2");
-                    $("#txtNroOpe2").removeClass("personas").attr("disabled", false);
-                    $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la transacción");
-                    $("#txtMonto").attr("disabled", true);
-                    $("#cbo_moneda").val($("#cbo_Det_Origen2 :selected").attr("moneda")).change().attr("disabled", true);
-                    $("#txtEfectivo2").val("");
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-
-                case "0003": //transferencia
-
-                    $("#lbl_detalle3_2").html("Origen");
-                    $("#lbl_detalle4_2").html("Nro. Operación");
-
-                    $("#txtDestino2").parent().html("<select id='cbDestino2' class='obligatorio span12 cbocta2' data-placeholder='CUENTA DE CLIENTE'></select>");
-                    $("#cbDestino2").select2();
-                    $.ajaxSetup({ async: false });
-
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen2 :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
-                        function (res) {
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                $("#cbDestino2").html(res).select2();
-                            } else {
-                                $("#cbDestino2").html("<option></option>").select2();
-                            }
-
-                        });
-                    $.ajaxSetup({ async: true });
-                    $.ajaxSetup({ async: false });
-
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6, banco: $("#cbo_Det_Origen2 :selected").attr("banco"), moneda: $("#cbo_Det_Origen2 :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
-                        function (res) {
-                            if (res != null && res != "" < 0) {
-                                $("#cbDestino2 option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
-                                if (res != "error") {
-                                    $("#cbDestino2").append(res.split("<option></option")[1]);
-                                }
-                            } else {
-                                $("#cbDestino2").html("<option></option>").change();
-                            }
-
-                        });
-                    $.ajaxSetup({ async: true });
-
-                    $("#cbDestino2").attr("disabled", false).change();
-                    $("#cbo_moneda").attr("disabled", true);
-                    $("#txtMonto").attr("disabled", true);
-                    //$("#txtNroOpe2").attr("disabled", false);
-                    $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la transacción");
-                    $("#txtEfectivo2").val("");
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-
-                case "0013": //cheques bancarios
-
-                    $("#lbl_detalle3_2").html("N° Cheque");
-                    $("#lbl_detalle4_2").html("Girado a");
-                    $("#txtDestino2").attr("disabled", false);
-                    //$("#txtNroOpe2").attr("disabled", false);
-                    $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "");
-                    $("#txtMonto").attr("disabled", true);
-                    $("#txtEfectivo2").val("");
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-
-                case "0006": //tarjeta de credito
-
-                    $("#cbo_moneda").attr("disabled", false);
-                    $("#lbl_detalle3_2").html("N° Tarjeta");
-                    $("#lbl_detalle4_2").html("Cod. Autorización");
-
-                    $("#txtNroOpe2").attr("disabled", false);
-                    $("#txtMonto").attr("disabled", true);
-
-                    $("#txtDestino2").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
-                    $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la operación");
-                    mascespecial("txtDestino2", "************", 16);
-
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos2"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos2" class="span12"><option></option></select></div></div>');
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta2"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta2" class="span12"><option></option></select></div></div>')
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco2"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco2" class="span12"><option></option></select></div></div>')
-
-                    $("#slcPos2, #slcTarjeta2, #slcBco2").select2();
-                    $("#slcPos2, #slcBco2, #slcTarjeta2").attr("disabled", true);
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
-                        function (res) {
-                            Bloquear($($("#slcBco2").siblings("div")).attr("id"));
-                            $("#slcBco2").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                $("#slcBco2").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcBco2").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcBco2").siblings("div")).attr("id")); });
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
-                        function (res) {
-                            Bloquear($($("#slcTarjeta2").siblings("div")).attr("id"));
-                            $("#slcTarjeta2").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                listaTarjetas = res;
-                                $("#slcTarjeta2").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcTarjeta2").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcTarjeta2").siblings("div")).attr("id")); });;
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen2").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen2 :selected").attr("stbl") },
-                        function (res) {
-                            Bloquear($($("#slcPos2").siblings("div")).attr("id"));
-                            $("#slcPos2").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-
-                                $("#slcPos2").addClass("obligatorio").html(res).change(function () {
-
-                                    var mone_pos = $("#slcPos2 :selected").attr("moneda");
-
-                                    if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
-                                        $("#slcPos2").select2("val", "");
-                                        infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
-                                    }
-
-                                    var tarj_pos = $("#slcPos2 :selected").attr("tarjetas");
-                                    $("#slcTarjeta2").html(listaTarjetas).select2("val", "");
-                                    $("#slcTarjeta2 option").filter(function (e, d) {
-                                        var val0r = $(d).val();
-                                        if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta2 option[value=" + val0r + "]").remove(); }
-
-                                    });
-                                    $("#slcTarjeta2").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
-                                });
-
-                            } else {
-                                $("#slcPos2").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () //DPORTA 24/06/2021
-                        {
-                            Desbloquear($($("#slcPos2").siblings("div")).attr("id"));
-                            $.ajax({
-                                type: "post",
-                                url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen2").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen2 :selected").attr("stbl"),
-                                contenttype: "application/json;",
-                                datatype: "json",
-                                async: false,
-                                success: function (datos) {
-                                    if (datos != null) {
-                                        $("#slcPos2").val(datos);
-                                        $("#slcPos2").change();
-                                    }
-                                },
-                                error: function (msg) {
-                                    alertCustom("Monedas no se listaron correctamente.");
-                                }
-                            });
-
-                        });
-                    $("#txtEfectivo2").val("");
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-                case "0005": // tarjeta de debito
-
-                    $("#lbl_detalle3_2").html("N° Tarjeta");
-                    $("#lbl_detalle4_2").html("Cod. Autorización");
-
-                    $("#txtNroOpe2").attr("disabled", false);
-                    $("#txtMonto").attr("disabled", true);
-
-                    $("#txtDestino2").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
-                    $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la operación");
-                    mascespecial("txtDestino2", "************", 16);
-
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos2"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos2" class="span12"><option></option></select></div></div>');
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta2"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta2" class="span12"><option></option></select></div></div>')
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco2"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco2" class="span12"><option></option></select></div></div>')
-
-                    $("#slcPos2, #slcTarjeta2, #slcBco2").select2();
-                    $("#slcPos2, #slcBco2, #slcTarjeta2").attr("disabled", true);
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
-                        function (res) {
-                            Bloquear($($("#slcBco2").siblings("div")).attr("id"));
-                            $("#slcBco2").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                $("#slcBco2").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcBco2").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcBco2").siblings("div")).attr("id")); });
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
-                        function (res) {
-                            Bloquear($($("#slcTarjeta2").siblings("div")).attr("id"));
-                            $("#slcTarjeta2").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                listaTarjetas = res;
-                                $("#slcTarjeta2").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcTarjeta2").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcTarjeta2").siblings("div")).attr("id")); });;
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen2").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen2 :selected").attr("stbl") },
-                        function (res) {
-                            Bloquear($($("#slcPos2").siblings("div")).attr("id"));
-                            $("#slcPos2").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-
-                                $("#slcPos2").addClass("obligatorio").html(res).change(function () {
-
-                                    var mone_pos = $("#slcPos2 :selected").attr("moneda");
-
-                                    if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
-                                        $("#slcPos2").select2("val", "");
-                                        infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
-                                    }
-
-                                    var tarj_pos = $("#slcPos2 :selected").attr("tarjetas");
-                                    $("#slcTarjeta2").html(listaTarjetas).select2("val", "");
-                                    $("#slcTarjeta2 option").filter(function (e, d) {
-                                        var val0r = $(d).val();
-                                        if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta2 option[value=" + val0r + "]").remove(); }
-                                    });
-                                    $("#slcTarjeta2").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
-                                });
-
-                            } else {
-                                $("#slcPos2").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () //DPORTA 24/06/2021
-                        {
-                            Desbloquear($($("#slcPos2").siblings("div")).attr("id"));
-                            $.ajax({
-                                type: "post",
-                                url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen2").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen2 :selected").attr("stbl"),
-                                contenttype: "application/json;",
-                                datatype: "json",
-                                async: false,
-                                success: function (datos) {
-                                    if (datos != null) {
-                                        $("#slcPos2").val(datos);
-                                        $("#slcPos2").change();
-                                    }
-                                },
-                                error: function (msg) {
-                                    alertCustom("Monedas no se listaron correctamente.");
-                                }
-                            });
-
-                        });
-                    $("#txtEfectivo2").val("");
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-                case "0020"://OTROS: YAPE, PLIN, TUNKI, ETC BILLETERA DIG.
-
-                    let billetera_dig = $("#cbo_Det_Origen2 :selected").attr("billetera_dig");
-
-                    if (billetera_dig == 'S') {
                         $("#lbl_detalle3_2").html("Origen de Pago");
-                        //$("#lbl_detalle4_2").html("Nro. Op.");
-                        $("#lbl_detalle4_2").html("App - Nro. Celular");
+                        $("#lbl_detalle4_2").html("Nro. Operación");
                         $("#txtDestino2").parent().html("<select id='cbDestino2' class='obligatorio span12 cbocta2' data-placeholder='CUENTA DE CLIENTE'></select>");
-                        $("#cbDestino2").html("<option>BILLETERA DIGITAL</option>").attr("disabled", true).select2();
+                        $("#cbDestino2").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
 
                         $(".mPersona2").css("display", "none");
                         offObjectEvents("txtNroOpe2");
                         $("#txtNroOpe2").removeClass("personas").attr("disabled", false);
-                        $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de billetera digital");
+                        $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la transacción");
                         $("#txtMonto").attr("disabled", true);
                         $("#cbo_moneda").val($("#cbo_Det_Origen2 :selected").attr("moneda")).change().attr("disabled", true);
-
-                        //$("#p_DatVuelto").hide();
                         $("#txtEfectivo2").val("");
-                        //$("#txtVuelto").val("");
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
 
-                        let nombre_cuenta = $("#cbo_Det_Origen2 :selected").html(); //DPORTA 09/12/2021
+                        break;
 
-                        if (nombre_cuenta.indexOf('BCP') > 0) {
-                            //$("#txtNroOpe2").val("YAPE  -");
-                            mascespecial("txtNroOpe2", "YAPE  -", 16);
-                        } else if (nombre_cuenta.indexOf('BBVA') > 0) {
-                            //$("#txtNroOpe2").val("LUKITA-");
-                            mascespecial("txtNroOpe2", "LUKITA-", 16);
-                        } else if (nombre_cuenta.indexOf('IBK') > 0) {
-                            //$("#txtNroOpe2").val("TUNKI -");
-                            mascespecial("txtNroOpe2", "TUNKI -", 16);
-                        } else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
-                            //$("#txtNroOpe2").val("PLIN  -");
-                            mascespecial("txtNroOpe2", "PLIN  -", 16);
+                    case "0003": //transferencia
+
+                        $("#lbl_detalle3_2").html("Origen");
+                        $("#lbl_detalle4_2").html("Nro. Operación");
+
+                        $("#txtDestino2").parent().html("<select id='cbDestino2' class='obligatorio span12 cbocta2' data-placeholder='CUENTA DE CLIENTE'></select>");
+                        $("#cbDestino2").select2();
+                        $.ajaxSetup({ async: false });
+
+                        $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen2 :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
+                            function (res) {
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    $("#cbDestino2").html(res).select2();
+                                } else {
+                                    $("#cbDestino2").html("<option></option>").select2();
+                                }
+
+                            });
+                        $.ajaxSetup({ async: true });
+                        $.ajaxSetup({ async: false });
+
+                        $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6, banco: $("#cbo_Det_Origen2 :selected").attr("banco"), moneda: $("#cbo_Det_Origen2 :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
+                            function (res) {
+                                if (res != null && res != "" < 0) {
+                                    $("#cbDestino2 option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
+                                    if (res != "error") {
+                                        $("#cbDestino2").append(res.split("<option></option")[1]);
+                                    }
+                                } else {
+                                    $("#cbDestino2").html("<option></option>").change();
+                                }
+
+                            });
+                        $.ajaxSetup({ async: true });
+
+                        $("#cbDestino2").attr("disabled", false).change();
+                        $("#cbo_moneda").attr("disabled", true);
+                        $("#txtMonto").attr("disabled", true);
+                        //$("#txtNroOpe2").attr("disabled", false);
+                        $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la transacción");
+                        $("#txtEfectivo2").val("");
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+
+                        break;
+
+                    case "0013": //cheques bancarios
+
+                        $("#lbl_detalle3_2").html("N° Cheque");
+                        $("#lbl_detalle4_2").html("Girado a");
+                        $("#txtDestino2").attr("disabled", false);
+                        //$("#txtNroOpe2").attr("disabled", false);
+                        $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "");
+                        $("#txtMonto").attr("disabled", true);
+                        $("#txtEfectivo2").val("");
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+
+                        break;
+
+                    case "0006": //tarjeta de credito
+
+                        $("#cbo_moneda").attr("disabled", false);
+                        $("#lbl_detalle3_2").html("N° Tarjeta");
+                        $("#lbl_detalle4_2").html("Cod. Autorización");
+
+                        $("#txtNroOpe2").attr("disabled", false);
+                        $("#txtMonto").attr("disabled", true);
+
+                        $("#txtDestino2").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                        $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la operación");
+                        mascespecial("txtDestino2", "************", 16);
+
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos2"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos2" class="span12"><option></option></select></div></div>');
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta2"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta2" class="span12"><option></option></select></div></div>')
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco2"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco2" class="span12"><option></option></select></div></div>')
+
+                        $("#slcPos2, #slcTarjeta2, #slcBco2").select2();
+                        $("#slcPos2, #slcBco2, #slcTarjeta2").attr("disabled", true);
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
+                            function (res) {
+                                Bloquear($($("#slcBco2").siblings("div")).attr("id"));
+                                $("#slcBco2").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    $("#slcBco2").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcBco2").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcBco2").siblings("div")).attr("id")); });
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
+                            function (res) {
+                                Bloquear($($("#slcTarjeta2").siblings("div")).attr("id"));
+                                $("#slcTarjeta2").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    listaTarjetas = res;
+                                    $("#slcTarjeta2").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcTarjeta2").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcTarjeta2").siblings("div")).attr("id")); });;
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen2").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen2 :selected").attr("stbl") },
+                            function (res) {
+                                Bloquear($($("#slcPos2").siblings("div")).attr("id"));
+                                $("#slcPos2").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+
+                                    $("#slcPos2").addClass("obligatorio").html(res).change(function () {
+
+                                        var mone_pos = $("#slcPos2 :selected").attr("moneda");
+
+                                        if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
+                                            $("#slcPos2").select2("val", "");
+                                            infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
+                                        }
+
+                                        var tarj_pos = $("#slcPos2 :selected").attr("tarjetas");
+                                        $("#slcTarjeta2").html(listaTarjetas).select2("val", "");
+                                        $("#slcTarjeta2 option").filter(function (e, d) {
+                                            var val0r = $(d).val();
+                                            if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta2 option[value=" + val0r + "]").remove(); }
+
+                                        });
+                                        $("#slcTarjeta2").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
+                                    });
+
+                                } else {
+                                    $("#slcPos2").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () //DPORTA 24/06/2021
+                            {
+                                Desbloquear($($("#slcPos2").siblings("div")).attr("id"));
+                                $.ajax({
+                                    type: "post",
+                                    url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen2").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen2 :selected").attr("stbl"),
+                                    contenttype: "application/json;",
+                                    datatype: "json",
+                                    async: false,
+                                    success: function (datos) {
+                                        if (datos != null) {
+                                            $("#slcPos2").val(datos);
+                                            $("#slcPos2").change();
+                                        }
+                                    },
+                                    error: function (msg) {
+                                        alertCustom("Monedas no se listaron correctamente.");
+                                    }
+                                });
+
+                            });
+                        $("#txtEfectivo2").val("");
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+
+                        break;
+                    case "0005": // tarjeta de debito
+
+                        $("#lbl_detalle3_2").html("N° Tarjeta");
+                        $("#lbl_detalle4_2").html("Cod. Autorización");
+
+                        $("#txtNroOpe2").attr("disabled", false);
+                        $("#txtMonto").attr("disabled", true);
+
+                        $("#txtDestino2").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                        $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de la operación");
+                        mascespecial("txtDestino2", "************", 16);
+
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos2"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos2" class="span12"><option></option></select></div></div>');
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta2"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta2" class="span12"><option></option></select></div></div>')
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco2"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco2" class="span12"><option></option></select></div></div>')
+
+                        $("#slcPos2, #slcTarjeta2, #slcBco2").select2();
+                        $("#slcPos2, #slcBco2, #slcTarjeta2").attr("disabled", true);
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
+                            function (res) {
+                                Bloquear($($("#slcBco2").siblings("div")).attr("id"));
+                                $("#slcBco2").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    $("#slcBco2").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcBco2").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcBco2").siblings("div")).attr("id")); });
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
+                            function (res) {
+                                Bloquear($($("#slcTarjeta2").siblings("div")).attr("id"));
+                                $("#slcTarjeta2").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    listaTarjetas = res;
+                                    $("#slcTarjeta2").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcTarjeta2").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcTarjeta2").siblings("div")).attr("id")); });;
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen2").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen2 :selected").attr("stbl") },
+                            function (res) {
+                                Bloquear($($("#slcPos2").siblings("div")).attr("id"));
+                                $("#slcPos2").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+
+                                    $("#slcPos2").addClass("obligatorio").html(res).change(function () {
+
+                                        var mone_pos = $("#slcPos2 :selected").attr("moneda");
+
+                                        if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
+                                            $("#slcPos2").select2("val", "");
+                                            infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
+                                        }
+
+                                        var tarj_pos = $("#slcPos2 :selected").attr("tarjetas");
+                                        $("#slcTarjeta2").html(listaTarjetas).select2("val", "");
+                                        $("#slcTarjeta2 option").filter(function (e, d) {
+                                            var val0r = $(d).val();
+                                            if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta2 option[value=" + val0r + "]").remove(); }
+                                        });
+                                        $("#slcTarjeta2").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
+                                    });
+
+                                } else {
+                                    $("#slcPos2").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () //DPORTA 24/06/2021
+                            {
+                                Desbloquear($($("#slcPos2").siblings("div")).attr("id"));
+                                $.ajax({
+                                    type: "post",
+                                    url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen2").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen2 :selected").attr("stbl"),
+                                    contenttype: "application/json;",
+                                    datatype: "json",
+                                    async: false,
+                                    success: function (datos) {
+                                        if (datos != null) {
+                                            $("#slcPos2").val(datos);
+                                            $("#slcPos2").change();
+                                        }
+                                    },
+                                    error: function (msg) {
+                                        alertCustom("Monedas no se listaron correctamente.");
+                                    }
+                                });
+
+                            });
+                        $("#txtEfectivo2").val("");
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+
+                        break;
+                    case "0020"://OTROS: YAPE, PLIN, TUNKI, ETC BILLETERA DIG.
+
+                        let billetera_dig = $("#cbo_Det_Origen2 :selected").attr("billetera_dig");
+
+                        if (billetera_dig == 'S') {
+                            $("#lbl_detalle3_2").html("Origen de Pago");
+                            //$("#lbl_detalle4_2").html("Nro. Op.");
+                            $("#lbl_detalle4_2").html("App - Nro. Celular");
+                            $("#txtDestino2").parent().html("<select id='cbDestino2' class='obligatorio span12 cbocta2' data-placeholder='CUENTA DE CLIENTE'></select>");
+                            $("#cbDestino2").html("<option>BILLETERA DIGITAL</option>").attr("disabled", true).select2();
+
+                            $(".mPersona2").css("display", "none");
+                            offObjectEvents("txtNroOpe2");
+                            $("#txtNroOpe2").removeClass("personas").attr("disabled", false);
+                            $("#txtNroOpe2").attr("disabled", false).attr("placeholder", "de billetera digital");
+                            $("#txtMonto").attr("disabled", true);
+                            $("#cbo_moneda").val($("#cbo_Det_Origen2 :selected").attr("moneda")).change().attr("disabled", true);
+
+                            //$("#p_DatVuelto").hide();
+                            $("#txtEfectivo2").val("");
+                            //$("#txtVuelto").val("");
+
+                            let nombre_cuenta = $("#cbo_Det_Origen2 :selected").html(); //DPORTA 09/12/2021
+
+                            if (nombre_cuenta.indexOf('BCP') > 0) {
+                                //$("#txtNroOpe2").val("YAPE  -");
+                                mascespecial("txtNroOpe2", "YAPE  -", 16);
+                            } else if (nombre_cuenta.indexOf('BBVA') > 0) {
+                                //$("#txtNroOpe2").val("LUKITA-");
+                                mascespecial("txtNroOpe2", "LUKITA-", 16);
+                            } else if (nombre_cuenta.indexOf('IBK') > 0) {
+                                //$("#txtNroOpe2").val("TUNKI -");
+                                mascespecial("txtNroOpe2", "TUNKI -", 16);
+                            } else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
+                                //$("#txtNroOpe2").val("PLIN  -");
+                                mascespecial("txtNroOpe2", "PLIN  -", 16);
+                            }
+
+                            ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+                        } else {
+                            infoCustom2("La cuenta destino seleccionada no tiene asociada una Billetera digital");
                         }
 
-                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-                    } else {
-                        infoCustom2("La cuenta destino seleccionada no tiene asociada una Billetera digital");
-                    }
-
-                    break;
+                        break;
+                }
             }
         });
 
@@ -7840,339 +7872,341 @@ function CargarDatosCobro() {
 
             var MedioActual3 = $(this).val();
 
-            $(".cbocta3").parent().html(html_txtDestino);
-            $("#txtNroOpe3").removeClass("personas").attr("disabled", false);
-            $("#txtDestino3").val("");
-            $("#txtDestino3").attr("disabled", false).off("change").attr("placeholder", "");
-            $("#txtNroOpe3").val("");
+            if (MedioActual3 != null) {
+                $(".cbocta3").parent().html(html_txtDestino);
+                $("#txtNroOpe3").removeClass("personas").attr("disabled", false);
+                $("#txtDestino3").val("");
+                $("#txtDestino3").attr("disabled", false).off("change").attr("placeholder", "");
+                $("#txtNroOpe3").val("");
 
-            $("#pos3,#tarjeta3,#bco3").remove();
-            $(".mPersona3").css("display", "none");
-            offObjectEvents("txtNroOpe3");
+                $("#pos3,#tarjeta3,#bco3").remove();
+                $(".mPersona3").css("display", "none");
+                offObjectEvents("txtNroOpe3");
 
-            $("#txtNroOpe3").removeClass("personas").attr("disabled", false);
-            $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "");
-            switch (MedioActual3) {
-                case "0001"://DEPOSITO BANCARIO
+                $("#txtNroOpe3").removeClass("personas").attr("disabled", false);
+                $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "");
+                switch (MedioActual3) {
+                    case "0001"://DEPOSITO BANCARIO
 
-                    $("#lbl_detalle3_3").html("Origen de Pago");
-                    $("#lbl_detalle4_3").html("Nro. Operación");
-                    $("#txtDestino3").parent().html("<select id='cbDestino3' class='obligatorio span12 cbocta3' data-placeholder='CUENTA DE CLIENTE'></select>");
-                    $("#cbDestino3").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
-
-                    $(".mPersona3").css("display", "none");
-                    offObjectEvents("txtNroOpe3");
-                    $("#txtNroOpe3").removeClass("personas").attr("disabled", false);
-                    $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la transacción");
-                    $("#txtMonto").attr("disabled", true);
-                    $("#cbo_moneda").val($("#cbo_Det_Origen3 :selected").attr("moneda")).change().attr("disabled", true);
-                    $("#txtEfectivo3").val("");
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-
-                case "0003": //transferencia
-
-                    $("#lbl_detalle3_3").html("Origen");
-                    $("#lbl_detalle4_3").html("Nro. Operación");
-
-                    $("#txtDestino3").parent().html("<select id='cbDestino3' class='obligatorio span12 cbocta3' data-placeholder='CUENTA DE CLIENTE'></select>");
-                    $("#cbDestino3").select2();
-                    $.ajaxSetup({ async: false });
-
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen3 :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
-                        function (res) {
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                $("#cbDestino3").html(res).select2();
-                            } else {
-                                $("#cbDestino3").html("<option></option>").select2();
-                            }
-
-                        });
-                    $.ajaxSetup({ async: true });
-                    $.ajaxSetup({ async: false });
-
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6, banco: $("#cbo_Det_Origen3 :selected").attr("banco"), moneda: $("#cbo_Det_Origen3 :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
-                        function (res) {
-                            if (res != null && res != "" < 0) {
-                                $("#cbDestino3 option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
-                                if (res != "error") {
-                                    $("#cbDestino3").append(res.split("<option></option")[1]);
-                                }
-                            } else {
-                                $("#cbDestino3").html("<option></option>").change();
-                            }
-
-                        });
-                    $.ajaxSetup({ async: true });
-
-                    $("#cbDestino3").attr("disabled", false).change();
-                    $("#cbo_moneda").attr("disabled", true);
-                    $("#txtMonto").attr("disabled", true);
-                    //$("#txtNroOpe3").attr("disabled", false);
-                    $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la transacción");
-                    $("#txtEfectivo3").val("");
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-
-                case "0013": //cheques bancarios
-
-                    $("#lbl_detalle3_3").html("N° Cheque");
-                    $("#lbl_detalle4_3").html("Girado a");
-                    $("#txtDestino3").attr("disabled", false);
-                    //$("#txtNroOpe3").attr("disabled", false);
-                    $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "");
-                    $("#txtMonto").attr("disabled", true);
-                    $("#txtEfectivo3").val("");
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-
-                case "0006": //tarjeta de credito
-
-                    $("#cbo_moneda").attr("disabled", false);
-                    $("#lbl_detalle3_3").html("N° Tarjeta");
-                    $("#lbl_detalle4_3").html("Cod. Autorización");
-
-                    $("#txtNroOpe3").attr("disabled", false);
-                    $("#txtMonto").attr("disabled", true);
-
-                    $("#txtDestino3").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
-                    $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la operación");
-                    mascespecial("txtDestino3", "************", 16);
-
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos3"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos3" class="span12"><option></option></select></div></div>');
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta3"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta3" class="span12"><option></option></select></div></div>')
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco3"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco3" class="span12"><option></option></select></div></div>')
-
-                    $("#slcPos3, #slcTarjeta3, #slcBco3").select2();
-                    $("#slcPos3, #slcBco3, #slcTarjeta3").attr("disabled", true);
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
-                        function (res) {
-                            Bloquear($($("#slcBco3").siblings("div")).attr("id"));
-                            $("#slcBco3").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                $("#slcBco3").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcBco3").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcBco3").siblings("div")).attr("id")); });
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
-                        function (res) {
-                            Bloquear($($("#slcTarjeta3").siblings("div")).attr("id"));
-                            $("#slcTarjeta3").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                listaTarjetas = res;
-                                $("#slcTarjeta3").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcTarjeta3").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcTarjeta3").siblings("div")).attr("id")); });;
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen3").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen3 :selected").attr("stbl") },
-                        function (res) {
-                            Bloquear($($("#slcPos3").siblings("div")).attr("id"));
-                            $("#slcPos3").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-
-                                $("#slcPos3").addClass("obligatorio").html(res).change(function () {
-
-                                    var mone_pos = $("#slcPos3 :selected").attr("moneda");
-
-                                    if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
-                                        $("#slcPos3").select2("val", "");
-                                        infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
-                                    }
-
-                                    var tarj_pos = $("#slcPos3 :selected").attr("tarjetas");
-                                    $("#slcTarjeta3").html(listaTarjetas).select2("val", "");
-                                    $("#slcTarjeta3 option").filter(function (e, d) {
-                                        var val0r = $(d).val();
-                                        if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta3 option[value=" + val0r + "]").remove(); }
-
-                                    });
-                                    $("#slcTarjeta3").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
-                                });
-
-                            } else {
-                                $("#slcPos3").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () //DPORTA 24/06/2021
-                        {
-                            Desbloquear($($("#slcPos3").siblings("div")).attr("id"));
-                            $.ajax({
-                                type: "post",
-                                url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen3").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen3 :selected").attr("stbl"),
-                                contenttype: "application/json;",
-                                datatype: "json",
-                                async: false,
-                                success: function (datos) {
-                                    if (datos != null) {
-                                        $("#slcPos3").val(datos);
-                                        $("#slcPos3").change();
-                                    }
-                                },
-                                error: function (msg) {
-                                    alertCustom("Monedas no se listaron correctamente.");
-                                }
-                            });
-
-                        });
-                    $("#txtEfectivo3").val("");
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-                case "0005": // tarjeta de debito
-
-                    $("#lbl_detalle3_3").html("N° Tarjeta");
-                    $("#lbl_detalle4_3").html("Cod. Autorización");
-
-                    $("#txtNroOpe3").attr("disabled", false);
-                    $("#txtMonto").attr("disabled", true);
-
-                    $("#txtDestino3").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
-                    $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la operación");
-                    mascespecial("txtDestino3", "************", 16);
-
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos3"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos3" class="span12"><option></option></select></div></div>');
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta3"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta3" class="span12"><option></option></select></div></div>')
-                    $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco3"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco3" class="span12"><option></option></select></div></div>')
-
-                    $("#slcPos3, #slcTarjeta3, #slcBco3").select2();
-                    $("#slcPos3, #slcBco3, #slcTarjeta3").attr("disabled", true);
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
-                        function (res) {
-                            Bloquear($($("#slcBco3").siblings("div")).attr("id"));
-                            $("#slcBco3").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                $("#slcBco3").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcBco3").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcBco3").siblings("div")).attr("id")); });
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
-                        function (res) {
-                            Bloquear($($("#slcTarjeta3").siblings("div")).attr("id"));
-                            $("#slcTarjeta3").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-                                listaTarjetas = res;
-                                $("#slcTarjeta3").addClass("obligatorio").html(res);
-
-                            } else {
-                                $("#slcTarjeta3").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () { Desbloquear($($("#slcTarjeta3").siblings("div")).attr("id")); });;
-
-                    $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen3").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen3 :selected").attr("stbl") },
-                        function (res) {
-                            Bloquear($($("#slcPos3").siblings("div")).attr("id"));
-                            $("#slcPos3").attr("disabled", false);
-                            if (res != null && res != "" && res.indexOf("error") < 0) {
-
-                                $("#slcPos3").addClass("obligatorio").html(res).change(function () {
-
-                                    var mone_pos = $("#slcPos3 :selected").attr("moneda");
-
-                                    if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
-                                        $("#slcPos3").select2("val", "");
-                                        infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
-                                    }
-
-                                    var tarj_pos = $("#slcPos3 :selected").attr("tarjetas");
-                                    $("#slcTarjeta3").html(listaTarjetas).select2("val", "");
-                                    $("#slcTarjeta3 option").filter(function (e, d) {
-                                        var val0r = $(d).val();
-                                        if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta3 option[value=" + val0r + "]").remove(); }
-                                    });
-                                    $("#slcTarjeta3").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
-                                });
-
-                            } else {
-                                $("#slcPos3").html("").attr("disabled", true);
-                            }
-
-                        }).done(function () //DPORTA 24/06/2021
-                        {
-                            Desbloquear($($("#slcPos3").siblings("div")).attr("id"));
-                            $.ajax({
-                                type: "post",
-                                url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen3").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen3 :selected").attr("stbl"),
-                                contenttype: "application/json;",
-                                datatype: "json",
-                                async: false,
-                                success: function (datos) {
-                                    if (datos != null) {
-                                        $("#slcPos3").val(datos);
-                                        $("#slcPos3").change();
-                                    }
-                                },
-                                error: function (msg) {
-                                    alertCustom("Monedas no se listaron correctamente.");
-                                }
-                            });
-
-                        });
-                    $("#txtEfectivo3").val("");
-                    ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-
-                    break;
-                case "0020"://OTROS: YAPE, PLIN, TUNKI, ETC BILLETERA DIG.
-
-                    let billetera_dig = $("#cbo_Det_Origen3 :selected").attr("billetera_dig");
-
-                    if (billetera_dig == 'S') {
                         $("#lbl_detalle3_3").html("Origen de Pago");
-                        //$("#lbl_detalle4_3").html("Nro. Op.");
-                        $("#lbl_detalle4_3").html("App - Nro. Celular");
+                        $("#lbl_detalle4_3").html("Nro. Operación");
                         $("#txtDestino3").parent().html("<select id='cbDestino3' class='obligatorio span12 cbocta3' data-placeholder='CUENTA DE CLIENTE'></select>");
-                        $("#cbDestino3").html("<option>BILLETERA DIGITAL</option>").attr("disabled", true).select2();
+                        $("#cbDestino3").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
 
                         $(".mPersona3").css("display", "none");
                         offObjectEvents("txtNroOpe3");
                         $("#txtNroOpe3").removeClass("personas").attr("disabled", false);
-                        $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de billetera digital");
+                        $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la transacción");
                         $("#txtMonto").attr("disabled", true);
                         $("#cbo_moneda").val($("#cbo_Det_Origen3 :selected").attr("moneda")).change().attr("disabled", true);
-
-                        //$("#p_DatVuelto").hide();
                         $("#txtEfectivo3").val("");
-                        //$("#txtVuelto").val("");
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
 
-                        let nombre_cuenta = $("#cbo_Det_Origen3 :selected").html(); //DPORTA 09/12/2021
+                        break;
 
-                        if (nombre_cuenta.indexOf('BCP') > 0) {
-                            //$("#txtNroOpe3").val("YAPE  -");
-                            mascespecial("txtNroOpe3", "YAPE  -", 16);
-                        } else if (nombre_cuenta.indexOf('BBVA') > 0) {
-                            //$("#txtNroOpe3").val("LUKITA-");
-                            mascespecial("txtNroOpe3", "LUKITA-", 16);
-                        } else if (nombre_cuenta.indexOf('IBK') > 0) {
-                            //$("#txtNroOpe3").val("TUNKI -");
-                            mascespecial("txtNroOpe3", "TUNKI -", 16);
-                        } else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
-                            //$("#txtNroOpe3").val("PLIN  -");
-                            mascespecial("txtNroOpe3", "PLIN  -", 16);
+                    case "0003": //transferencia
+
+                        $("#lbl_detalle3_3").html("Origen");
+                        $("#lbl_detalle4_3").html("Nro. Operación");
+
+                        $("#txtDestino3").parent().html("<select id='cbDestino3' class='obligatorio span12 cbocta3' data-placeholder='CUENTA DE CLIENTE'></select>");
+                        $("#cbDestino3").select2();
+                        $.ajaxSetup({ async: false });
+
+                        $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen3 :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
+                            function (res) {
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    $("#cbDestino3").html(res).select2();
+                                } else {
+                                    $("#cbDestino3").html("<option></option>").select2();
+                                }
+
+                            });
+                        $.ajaxSetup({ async: true });
+                        $.ajaxSetup({ async: false });
+
+                        $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6, banco: $("#cbo_Det_Origen3 :selected").attr("banco"), moneda: $("#cbo_Det_Origen3 :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
+                            function (res) {
+                                if (res != null && res != "" < 0) {
+                                    $("#cbDestino3 option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
+                                    if (res != "error") {
+                                        $("#cbDestino3").append(res.split("<option></option")[1]);
+                                    }
+                                } else {
+                                    $("#cbDestino3").html("<option></option>").change();
+                                }
+
+                            });
+                        $.ajaxSetup({ async: true });
+
+                        $("#cbDestino3").attr("disabled", false).change();
+                        $("#cbo_moneda").attr("disabled", true);
+                        $("#txtMonto").attr("disabled", true);
+                        //$("#txtNroOpe3").attr("disabled", false);
+                        $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la transacción");
+                        $("#txtEfectivo3").val("");
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+
+                        break;
+
+                    case "0013": //cheques bancarios
+
+                        $("#lbl_detalle3_3").html("N° Cheque");
+                        $("#lbl_detalle4_3").html("Girado a");
+                        $("#txtDestino3").attr("disabled", false);
+                        //$("#txtNroOpe3").attr("disabled", false);
+                        $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "");
+                        $("#txtMonto").attr("disabled", true);
+                        $("#txtEfectivo3").val("");
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+
+                        break;
+
+                    case "0006": //tarjeta de credito
+
+                        $("#cbo_moneda").attr("disabled", false);
+                        $("#lbl_detalle3_3").html("N° Tarjeta");
+                        $("#lbl_detalle4_3").html("Cod. Autorización");
+
+                        $("#txtNroOpe3").attr("disabled", false);
+                        $("#txtMonto").attr("disabled", true);
+
+                        $("#txtDestino3").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                        $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la operación");
+                        mascespecial("txtDestino3", "************", 16);
+
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos3"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos3" class="span12"><option></option></select></div></div>');
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta3"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta3" class="span12"><option></option></select></div></div>')
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco3"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco3" class="span12"><option></option></select></div></div>')
+
+                        $("#slcPos3, #slcTarjeta3, #slcBco3").select2();
+                        $("#slcPos3, #slcBco3, #slcTarjeta3").attr("disabled", true);
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
+                            function (res) {
+                                Bloquear($($("#slcBco3").siblings("div")).attr("id"));
+                                $("#slcBco3").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    $("#slcBco3").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcBco3").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcBco3").siblings("div")).attr("id")); });
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
+                            function (res) {
+                                Bloquear($($("#slcTarjeta3").siblings("div")).attr("id"));
+                                $("#slcTarjeta3").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    listaTarjetas = res;
+                                    $("#slcTarjeta3").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcTarjeta3").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcTarjeta3").siblings("div")).attr("id")); });;
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen3").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen3 :selected").attr("stbl") },
+                            function (res) {
+                                Bloquear($($("#slcPos3").siblings("div")).attr("id"));
+                                $("#slcPos3").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+
+                                    $("#slcPos3").addClass("obligatorio").html(res).change(function () {
+
+                                        var mone_pos = $("#slcPos3 :selected").attr("moneda");
+
+                                        if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
+                                            $("#slcPos3").select2("val", "");
+                                            infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
+                                        }
+
+                                        var tarj_pos = $("#slcPos3 :selected").attr("tarjetas");
+                                        $("#slcTarjeta3").html(listaTarjetas).select2("val", "");
+                                        $("#slcTarjeta3 option").filter(function (e, d) {
+                                            var val0r = $(d).val();
+                                            if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta3 option[value=" + val0r + "]").remove(); }
+
+                                        });
+                                        $("#slcTarjeta3").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
+                                    });
+
+                                } else {
+                                    $("#slcPos3").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () //DPORTA 24/06/2021
+                            {
+                                Desbloquear($($("#slcPos3").siblings("div")).attr("id"));
+                                $.ajax({
+                                    type: "post",
+                                    url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen3").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen3 :selected").attr("stbl"),
+                                    contenttype: "application/json;",
+                                    datatype: "json",
+                                    async: false,
+                                    success: function (datos) {
+                                        if (datos != null) {
+                                            $("#slcPos3").val(datos);
+                                            $("#slcPos3").change();
+                                        }
+                                    },
+                                    error: function (msg) {
+                                        alertCustom("Monedas no se listaron correctamente.");
+                                    }
+                                });
+
+                            });
+                        $("#txtEfectivo3").val("");
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+
+                        break;
+                    case "0005": // tarjeta de debito
+
+                        $("#lbl_detalle3_3").html("N° Tarjeta");
+                        $("#lbl_detalle4_3").html("Cod. Autorización");
+
+                        $("#txtNroOpe3").attr("disabled", false);
+                        $("#txtMonto").attr("disabled", true);
+
+                        $("#txtDestino3").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                        $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de la operación");
+                        mascespecial("txtDestino3", "************", 16);
+
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos3"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos3" class="span12"><option></option></select></div></div>');
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="tarjeta3"><div class="span4">MARCA</div><div class="span8"><select data-placeholder="MARCA TARJETA" id="slcTarjeta3" class="span12"><option></option></select></div></div>')
+                        $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="bco3"><div class="span4">BANCO</div><div class="span8"><select data-placeholder="BANCO" id="slcBco3" class="span12"><option></option></select></div></div>')
+
+                        $("#slcPos3, #slcTarjeta3, #slcBco3").select2();
+                        $("#slcPos3, #slcBco3, #slcTarjeta3").attr("disabled", true);
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
+                            function (res) {
+                                Bloquear($($("#slcBco3").siblings("div")).attr("id"));
+                                $("#slcBco3").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    $("#slcBco3").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcBco3").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcBco3").siblings("div")).attr("id")); });
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
+                            function (res) {
+                                Bloquear($($("#slcTarjeta3").siblings("div")).attr("id"));
+                                $("#slcTarjeta3").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    listaTarjetas = res;
+                                    $("#slcTarjeta3").addClass("obligatorio").html(res);
+
+                                } else {
+                                    $("#slcTarjeta3").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () { Desbloquear($($("#slcTarjeta3").siblings("div")).attr("id")); });;
+
+                        $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen3").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen3 :selected").attr("stbl") },
+                            function (res) {
+                                Bloquear($($("#slcPos3").siblings("div")).attr("id"));
+                                $("#slcPos3").attr("disabled", false);
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+
+                                    $("#slcPos3").addClass("obligatorio").html(res).change(function () {
+
+                                        var mone_pos = $("#slcPos3 :selected").attr("moneda");
+
+                                        if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
+                                            $("#slcPos3").select2("val", "");
+                                            infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
+                                        }
+
+                                        var tarj_pos = $("#slcPos3 :selected").attr("tarjetas");
+                                        $("#slcTarjeta3").html(listaTarjetas).select2("val", "");
+                                        $("#slcTarjeta3 option").filter(function (e, d) {
+                                            var val0r = $(d).val();
+                                            if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta3 option[value=" + val0r + "]").remove(); }
+                                        });
+                                        $("#slcTarjeta3").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
+                                    });
+
+                                } else {
+                                    $("#slcPos3").html("").attr("disabled", true);
+                                }
+
+                            }).done(function () //DPORTA 24/06/2021
+                            {
+                                Desbloquear($($("#slcPos3").siblings("div")).attr("id"));
+                                $.ajax({
+                                    type: "post",
+                                    url: "vistas/CC/ajax/CCMCBCL.ASHX?flag=POS_PRED&caja=" + $("#cbo_Det_Origen3").val() + "&empresa=" + $("#cbo_Empresa").val() + "&estable=" + $("#cbo_Det_Origen3 :selected").attr("stbl"),
+                                    contenttype: "application/json;",
+                                    datatype: "json",
+                                    async: false,
+                                    success: function (datos) {
+                                        if (datos != null) {
+                                            $("#slcPos3").val(datos);
+                                            $("#slcPos3").change();
+                                        }
+                                    },
+                                    error: function (msg) {
+                                        alertCustom("Monedas no se listaron correctamente.");
+                                    }
+                                });
+
+                            });
+                        $("#txtEfectivo3").val("");
+                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+
+                        break;
+                    case "0020"://OTROS: YAPE, PLIN, TUNKI, ETC BILLETERA DIG.
+
+                        let billetera_dig = $("#cbo_Det_Origen3 :selected").attr("billetera_dig");
+
+                        if (billetera_dig == 'S') {
+                            $("#lbl_detalle3_3").html("Origen de Pago");
+                            //$("#lbl_detalle4_3").html("Nro. Op.");
+                            $("#lbl_detalle4_3").html("App - Nro. Celular");
+                            $("#txtDestino3").parent().html("<select id='cbDestino3' class='obligatorio span12 cbocta3' data-placeholder='CUENTA DE CLIENTE'></select>");
+                            $("#cbDestino3").html("<option>BILLETERA DIGITAL</option>").attr("disabled", true).select2();
+
+                            $(".mPersona3").css("display", "none");
+                            offObjectEvents("txtNroOpe3");
+                            $("#txtNroOpe3").removeClass("personas").attr("disabled", false);
+                            $("#txtNroOpe3").attr("disabled", false).attr("placeholder", "de billetera digital");
+                            $("#txtMonto").attr("disabled", true);
+                            $("#cbo_moneda").val($("#cbo_Det_Origen3 :selected").attr("moneda")).change().attr("disabled", true);
+
+                            //$("#p_DatVuelto").hide();
+                            $("#txtEfectivo3").val("");
+                            //$("#txtVuelto").val("");
+
+                            let nombre_cuenta = $("#cbo_Det_Origen3 :selected").html(); //DPORTA 09/12/2021
+
+                            if (nombre_cuenta.indexOf('BCP') > 0) {
+                                //$("#txtNroOpe3").val("YAPE  -");
+                                mascespecial("txtNroOpe3", "YAPE  -", 16);
+                            } else if (nombre_cuenta.indexOf('BBVA') > 0) {
+                                //$("#txtNroOpe3").val("LUKITA-");
+                                mascespecial("txtNroOpe3", "LUKITA-", 16);
+                            } else if (nombre_cuenta.indexOf('IBK') > 0) {
+                                //$("#txtNroOpe3").val("TUNKI -");
+                                mascespecial("txtNroOpe3", "TUNKI -", 16);
+                            } else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
+                                //$("#txtNroOpe3").val("PLIN  -");
+                                mascespecial("txtNroOpe3", "PLIN  -", 16);
+                            }
+
+                            ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+                        } else {
+                            infoCustom2("La cuenta destino seleccionada no tiene asociada una Billetera digital");
                         }
 
-                        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
-                    } else {
-                        infoCustom2("La cuenta destino seleccionada no tiene asociada una Billetera digital");
-                    }
-
-                    break;
+                        break;
+                }
             }
         });
 
@@ -8732,19 +8766,20 @@ function pagar3() { //25/02
 function CargarDatosCobroPorDefecto() {
     //CARGA POR DEFECTO
     $("#txtMonto,#txtNroOpe, #txtNroOpe2, #txtNroOpe3").val("");//20/02
-    $('#cbo_OrigenPago, #cbo_OrigenPago2, #cbo_OrigenPago3').select2("val", "Caja").change();
+    //$('#cbo_OrigenPago, #cbo_OrigenPago2, #cbo_OrigenPago3').select2("val", "Caja").change();
+    $('#cbo_OrigenPago, #cbo_OrigenPago2').select2("val", "Caja").change();
     if ($("#cbo_Det_Origen option").length > 0) {
-        var cbo = $("#cbo_Det_Origen option");
+        //var cbo = $("#cbo_Det_Origen option");
         $("#cbo_Det_Origen").select2("val", $($("#cbo_Det_Origen option")[1]).val()).change();
     }
     if ($("#cbo_Det_Origen2 option").length > 0) {
-        var cbo = $("#cbo_Det_Origen2 option");
+        //var cbo = $("#cbo_Det_Origen2 option");
         $("#cbo_Det_Origen2").select2("val", $($("#cbo_Det_Origen2 option")[1]).val()).change();
     }
-    if ($("#cbo_Det_Origen3 option").length > 0) {
-        var cbo = $("#cbo_Det_Origen3 option");
-        $("#cbo_Det_Origen3").select2("val", $($("#cbo_Det_Origen3 option")[1]).val()).change();
-    }
+    //if ($("#cbo_Det_Origen3 option").length > 0) {
+    //    //var cbo = $("#cbo_Det_Origen3 option");
+    //    $("#cbo_Det_Origen3").select2("val", $($("#cbo_Det_Origen3 option")[1]).val()).change();
+    //}
 
     if ($("#cboMedioPago option").length > 0) {
         $("#cboMedioPago").select2("val", "0008"); //EFECTIVO DIRECTO           
@@ -9066,6 +9101,66 @@ function enviarCorreo() {
             }
         });
     }
+};
+
+//WHATSAPP
+
+function cargarTelefonos() {
+    $.ajax({
+        type: 'post',
+        url: 'vistas/na/ajax/naminsa.ashx?OPCION=LTELEFONOS',
+        async: false
+    }).done(function (data) {
+        data = JSON.parse(data);
+        //for (var u in data) {
+        //    if (data[u].usuario === $('#ctl00_txtus').val()) {
+        //        $('#txtRemitente').val(data[u].email);
+        //        break;
+        //    }
+        //}
+
+        $('#cboClienteWhatsapp').selectize({
+            persist: false,
+            maxItems: null,
+            valueField: 'telefono',
+            labelField: 'name',
+            searchField: ['name', 'telefono'],
+            options: data,
+            render: {
+                item: function (item, escape) {
+                    return '<div>' +
+                        (item.name ? '<span class="name">' + escape(item.name) + '</span>&nbsp;' : '') +
+                        (item.telefono ? '<span class="telefono">' + escape(item.telefono) + '</span>' : '') +
+                        '</div>';
+                },
+                option: function (item, escape) {
+                    var label = item.name || item.telefono;
+                    var caption = item.name ? item.telefono : null;
+                    return '<div style="padding: 2px">' +
+                        '<span class="label" style="display: block; font-size: 14px; background-color: inherit; color: inherit; text-shadow: none">' + escape(label) + '</span>' +
+                        (caption ? '<span class="caption" style="display: block; font-size: 12px; margin: 2px 5px">' + escape(caption) + '</span>' : '') +
+                        '</div>';
+                }
+            },
+        });
+        $('.selectize-control').css('margin-left', '0px').css('margin-bottom', '15px');
+        $('.selectize-dropdown').css('margin-left', '0px');
+
+        for (var c in data) {
+            if (data[c].codigo === $('#hfPIDM').val()) {
+                $("#cboClienteWhatsapp")[0].selectize.setValue(data[c].telefono);
+                break;
+            }
+        }
+    });
+}
+function enviarWhatsapp() {
+    var numeroWhatsapp = $("#cboClienteWhatsapp").val();
+    var mensaje = $("#txtContenidoWhatsapp").val();
+
+    var urlWa = "https://wa.me/" + numeroWhatsapp + "/?text=" + encodeURIComponent(mensaje);
+
+    window.open(urlWa)
 };
 
 flagCargaPlugMaps = false;

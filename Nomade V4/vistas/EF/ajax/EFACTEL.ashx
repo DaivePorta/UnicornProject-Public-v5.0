@@ -36,7 +36,7 @@ Public Class EFACTEL : Implements IHttpHandler
             Select Case sOpcion
                 Case "FACT"
                     Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
-                    onEFFactura.fnGetFactura(sCodEmpresa, sCodVenta)
+                    onEFFactura.FnGetFactura(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
                 Case "BFACT"
                     Dim onDEFFactura As New Nomade.Efact.LogNegocio.nEFBajaFactura()
@@ -49,7 +49,7 @@ Public Class EFACTEL : Implements IHttpHandler
                     sResponse = onEFFactura.fnVerificarBajaDoc(sCodEmpresa, sCodVenta)
                 Case "BOL"
                     Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
-                    onEFBoleta.fnGetBoleta(sCodEmpresa, sCodVenta)
+                    onEFBoleta.FnGetBoleta(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
                 Case "BBOL"
                     Dim onBEFBoleta As New Nomade.Efact.LogNegocio.nEFBajaBoleta()
@@ -100,7 +100,7 @@ Public Class EFACTEL : Implements IHttpHandler
                     End If
                 Case "SUBIR_EFACT"
                     Dim Efact As New Nomade.Efact.Conexion.Conexion()
-                    sResponse = Efact.fnSubirArchivo(sRuta)
+                    sResponse = Efact.FnSubirArchivo(sRuta)
 
                 Case "BAJAR_EFACT"
                     Dim Efact As New NOMADE.Efact.Conexion.Conexion()
@@ -115,11 +115,11 @@ Public Class EFACTEL : Implements IHttpHandler
                         Case "0008" 'nota debito
                             sRutaDescarga &= "debitnote\08"
                     End Select
-                    sResponse = Efact.fnDescargaArchivo(sRutaDescarga & sNroDoc & ".xml")
+                    sResponse = Efact.FnDescargaArchivo(sRutaDescarga & sNroDoc & ".xml")
 
                 Case "TEST_CONEC_FTP_EFACT"
                     Dim oConexion As New NOMADE.Efact.Conexion.Conexion()
-                    oConexion.fnTestConexionFTP()
+                    oConexion.FnTestConexionFTP()
                     sResponse = "OK"
 
                 Case Else

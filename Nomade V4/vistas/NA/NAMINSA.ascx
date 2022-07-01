@@ -663,7 +663,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="span2 hidden" id="divElec">
+                                            <div class="span3 hidden" id="divElec">
                                                 <div class="control-group">
                                                     <div class="controls" style="height: 30px;">
                                                         <label class="control-label" for="chkElectronico">
@@ -676,7 +676,7 @@
                                         </div>
                                         <div class="row-fluid" id="divNuestraGuia" style="display: none;">
                                             <div class="span2"></div>
-                                            <div class="span2">
+                                            <div class="span3">
                                                 <div class="control-group">
                                                     <div class="controls" style="height: 20px;">
                                                         <label class="control-label" for="chkNuestraGuia">
@@ -780,7 +780,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="span4" id="ComIGV">
-                                                            <p style="font-style: italic; color: blue; text-align: justify" class="span4">
+                                                            <p style="font-style: italic; color: blue; text-align: justify" class="span12">
                                                                 <span id="divComunicado">*Valor incluye IGV y en soles</span>
                                                              </p>
                                                         </div>
@@ -1255,7 +1255,7 @@
                                 </div>
                                 <div id="btnCompletar" class="form-actions">
                                     <a class="btn green" href="javascript:CompletarDcto();" style="display: none"><i class="icon-ok-sign"></i>&nbsp;Completar</a>
-                                    <a id="btnImprimirGuia" class="btn black" style="display: none"><i class="icon-print"></i>&nbsp;Imprimir Guia</a>
+                                    <a id="btnImprimirGuia" class="btn black" style="display: none"><i class="icon-print"></i>&nbsp;Imprimir Guía</a>
                                     <%--<a id="btnImprimirGuia" class="btn black" href="javascript:ImprimirGuiaRemisionElectonica();" style="display: none"><i class="icon-print"></i>&nbsp;Imprimir Guia</a>--%>
                                     <p style="font-style: italic; color: blue; float: right" id="p_info">* Doble clic para modificar serie, centro de costos o cantidad.</p><br><br>
                                     <p style="font-style: italic; color: blue; float: right; display:none" id="p_info2">* Los valores que se muestran son los costos de KARDEX.</p>

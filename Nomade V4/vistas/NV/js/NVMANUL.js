@@ -231,7 +231,7 @@
         var SCSL_CODE = $("#cboEstablecimiento").val();
         var DCTO_CODE = ($("#cboTipoDoc").val() == "TODOS") ? '' : $("#cboTipoDoc").val();
         var VENDEDOR = ($("#cboVendedor").val() == "TODOS") ? '' : $("#cboVendedor :selected").text();
-        var CLIENTE = ($("#cboCliente").val() == "TODOS") ? '' : parseFloat($("#cboCliente :selected").val()).toString();
+        var CLIENTE = ($("#cboCliente").val() == "TODOS" || $("#cboCliente").val() == "") ? '' : parseFloat($("#cboCliente :selected").val()).toString();
         var PRODUCTO = ($("#cboProducto").val() == "TODOS") ? '' : $("#cboProducto").val();
         var ESTADO = ($("#cboEstado").val() == "TODOS") ? '' : $("#cboEstado").val();
         
