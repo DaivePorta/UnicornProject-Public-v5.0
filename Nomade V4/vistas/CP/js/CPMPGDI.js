@@ -366,7 +366,7 @@ var CPMPGDI = function () {
             "columnDefs": [
                 { "visible": false, "targets": 0 }
             ],
-            order: [[0, 'asc']],
+            order: [[1, 'desc']],
             drawCallback: function (settings) {
                 var api = this.api();
                 var rows = api.rows({ page: 'current' }).nodes();

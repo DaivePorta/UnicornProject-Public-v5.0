@@ -1149,7 +1149,7 @@ Public Class NVMDOCV : Implements IHttpHandler
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = ncTipoDcEmpresa.ListarTipoDCEspecifico(TIPO_DCTO, CTLG)
                     If Not (dt Is Nothing) Then
-                        dt = SortDataTableColumn(dt, "DESCRIPCION_CORTA", "ASC")
+                        dt = SortDataTableColumn(dt, "CODIGO", "ASC")
                         resb.Append("[")
                         For Each MiDataRow As DataRow In dt.Rows
                             If MiDataRow("DESCRIPCION_CORTA").ToString <> "" Then

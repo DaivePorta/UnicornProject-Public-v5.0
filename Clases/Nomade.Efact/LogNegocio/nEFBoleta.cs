@@ -1,4 +1,5 @@
-﻿using Nomade.Efact.LogDatos;
+﻿using Nomade.Efact.Conexion;
+using Nomade.Efact.LogDatos;
 using Nomade.NB;
 using System;
 using System.Collections.Generic;
@@ -28,16 +29,16 @@ namespace Nomade.Efact.LogNegocio
         private readonly string sDelimitador = "FF00FF";
 
         public nEFBoleta()
-        {
+                {
             if (!Directory.Exists(In_LocalPathEfact)) Directory.CreateDirectory(In_LocalPathEfact);
             if (!Directory.Exists(Out_LocalPathEfact)) Directory.CreateDirectory(Out_LocalPathEfact);
             if (!Directory.Exists(Error_LocalPathEfact)) Directory.CreateDirectory(Error_LocalPathEfact);
-        }
+                }
 
         public void FnGetBoleta(string p_CTLG_CODE, string p_VTAC_CODE)
-        {
+                {
             try
-            {
+                    {
                 cEFBoleta ocEFBoleta = new cEFBoleta("Bn");
                 DataTable oDT_Doc = ocEFBoleta.fnListarDoc(p_CTLG_CODE, p_VTAC_CODE);
 
@@ -170,7 +171,7 @@ namespace Nomade.Efact.LogNegocio
                 string s1AJ = ""; // Campo gris, en blanco
                 string s1AK = ""; // Campo gris, en blanco
 
-                string s1AL = "1"; // Cantidad de Líneas del documento
+                string s1AL = oDR_DatosDoc["1AL"].ToString(); // Cantidad de Líneas del documento
                 string s1AM = ""; // Código del régimen de la percepción
                 string s1AN = ""; // Cantidad guías, otros documentos y pago único o cuotas relacionadas
                 string s1AO = ""; // Cantidad de anticipos asociados
@@ -1004,7 +1005,7 @@ namespace Nomade.Efact.LogNegocio
                 }
                 DataRow oDR_DatosDoc = oDT_DatosDoc.Rows[0];
 
-                
+
 
                 string c1 = oDR_DatosDoc["CAB1"].ToString(); // TIPO DE OPERACION 0101
                 string c2 = oDR_DatosDoc["CAB2"].ToString(); // Fecha de Emisión            
@@ -1166,7 +1167,7 @@ namespace Nomade.Efact.LogNegocio
                 {
                     File.Delete(sNombreArchivoTri);
                 }
-                
+
                 string sInfoDoc = sDatosCabecera;
                 string sInfoDocDet = sProductoDet;
                 string sInfoDocLeyenda = sDatosLeyenda;
@@ -1283,7 +1284,7 @@ namespace Nomade.Efact.LogNegocio
                     throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento fué comunicado para baja.");
                 }
 
-                
+
 
                 // Inicio - Datos del Documento
                 DataTable oDT_DatosDoc = ocEFBoleta.fnListarDatosBoletaAnticipoOrbitum(p_CTLG_CODE, P_FVRANTI_CODE);
@@ -1415,7 +1416,7 @@ namespace Nomade.Efact.LogNegocio
                 {
                     File.Delete(sNombreArchivoTri);
                 }
-                
+
                 string sInfoDoc = sDatosCabecera;
                 string sInfoDocDet = sProductoDet;
                 string sInfoDocLeyenda = sDatosLeyenda;
@@ -1479,12 +1480,12 @@ namespace Nomade.Efact.LogNegocio
 
         public string fnVerificarDoc(string p_CTLG_CODE, string p_VTAC_CODE)
         {
-			string sRespuesta = "";
-			try
+            string sRespuesta = "";
+            try
             {
 
                 cEFBoleta ocEFBoleta = new cEFBoleta("Bn");
-                
+
                 DataTable oDT_Doc = ocEFBoleta.fnListarDoc(p_CTLG_CODE, p_VTAC_CODE);
 
                 if (oDT_Doc == null)
@@ -1493,36 +1494,36 @@ namespace Nomade.Efact.LogNegocio
                 }
 
                 DataRow oDR_DatosDoc = oDT_Doc.NewRow();
-                oDR_DatosDoc = oDT_Doc.Rows[0];                
+                oDR_DatosDoc = oDT_Doc.Rows[0];
                 string sSerieNroDoc = oDR_DatosDoc["NroSerieDoc"].ToString(); // Serie y Nro del Documento
-               
+
                 cEFFactura ocEFFactura = new cEFFactura("Bn");
                 string sNombreArchivo = sPath_Orbitum + @"FIRMA\" + "03" + sSerieNroDoc + ".xml";
                 if (File.Exists(sNombreArchivo))
                 {
-					string sRutaArchivo = sNombreArchivo;
-					sRutaArchivo = sRutaArchivo.Replace(".xml", ".zip");
-					bool bUpLoadOk = false;
-					try
-					{
-						Nomade.Efact.Conexion.Conexion oConexion = new Nomade.Efact.Conexion.Conexion();
-						oConexion.FnSubirArchivo(sRutaArchivo);
-						bUpLoadOk = true;
-					}
-					catch (Exception)
-					{
+                    string sRutaArchivo = sNombreArchivo;
+                    sRutaArchivo = sRutaArchivo.Replace(".xml", ".zip");
+                    bool bUpLoadOk = false;
+                    try
+                    {
+                        ConnectionSFTP oConexion = new ConnectionSFTP();
+                        oConexion.FnSubirArchivo(sRutaArchivo);
+                        bUpLoadOk = true;
+                    }
+                    catch (Exception)
+                    {
 
-					}
+                    }
 
-					if (bUpLoadOk)
-					{
-						sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "S");
+                    if (bUpLoadOk)
+                    {
+                        sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "S");
                         sRespuesta = "OK";
                     }
-					else
-					{
-						sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "P");
-					}
+                    else
+                    {
+                        sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "P");
+                    }
 
 				} else
                 {
@@ -1538,14 +1539,14 @@ namespace Nomade.Efact.LogNegocio
                         if (File.Exists(sNombreArchivo))
                         {
                             sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "X");
-						}
-						else
-						{
-							sRespuesta = "[Advertencia]: No se encontró el archivo generado";
-						}
-					}
+                        }
+                        else
+                        {
+                            sRespuesta = "[Advertencia]: No se encontró el archivo generado";
+                        }
+                    }
                 }
-				return sRespuesta;
+                return sRespuesta;
             }
             catch (Exception ex)
             {
@@ -1749,7 +1750,7 @@ namespace Nomade.Efact.LogNegocio
                             }
                         }
                         else
-                        {                            
+                        {
 
                             string sNombreArchivoArchivoTemp = sPath_Orbitum + @"TEMP\" + sRUC + "-03-" + sSerieNroDoc + ".xml";
 
@@ -1791,7 +1792,7 @@ namespace Nomade.Efact.LogNegocio
 
                 }
 
-                
+
             }
             catch (Exception ex)
             {

@@ -63,6 +63,30 @@ namespace Nomade.Efact.LogDatos
         }
 
         
+
+        public DataTable FnListarGuiaRemision(string p_CTLG_CODE, string p_NC_CODE)
+        {
+            try
+            {
+                IDbCommand newCommand = this.cn.GetNewCommand("EFAC_NC_GUIAS", CommandType.StoredProcedure);
+                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_CTLG", p_CTLG_CODE, ParameterDirection.Input, (DbType)253, 0));
+                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_NC_CODE", p_NC_CODE, ParameterDirection.Input, (DbType)253, 0));
+
+                DataTable oDataTable = new DataTable();
+                oDataTable = this.cn.Consulta(newCommand);
+                if (oDataTable == null)
+                    return null;
+                else if (oDataTable.Rows.Count == 0)
+                    return null;
+                else
+                    return oDataTable;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public DataTable fnListarDatosDocumentoOrbitum(string p_CTLG_CODE, string p_NC_CODE)
         {
             try

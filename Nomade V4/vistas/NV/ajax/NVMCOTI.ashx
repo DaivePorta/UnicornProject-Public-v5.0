@@ -53,7 +53,7 @@ Public Class NVMCOTI : Implements IHttpHandler
     Dim nmGestionPrecios As New NOMADE.NM.NMGestionPrecios("Bn")
     Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
     Dim nvDetCotizacion As New Nomade.NV.NVCotizacion("Bn") 'almacena los detalles de cotizaciones de cliente para recepcion de anticipos
-
+    Dim nvCtasBancarias As New Nomade.NC.NCCuentaBancaria("Bn")
     Dim dt As DataTable
 
     Dim res, cod, msg As String
@@ -630,11 +630,12 @@ Public Class NVMCOTI : Implements IHttpHandler
         Dim tabla As New StringBuilder
         Dim dtCabecera As New DataTable
         Dim dtDetalles As New DataTable
-        'Dim dtEmpresas As New DataTable
+        Dim dtCuentas As New DataTable
         Dim dtParametroLogo As New DataTable
 
         dtCabecera = nvCotizacion.ListarCabCotizacionClienteImpresion(p_CODE)
         dtDetalles = nvCotizacion.ListarDetCotizacionClienteImpresion(p_CODE)
+        dtCuentas = nvCtasBancarias.ListarCuentasBancarias(dtCabecera.Rows(0)("CODE_EMPRESA"), "", "A")
         dtParametroLogo = New Nomade.NC.NCParametros("Bn").ListarParametros("LOVE", "")
 
         If dtCabecera IsNot Nothing Then
@@ -713,6 +714,7 @@ Public Class NVMCOTI : Implements IHttpHandler
             tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Cliente<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("RAZON_SOCIAL"))
             tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>{0}<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{1}</td></tr>", dtCabecera.Rows(0)("CLIE_DCTO_DESC"), dtCabecera.Rows(0)("CLIE_DCTO_NRO"))
             tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Dirección<span>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DIRECCION_CLIENTE"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Glosa<span>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("GLOSA"))
             tabla.Append("</tbody></table>")
 
             tabla.Append("<table border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'><tbody>")
@@ -1006,6 +1008,44 @@ Public Class NVMCOTI : Implements IHttpHandler
             tabla.Append("</tr>")
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            tabla.Append("<tr>")
+            tabla.AppendFormat("<td colspan='4'><strong>CONDICIÓN DE PAGO: {0}</strong></td>", dtCabecera.Rows(0)("DESC_MODO_PAGO"))
+            tabla.Append("</tr>")
+
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            tabla.Append("<tr>")
+            tabla.AppendFormat("<td colspan='4'><strong>CTAS BANCARIAS A DEPOSITAR:</strong></td>")
+            tabla.Append("</tr>")
+
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            tabla.Append("<table border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'><tbody>")
+            tabla.Append("<tr style='border-top: 1px dashed black;border-bottom: 1px dashed black;'>")
+            tabla.Append("<td style='text-align: left;'><strong>Tipo</strong></td><td style='text-align: left;'><strong>Banco</strong></td><td style='text-align: left;'><strong>Cta. Bancaria</strong></td><td style='text-align: left;'><strong>Cta. Interbancaria</strong></td>")
+            tabla.Append("</tr>")
+            tabla.Append("<tr>")
+            For Each row In dtCuentas.Rows
+                If row("CUENTA_COBRANZA") = "S" Then
+                    tabla.Append("<tr>")
+                    tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", row("TPOCUENTA"))
+                    tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", row("BANCO"))
+                    tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", row("NRO_CUENTA"))
+                    tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", row("NRO_CTA_INTER"))
+                    tabla.Append("</tr>")
+                End If
+            Next
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            tabla.Append("<tr style='border-top: 1px dashed black;'>")
+            tabla.Append("<td colspan='4' style='text-align: center;'><strong></strong></td>")
+            tabla.Append("</tr>")
+            'tabla.Append("</tr>")
+            'tabla.Append("</tbody></table>")
+
+            'tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            'tabla.Append("<tr>")
+            'tabla.AppendFormat("<td colspan='4'><strong>CONSULTAS: {0}</strong></td>", "ESTEFANY VASQUEZ MACHUCA J. - TELEF: 98666789")
+            'tabla.Append("</tr>")
+
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
             tabla.Append("<tr style='border-top: 1px dashed black;'>")
             tabla.Append("</tr>")
 
@@ -1224,11 +1264,13 @@ Public Class NVMCOTI : Implements IHttpHandler
         Dim tabla As New StringBuilder
         Dim dtCabecera As New DataTable
         Dim dtDetalles As New DataTable
+        Dim dtCuentas As New DataTable
         'Dim dtEmpresas As New DataTable
         'Dim dtParametroLogo As New DataTable
 
         dtCabecera = nvCotizacion.ListarCabCotizacionClienteImpresion(p_CODE)
         dtDetalles = nvCotizacion.ListarDetCotizacionClienteImpresion(p_CODE)
+        dtCuentas = nvCtasBancarias.ListarCuentasBancarias(dtCabecera.Rows(0)("CODE_EMPRESA"), "", "A")
         'dtParametroLogo = New Nomade.NC.NCParametros("Bn").ListarParametros("LOVE", "")
 
         If dtCabecera IsNot Nothing Then
@@ -1294,6 +1336,8 @@ Public Class NVMCOTI : Implements IHttpHandler
             tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Cliente</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("RAZON_SOCIAL"))
             tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>{0}</strong></td><td colspan='3'><strong>: </strong>{1}</td></tr>", dtCabecera.Rows(0)("CLIE_DCTO_DESC"), dtCabecera.Rows(0)("CLIE_DCTO_NRO"))
             tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Dirección</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("DIRECCION_CLIENTE"))
+            tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Condición de pago</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("DESC_MODO_PAGO"))
+            tabla.AppendFormat("<tr><td valign='top' style='font-size:8pt;font-family:Arial,sans-serif'><strong>Glosa</strong></td><td colspan='3'><strong>: </strong>{0}</td></tr>", dtCabecera.Rows(0)("GLOSA"))
             tabla.Append("<tr><td colspan='4' border='1' style='border-top:1px solid black;' ></td></tr>")
             tabla.Append("</tbody>")
             tabla.Append("</table>")
@@ -1599,12 +1643,33 @@ Public Class NVMCOTI : Implements IHttpHandler
             tabla.Append("<br>")
             tabla.Append("</tr>")
 
-            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
-            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
-            tabla.Append("<tr><td colspan='4' border='1'></td></tr>")
-            tabla.Append("<tr>")
-            tabla.Append("<td colspan='4' style='text-align: center;'>GRACIAS POR SU PREFERENCIA</td>")
+            tabla.Append("</tbody></table>")
 
+            tabla.Append("<table border='1' style='width: 50%;' cellspacing='0px'  align='center' font size=9pt>")
+            tabla.Append("<thead>")
+            tabla.Append("</thead>")
+            tabla.Append("<tbody>")
+            tabla.Append("<tr style='border-top: 1px dashed black;border-bottom: 1px dashed black;background-color: #D6EAF8;'>")
+            tabla.Append("<td style='text-align: left;'><strong>Tipo</strong></td>")
+            tabla.Append("<td style='text-align: left;'><strong>Banco</strong></td>")
+            tabla.Append("<td style='text-align: left;'><strong>Cta. Bancaria</strong></td>")
+            tabla.Append("<td style='text-align: left;'><strong>Cta. Interbancaria</strong></td>")
+            tabla.Append("</tr>")
+            For Each row In dtCuentas.Rows
+                If row("CUENTA_COBRANZA") = "S" Then
+                    tabla.Append("<tr>")
+                    tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", row("TPOCUENTA"))
+                    tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", row("BANCO"))
+                    tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", row("NRO_CUENTA"))
+                    tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", row("NRO_CTA_INTER"))
+                    tabla.Append("</tr>")
+                End If
+            Next
+            'tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            'tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            'tabla.Append("<tr><td colspan='4' border='1'></td></tr>")
+            tabla.Append("<tr>")
+            tabla.Append("<td colspan='4' style='text-align: center;'><strong>CTAS. BANCARIAS A DEPOSITAR</strong></td>")
             tabla.Append("</table>")
 
         End If

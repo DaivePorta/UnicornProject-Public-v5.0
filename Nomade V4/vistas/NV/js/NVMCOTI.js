@@ -971,6 +971,12 @@ var NVMCOTI = function () {
                         $('#txt_fec_vencimiento').datepicker('setDate', 'now');
                         $('#txtFechaVigencia').datepicker('setDate', 'now');
                         $("#txtDiasVigencia").val(0);
+                        $("#txtFechaVigencia, #txtDiasVigencia").pulsate({
+                            color: "#0004FF",
+                            reach: 20,
+                            repeat: 3,
+                            glow: true
+                        });
                     }                   
                     
                     //$("#hfPIDM").val(datos[0].CLIE_PIDM);
@@ -1298,17 +1304,12 @@ var NVMCOTI = function () {
                                     ListarTablaDetallesMuestra(datos4);
                                 }
 
-
-
-
-
-
                                 if ($("#hfCompletoInd").val() == "S") {
                                     $(".btnEliminarDetalle").remove();
                                     $("#tabla_det").DataTable().column(0).visible(false);
 
                                 } else {
-
+                                    $("#div_btn_completar").attr("style", "display:none");//para que obligatoriamente se tenga que modificar antes de completar
                                     CalcularDetraccion();
                                     CalcularDatosMonetarios();
                                 }
@@ -1769,9 +1770,10 @@ function CargarFactorImpuestoRentaVenta() {
 }
 
 function ListarSucursales(ctlg) {
+    var USUA_ID = $("#ctl00_txtus").val();
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=0&CTLG_CODE=" + ctlg,
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LSU&CTLG_CODE=" + ctlg + "&USUA_ID=" + USUA_ID,
         contenttype: "application/json;",
         datatype: "json",
         async: false,
@@ -1840,8 +1842,9 @@ function filltxtdescproducto(seriado) {
     if ($('#cboAlmacen').val() != null) {
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODALMC&CTLG=" + $('#cbo_Empresa').val() + "&ALMC_CODE=" + $('#cboAlmacen').val() + "&SERIADO_IND=" + seriado,
+            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODALMC&CTLG=" + $('#cbo_Empresa').val() + "&ALMC_CODE=" + $('#cboAlmacen').val() + "&SERIADO_IND=" + seriado,
             //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODTODOS&CTLG=" + $('#cbo_Empresa').val() + "&SCSL=" + $('#cbo_Sucursal').val() + "&SERIADO_IND=" + seriado,
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODALMC_CAB&CTLG=" + $('#cbo_Empresa').val() + "&ALMC_CODE=" + $('#cboAlmacen').val() + "&SERIADO_IND=" + seriado,
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -3038,7 +3041,7 @@ function AgregarDetalleVenta() {
         }
     }
     //Agregado, no se muestra hasta que se de grabar a la venta
-    //$("#div_btn_completar").attr("style", "display:none");
+    $("#div_btn_completar").attr("style", "display:none");
 }
 
 //Limpiar campos para llenar nuevo producto
@@ -3095,7 +3098,8 @@ function ObtenerProductoCompleto(codeProd, cliePidm) {
     $.ajax({
         type: "post",
         //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPROD_COTI&PROD_CODE=" + codeProd,
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODALMC" +
+        //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODALMC" +
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LPRODALMC_DET" +
         "&PROD_CODE=" + codeProd +
         "&CTLG=" + $("#cbo_Empresa").val() +
         "&ALMC_CODE=" + $('#cboAlmacen').val(),
@@ -3323,7 +3327,7 @@ function Delete(item) {
 
 
         $("#div_tabla_det").attr("style", "display:block");
-        $("#div_btn_completar").attr("style", "display:inline");
+        //$("#div_btn_completar").attr("style", "display:inline");
         $('#div_tabla_det').html(datos);
 
         $('#tabla_det').dataTable({
@@ -4192,7 +4196,7 @@ function GrabarDctoVenta() {
                            $("#grabar").html("<i class='icon-pencil'></i> Modificar");
                            $("#grabar").attr("href", "javascript:ActualizarDctoVenta();");
                            $("#txtNumDctoComp").val(datos[0].CODIGO);
-                         
+                           $("#div_btn_completar").attr("style", "display:inline");
                            $('.buscar, .add, .remove').css('display', 'none');
                            $('#cbo_Empresa').attr('disabled', 'disabled');
                            $("#btnBuscarDctoOrigen").attr("style", "display:inline:block;");
@@ -4537,7 +4541,7 @@ function GrabarCompletarDctoVenta() {
                                $("#hfCompletoInd").val("S")
                                $("#grabar").attr("href", "javascript:ActualizarDctoVenta();");
                                $("#divBtnsMantenimiento").attr("style", "display:none");
-
+                               $("#div_btn_completar").attr("style", "display:inline");
                                $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
                                $("#txtNumDctoComp").val(datos[0].CODIGO);
                                BloquearCampos();
@@ -4881,7 +4885,7 @@ function ActualizarDctoVenta() {
                            $("#txtNumSec").val(datos[0].SECUENCIA);
                            $('#cbo_Empresa').attr('disabled', 'disabled');
                            $('.buscar, .add, .remove').css('display', 'none');
-
+                           $("#div_btn_completar").attr("style", "display:inline");
                        }
                        else {
                            alertCustom("Se ha excedido el límite de los documentos autorizados. Intente utilizar otra serie o refrescar la página");
@@ -6006,7 +6010,11 @@ function ObtenerTablaDetalles() {
 
 function ListarTablaDetalles(datos) {
     $("#div_tabla_det").attr("style", "display:block");
-    $("#div_btn_completar").attr("style", "display:inline");
+    if ($("#txtNumDctoComp").val() != "") {
+        $("#div_btn_completar").attr("style", "display:inline");
+    } else {
+        $("#div_btn_completar").attr("style", "display:none");
+    }
     $('#div_tabla_det').html(datos);
 
     $('#tabla_det').dataTable({

@@ -142,6 +142,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="span2 offset1">
+                        <div class="control-group">
+                            <div class="controls">
+                                <input type="checkbox" id="chkDetGastos" />
+                                Ver Detalle de Gastos
+                            </div>
+                        </div>
+                    </div> 
                     <div class="span1">
                     </div>
                     <div class="span2" id="div_generarDPF" style="display: none;">
@@ -212,6 +220,9 @@
 
                         </div>
                         <div class="span6" id="divVentasArea">
+
+                        </div>
+                        <div class="span12" style="margin-left: 0" id="divDetGastos">
 
                         </div>
                         <div class="span12" style="margin-left: 0" id="divInconsistencias">

@@ -2820,6 +2820,7 @@ var NVMDOCV = function () {
                                     $("#rbRedondeo,#rbDonacion").removeAttr("disabled");
                                     CalcularDetraccion();
                                     CalcularDatosMonetarios();
+                                    $("#div_btn_completar").attr("style", "display:none");//para que obligatoriamente se tenga que modificar antes de completar
                                 }
 
                                 if (datos[0].COMPLETO != "SI") {

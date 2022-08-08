@@ -67,14 +67,14 @@
                             <label id="lblrazsocial" class="control-label" for="txtrazsocial">Cliente</label>
                         </div>
                     </div>
-                    <div class="span5">
+                    <div class="span4">
                         <div class="control-group">
                             <div class="controls" id="inputRazsocial">
                                 <input id="txtrazsocial" class="span12" type="text" data-provide="typeahead" placeholder="Cliente" />
                             </div>
                         </div>
                     </div>
-
+                    <div class="span1"></div>
                     <div class="span1">
                         <div class="control-group">
                             <label id="lblSerieNotaCredito" class="control-label" for="cboSerieNC">Serie</label>
@@ -182,7 +182,7 @@
                         </div>
                     </div>
                 </div>
-
+                <br />
 
                 <div class="row-fluid">
                     <div class="span1">
@@ -221,14 +221,14 @@
                         </div>
                     </div>   
                 </div>
-
+                <br />
                 <div class="row-fluid">
                     <div class="span1">
                         <div class="control-group">
                             <label class="control-label" for="txtGlosa">Glosa</label>
                         </div>
                     </div>
-                    <div class="span5">
+                    <div class="span4">
                         <div class="control-group">
                             <div class="controls">
                                 <input id="txtGlosa" class="span12" type="text" maxlength="100" placeholder="Descripción detallada del motivo"/>

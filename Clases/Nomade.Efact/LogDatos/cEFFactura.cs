@@ -290,6 +290,29 @@ namespace Nomade.Efact
             }
         }
 
+        public DataTable FnListarGlobalesAdicionales(string p_CTLG_CODE, string p_VTAC_CODE)
+        {
+            try
+            {
+                IDbCommand newCommand = this.cn.GetNewCommand("EFAC_FACT_GLOBALES_ADICIONALES", CommandType.StoredProcedure);
+                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_CTLG", p_CTLG_CODE, ParameterDirection.Input, (DbType)253, 0));
+                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, (DbType)253, 0));
+
+                DataTable oDataTable = new DataTable();
+                oDataTable = this.cn.Consulta(newCommand);
+                if (oDataTable == null)
+                    return null;
+                else if (oDataTable.Rows.Count == 0)
+                    return null;
+                else
+                    return oDataTable;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public DataTable fnListarDatosProducto(string p_CTLG_CODE, string p_VTAC_CODE)
         {
             try

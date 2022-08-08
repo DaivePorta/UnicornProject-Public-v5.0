@@ -692,7 +692,7 @@
   ByVal p_IGV_PORCENTAJE As String, ByVal p_USUA_ID As String,
   ByVal p_SCSL_EXONERADA_IND As String, ByVal p_VALOR_CAMBIO As String,
   ByVal p_MONTO_USABLE As String, ByVal p_MES_PERIODO As String, ByVal p_ANIO_PERIODO As String, ByVal p_DEVOLVER_DINERO As String,
-  ByVal p_COD_AUT As String, ByVal p_DETALLES As String
+  ByVal p_APLICA_DOC_REFERENCIA As String, ByVal p_COD_AUT As String, ByVal p_DETALLES As String
  ) As Array
         Dim msg(3) As String
         Try
@@ -723,7 +723,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_MES_PERIODO", p_MES_PERIODO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_ANIO_PERIODO", p_ANIO_PERIODO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DEVOLVER_DINERO", p_DEVOLVER_DINERO, ParameterDirection.Input, 253))
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_APLICA_DOC_REFERENCIA", p_APLICA_DOC_REFERENCIA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_COD_AUT", p_COD_AUT, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", String.Empty, ParameterDirection.Output, 253))

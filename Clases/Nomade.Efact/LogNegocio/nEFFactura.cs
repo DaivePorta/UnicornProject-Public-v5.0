@@ -1,4 +1,5 @@
-﻿using Nomade.NB;
+﻿using Nomade.Efact.Conexion;
+using Nomade.NB;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -69,7 +70,7 @@ namespace Nomade.Efact.LogNegocio
                 {
                     throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento fué comunicado para baja.");
                 }
-                
+
                 string sMoneda = "";
 
                 // Inicio: FILA 1 - DATOS DEL DOCUMENTO
@@ -122,7 +123,7 @@ namespace Nomade.Efact.LogNegocio
 
                 decimal nMontoExon = Convert.ToDecimal(oDR_DatosDoc["1X"]);
                 string s1X = "";
-                if(nMontoExon != 0)
+                if (nMontoExon != 0)
                     s1X = oDR_DatosDoc["1X"].ToString(); // Monto Total Exoneradas
 
                 decimal nMontoGrat = Convert.ToDecimal(oDR_DatosDoc["1Y"]);
@@ -134,7 +135,7 @@ namespace Nomade.Efact.LogNegocio
 
                 decimal nBasePercep = Convert.ToDecimal(oDR_DatosDoc["1AA"]);
                 string s1AA = "";
-                if(nBasePercep != 0)
+                if (nBasePercep != 0)
                     s1AA = nBasePercep.ToString(); // Base Imponible Percepción
                 string s1AB = "";
                 if (nBasePercep != 0)
@@ -165,9 +166,10 @@ namespace Nomade.Efact.LogNegocio
                 string s1AI = ""; // Monto base retención del IGV                
                 string s1AJ = ""; // Factor retención del IGV
                 string s1AK = ""; // Monto total retención del IGV
-                string s1AL = "1"; // Cantidad de Líneas del documento
+                string s1AL = oDR_DatosDoc["1AL"].ToString(); // Cantidad de Líneas del documento
                 string s1AM = ""; // Código del régimen de la percepción
-                string s1AN = ""; // Cantidad guías, otros documentos y pago único o cuotas relacionadas
+                string s1AN = oDR_DatosDoc["1AN"].ToString(); // Cantidad guías, otros documentos y pago único o cuotas relacionadas
+                s1AN = (s1AN.Equals("0") ? "" : s1AN);
                 string s1AO = ""; // Cantidad de anticipos asociados
                 string s1AP = ""; // Total anticipos
                 string s1AQ = ""; // Cantidad de punto de partida y llegada
@@ -190,9 +192,9 @@ namespace Nomade.Efact.LogNegocio
                 string s1BH = ""; // Total descuentos AB
 
                 string fila1_DatosDoc = s1A + "," + s1B + "," + s1C + "," + s1D + "," + s1E + "," + s1F + "," + s1G + "," +
-                    s1H + "," + s1I + "," + s1J + "," + s1K + "," + s1L + "," + s1M + "," + s1N + "," + s1O + "," +
-                    s1P + "," + s1Q + "," + s1R + "," + s1S + "," + s1T + "," + s1U + "," + s1V + "," + s1W + "," +
-                    s1X + "," + s1Y + "," + s1Z + "," + s1AA + "," + s1AB + "," + s1AC + "," + s1AD + "," + s1AE + "," +
+                     s1H + "," + s1I + "," + s1J + "," + s1K + "," + s1L + "," + s1M + "," + s1N + "," + s1O + "," +
+                     s1P + "," + s1Q + "," + s1R + "," + s1S + "," + s1T + "," + s1U + "," + s1V + "," + s1W + "," +
+                     s1X + "," + s1Y + "," + s1Z + "," + s1AA + "," + s1AB + "," + s1AC + "," + s1AD + "," + s1AE + "," +
                     s1AF + "," + s1AG + "," + s1AH + "," + s1AI + "," + s1AJ + "," + s1AK + "," + s1AL + "," + s1AM + "," +
                     s1AN + "," + s1AO + "," + s1AP + "," + s1AQ + "," + s1AR + "," + s1AS + "," + s1AT + "," + s1AU + "," +
                     s1AV + "," + s1AW + "," + s1AX + "," + s1AY + "," + s1AZ + "," + s1BA + "," + s1BB + "," + s1BC + "," +
@@ -201,7 +203,7 @@ namespace Nomade.Efact.LogNegocio
 
                 // Inicio: FILA 2 - SUSTENTO DE TRASLADO DE MERCADERÍA (Dato exclusivo para la Factura Guía Remitente)
                 DataTable oDT_PuntoPartida = ocEFFactura.fnListarPuntoPartida(p_CTLG_CODE, p_VTAC_CODE);
-                
+
                 string s2A = "";
                 string s2B = "";
                 string s2C = "";
@@ -513,6 +515,9 @@ namespace Nomade.Efact.LogNegocio
                 // Fin - FILA 7 - LEYENDAS
 
                 // Inicio - FILA 8 - ADICIONALES GLOBALES
+
+                DataTable oDT_GlobalesAdicionales = ocEFFactura.FnListarGlobalesAdicionales(p_CTLG_CODE, p_VTAC_CODE);
+
                 string s8A = "";
                 string s8B = "";
                 string s8C = "";
@@ -607,6 +612,14 @@ namespace Nomade.Efact.LogNegocio
                 string s8CG = "";
                 string s8CH = "";
                 string s8CI = "";
+
+                if(oDT_GlobalesAdicionales != null)
+                {
+                    DataRow oDR_GlobalesAdicionales = oDT_GlobalesAdicionales.NewRow();
+                    oDR_GlobalesAdicionales = oDT_GlobalesAdicionales.Rows[0];
+
+                    s8CG = oDR_GlobalesAdicionales["8CG"].ToString(); // Medio de pago
+                }
 
                 string fila8_AdicionalesGlobales = s8A + "," + s8B + "," + s8C + "," + s8D + "," + s8E + "," + s8F + "," + s8G + "," + s8H + "," + 
                     s8I + "," + s8J + "," + s8K + "," + s8L + "," + s8M + "," + s8N + "," + s8O + "," + s8P + "," + s8Q + "," + 
@@ -793,7 +806,7 @@ namespace Nomade.Efact.LogNegocio
                 string s9EW = "";
 
                 string fila9_DatosLinea = "";
-                foreach(DataRow oDR in oDT_DatosProd.Rows)
+                foreach (DataRow oDR in oDT_DatosProd.Rows)
                 {
                     if (bIndicador) fila9_DatosLinea += ((char)10);
 
@@ -1014,15 +1027,15 @@ namespace Nomade.Efact.LogNegocio
                 {
                     // Add some text to file
                     Byte[] abDatosDoc = new UTF8Encoding(true).GetBytes(sInfoDoc);
-                    oFileStream.Write(abDatosDoc, 0, abDatosDoc.Length);                    
+                    oFileStream.Write(abDatosDoc, 0, abDatosDoc.Length);
                 }
 
                 string sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "P");
-                
+
             }
             catch (Exception ex)
             {
-                throw(ex);
+                throw (ex);
             }
         }
 
@@ -1052,10 +1065,10 @@ namespace Nomade.Efact.LogNegocio
                 }
                 else
                 {
-                    if(p_CTLG_CODE == "O")
+                    if (p_CTLG_CODE == "O")
                     {
                         sPath_Orbitum = sPath_Orbitum2;
-                    } 
+                    }
                     else if (p_CTLG_CODE == "P")
                     {
                         sPath_Orbitum = sPath_Orbitum3;
@@ -1105,14 +1118,14 @@ namespace Nomade.Efact.LogNegocio
 
                 // Inicio - Datos del Documento Cabecera (cab)
                 DataTable oDT_DatosDoc = ocEFFactura.fnListarDatosDocumentoOrbitum(p_CTLG_CODE, p_VTAC_CODE);
-                
+
                 DataRow oDR_DatosDoc = oDT_DatosDoc.Rows[0];
-                
+
                 if (oDT_DatosDoc == null)
                 {
                     throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
                 }
-                
+
                 string c1 = oDR_DatosDoc["CAB1"].ToString(); // TIPO DE OPERACION 0101
                 string c2 = oDR_DatosDoc["CAB2"].ToString(); // Fecha de Emisión            
                 string c3 = oDR_DatosDoc["CAB3"].ToString(); // Hora de emisión
@@ -1175,13 +1188,13 @@ namespace Nomade.Efact.LogNegocio
                     foreach (DataRow oDRAnticiposACV in oDT_DatosAnticipoACV.Rows)
                     {
                         if (enterAnticipo) sDatosAnticipoACV += ((char)10);
-                        string acv1 = oDRAnticiposACV["ACV1"].ToString(); 
-                        string acv2 = oDRAnticiposACV["ACV2"].ToString(); 
-                        string acv3 = oDRAnticiposACV["ACV3"].ToString(); 
-                        string acv4 = oDRAnticiposACV["ACV4"].ToString(); 
-                        string acv5 = oDRAnticiposACV["ACV5"].ToString(); 
-                        string acv6 = oDRAnticiposACV["ACV6"].ToString(); 
-                        string acv7 = oDRAnticiposACV["ACV7"].ToString(); 
+                        string acv1 = oDRAnticiposACV["ACV1"].ToString();
+                        string acv2 = oDRAnticiposACV["ACV2"].ToString();
+                        string acv3 = oDRAnticiposACV["ACV3"].ToString();
+                        string acv4 = oDRAnticiposACV["ACV4"].ToString();
+                        string acv5 = oDRAnticiposACV["ACV5"].ToString();
+                        string acv6 = oDRAnticiposACV["ACV6"].ToString();
+                        string acv7 = oDRAnticiposACV["ACV7"].ToString();
 
                         sDatosAnticipoACV += acv1 + "|" + acv2 + "|" + acv3 + "|" + acv4 + "|" + acv5 + "|" + acv6 + "|" + acv7 + "|";
                     }
@@ -1251,7 +1264,7 @@ namespace Nomade.Efact.LogNegocio
                 }
                 // Fin - Datos del Documento Detalle (DET)
 
-                string sNombreArchivo = sPath_Orbitum + @"DATA\"+ ruc + "-01-" + seriecorrelativo + ".cab";
+                string sNombreArchivo = sPath_Orbitum + @"DATA\" + ruc + "-01-" + seriecorrelativo + ".cab";
                 string sNombreArchivoDet = sPath_Orbitum + @"DATA\" + ruc + "-01-" + seriecorrelativo + ".det";
 
                 // Inicio - Datos del documento de Tributos Generales (TRI)
@@ -1276,16 +1289,16 @@ namespace Nomade.Efact.LogNegocio
                 }
                 else
                 {
-                string l1 = "1000";
-                string l2 = enletras(oDR_DatosDoc["CAB16"].ToString()) ; // IGV
-                if (c9 == "PEN")
-                {
-                    l2 += " SOLES";
+                    string l1 = "1000";
+                    string l2 = enletras(oDR_DatosDoc["CAB16"].ToString()); // IGV
+                    if (c9 == "PEN")
+                    {
+                        l2 += " SOLES";
                     }
                     else
-                {
-                    l2 += " DOLARES AMERICANOS";
-                }
+                    {
+                        l2 += " DOLARES AMERICANOS";
+                    }
                     sDatosLeyenda = l1 + "|" + l2 + "|";
                 }
                 //string l1 = "1000"; COMENTADO
@@ -1313,7 +1326,7 @@ namespace Nomade.Efact.LogNegocio
 
                 // Inicio - Datos del modo pago detalle (dpa) DPORTA 29/11/2021
                 string sModoPagoDet = "";
-                if (oDR_DatosDoc["MODO_PAGO"].ToString() == "Credito") 
+                if (oDR_DatosDoc["MODO_PAGO"].ToString() == "Credito")
                 {
                     DataTable oDT_DatosModoPagoDet = ocEFFactura.fnListarDatosModoPagoOrbitum(p_CTLG_CODE, p_VTAC_CODE);
 
@@ -1412,7 +1425,7 @@ namespace Nomade.Efact.LogNegocio
                 {
                     // Add some text to file
                     Byte[] abDatosDoc = new UTF8Encoding(true).GetBytes(sInfoDoc);
-                    oFileStream.Write(abDatosDoc, 0, abDatosDoc.Length);                  
+                    oFileStream.Write(abDatosDoc, 0, abDatosDoc.Length);
                 }
 
                 using (FileStream oFileStream = File.Create(sNombreArchivoDet))
@@ -1588,7 +1601,7 @@ namespace Nomade.Efact.LogNegocio
 
                 // Inicio DATOS DE LA CABECERA
                 DataTable oDT_DatosDoc = ocEFFactura.fnListarDatosFacturaAnticipoOrbitum(p_CTLG_CODE, P_FVRANTI_CODE);
-                
+
                 if (oDT_DatosDoc == null)
                 {
                     throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
@@ -1788,7 +1801,7 @@ namespace Nomade.Efact.LogNegocio
             {
                 string sResultado = sCadena;
                 int iLongCadena = sCadena.Length;
-                if(iLongCadena > iTamMax)
+                if (iLongCadena > iTamMax)
                     sResultado = sCadena.Substring(0, iTamMax);
                 return sResultado;
             }
@@ -1798,13 +1811,13 @@ namespace Nomade.Efact.LogNegocio
             }
         }
 
-        public string fnVerificarDoc(string p_CTLG_CODE, string p_VTAC_CODE) 
+        public string fnVerificarDoc(string p_CTLG_CODE, string p_VTAC_CODE)
         {
-			string sRespuesta = "";
-			try
+            string sRespuesta = "";
+            try
             {
                 cEFFactura ocEFFactura = new cEFFactura("Bn");
-                
+
                 DataTable oDT_Doc = ocEFFactura.fnListarDoc(p_CTLG_CODE, p_VTAC_CODE);
 
                 if (oDT_Doc == null)
@@ -1820,30 +1833,30 @@ namespace Nomade.Efact.LogNegocio
                 string sNombreArchivo = Out_LocalPathEfact + FnGetNombreArchivo(p_CTLG_CODE, "01", sSerieNroDoc, "xml");
 
                 if (File.Exists(sNombreArchivo))
-				{
-					string sRutaArchivo = sNombreArchivo;
-					sRutaArchivo = sRutaArchivo.Replace(".xml", ".zip");
-					bool bUpLoadOk = false;
-					try
-					{
-						Nomade.Efact.Conexion.Conexion oConexion = new Nomade.Efact.Conexion.Conexion();
-						oConexion.FnSubirArchivo(sRutaArchivo);
-						bUpLoadOk = true;
-					}
-					catch (Exception)
-					{
+                {
+                    string sRutaArchivo = sNombreArchivo;
+                    sRutaArchivo = sRutaArchivo.Replace(".xml", ".zip");
+                    bool bUpLoadOk = false;
+                    try
+                    {
+                        ConnectionSFTP oConexion = new ConnectionSFTP();
+                        oConexion.FnSubirArchivo(sRutaArchivo);
+                        bUpLoadOk = true;
+                    }
+                    catch (Exception)
+                    {
 
-					}
-					if (bUpLoadOk)
-					{
-						sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "S");
+                    }
+                    if (bUpLoadOk)
+                    {
+                        sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "S");
                         sRespuesta = "OK";
-					}
-					else
-					{
-						sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "P");
-					}
-				}
+                    }
+                    else
+                    {
+                        sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "P");
+                    }
+                }
                 else
                 {
 
@@ -1861,14 +1874,14 @@ namespace Nomade.Efact.LogNegocio
                         if (File.Exists(sNombreArchivo))
                         {
                             sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "X");
-						}
-						else
-						{
-							sRespuesta = "[Advertencia]: No se encontró el archivo generado";
-						}
-					}
+                        }
+                        else
+                        {
+                            sRespuesta = "[Advertencia]: No se encontró el archivo generado";
+                        }
+                    }
                 }
-				return sRespuesta;
+                return sRespuesta;
             }
             catch (Exception ex)
             {
@@ -2115,11 +2128,11 @@ namespace Nomade.Efact.LogNegocio
                     return sRespuesta;
 
                 }
-                
 
-               
 
-                
+
+
+
             }
             catch (Exception ex)
             {
@@ -2134,13 +2147,13 @@ namespace Nomade.Efact.LogNegocio
             int decimales;
             double nro;
             try
-                {
-                    nro = Convert.ToDouble(num);
-                }
+            {
+                nro = Convert.ToDouble(num);
+            }
             catch
-                {
-                    return "";
-                }
+            {
+                return "";
+            }
             entero = Convert.ToInt64(Math.Truncate(nro));
             decimales = Convert.ToInt32(Math.Round((nro - entero) * 100, 2));
             if (decimales >= 0)

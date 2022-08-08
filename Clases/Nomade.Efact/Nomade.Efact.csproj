@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conexion\Conexion.cs" />
+    <Compile Include="Conexion\ConnectionSFTP.cs" />
     <Compile Include="LogDatos\cEFBajaBoleta.cs" />
     <Compile Include="LogDatos\cEFBajaFactura.cs" />
     <Compile Include="LogDatos\cEFBajaNC.cs" />

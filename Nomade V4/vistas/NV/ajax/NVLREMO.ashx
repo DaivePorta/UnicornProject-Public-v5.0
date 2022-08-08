@@ -10,7 +10,7 @@ Imports System.IO.FileStream
 
 Public Class NVLREMO : Implements IHttpHandler
     Dim OPCION As String
-    Dim p_CTLG_CODE, p_SCSL_CODE, p_USUA_ID, p_CODE_MOVI, p_DESDE, p_HASTA As String
+    Dim p_CTLG_CODE, p_SCSL_CODE, p_USUA_ID, p_CODE_MOVI, p_DESDE, p_HASTA, p_DET_GASTO As String
 
 
     Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
@@ -35,7 +35,7 @@ Public Class NVLREMO : Implements IHttpHandler
         p_SCSL_CODE = context.Request("p_SCSL_CODE")
         p_DESDE = context.Request("p_DESDE")
         p_HASTA = context.Request("p_HASTA")
-
+        p_DET_GASTO = context.Request("p_DET_GASTO")
         p_USUA_ID = context.Request("p_USUA_ID")
         p_CODE_MOVI = context.Request("p_CODE_MOVI")
 
@@ -72,6 +72,12 @@ Public Class NVLREMO : Implements IHttpHandler
                     'If Not (dt Is Nothing) Then
                     res = GenerarTablaPagoGastosPorBanco(dt)
                     'End If
+                Case "4.5" 'Generar tabla pago gastos de caja (montos)
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    dt = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    'If Not (dt Is Nothing) Then
+                    res = GenerarTablaDetGastos(dt)
+                    'End If
                 Case "5" 'Generar tabla ventas área (montos)
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
@@ -92,12 +98,12 @@ Public Class NVLREMO : Implements IHttpHandler
                     End If
                 Case "IMPR" 'Generar tabla para impresion de detalle 
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    res = GenerarReporteImprimir(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_HASTA)
+                    res = GenerarReporteImprimir(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_HASTA, p_DET_GASTO)
                 Case "GENERAR_PDF" 'DPORTA
                     Dim msgError As String = "OK"
                     p_CODE_MOVI = "Reporte_Monetario_"
                     Try
-                        GenerarPDF(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DESDE, p_HASTA)
+                        GenerarPDF(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DESDE, p_HASTA, p_DET_GASTO)
                     Catch ex As Exception
                         msgError = "ERROR: " + ex.Message
                     End Try
@@ -110,7 +116,7 @@ Public Class NVLREMO : Implements IHttpHandler
 
                     Dim documento As String = ""
 
-                    documento = GenerarDctoCorreo(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    documento = GenerarDctoCorreo(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DET_GASTO)
                     MENSAJE += documento
                     'email.enviar(REMITENTE, REMITENTE, DESTINATARIOS, ASUNTO, MENSAJE, datoAj) 'DPORTA PDF
                     email.enviar(REMITENTE, REMITENTE, DESTINATARIOS, ASUNTO, MENSAJE)
@@ -122,25 +128,25 @@ Public Class NVLREMO : Implements IHttpHandler
 
     End Sub
 
-    Public Function GenerarPDF(ByVal CODIGO As String, ByVal CTLG As String, ByVal SCSL As String, ByVal DESDE As String, ByVal HASTA As String, ByVal p_DESDEH As String, ByVal p_HASTAH As String) As String
+    Public Function GenerarPDF(ByVal CODIGO As String, ByVal CTLG As String, ByVal SCSL As String, ByVal DESDE As String, ByVal HASTA As String, ByVal p_DESDEH As String, ByVal p_HASTAH As String, ByVal p_DET_GASTO As String) As String
         Dim ress As String = ""
         Dim htmlText As StringBuilder
         Dim cNomArch As String = CODIGO + Date.Now().ToString("ddMMyyyy") + ".pdf"
-        htmlText = GenerarReportePDF(CTLG, SCSL, DESDE, HASTA, p_DESDEH, p_HASTAH)
+        htmlText = GenerarReportePDF(CTLG, SCSL, DESDE, HASTA, p_DESDEH, p_HASTAH, p_DET_GASTO)
         HTMLToPDF(htmlText, cNomArch)
         Return ress
     End Function
 
-    Function getHtmlTextPDF(ByVal codigo As String, ByVal ctlg As String, ByVal scsl As String, ByVal desde As String, ByVal hasta As String) As String
+    Function getHtmlTextPDF(ByVal codigo As String, ByVal ctlg As String, ByVal scsl As String, ByVal desde As String, ByVal hasta As String, ByVal p_DET_GASTO As String) As String
         Dim htmlText As New StringBuilder
         htmlText.Length = 0
         Dim documento As String = ""
-        documento = GenerarDctoCorreo(codigo, ctlg, scsl, desde, hasta)
+        documento = GenerarDctoCorreo(codigo, ctlg, scsl, desde, hasta, p_DET_GASTO)
         htmlText.Append(documento)
         Return htmlText.ToString
     End Function
 
-    Public Function GenerarDctoCorreo(ByVal p_CODE_MOVI As String, ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String) As String
+    Public Function GenerarDctoCorreo(ByVal p_CODE_MOVI As String, ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_DET_GASTO As String) As String
         Dim tabla As New StringBuilder
         Dim dtVentasContado As New DataTable
         Dim dtVentasCredito As New DataTable
@@ -149,6 +155,7 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim dtVentasArea As New DataTable
         Dim dtVentasSubArea As New DataTable
         Dim dtInconsistencias As New DataTable
+        Dim dtDetGastos As New DataTable
 
         Dim caMovimientos As New Nomade.CA.CAMovimientos("Bn")
         dtVentasContado = caMovimientos.ListarVentasContado(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
@@ -158,7 +165,9 @@ Public Class NVLREMO : Implements IHttpHandler
         dtVentasArea = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
         dtVentasSubArea = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
         dtInconsistencias = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-
+        If p_DET_GASTO = "S" Then
+            dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
+        End If
         'tabla.Clear()
         Dim dtMonedas As New DataTable
         dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
@@ -593,6 +602,29 @@ Public Class NVLREMO : Implements IHttpHandler
             Next
             tabla.Append("</tbody>")
             tabla.Append("</table>")
+        End If
+        'GASTOS DE CAJA
+        If p_DET_GASTO = "S" Then
+            If Not (dtDetGastos Is Nothing) Then
+                tabla.AppendFormat("<table id=""tblTotales4.5"" class=""table display DTTT_selectable"" style=""border: 1px solid #cbcbcb;width:100%;"">")
+                tabla.AppendFormat("<thead>")
+                tabla.AppendFormat("<tr style='background-color:#4B8CC5;color:white;'>")
+                tabla.AppendFormat("<th>GASTOS DE CAJA</th>")
+                tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>MONTO ({0})</th>", simbMonedaBase)
+                tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>APROBADO</th>")
+                tabla.AppendFormat("</tr>")
+                tabla.AppendFormat("</thead>")
+                tabla.AppendFormat("<tbody>")
+                For i As Integer = 0 To dtDetGastos.Rows.Count - 1
+                    tabla.Append("<tr>")
+                    tabla.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dtDetGastos.Rows(i)("DESC_GASTO").ToString())
+                    tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtDetGastos.Rows(i)("MONTO_PAGADO").ToString())))
+                    tabla.AppendFormat("<td style='text-align:center;border-left: 1px solid #cbcbcb;'>{0}</td>", dtDetGastos.Rows(i)("APROBADO").ToString())
+                    tabla.Append("</tr>")
+                Next
+                tabla.Append("</tbody>")
+                tabla.Append("</table>")
+            End If
         End If
         'RESUMEN CAJAS 
         If Not (dtResumenCajas Is Nothing) Then
@@ -1173,6 +1205,54 @@ Public Class NVLREMO : Implements IHttpHandler
         Return res
     End Function
 
+    Public Function GenerarTablaDetGastos(ByVal dt As DataTable) As String
+        resb.Clear()
+        Dim dtMonedas As New DataTable
+        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        Dim descMonedaBase As String = ""
+        Dim descMonedaAlterna As String = ""
+        Dim simbMonedaBase As String = ""
+        Dim simbMonedaAlterna As String = ""
+        For Each row In dtMonedas.Rows
+            If row("TIPO") = "MOBA" Then
+                descMonedaBase = row("DESC_CORTA")
+                simbMonedaBase = row("SIMBOLO")
+            Else
+                descMonedaAlterna = row("DESC_CORTA")
+                simbMonedaAlterna = row("SIMBOLO")
+            End If
+        Next
+        '------
+        resb.AppendFormat("<table id=""tblTotales4.5"" class=""table display DTTT_selectable"" style=""border: 1px solid #cbcbcb;width:100%;"">")
+        resb.AppendFormat("<thead>")
+        resb.AppendFormat("<tr style='background-color:#4B8CC5;color:white;'>")
+        resb.AppendFormat("<th>GASTOS DE CAJA</th>")
+        resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>MONTO ({0})</th>", simbMonedaBase)
+        resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>APROBADO</th>")
+        resb.AppendFormat("</tr>")
+        resb.AppendFormat("</thead>")
+        resb.AppendFormat("<tbody>")
+        If Not (dt Is Nothing) Then
+            For i As Integer = 0 To dt.Rows.Count - 1
+                resb.Append("<tr>")
+                resb.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dt.Rows(i)("DESC_GASTO").ToString())
+                resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_PAGADO").ToString())))
+                resb.AppendFormat("<td style='text-align:center;border-left: 1px solid #cbcbcb;'>{0}</td>", dt.Rows(i)("APROBADO").ToString())
+                resb.Append("</tr>")
+            Next
+        Else
+            resb.Append("<tr>")
+            resb.AppendFormat("<td style='text-align:center;border-center: 1px solid #cbcbcb;'>{0}</td>", "No hay datos")
+            resb.AppendFormat("<td style='text-align:center;border-center: 1px solid #cbcbcb;'>{0}</td>", "No hay datos")
+            resb.AppendFormat("<td style='text-align:center;border-center: 1px solid #cbcbcb;'>{0}</td>", "No hay datos")
+            resb.Append("</tr>")
+        End If
+        resb.Append("</tbody>")
+        resb.Append("</table>")
+        res = resb.ToString()
+        Return res
+    End Function
+
     Public Function GenerarTablaVentasSubArea(ByVal dt As DataTable) As String
         resb.Clear()
         Dim dtMonedas As New DataTable
@@ -1278,7 +1358,7 @@ Public Class NVLREMO : Implements IHttpHandler
         End Get
     End Property
 
-    Public Function GenerarReporteImprimir(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_HASTAH As String) As String
+    Public Function GenerarReporteImprimir(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_HASTAH As String, ByVal p_DET_GASTO As String) As String
         Dim tabla As New StringBuilder
         Dim dtVentasContado As New DataTable
         Dim dtVentasCredito As New DataTable
@@ -1287,6 +1367,7 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim dtVentasArea As New DataTable
         Dim dtVentasSubArea As New DataTable
         Dim dtInconsistencias As New DataTable
+        Dim dtDetGastos As New DataTable
 
         Dim caMovimientos As New Nomade.CA.CAMovimientos("Bn")
         dtVentasContado = caMovimientos.ListarVentasContado(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
@@ -1296,7 +1377,9 @@ Public Class NVLREMO : Implements IHttpHandler
         dtVentasArea = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
         dtVentasSubArea = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
         dtInconsistencias = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-
+        If p_DET_GASTO = "S" Then
+            dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
+        End If
         Dim dtMonedas As New DataTable
         dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
@@ -1731,6 +1814,29 @@ Public Class NVLREMO : Implements IHttpHandler
             tabla.Append("</tbody>")
             tabla.Append("</table>")
         End If
+        'GASTOS DE CAJA
+        If p_DET_GASTO = "S" Then
+            If Not (dtDetGastos Is Nothing) Then
+                tabla.AppendFormat("<table id=""tblTotales4.5"" class=""table display DTTT_selectable"" style=""border: 1px solid #cbcbcb;width:100%;"">")
+                tabla.AppendFormat("<thead>")
+                tabla.AppendFormat("<tr style='background-color:#4B8CC5;color:white;'>")
+                tabla.AppendFormat("<th style='font-size:200%;'>GASTOS DE CAJA</th>")
+                tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:200%;'>MONTO ({0})</th>", simbMonedaBase)
+                tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:200%;'>APROBADO POR</th>")
+                tabla.AppendFormat("</tr>")
+                tabla.AppendFormat("</thead>")
+                tabla.AppendFormat("<tbody>")
+                For i As Integer = 0 To dtDetGastos.Rows.Count - 1
+                    tabla.Append("<tr>")
+                    tabla.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb; font-size:160%;'>{0}</td>", dtDetGastos.Rows(i)("DESC_GASTO").ToString())
+                    tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtDetGastos.Rows(i)("MONTO_PAGADO").ToString())))
+                    tabla.AppendFormat("<td style='text-align:center;border-left: 1px solid #cbcbcb; font-size:160%;'>{0}</td>", dtDetGastos.Rows(i)("APROBADO").ToString())
+                    tabla.Append("</tr>")
+                Next
+                tabla.Append("</tbody>")
+                tabla.Append("</table>")
+            End If
+        End If
         'RESUMEN CAJAS 
         If Not (dtResumenCajas Is Nothing) Then
             tabla.AppendFormat("<table id=""tblTotales6"" class=""table display DTTT_selectable"" style=""border: 1px solid #cbcbcb;width:100%;"">")
@@ -1777,7 +1883,7 @@ Public Class NVLREMO : Implements IHttpHandler
         Return tabla.ToString()
     End Function
 
-    Public Function GenerarReportePDF(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_DESDEH As String, ByVal p_HASTAH As String) As StringBuilder
+    Public Function GenerarReportePDF(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_DESDEH As String, ByVal p_HASTAH As String, ByVal p_DET_GASTO As String) As StringBuilder
         'Dim tabla As New StringBuilder
         res = ""
         resb.Clear()
@@ -1789,6 +1895,7 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim dtVentasSubArea As New DataTable
         Dim dtInconsistencias As New DataTable
         Dim dtEmpresas As New DataTable
+        Dim dtDetGastos As New DataTable
 
         Dim caMovimientos As New Nomade.CA.CAMovimientos("Bn")
         Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
@@ -1801,7 +1908,9 @@ Public Class NVLREMO : Implements IHttpHandler
         dtVentasSubArea = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
         dtInconsistencias = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
         dtEmpresas = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "")
-
+        If p_DET_GASTO = "S" Then
+            dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
+        End If
         'tabla.Clear()
         Dim dtMonedas As New DataTable
         dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
@@ -2250,6 +2359,29 @@ Public Class NVLREMO : Implements IHttpHandler
             Next
             resb.Append("</tbody>")
             resb.Append("</table><br>")
+        End If
+        'GASTOS DE CAJA
+        If p_DET_GASTO = "S" Then
+            If Not (dtDetGastos Is Nothing) Then
+                resb.AppendFormat("<table border=""1"" width=""100%"">")
+                resb.AppendFormat("<thead>")
+                resb.AppendFormat("<tr style='background-color:#4B8CC5;color:black;'>")
+                resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>GASTOS DE CAJA</th>")
+                resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>MONTO ({0})</th>", simbMonedaBase)
+                resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>APROBADO</th>")
+                resb.AppendFormat("</tr>")
+                resb.AppendFormat("</thead>")
+                resb.AppendFormat("<tbody>")
+                For i As Integer = 0 To dtDetGastos.Rows.Count - 1
+                    resb.Append("<tr>")
+                    resb.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dtDetGastos.Rows(i)("DESC_GASTO").ToString())
+                    resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtDetGastos.Rows(i)("MONTO_PAGADO").ToString())))
+                    resb.AppendFormat("<td style='text-align:center;border-left: 1px solid #cbcbcb;'>{0}</td>", dtDetGastos.Rows(i)("APROBADO").ToString())
+                    resb.Append("</tr>")
+                Next
+                resb.Append("</tbody>")
+                resb.Append("</table><br>")
+            End If
         End If
         'RESUMEN CAJAS 
         If Not (dtResumenCajas Is Nothing) Then

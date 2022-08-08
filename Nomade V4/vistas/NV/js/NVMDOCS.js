@@ -2911,6 +2911,7 @@ var NVMDOCS = function () {
                                     $("#tabla_det").DataTable().column(0).visible(false);
                                     CalcularDetraccion();
                                     CalcularDatosMonetarios();
+                                    $("#div_btn_completar").attr("style", "display:none");//para que obligatoriamente se tenga que modificar antes de completar
                                 }
 
                                 if (datos[0].COMPLETO != "SI") {

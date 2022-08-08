@@ -1,4 +1,5 @@
-﻿using Nomade.Efact.LogDatos;
+﻿using Nomade.Efact.Conexion;
+using Nomade.Efact.LogDatos;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,8 +13,8 @@ namespace Nomade.Efact.LogNegocio
 {
     public class nEFBajaND
     {
-		private string sPath = ConfigurationManager.AppSettings["path_efact"];
-		public string fnGetND(string p_CTLG_CODE, string p_ND_CODE)
+        private string sPath = ConfigurationManager.AppSettings["path_efact"];
+        public string fnGetND(string p_CTLG_CODE, string p_ND_CODE)
         {
             try
             {
@@ -33,7 +34,7 @@ namespace Nomade.Efact.LogNegocio
                 string s1A = oDR_IdDoc["1A"].ToString(); // Fecha de Baja
                 string s1B = oDR_IdDoc["1B"].ToString(); // Fecha de Emisión del Documento
                 string s1C = oDR_IdDoc["1C"].ToString(); // ID
-               // s1C = p_ND_CODE;
+                                                         // s1C = p_ND_CODE;
                 string sIdDoc = s1A + "," + s1B + "," + s1C;
                 // Fin - ID del Documento
 
@@ -72,9 +73,9 @@ namespace Nomade.Efact.LogNegocio
 
                 s2D = ""; // Código Ubigeo de la Empresa
 
-				s2E = oDR_DatosEmpresa["2E"].ToString();  // Dirección de la Empresa
+                s2E = oDR_DatosEmpresa["2E"].ToString();  // Dirección de la Empresa
 
-				s2F = ""; // Urbanización de la Empresa
+                s2F = ""; // Urbanización de la Empresa
 
                 s2G = ""; // Departamento de la Empresa
 
@@ -82,9 +83,9 @@ namespace Nomade.Efact.LogNegocio
 
                 s2I = ""; // Distrito de la Empresa
 
-				s2J = oDR_DatosEmpresa["2J"].ToString();  // Código País de la Empresa
+                s2J = oDR_DatosEmpresa["2J"].ToString();  // Código País de la Empresa
 
-				s2K = oDR_DatosEmpresa["2K"].ToString(); // Usuario SOL de la Empresa
+                s2K = oDR_DatosEmpresa["2K"].ToString(); // Usuario SOL de la Empresa
 
                 s2L = oDR_DatosEmpresa["2L"].ToString(); // Clave SOL de la Empresa
 
@@ -137,74 +138,74 @@ namespace Nomade.Efact.LogNegocio
                     // Add some text to file
                     Byte[] abInfoDoc = new UTF8Encoding(true).GetBytes(sInfoDocumento);
                     oFileStream.Write(abInfoDoc, 0, abInfoDoc.Length);
-				}
+                }
 
-				var sRespuesta = "";
-				sRespuesta = fnVerificarBajaDoc(p_CTLG_CODE, p_ND_CODE);
+                var sRespuesta = "";
+                sRespuesta = fnVerificarBajaDoc(p_CTLG_CODE, p_ND_CODE);
 
-				return sNombreArchivo;
+                return sNombreArchivo;
 
-			}
+            }
             catch (Exception ex)
             {
                 throw (ex);
             }
-		}
+        }
 
-		public string fnVerificarBajaDoc(string p_CTLG_CODE, string p_ND_CODE)
-		{
-			string sRespuesta = "";
-			try
-			{
-				cEFND ocEFND = new cEFND("Bn");
+        public string fnVerificarBajaDoc(string p_CTLG_CODE, string p_ND_CODE)
+        {
+            string sRespuesta = "";
+            try
+            {
+                cEFND ocEFND = new cEFND("Bn");
 
-				DataTable oDT_Doc = ocEFND.fnListarDoc(p_CTLG_CODE, p_ND_CODE);
+                DataTable oDT_Doc = ocEFND.fnListarDoc(p_CTLG_CODE, p_ND_CODE);
 
-				if (oDT_Doc == null)
-				{
-					throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
-				}
+                if (oDT_Doc == null)
+                {
+                    throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
+                }
 
-				string sNombreArchivo = sPath + @"baja\debitnote\17" + p_ND_CODE + ".csv";
-				if (File.Exists(sNombreArchivo))
-				{
-					string sRutaArchivo = sNombreArchivo;
-					bool bUpLoadOk = false;
-					try
-					{
-						Nomade.Efact.Conexion.Conexion oConexion = new Nomade.Efact.Conexion.Conexion();
-						oConexion.FnSubirArchivo(sRutaArchivo);
-						bUpLoadOk = true;
-					}
-					catch (Exception)
-					{
+                string sNombreArchivo = sPath + @"baja\debitnote\17" + p_ND_CODE + ".csv";
+                if (File.Exists(sNombreArchivo))
+                {
+                    string sRutaArchivo = sNombreArchivo;
+                    bool bUpLoadOk = false;
+                    try
+                    {
+                        ConnectionSFTP oConexion = new ConnectionSFTP();
+                        oConexion.FnSubirArchivo(sRutaArchivo);
+                        bUpLoadOk = true;
+                    }
+                    catch (Exception)
+                    {
 
-					}
+                    }
 
-					if (bUpLoadOk)
-					{
-						sRespuesta = ocEFND.fnActualizar_ELECT_IND_ND(p_CTLG_CODE, p_ND_CODE, "B");
+                    if (bUpLoadOk)
+                    {
+                        sRespuesta = ocEFND.fnActualizar_ELECT_IND_ND(p_CTLG_CODE, p_ND_CODE, "B");
                         sRespuesta = "OK";
                     }
-					else
-					{
-						sRespuesta = ocEFND.fnActualizar_ELECT_IND_ND(p_CTLG_CODE, p_ND_CODE, "Q");
-					}
-				}
-				else
-				{
-					sRespuesta = "[Advertencia]: No se encontró el archivo generado";
-				}
-				return sRespuesta;
-			}
-			catch (Exception ex)
-			{
-				throw ex;
-			}
-		}
+                    else
+                    {
+                        sRespuesta = ocEFND.fnActualizar_ELECT_IND_ND(p_CTLG_CODE, p_ND_CODE, "Q");
+                    }
+                }
+                else
+                {
+                    sRespuesta = "[Advertencia]: No se encontró el archivo generado";
+                }
+                return sRespuesta;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
-		// Retorna una cadena de tamaño máximo(hasta) definido por el usuario
-		private string fnCortarCadena(string sCadena, int iTamMax)
+        // Retorna una cadena de tamaño máximo(hasta) definido por el usuario
+        private string fnCortarCadena(string sCadena, int iTamMax)
         {
             try
             {

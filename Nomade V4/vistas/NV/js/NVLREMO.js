@@ -122,6 +122,7 @@ var NVLREMO = function () {
             ResumenDetallesMovimientosCaja($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
             PagoGastosPorBanco($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
             VentasArea($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
+            $("#chkDetGastos").is(':checked') ? ($("#divDetGastos").attr("style", "margin-left: 0; display:inline") && DetGastos($("#cboEmpresa").val(), $("#cboEstablecimiento").val())) : $("#divDetGastos").attr("style", "display:none");
             VentasSubArea($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
             Inconsistencias($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
         });  
@@ -138,7 +139,15 @@ var NVLREMO = function () {
                 $('.btnLibroPDF').attr('disabled', false);
                 fnGenerarPDF();
             }
-        }); 
+        });
+
+        $('#chkDetGastos').click(function () {
+            var checked = $(this).is(':checked');
+
+            if (!checked) {
+                $("#divDetGastos").attr("style", "display:none");
+            }
+        });
     }
 
     var fnGenerarPDF = function () { //DPORTA
@@ -149,6 +158,7 @@ var NVLREMO = function () {
         data.append('p_SCSL_CODE', $("#cboEstablecimiento").val());
         data.append('p_DESDE', $("#txtDesde").val());
         data.append('p_HASTA', $("#txtHasta").val());
+        data.append('p_DET_GASTO', $("#chkDetGastos").is(':checked') ? 'S' : 'N');
         $.ajax({
             type: "POST",
             url: "vistas/nv/ajax/NVLREMO.ashx",
@@ -520,6 +530,38 @@ function PagoGastosPorBanco(empresa, establecimiento) {
     });
 }
 
+function DetGastos(empresa, establecimiento) {
+    var data = new FormData();
+    data.append('OPCION', '4.5');
+    data.append('p_CTLG_CODE', empresa);
+    data.append('p_SCSL_CODE', establecimiento);
+    data.append('p_DESDE', $("#txtDesde").val());
+    data.append('p_HASTA', $("#txtHasta").val());
+
+    Bloquear('divDetGastos');
+    var jqxhr = $.ajax({
+        type: "POST",
+        url: "vistas/NV/ajax/NVLREMO.ASHX",
+        contentType: false,
+        data: data,
+        processData: false,
+        cache: false,
+        async: true
+    }).success(function (datos) {
+        Desbloquear("divDetGastos");
+        if (datos != null) {
+            $("#divDetGastos").html(datos);
+            if ($("#datosMoba").val() != undefined) {
+                $(".simboloMoba").html($("#datosMoba").val());
+                $(".simboloMoal").html($("#datosMoal").val());
+            }
+        }
+    }).error(function () {
+        Desbloquear("divDetGastos");
+        alertCustom("Error al listar. Por favor intente nuevamente.");
+    });
+}
+
 function VentasArea(empresa, establecimiento) {
     var data = new FormData();
     data.append('OPCION', '5');
@@ -700,6 +742,7 @@ function enviarCorreo() {
                 "&DESTINATARIOS=" + destinos +
                 "&ASUNTO=" + $('#txtAsunto').val() +
                 "&MENSAJE=" + $('#txtcontenido').val() +
+                "&p_DET_GASTO=" + ($("#chkDetGastos").is(':checked') ? 'S' : 'N') +
                 "&p_DESDE=" + $('#txtDesde').val() +
                 "&p_HASTA=" + $('#txtHasta').val(),
             contentType: "application/json;",
@@ -729,6 +772,7 @@ function imprimirReporte() {
     data.append('p_SCSL_CODE', $("#cboEstablecimiento").val());
     data.append('p_DESDE', $("#txtDesde").val());
     data.append('p_HASTA', $("#txtHasta").val());
+    data.append('p_DET_GASTO', $("#chkDetGastos").is(':checked') ? 'S' : 'N');
     var jqxhr = $.ajax({
         type: "POST",
         url: "vistas/NV/ajax/NVLREMO.ashx?OPCION=IMPR",

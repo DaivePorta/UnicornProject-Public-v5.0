@@ -1,4 +1,5 @@
-﻿using Nomade.Efact.LogDatos;
+﻿using Nomade.Efact.Conexion;
+using Nomade.Efact.LogDatos;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,7 +13,7 @@ namespace Nomade.Efact.LogNegocio
 {
     public class nEFBajaBoleta
     {
-		private string sPath = ConfigurationManager.AppSettings["path_efact"];
+        private string sPath = ConfigurationManager.AppSettings["path_efact"];
         private string sPath_Orbitum = ConfigurationManager.AppSettings["path_fac_orbi"];
 
         public string fnGetBoleta(string p_CTLG_CODE, string p_VTAC_CODE)
@@ -35,10 +36,10 @@ namespace Nomade.Efact.LogNegocio
                 string s1A = oDR_IdDoc["1A"].ToString(); // Fecha de Baja
                 string s1B = oDR_IdDoc["1B"].ToString(); // Fecha de Emisión del Documento
                 string s1C = oDR_IdDoc["1C"].ToString(); // ID
-				//s1C = p_VTAC_CODE;
+                                                         //s1C = p_VTAC_CODE;
                 string sIdDoc = s1A + "," + s1B + "," + s1C;
                 // Fin - ID del Documento
-                                
+
                 // Inicio - Datos de la Empresa
                 DataTable oDT_DatosEmpresa = ocEFBajaBoleta.fnListarDatosEmpresa(p_CTLG_CODE);
 
@@ -60,7 +61,7 @@ namespace Nomade.Efact.LogNegocio
                 {
                     throw new ArgumentException("[Advertencia]: No se encontró los datos de la Empresa");
                 }
-                
+
                 DataRow oDR_DatosEmpresa = oDT_DatosEmpresa.NewRow();
                 oDR_DatosEmpresa = oDT_DatosEmpresa.Rows[0];
 
@@ -89,7 +90,7 @@ namespace Nomade.Efact.LogNegocio
                 s2K = oDR_DatosEmpresa["2K"].ToString(); // Usuario SOL de la Empresa
 
                 s2L = oDR_DatosEmpresa["2L"].ToString(); // Clave SOL de la Empresa
-                
+
                 string sDatosEmpresa = s2A + "," + s2B + "," + s2C + "," + s2D + "," + s2E + "," + s2F + "," + s2G + "," +
                     s2H + "," + s2I + "," + s2J + "," + s2K + "," + s2L;
                 // Fin - Datos de la Empresa
@@ -107,7 +108,7 @@ namespace Nomade.Efact.LogNegocio
                 {
                     throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
                 }
-                
+
                 DataRow oDR_DatosDoc = oDT_DatosDoc.NewRow();
                 oDR_DatosDoc = oDT_DatosDoc.Rows[0];
 
@@ -120,12 +121,12 @@ namespace Nomade.Efact.LogNegocio
                 s3D = oDR_DatosDoc["3D"].ToString(); // Correlativo
 
                 s3E = oDR_DatosDoc["3E"].ToString(); // Motivo
-                
-                string sDatosDoc = s3A + "," + s3B + "," + s3C + "," + s3D + "," + s3E;
-				// Fin - Datos del Documento
 
-				string sNombreArchivo = sPath + @"baja\boleta\" + "17" + p_VTAC_CODE + ".csv";
-				//string sNombreArchivo = @"D:\Temp\" + s1C + ".csv";
+                string sDatosDoc = s3A + "," + s3B + "," + s3C + "," + s3D + "," + s3E;
+                // Fin - Datos del Documento
+
+                string sNombreArchivo = sPath + @"baja\boleta\" + "17" + p_VTAC_CODE + ".csv";
+                //string sNombreArchivo = @"D:\Temp\" + s1C + ".csv";
                 // verificar si existe archivo
                 if (File.Exists(sNombreArchivo))
                 {
@@ -142,17 +143,17 @@ namespace Nomade.Efact.LogNegocio
                     oFileStream.Write(abInfoDoc, 0, abInfoDoc.Length);
                 }
 
-				var sRespuesta = "";
-				sRespuesta = fnVerificarBajaDoc(p_CTLG_CODE, p_VTAC_CODE);
+                var sRespuesta = "";
+                sRespuesta = fnVerificarBajaDoc(p_CTLG_CODE, p_VTAC_CODE);
 
-				return sNombreArchivo;
+                return sNombreArchivo;
 
-			}
+            }
             catch (Exception ex)
             {
                 throw (ex);
             }
-		}
+        }
 
         public string fnInsertarDocBaja(string p_CTLG_CODE, string p_VTAC_CODE)
         {
@@ -379,62 +380,62 @@ namespace Nomade.Efact.LogNegocio
                 throw ex;
             }
         }
-    
+
         public string fnVerificarBajaDoc(string p_CTLG_CODE, string p_VTAC_CODE)
-		{
-			string sRespuesta = "";
-			try
-			{
+        {
+            string sRespuesta = "";
+            try
+            {
 
                 cEFBoleta ocEFBoleta = new cEFBoleta("Bn");
                 DataTable oDT_Doc = ocEFBoleta.fnListarDoc(p_CTLG_CODE, p_VTAC_CODE);
 
-				if (oDT_Doc == null)
-				{
-					throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
-				}
+                if (oDT_Doc == null)
+                {
+                    throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
+                }
 
-				string sNombreArchivo = sPath + @"baja\boleta\" + "17" + p_VTAC_CODE + ".csv";
-				if (File.Exists(sNombreArchivo))
-				{
-					string sRutaArchivo = sNombreArchivo;
-					bool bUpLoadOk = false;
-					try
-					{
-						Nomade.Efact.Conexion.Conexion oConexion = new Nomade.Efact.Conexion.Conexion();
+                string sNombreArchivo = sPath + @"baja\boleta\" + "17" + p_VTAC_CODE + ".csv";
+                if (File.Exists(sNombreArchivo))
+                {
+                    string sRutaArchivo = sNombreArchivo;
+                    bool bUpLoadOk = false;
+                    try
+                    {
+                        ConnectionSFTP oConexion = new ConnectionSFTP();
 						oConexion.FnSubirArchivo(sRutaArchivo);
-						bUpLoadOk = true;
-					}
-					catch (Exception)
-					{
+                        bUpLoadOk = true;
+                    }
+                    catch (Exception)
+                    {
 
-					}
+                    }
 
                     cEFFactura ocEFFactura = new cEFFactura("Bn");
                     if (bUpLoadOk)
-					{
-						sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "B");
+                    {
+                        sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "B");
                         sRespuesta = "OK";
                     }
-					else
-					{
-						sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "Q");
-					}
-				}
-				else
-				{
-					sRespuesta = "[Advertencia]: No se encontró el archivo generado";
-				}
-				return sRespuesta;
-			}
-			catch (Exception ex)
-			{
-				throw ex;
-			}
-		}
+                    else
+                    {
+                        sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "Q");
+                    }
+                }
+                else
+                {
+                    sRespuesta = "[Advertencia]: No se encontró el archivo generado";
+                }
+                return sRespuesta;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
-		// Retorna una cadena de tamaño máximo(hasta) definido por el usuario
-		private string fnCortarCadena(string sCadena, int iTamMax)
+        // Retorna una cadena de tamaño máximo(hasta) definido por el usuario
+        private string fnCortarCadena(string sCadena, int iTamMax)
         {
             try
             {

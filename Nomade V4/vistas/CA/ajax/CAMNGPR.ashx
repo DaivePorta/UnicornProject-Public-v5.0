@@ -292,7 +292,7 @@ Public Class CAMNGPR : Implements IHttpHandler
                         If continuar Then
                             Dim serie_numero As String() = dt_gasto.Rows(i)("SERIE_NRO_DOC").ToString().Split(New Char() {"-"})
                             Dim fechaEmision As String = If(dt_gasto.Rows(i)("FECHA_EMISION").ToString() = "", "", dt_gasto.Rows(i)("FECHA_EMISION").ToString().Substring(0, 10))
-                            resb.AppendFormat("<tr class='doc_fila' onclick=""setSeleccionDocumento('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}')"" id='doc_fila_{0}_{1}'>", dt_gasto.Rows(i)("CODIGO").ToString(), "", serie_numero(0), serie_numero(1), dt_gasto.Rows(i)("DCTO").ToString(), dt_gasto.Rows(i)("MONTO").ToString(), dt_gasto.Rows(i)("MONEDA").ToString(), dt_gasto.Rows(i)("MONE_SIMB").ToString(), "", fechaEmision)
+                            resb.AppendFormat("<tr class='doc_fila' onclick=""setSeleccionDocumento('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}')"" id='doc_fila_{0}_{1}'>", dt_gasto.Rows(i)("CODIGO").ToString(), "", serie_numero(0), serie_numero(1), dt_gasto.Rows(i)("DCTO_CODE").ToString(), dt_gasto.Rows(i)("MONTO").ToString(), dt_gasto.Rows(i)("MONE_CODE").ToString(), dt_gasto.Rows(i)("MONE_SIMB").ToString(), "", fechaEmision)
                             resb.AppendFormat("<td align='center' >{0}</td>", dt_gasto.Rows(i)("CODIGO").ToString())
                             resb.AppendFormat("<td align='center' >{0}</td>", serie_numero(0))
                             resb.AppendFormat("<td align='center' >{0}</td>", serie_numero(1))
