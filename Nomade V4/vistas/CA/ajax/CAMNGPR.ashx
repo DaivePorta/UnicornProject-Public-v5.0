@@ -12,6 +12,8 @@ Public Class CAMNGPR : Implements IHttpHandler
     Dim p_MOTIVO_CODE, p_MOTIVO_DESC, p_MOTIVO_ADICIONAL, p_FECHA_EMISION, p_FECHA_TRANSACCION, p_ESTADO_IND,
         p_MONE_CODE, p_DETALLES, p_MONTO_IGV, p_SERIE, p_NUMERO, p_CODIGO_CORRELATIVO, p_TIPO_IND As String
 
+    Dim p_DESDE, p_HASTA As String
+
     Dim p_IMPORTE_EXO, p_IMPORTE_INA, p_IMPORTE_GRA, p_IGV, p_IMPORTE_TOTAL, p_PCTJ_IGV As String
     Dim p_VALOR_CAMBIO, p_MONTO_USABLE, p_MES_PERIODO, p_ANIO_PERIODO As String
     'DOCUMENTO DE REFERENCIA
@@ -70,6 +72,9 @@ Public Class CAMNGPR : Implements IHttpHandler
         p_MES_PERIODO = context.Request("p_MES_PERIODO")
         p_ANIO_PERIODO = context.Request("p_ANIO_PERIODO")
 
+        p_DESDE = Utilities.fechaLocal(context.Request("p_DESDE"))
+        p_HASTA = Utilities.fechaLocal(context.Request("p_HASTA"))
+
         'DOCUMENTO DE REFERENCIA
         p_DCTO_REF_CODE = context.Request("p_DCTO_REF_CODE")
         p_DCTO_REF_SERIE = context.Request("p_DCTO_REF_SERIE")
@@ -124,7 +129,8 @@ Public Class CAMNGPR : Implements IHttpHandler
                 Case "4" 'LISTAR NOTA DE CRÉDITO ( JSON )
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = caNotaCredito.ListarNotaCreditoGenerica(If(p_CODE Is Nothing, "", p_CODE), If(p_CTLG_CODE Is Nothing, "", p_CTLG_CODE),
-                                                       If(p_SCSL_CODE Is Nothing, "", p_SCSL_CODE), If(p_PERS_PIDM Is Nothing, "", p_PERS_PIDM), If(p_TIPO_IND Is Nothing, "", p_TIPO_IND))
+                                                       If(p_SCSL_CODE Is Nothing, "", p_SCSL_CODE), If(p_PERS_PIDM Is Nothing, "", p_PERS_PIDM), If(p_TIPO_IND Is Nothing, "", p_TIPO_IND),
+                                                       If(p_DESDE Is Nothing, "0000-00-00", p_DESDE), If(p_HASTA Is Nothing, "0000-00-00", p_HASTA))
                     If Not (dt Is Nothing) Then
                         resb.Append("[")
                         For Each row As DataRow In dt.Rows
@@ -324,7 +330,7 @@ Public Class CAMNGPR : Implements IHttpHandler
         Dim dtCabecera As New DataTable
         Dim dtDetalles As New DataTable
         Dim dtEmpresas As New DataTable
-        dtCabecera = caNotaCredito.ListarNotaCreditoGenerica(p_CODE, "", "", "", "")
+        dtCabecera = caNotaCredito.ListarNotaCreditoGenerica(p_CODE, "", "", "", "", "0000-00-00", "0000-00-00")
 
         dtDetalles = caNotaCredito.ListarDetalleNotaCreditoGenerica(p_CODE, "")
 

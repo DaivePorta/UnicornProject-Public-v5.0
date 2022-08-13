@@ -692,7 +692,7 @@
   ByVal p_IGV_PORCENTAJE As String, ByVal p_USUA_ID As String,
   ByVal p_SCSL_EXONERADA_IND As String, ByVal p_VALOR_CAMBIO As String,
   ByVal p_MONTO_USABLE As String, ByVal p_MES_PERIODO As String, ByVal p_ANIO_PERIODO As String, ByVal p_DEVOLVER_DINERO As String,
-  ByVal p_APLICA_DOC_REFERENCIA As String, ByVal p_COD_AUT As String, ByVal p_DETALLES As String
+  ByVal p_APLICA_DOC_REFERENCIA As String, ByVal p_PAGADO_IND As String, ByVal p_COD_AUT As String, ByVal p_DETALLES As String
  ) As Array
         Dim msg(3) As String
         Try
@@ -724,6 +724,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_ANIO_PERIODO", p_ANIO_PERIODO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DEVOLVER_DINERO", p_DEVOLVER_DINERO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_APLICA_DOC_REFERENCIA", p_APLICA_DOC_REFERENCIA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PAGADO_IND", p_PAGADO_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_COD_AUT", p_COD_AUT, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", String.Empty, ParameterDirection.Output, 253))
@@ -749,7 +750,7 @@
     End Function
 
     Public Function ListarNotaCreditoGenerica(ByVal p_NOGC_CODE As String, ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String,
-                                              ByVal p_PERS_PIDM As String, ByVal p_TIPO_IND As String) As DataTable
+                                              ByVal p_PERS_PIDM As String, ByVal p_TIPO_IND As String, ByVal p_DESDE As String, p_HASTA As String) As DataTable
         Try
             Dim cmd As IDbCommand
             cmd = cn.GetNewCommand("PFB_LISTAR_NOTA_CREDITO_GENERICA", CommandType.StoredProcedure)
@@ -758,6 +759,8 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PERS_PIDM", p_PERS_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_IND", p_TIPO_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
             dt = cn.Consulta(cmd)
             If Not (dt Is Nothing) Then
                 Return dt

@@ -1,6 +1,10 @@
 ﻿
 var monedaCabecera;
 var gDatos = null;
+//------
+var p_DESDE = "";
+var p_HASTA = "";
+//------
 var CAMANCL = function () {
 
     var plugins = function () {
@@ -392,7 +396,9 @@ var CALNCCL = function () {
             url: "vistas/ca/ajax/camngcl.ashx?OPCION=4" +
                 "&p_CTLG_CODE=" + $("#cboEmpresa").val() +
                 "&p_SCSL_CODE=" + $("#cboEstablecimiento").val() +
-                "&p_TIPO_IND=C",
+                "&p_TIPO_IND=C" +
+                "&p_DESDE=" + p_DESDE +
+                "&p_HASTA=" + p_HASTA,
             contenttype: "application/text;",
             datatype: "json",
             async: true,
@@ -406,7 +412,7 @@ var CALNCCL = function () {
                ListarNotasCredito2();
             },
             error: function (msg) {
-                ListarNotasCredito2();
+                //ListarNotasCredito2();
                 Desbloquear("ventana")
                 alert(msg);
             }
@@ -417,10 +423,12 @@ var CALNCCL = function () {
         Bloquear("ventana")
         $.ajax({
             type: "post",
-            url: "vistas/ca/ajax/calnocr.ashx?OPCION=2" +
+            url: "vistas/ca/ajax/calnocr.ashx?OPCION=2.5" +
                 "&p_CTLG_CODE=" + $("#cboEmpresa").val() +
                 "&p_SCSL_CODE=" + $("#cboEstablecimiento").val() +
-                "&p_COMPRA_VENTA_IND=V",
+                "&p_COMPRA_VENTA_IND=T" +
+                "&p_DESDE=" + p_DESDE +
+                "&p_HASTA=" + p_HASTA,
             contenttype: "application/json;",
             datatype: "json",
             async: true,
@@ -442,6 +450,16 @@ var CALNCCL = function () {
         $('#cboEmpresa').select2();
         $('#cboEstablecimiento').select2();
         $('#cboEstado').select2();
+        $('#txtDesde').datepicker().change(function () {
+            $('#txtHasta').val((parseInt($(this).val().split("/").reverse().join("")) > parseInt($('#txtHasta').val().split("/").reverse().join(""))) ? "" : $('#txtHasta').val());
+            $('#txtHasta').datepicker('setStartDate', $(this).val());
+        });
+
+        $('#txtHasta').datepicker().on("change", function () {
+            if ($('#txtDesde').val() != "") {
+                $('#txtHasta').datepicker('setStartDate', $('#txtDesde').val());
+            }
+        });
     }
 
     function fillCboEmpresa() {
@@ -521,6 +539,8 @@ var CALNCCL = function () {
         });
 
         $('#buscar').on('click', function () {
+            p_DESDE = $("#txtDesde").val();
+            p_HASTA = $("#txtHasta").val();
             ListarNotasCredito();
         });
     }
@@ -650,10 +670,10 @@ var CALNCCL = function () {
     var Fin2_CargaEstablecimiento = function () {
 
         $("#cboEstablecimiento").select2("val", $("#ctl00_hddestablecimiento").val()).change();
-        if ($("#cboEstablecimiento").val() != "" && ini) {//Primera Carga
-            ini = false;
-            ListarNotasCredito();
-        }
+        //if ($("#cboEstablecimiento").val() != "" && ini) {//Primera Carga
+        //    ini = false;
+        //    ListarNotasCredito();
+        //}
     };
 
     return {
@@ -663,6 +683,28 @@ var CALNCCL = function () {
             plugins();
             fillCboEmpresa();
             eventoControles();
+            $("#txtHasta").datepicker({
+                dateFormat: 'dd/mm/yy',
+                firstDay: 1
+            }).datepicker("setDate", new Date());
+
+            var fecha = new Date();
+            var ano = fecha.getFullYear();
+            var mes = fecha.getMonth() + 1;
+
+            if (mes == 1) {
+                mes = 12;
+                ano = ano - 1
+            } else {
+                mes = mes - 1;
+            }
+
+            if (mes >= 10)
+                var fNueva = '01/' + mes + '/' + ano;
+            else
+                var fNueva = '01/0' + mes + '/' + ano;
+
+            $("#txtDesde").val(fNueva);
         }
     };
 

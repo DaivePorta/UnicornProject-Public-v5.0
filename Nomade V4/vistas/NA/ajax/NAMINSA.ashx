@@ -2828,10 +2828,10 @@ Public Class NAMINSA : Implements IHttpHandler
 
             For Each row In dtDetalles.Rows
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", Math.Round(Decimal.Parse(row("canItem")), 2).ToString())
+                tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", Decimal.Parse(row("canItem")))
                 tabla.AppendFormat("<td style='text-align: left;'>{0}</td>", row("descUnidadMedida").ToString())
-                tabla.AppendFormat("<td style='text-align: left;padding-right:10px;padding-left:5px;' colspan='2'><span style='word-break:break-all;'>{0}</span></td>", row("desItem"))
-                tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", Math.Round(Decimal.Parse(row("pesoItem")), 2).ToString())
+                tabla.AppendFormat("<td style='text-align: left;padding-right:10px;padding-left:5px;' colspan='2'><span style='word-break:break-all;'>{0}</span></td>", row("desItem").ToString())
+                tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", Decimal.Parse(row("pesoItem")))
                 tabla.Append("</tr>")
                 totalPeso += Decimal.Parse(row("pesoItem"))
             Next

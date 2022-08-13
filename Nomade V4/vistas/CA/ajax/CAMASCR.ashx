@@ -112,7 +112,7 @@ Public Class CAMASCR : Implements IHttpHandler
                     dt = p.ListarAsignacion("", ctlg_code, scsl_code, estado)
                     res = ListaProductosHtml1(dt)
                 Case "6"
-                    res = p.AprobarRechazarAsignacion(tipo, ctlg_code, scsl_code, codigos, caja_code, pidm, usua_id, "0101")
+                    res = p.AprobarRechazarAsignacion(tipo, ctlg_code, scsl_code, codigos, caja_code, pidm, usua_id, "0100")
 
                     If res = "OK" Then
                         Dim arr_users, arr_codigos As Array

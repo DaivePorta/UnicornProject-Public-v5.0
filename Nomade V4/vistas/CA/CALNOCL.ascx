@@ -68,7 +68,8 @@
                     <i class="icon-reorder"></i>LISTA NOTA DE CRÉDITO DEVOLUCIÓN CLIENTE</h4>
                 <div class="actions">
                     <a class="btn black printlist "><i class="icon-print"></i>&nbsp;Imprimir</a>
-                    <a href="?f=CAMNOCL" class="btn green"><i class="icon-plus"></i>&nbsp;Nuevo</a>                   
+                    <a href="?f=CAMNOCL" class="btn green"><i class="icon-plus"></i>&nbsp;Nuevo</a>
+                    <a href="?f=CALNOCL" class="btn red"><i class="icon-list"></i>&nbsp;Listar</a>
                 </div>
 
             </div>

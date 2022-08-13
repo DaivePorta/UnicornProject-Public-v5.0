@@ -8,7 +8,8 @@
                     <i class="icon-reorder"></i>LISTA NOTA DE CRÉDITO GENÉRICA CLIENTE</h4>
                 <div class="actions">
                     <a class="btn black printlist "><i class="icon-print"></i>&nbsp;Imprimir</a>
-                    <a href="?f=CAMNGCL" class="btn green"><i class="icon-plus"></i>&nbsp;Nuevo</a>                   
+                    <a href="?f=CAMNGCL" class="btn green"><i class="icon-plus"></i>&nbsp;Nuevo</a>
+                    <a href="?f=CALNGCL" class="btn red"><i class="icon-list"></i>&nbsp;Listar</a>
                 </div>
 
             </div>
@@ -46,16 +47,45 @@
                             </div>
                         </div>
                     </div>
+                    
                 </div>
-
-                <div class="row-fluid">                    
-                    <div class="span2 offset10">
+                <div class="row-fluid">
+                    <div class="span1">
                         <div class="control-group">
+                                <label id="Label1" class="control-label" for="txtDesde">Desde</label>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div class="span4">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtDesde" data-date-format="dd/mm/yyyy" maxlength="10" />
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="span4">
+                            <div class="control-group">
+                                <label id="Label3" class="control-label" for="txtHasta" style="text-align: center;">Hasta</label>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtHasta" data-date-format="dd/mm/yyyy" maxlength="10" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span1">
+                    </div>
+                    <div class="span1">
+                        <div class="control-group span2">
                             <div class="controls">
                                 <a id="buscar" class="btn blue">FILTRAR</a>
                             </div>
                         </div>
-                    </div>
+                    </div>                    
                 </div>
 
                 <div class="row-fluid">

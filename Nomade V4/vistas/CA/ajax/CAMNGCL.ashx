@@ -17,6 +17,8 @@ Public Class CAMNGCL : Implements IHttpHandler
     Dim p_MOTIVO_CODE, p_MOTIVO_DESC, p_MOTIVO_ADICIONAL, p_FECHA_EMISION,
         p_MONE_CODE, p_DETALLES, p_MONTO_IGV, p_SERIE, p_NUMERO, p_CODIGO_CORRELATIVO, p_TIPO_IND As String
 
+    Dim p_DESDE, p_HASTA As String
+
     Dim p_IMPORTE_EXO, p_IMPORTE_INA, p_IMPORTE_GRA, p_IGV, p_IMPORTE_TOTAL, p_PCTJ_IGV As String
     Dim p_VALOR_CAMBIO, p_MONTO_USABLE, p_MES_PERIODO, p_ANIO_PERIODO As String
     'DOCUMENTO DE REFERENCIA
@@ -29,8 +31,8 @@ Public Class CAMNGCL : Implements IHttpHandler
     'QR
     Dim p_IMGQR As String
 
-    'DEVOLUCION DINERO
-    Dim p_DEVOLVER_DINERO As String
+    'DEVOLUCION DINERO, APLICA A DOCUMENTO
+    Dim p_DEVOLVER_DINERO, p_APLICA_DOC_REFERENCIA, p_PAGADO_IND As String
 
     Dim ncCliente As New Nomade.NC.NCECliente("Bn")
     Dim caNotaCredito As New Nomade.CA.NotaCredito("Bn")
@@ -71,6 +73,10 @@ Public Class CAMNGCL : Implements IHttpHandler
         p_TIPO_IND = vChar(context.Request("p_TIPO_IND"))
         p_CODIGO_CORRELATIVO = context.Request("p_CODIGO_CORRELATIVO")
 
+        p_DESDE = Utilities.fechaLocal(context.Request("p_DESDE"))
+        p_HASTA = Utilities.fechaLocal(context.Request("p_HASTA"))
+
+
         p_VALOR_CAMBIO = context.Request("p_VALOR_CAMBIO")
         p_MONTO_USABLE = context.Request("p_MONTO_USABLE")
         'AGREGADO PARA QUEN SE MUESTRE EL PERIODO TRIBUTARIO'
@@ -86,6 +92,9 @@ Public Class CAMNGCL : Implements IHttpHandler
         p_ITEM = context.Request("p_ITEM")
         'DEVOLUCION DINERO
         p_DEVOLVER_DINERO = context.Request("p_DEVOLVER_DINERO")
+        'APLICA A DOCUMENTO
+        p_APLICA_DOC_REFERENCIA = context.Request("p_APLICA_DOC_REFERENCIA")
+        p_PAGADO_IND = context.Request("p_PAGADO_IND")
         ' correo
         REMITENTE = context.Request("REMITENTE")
         DESTINATARIOS = context.Request("DESTINATARIOS")
@@ -171,7 +180,7 @@ Public Class CAMNGCL : Implements IHttpHandler
                     array = caNotaCredito.CrearNotaCreditoGenerica_2(p_CTLG_CODE, p_SCSL_CODE, p_SERIE, p_NUMERO, Utilities.fechaLocal(p_FECHA_EMISION),
                                                          p_PERS_PIDM, p_DCTO_REF_CODE, p_DCTO_REF_TIPO_CODE, p_MOTIVO_CODE, p_MOTIVO_DESC, p_MONE_CODE, p_TIPO_IND,
                                                           p_IMPORTE_INA, p_IMPORTE_EXO, p_IMPORTE_GRA, p_IGV, p_IMPORTE_TOTAL, p_PCTJ_IGV, USUA_ID, p_SCSL_EXONERADA_IND,
-                                                          p_VALOR_CAMBIO, p_MONTO_USABLE, p_MES_PERIODO, p_ANIO_PERIODO, p_DEVOLVER_DINERO,
+                                                          p_VALOR_CAMBIO, p_MONTO_USABLE, p_MES_PERIODO, p_ANIO_PERIODO, p_DEVOLVER_DINERO, p_APLICA_DOC_REFERENCIA, p_PAGADO_IND,
                                                           p_CODIGO_CORRELATIVO, p_DETALLES)
 
                     If Not (array Is Nothing) Then
@@ -187,7 +196,8 @@ Public Class CAMNGCL : Implements IHttpHandler
                 Case "4" 'LISTAR NOTA DE CRÉDITO ( JSON )
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = caNotaCredito.ListarNotaCreditoGenerica(If(p_CODE Is Nothing, "", p_CODE), If(p_CTLG_CODE Is Nothing, "", p_CTLG_CODE),
-                                                       If(p_SCSL_CODE Is Nothing, "", p_SCSL_CODE), If(p_PERS_PIDM Is Nothing, "", p_PERS_PIDM), If(p_TIPO_IND Is Nothing, "", p_TIPO_IND))
+                                                       If(p_SCSL_CODE Is Nothing, "", p_SCSL_CODE), If(p_PERS_PIDM Is Nothing, "", p_PERS_PIDM), If(p_TIPO_IND Is Nothing, "", p_TIPO_IND),
+                                                       If(p_DESDE Is Nothing, "0000-00-00", p_DESDE), If(p_HASTA Is Nothing, "0000-00-00", p_HASTA))
                     If Not (dt Is Nothing) Then
                         resb.Append("[")
                         For Each row As DataRow In dt.Rows
@@ -236,7 +246,8 @@ Public Class CAMNGCL : Implements IHttpHandler
                             resb.Append("""DESTINO_CODE"" :" & """" & row("DESTINO_CODE").ToString & """,")
                             resb.Append("""VALOR_CAMBIO"" :" & """" & row("VALOR_CAMBIO").ToString & """,")
                             resb.Append("""PERIODO_DESC"" :" & """" & row("PERIODO_DESC").ToString & """,")
-
+                            resb.Append("""DEVUELVE_DINERO"" :" & """" & row("DEVUELVE_DINERO").ToString & """,")
+                            resb.Append("""APLICA_DOCUMENTO"" :" & """" & row("APLICA_DOCUMENTO").ToString & """,")
                             resb.Append("""USUA_ID"" :" & """" & row("USUA_ID").ToString & """")
                             resb.Append("}")
                             resb.Append(",")
@@ -328,7 +339,7 @@ Public Class CAMNGCL : Implements IHttpHandler
         If Not (dt Is Nothing) Then
             For i As Integer = 0 To dt.Rows.Count - 1
                 If dt.Rows(i)("COMPLETO_IND").ToString = "S" And dt.Rows(i)("ANULADO").ToString = "NO" And dt.Rows(i)("MONEDA").ToString = p_MONE_CODE Then
-                    If dt.Rows(i)("NOTA_CREDITO_IND").ToString = "N" Then
+                    If dt.Rows(i)("NOTA_CREDITO_IND").ToString = "N" And dt.Rows(i)("NC_DESTINO_IND").ToString = "N" And dt.Rows(i)("NOTA_CREDITO_GEN_IND").ToString = "N" And dt.Rows(i)("NCG_DESTINO_IND").ToString = "N" Then
                         'VALIDA QUE LA FECHA DE EMISION DE LA NOTA DE CREDITO SEA MENOR O IGUAL AL DOCUMENTO DE ORIGEN
                         Dim continuar As Boolean = False
                         If p_FECHA_EMISION <> "" And dt.Rows(i)("EMISION").ToString() <> "" Then
@@ -341,7 +352,7 @@ Public Class CAMNGCL : Implements IHttpHandler
                         If continuar Then
                             Dim serie_numero As String() = dt.Rows(i)("NUM_DCTO").ToString().Split(New Char() {"-"})
                             Dim fechaEmision As String = If(dt.Rows(i)("EMISION").ToString() = "", "", dt.Rows(i)("EMISION").ToString().Substring(0, 10))
-                            resb.AppendFormat("<tr class='doc_fila' onclick=""setSeleccionDocumento('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}')"" id='doc_fila_{0}_{1}'>", dt.Rows(i)("CODIGO").ToString(), dt.Rows(i)("SECUENCIA").ToString(), serie_numero(0), serie_numero(1), dt.Rows(i)("TIPO_DCTO").ToString(), dt.Rows(i)("IMPORTE").ToString(), dt.Rows(i)("MONEDA").ToString(), dt.Rows(i)("SIMBOLO_MONEDA").ToString(), dt.Rows(i)("SCSL_EXONERADA_IND").ToString(), fechaEmision)
+                            resb.AppendFormat("<tr class='doc_fila' onclick=""setSeleccionDocumento('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}')"" id='doc_fila_{0}_{1}'>", dt.Rows(i)("CODIGO").ToString(), dt.Rows(i)("SECUENCIA").ToString(), serie_numero(0), serie_numero(1), dt.Rows(i)("TIPO_DCTO").ToString(), dt.Rows(i)("IMPORTE").ToString(), dt.Rows(i)("MONEDA").ToString(), dt.Rows(i)("SIMBOLO_MONEDA").ToString(), dt.Rows(i)("SCSL_EXONERADA_IND").ToString(), fechaEmision, dt.Rows(i)("PAGADO_IND"), dt.Rows(i)("PAGADO_DESC"), dt.Rows(i)("POR_PAGAR_BASE"), dt.Rows(i)("POR_PAGAR_ALTER"))
                             resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CODIGO").ToString())
                             resb.AppendFormat("<td align='center' >{0}</td>", serie_numero(0))
                             resb.AppendFormat("<td align='center' >{0}</td>", serie_numero(1))
@@ -375,7 +386,7 @@ Public Class CAMNGCL : Implements IHttpHandler
         Dim dtCabecera As New DataTable
         Dim dtDetalles As New DataTable
         'Dim dtEmpresas As New DataTable
-        dtCabecera = caNotaCredito.ListarNotaCreditoGenerica(p_CODE, "", "", "", "X")
+        dtCabecera = caNotaCredito.ListarNotaCreditoGenerica(p_CODE, "", "", "", "X", "0000-00-00", "0000-00-00")
 
         dtDetalles = caNotaCredito.ListarDetalleNotaCreditoGenerica(p_CODE, "")
 
@@ -563,7 +574,7 @@ Public Class CAMNGCL : Implements IHttpHandler
         Dim dtCabecera As New DataTable
         Dim dtDetalles As New DataTable
         'Dim dtEmpresas As New DataTable
-        dtCabecera = caNotaCredito.ListarNotaCreditoGenerica(p_CODE, "", "", "", "X")
+        dtCabecera = caNotaCredito.ListarNotaCreditoGenerica(p_CODE, "", "", "", "X", "0000-00-00", "0000-00-00")
         dtDetalles = caNotaCredito.ListarDetalleNotaCreditoGenerica(p_CODE, "")
 
         If dtCabecera IsNot Nothing Then
@@ -728,7 +739,7 @@ Public Class CAMNGCL : Implements IHttpHandler
 
         Dim nc As New Nomade.NC.NCEmpresa("Bn")
         Dim dtCabecera As DataTable
-        dtCabecera = caNotaCredito.ListarNotaCreditoGenerica(p_CODE, "", "", "", "X")
+        dtCabecera = caNotaCredito.ListarNotaCreditoGenerica(p_CODE, "", "", "", "X", "0000-00-00", "0000-00-00")
 
         Dim imgS, imgI As String
 

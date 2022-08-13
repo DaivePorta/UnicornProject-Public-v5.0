@@ -395,37 +395,46 @@ var CAMNOCL = function () {
                 mostrarModalBuscarDocumento();
             }
         });
+
         $("#btnEFac").click(function () {
             GenerarDocFacturacion();
         });
+
         $("#chkAlmacen").on("change", function () {
+            if ($(this).is(":checked")) {
+                $("#lblMsgDespacho .si").html("");
+            } else {
+                $("#lblMsgDespacho .si").html("&nbsp;NO");
+            }
+
             var oTable = $("#tblDetallesCompraVenta").DataTable();
             if (!$("#chkAlmacen").is(":checked")) { 
                 oTable.columns(7).visible(false);
             } else {
                 //oTable.columns(7).visible(true);
             }
-            $("#lblMsgDespacho").pulsate({
-                color: "#33AECD",
-                reach: 20,
-                repeat: 1,
-                glow: true
-            });
+                        
+            //$("#lblMsgDespacho").pulsate({
+            //    color: "#33AECD",
+            //    reach: 20,
+            //    repeat: 1,
+            //    glow: true
+            //});
             BloqueaCamposProductosSeriados();
         });
 
         $("#chkAplicar").on("change", function () {            
             if ($(this).is(":checked")) {                
-                $("#lblMsgDevolverDinero .si").html("");
+                $("#lblMsgUsable .no").html("");
             } else {                
-                $("#lblMsgDevolverDinero .si").html("&nbsp;NO");
+                $("#lblMsgUsable .no").html("&nbsp;NO");
             }
-            $("#lblMsgDevolverDinero").pulsate({
-                color: "#33AECD",
-                reach: 20,
-                repeat: 1,
-                glow: true
-            });
+            //$("#lblMsgDevolverDinero").pulsate({
+            //    color: "#33AECD",
+            //    reach: 20,
+            //    repeat: 1,
+            //    glow: true
+            //});
         });
 
         $(".inputDevolucion").live("keyup", function () {
@@ -435,9 +444,9 @@ var CAMNOCL = function () {
             CalcularTotales();
         });
 
-        $("#txtTotalDevolucion").live("keyup", function () {
-            CambiarMensajes();
-        });
+        //$("#txtTotalDevolucion").live("keyup", function () {
+        //    CambiarMensajes();
+        //});
 
         $("#cboSerieNC").on("change", function () {
             $("#txtNroNC").val("");
@@ -794,10 +803,10 @@ var CAMNOCL = function () {
                     obtenerDocumento(datos[0].ORIGEN);
                     if (datos[0].DEVOLUCION_DINERO_IND == 'S') {
                         $("#chkAplicar").attr("checked", true).parent().addClass("checked");                        
-                        $("#lblMsgDevolverDinero .si").html("");
+                        $("#lblMsgUsable .no").html("");
                     } else {
                         $("#chkAplicar").attr("checked", false).parent().removeClass("checked");  
-                        $("#lblMsgDevolverDinero .si").html("&nbsp;NO");
+                        $("#lblMsgUsable .no").html("&nbsp;NO");
                     }
 
                     if (datos[0].ENTREGA_DESPACHO_ALMACEN == 'S') {
@@ -847,40 +856,42 @@ var CAMNOCL = function () {
     }
 
     var cargarTipoDocumento = function () {
-        $.ajax({
-            type: "post",
-            url: "vistas/na/ajax/naminsa.ashx?OPCION=LDOC&PIDM=" + $('#hfPIDM').val(),
-            contenttype: "application/json;",
-            datatype: "json",
-            async: false,
-            success: function (datos) {
-                $('#cboTipoDcto').html('<option></option>');
-                if (datos !== null) {
-                    let sCodDocIdent = "";
-                    for (var i = 0; i < datos.length; i++) {
-                        $('#cboTipoDcto').append('<option value="' + datos[i].CODIGO_DOCUMENTO + '" nroDoc="' + datos[i].NUM_DOC + '">' + datos[i].DESC_DOCUMENTO + '</option>');
-                        sCodDocIdent = datos[i].CODIGO_DOCUMENTO;
-                    }
+        if ($('#hfPIDM').val() != '') {
+            $.ajax({
+                type: "post",
+                url: "vistas/na/ajax/naminsa.ashx?OPCION=LDOC&PIDM=" + $('#hfPIDM').val(),
+                contenttype: "application/json;",
+                datatype: "json",
+                async: false,
+                success: function (datos) {
+                    $('#cboTipoDcto').html('<option></option>');
+                    if (datos !== null) {
+                        let sCodDocIdent = "";
+                        for (var i = 0; i < datos.length; i++) {
+                            $('#cboTipoDcto').append('<option value="' + datos[i].CODIGO_DOCUMENTO + '" nroDoc="' + datos[i].NUM_DOC + '">' + datos[i].DESC_DOCUMENTO + '</option>');
+                            sCodDocIdent = datos[i].CODIGO_DOCUMENTO;
+                        }
 
-                    $("#cboTipoDcto").val("6").change();
-                    if ($("#cboTipoDcto").val() == "") {
-                        $("#cboTipoDcto").val("1").change();
+                        $("#cboTipoDcto").val("6").change();
                         if ($("#cboTipoDcto").val() == "") {
-                            $("#cboTipoDcto").val(sCodDocIdent).change();
+                            $("#cboTipoDcto").val("1").change();
+                            if ($("#cboTipoDcto").val() == "") {
+                                $("#cboTipoDcto").val(sCodDocIdent).change();
+                            }
                         }
                     }
+                    //console.log(datos);
+
+
+
+                    Desbloquear('ventana');
+                },
+                error: function (msg) {
+                    alertCustom('Error al listar direcciones.');
+                    Desbloquear('ventana');
                 }
-                //console.log(datos);
-
-
-
-                Desbloquear('ventana');
-            },
-            error: function (msg) {
-                alertCustom('Error al listar direcciones.');
-                Desbloquear('ventana');
-            }
-        });
+            });
+        }        
     };
 
     return {
@@ -889,7 +900,7 @@ var CAMNOCL = function () {
             plugins();
             eventoControles();
             fillCboEmpresa();
-            fillCboEstablecimiento($("#ctl00_hddctlg").val());
+            //fillCboEstablecimiento($("#ctl00_hddctlg").val());
             //filltxtrazsocial('#txtrazsocial', '');
             fillCboTipoDocumento();
             fillCboMotivoSunat();
@@ -1062,7 +1073,7 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
             }
 
             $('#txtFechaDocModif').datepicker('setDate', fechaEmision);
-            ObtenerDeudaDocumento();
+            //ObtenerDeudaDocumento();
         }
         else {
             $("#txtNro").val("");
@@ -1126,7 +1137,7 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
                 }
 
                 $('#txtFechaDocModif').datepicker('setDate', fechaEmision);
-                ObtenerDeudaDocumento();
+                //ObtenerDeudaDocumento();
             }
             else {
                 $("#txtNro").val("");
@@ -1194,7 +1205,7 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
                     }
 
                     $('#txtFechaDocModif').datepicker('setDate', fechaEmision);
-                    ObtenerDeudaDocumento();
+                    //ObtenerDeudaDocumento();
                 }
                 else {
                     $("#txtNro").val("");
@@ -1215,7 +1226,12 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
             }
     }
 
-    
+    $("#divInfo").pulsate({
+        color: "#33AECD",
+        reach: 20,
+        repeat: 5,
+        glow: true
+    });
 }
 
 function setSerieNotaCredito(tipo) {
@@ -1347,48 +1363,48 @@ function enviarCorreo() {
 
 var ajaxDeuda = null;
 var deudaOrigen = "";
-function ObtenerDeudaDocumento() {
-    $("#lblDeuda").html("...")
-    if (ajaxDeuda) {
-        ajaxDeuda.abort();
-    }
-    ajaxDeuda = $.ajax({
-        type: "post",
-        url: "vistas/ca/ajax/camnocl.ashx?OPCION=DEUDA" +
-            "&p_CTLG_CODE=" + $("#cboEmpresa").val() +
-            "&p_PERS_PIDM=" + $("#hfPIDM").val() +
-            "&p_ORIGEN_CODE=" + $("#hfCodDocSeleccionado").val(),
-        contenttype: "application/text;",
-        datatype: "text",
-        async: true,
-        success: function (datos) {
-            deudaOrigen = datos;
-            CambiarMensajes();
-        },
-        error: function (msg) {
-            deudaOrigen = "NO_ENCONTRADO";
-            $("#lblDeuda").html("...")
-            if (msg.statusText != "abort") {
-                alertCustom("Deuda del Documento Referenciado no se obtuvo correctamente.");
-            }
-        }
-    });
-}
+//function ObtenerDeudaDocumento() {
+//    $("#lblDeuda").html("...")
+//    if (ajaxDeuda) {
+//        ajaxDeuda.abort();
+//    }
+//    ajaxDeuda = $.ajax({
+//        type: "post",
+//        url: "vistas/ca/ajax/camnocl.ashx?OPCION=DEUDA" +
+//            "&p_CTLG_CODE=" + $("#cboEmpresa").val() +
+//            "&p_PERS_PIDM=" + $("#hfPIDM").val() +
+//            "&p_ORIGEN_CODE=" + $("#hfCodDocSeleccionado").val(),
+//        contenttype: "application/text;",
+//        datatype: "text",
+//        async: true,
+//        success: function (datos) {
+//            deudaOrigen = datos;
+//            //CambiarMensajes();
+//        },
+//        error: function (msg) {
+//            deudaOrigen = "NO_ENCONTRADO";
+//            $("#lblDeuda").html("...")
+//            if (msg.statusText != "abort") {
+//                alertCustom("Deuda del Documento Referenciado no se obtuvo correctamente.");
+//            }
+//        }
+//    });
+//}
 
-function CambiarMensajes() {
-    if (deudaOrigen != "NO_ENCONTRADO") {
-        var deuda = parseFloat(deudaOrigen);
-        $("#lblDeuda").html($(".lblMoneda").html() + " " + deuda.toFixed(2));
+//function CambiarMensajes() {
+//    if (deudaOrigen != "NO_ENCONTRADO") {
+//        var deuda = parseFloat(deudaOrigen);
+//        $("#lblDeuda").html($(".lblMoneda").html() + " " + deuda.toFixed(2));
         
-        if (parseFloat(deuda.toFixed(2)) >= parseFloat($("#txtTotalDevolucion").val())) {
-            $("#lblMsgUsable .no").html("");
-        } else {
-            $("#lblMsgUsable .no").html("NO");
-        }
-    } else {
-        $("#lblDeuda").html("(No se pudo consultar)");
-    }
-}
+//        if (parseFloat(deuda.toFixed(2)) >= parseFloat($("#txtTotalDevolucion").val())) {
+//            $("#lblMsgUsable .no").html("");
+//        } else {
+//            $("#lblMsgUsable .no").html("NO");
+//        }
+//    } else {
+//        $("#lblDeuda").html("(No se pudo consultar)");
+//    }
+//}
 
 // MANTENIMIENTO / TRANSACCIONES
 var montoTotalISCGlobal = 0;
@@ -1943,7 +1959,7 @@ function CalcularTotales() {
 
   
     $("#divTotales").slideDown();
-    CambiarMensajes();
+    //CambiarMensajes();
     return continuar;
 }
 

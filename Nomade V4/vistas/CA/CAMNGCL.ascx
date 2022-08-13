@@ -185,13 +185,13 @@
                     <div class="span1">
                         <div class="control-group">
                             <label class="control-label" for="txtFechaEmision">
-                                Fecha Emisión</label>
+                                Fecha Emisión N. de Crédito</label>
                         </div>
                     </div>
                     <div class="span2">
                         <div class="control-group">
                             <div class="controls">
-                                <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtFechaEmision" data-date-format="dd/mm/yyyy" />
+                                <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtFechaEmision" data-date-format="dd/mm/yyyy" disabled="disabled"/>
                             </div>
                         </div>
                     </div>
@@ -209,49 +209,14 @@
                         </div>
                     </div>
                 </div>
-                           
-
+                <br />
                 <div class="row-fluid">
-                    <div class="span1">
-                        <div class="control-group">
-                            <label class="control-label" for="cboMoneda">
-                                Moneda</label>
-                        </div>
-                    </div>
-                    <div class="span2" id="divCboMoneda">
-                        <div class="control-group">
-                            <div class="controls">
-                                <select id="cboMoneda" class="span12" data-placeholder="Moneda">
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="span1 offset3">
-                        <div class="control-group">
-                            <label class="control-label" for="txtCodigo">
-                                Periodo Tributario</label>
-                        </div>
-                    </div>
-                    <div class="span2" id="divCboPeriodo">
-                        <div class="control-group">
-                            <div class="controls">
-                                <select id="cboPeriodo" class="b limpiar span12 m-wrap" placeholder="Selecciona Periodo">
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                    
-                    <div class="row-fluid">
                     <div class="span1">
                         <div class="control-group">
                             <label class="control-label" for="cboMotivo">Motivo</label>
                         </div>
                     </div>
-                    <div class="span3">
+                    <div class="span4">
                         <div class="control-group">
                             <div class="controls">
                                 <select id="cboMotivo" class="span12" data-placeholder="Motivo">
@@ -260,7 +225,14 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="span2 offset1">
+                        <div class="control-group">
+                            <div class="controls">
+                                <input type="checkbox" id="chkAplicar" />
+                                Aplicar a Doc. que Modifica
+                            </div>
+                        </div>
+                    </div> 
                      <div class="span4" id="Div_chkDinero" style="display:none;"> <%--style="display:none;"--%>
                         <div class="control-group">
                           <input id="chkDevDinero" type="checkbox" disabled='disabled'  class="span12"/><span>Devolver dinero</span> <%--checked="checked"--%>
@@ -280,7 +252,51 @@
                             </div>
                         </div>
                     </div>
-                </div>     
+                </div>
+                <div class="row-fluid">
+                    <%--<div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="txtGlosa">Glosa</label>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div class="control-group">
+                            <div class="controls">
+                                <input id="txtGlosa" class="span12" type="text" maxlength="100" placeholder="Descripción detallada del motivo"/>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="span1"></div>--%>
+                    <div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="cboMoneda">
+                                Moneda</label>
+                        </div>
+                    </div>
+                    <div class="span2" id="divCboMoneda">
+                        <div class="control-group">
+                            <div class="controls">
+                                <select id="cboMoneda" class="span12" data-placeholder="Moneda">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <%--<div class="span1 offset3">
+                        <div class="control-group">
+                            <label class="control-label" for="txtCodigo">
+                                Periodo Tributario</label>
+                        </div>
+                    </div>
+                    <div class="span2" id="divCboPeriodo">
+                        <div class="control-group">
+                            <div class="controls">
+                                <select id="cboPeriodo" class="b limpiar span12 m-wrap" placeholder="Selecciona Periodo">
+                                </select>
+                            </div>
+                        </div>
+                    </div>--%>
+                </div>
                 <!-- DOCUMENTO AL QUE MODIFICA -->
 
                 <div class="row-fluid">
@@ -351,25 +367,49 @@
                                 Fecha Emisión</label>
                         </div>
                     </div>
-                    <div class="span2">
-                        <div class="control-group">
-                            <div class="controls">
-                                <input id="txtFechaEmisionRef" type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" data-date-format="dd/mm/yyyy" disabled="disabled" />
+                    <div class="span5">
+                        <div class="span5">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input id="txtFechaEmisionRef" type="text" class="span10 date-picker" placeholder="dd/mm/yyyy" data-date-format="dd/mm/yyyy" disabled="disabled" />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- SE AGREGÓ EL CAMPO MONTO EN EL FORMULARIO -->
+                        <div class="span1">
+                            <div class="control-group">
+                                <label class="control-label" for="txtMonto">
+                                    Importe</label>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input id="txtMonto" type="text" class="span10 right" placeholder="Importe Total" disabled="disabled" />
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- SE AGREGÓ EL CAMPO MONTO EN EL FORMULARIO -->
-                    <div class="span1">
+                    <div class="span1" id="divLblEstadoPago">
                         <div class="control-group">
-                            <label class="control-label" for="txtMonto">
-                                Monto</label>
+                            <label class="control-label">Estado Pago:</label>
                         </div>
                     </div>
-                    <div class="span2">
+                    <div class="span1" id="divEstadoPago">
+                        <div class="control-group">
+                            <label style="font-weight:bold"  class ="control-label" id="lblPagoInd">-</label>
+                        </div>
+                    </div>
+                    <div class="span1" id="divLblMontoPagar" style="display: none">
+                        <div class="control-group">
+                            <label class="control-label" for="txtMontoPagar">
+                                Monto Pendiente</label>
+                        </div>
+                    </div>
+                    <div class="span2" id="divMontoPagar" style="display: none">
                         <div class="control-group">
                             <div class="controls">
-                                <input id="txtMonto" type="text" class="span12 date-picker" placeholder="Monto" disabled="disabled" />
+                                <input id="txtMontoPagar" type="text" class="span12 " placeholder="Monto por pagar" disabled="disabled" />
                             </div>
                         </div>
                     </div>
@@ -424,14 +464,14 @@
                             </div>
                         </div>
 
-                        <div class="span3">
+                        <div class="span4">
                             <div class="control-group">
                                 <label id="lblIndIgv" class="control-label" style="color: gray">
                                     <small>*Montos para detalle incluyen IGV</small></label>
                             </div>
                         </div>
 
-                           <div class="span2">
+                           <div class="span1">
                             <div class="control-group">
                                 <label class="control-label" for="cboAfectacionIgv">Afectación al IGV</label>
                             </div>
@@ -525,7 +565,19 @@
                         </div>
 
                     </div>
+                    <div class="row-fluid">
+                        <div id="divMensajes">
+                            <!-- MENSAJES -->
+                            <div class="span6 ">
+                                    <div class="row-fluid">
+                                    <div class="span9 alert alert-info" id="divInfo">
+                                        <p id="lblMsgUsable">* La Nota de Crédito<strong class="no">&nbsp;NO</strong>&nbsp;se utilizará en el mismo Documento Referenciado.</p>                                        
+                                    </div>
+                                </div>
+                            </div>   
 
+                        </div>
+                    </div>  
                 </div>
                  <!-- CAMPOS PARA CREAR QR -->
                  <div id="codigoQR" style="display: none"></div>  
@@ -613,7 +665,7 @@
 <input id="hfDIR" type="hidden" />
 <input id="hfDNI" type="hidden" />
 <input id="hfRUC" type="hidden" />
-
+<input id="hfPagadoInd" type="hidden" />
 <input id="hfCodigoNotaCredito" type="hidden" />
 <input id="hfCodigoCorrelativo" type="hidden" />
 <input id="hfIMPUESTO" type="hidden" />

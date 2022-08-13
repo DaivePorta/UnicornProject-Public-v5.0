@@ -17,6 +17,9 @@ var item = {};
 var dctoSeleccionado = {};
 var notaCredito = {};
 //------
+var p_DESDE = "";
+var p_HASTA = "";
+//------
 var tipoCambioInterno = 1;
 var bCargaIgv = false;
 var bCargaTC = false;
@@ -108,7 +111,7 @@ var CAMNGCL = function () {
         $("#cboMoneda").select2();
         $("#cboMotivo").select2();
         $("#cboAfectacionIgv").select2();
-        $("#cboPeriodo").select2();
+        //$("#cboPeriodo").select2();
         $("#txtFechaEmisionRef").datepicker();
         $("#txtFechaTransaccion").datepicker("setDate", "now");
         $("#cboTipoDcto").select2();
@@ -261,41 +264,41 @@ var CAMNGCL = function () {
         });
     }
 
-    var fillCboPeriodo = function () {
-        Bloquear("divCboPeriodo");
-        $.ajax({
-            type: "post",
-            url: "vistas/cp/ajax/cpmpgas.ashx?OPCION=99&p_CTLG_CODE=" + $("#cboEmpresa").val(),
-            contenttype: "application/json;",
-            datatype: "json",
-            async: true,
-            success: function (datos) {
-                Desbloquear("divCboPeriodo");
-                $('#cboPeriodo').empty();
-                $('#cboPeriodo').append('<option></option>');
-                if (datos != null) {
-                    var valor = "";
-                    for (var i = 0; i < datos.length; i++) {
-                        $('#cboPeriodo').append('<option  value="' + datos[i].COD + '">' + datos[i].PERIODO_DESC + '</option>');
-                        if (i == datos.length - 1) {
-                            valor = datos[i].COD;
-                        }
-                    }
-                    var cod = ObtenerQueryString("codigo");
-                    if (cod == undefined) {
-                        $('#cboPeriodo').select2("val", valor);
-                    }
-                } else {
-                    infoCustom2("No se encontró periodos tributarios")
-                }
-                Fin2_CargaPeriodo();
-            },
-            error: function (msg) {
-                Desbloquear("divCboPeriodo");
-                alertCustom("Error al cargar periodo.");
-            }
-        });
-    }
+    //var fillCboPeriodo = function () {
+    //    Bloquear("divCboPeriodo");
+    //    $.ajax({
+    //        type: "post",
+    //        url: "vistas/cp/ajax/cpmpgas.ashx?OPCION=99&p_CTLG_CODE=" + $("#cboEmpresa").val(),
+    //        contenttype: "application/json;",
+    //        datatype: "json",
+    //        async: true,
+    //        success: function (datos) {
+    //            Desbloquear("divCboPeriodo");
+    //            $('#cboPeriodo').empty();
+    //            $('#cboPeriodo').append('<option></option>');
+    //            if (datos != null) {
+    //                var valor = "";
+    //                for (var i = 0; i < datos.length; i++) {
+    //                    $('#cboPeriodo').append('<option  value="' + datos[i].COD + '">' + datos[i].PERIODO_DESC + '</option>');
+    //                    if (i == datos.length - 1) {
+    //                        valor = datos[i].COD;
+    //                    }
+    //                }
+    //                var cod = ObtenerQueryString("codigo");
+    //                if (cod == undefined) {
+    //                    $('#cboPeriodo').select2("val", valor);
+    //                }
+    //            } else {
+    //                infoCustom2("No se encontró periodos tributarios")
+    //            }
+    //            Fin2_CargaPeriodo();
+    //        },
+    //        error: function (msg) {
+    //            Desbloquear("divCboPeriodo");
+    //            alertCustom("Error al cargar periodo.");
+    //        }
+    //    });
+    //}
 
     function filltxtrazsocial() {
         var v_ID = '#txtrazsocial';
@@ -504,7 +507,7 @@ var CAMNGCL = function () {
 
             fillCboEstablecimiento();
             fillCboTipoDocumento();
-            fillCboPeriodo();
+            //fillCboPeriodo();
             filltxtrazsocial();
 
             $("#cboEstablecimiento").change();
@@ -536,11 +539,23 @@ var CAMNGCL = function () {
 
         $("#cboMotivo").on("change", function () { //Para marcar y desmarcar checkbox
             if ($("#cboMotivo").val() == "011") {
-                $('#chkDevDinero').prop('checked', true).parent().addClass('checked');
+                //$('#chkDevDinero,#chkAplicar').prop('checked', true).parent().addClass('checked');
+                //$("#Div_chkDinero").attr("style", "display:inline");
+                //$('#chkAplicar').attr('disabled', true);
+                $("#divMensajes").attr("style", "display:none");
                 $("#Div_chkDinero").attr("style", "display:inline");
+                $("#chkDevDinero,#chkAplicar").attr("checked", true).parent().addClass("checked");
+                $('#chkAplicar').attr('disabled', true);
+                $('#chkAplicar').change();
             } else {
-                $('#chkDevDinero').prop('checked', false).parent().removeClass('checked');
+                //$('#chkDevDinero,#chkAplicar').prop('checked', false).parent().removeClass('checked');
+                //$("#Div_chkDinero").attr("style", "display:none");
+                //$('#chkAplicar').attr('disabled', false);
+                $("#divMensajes").attr("style", "display:inline");
                 $("#Div_chkDinero").attr("style", "display:none");
+                $("#chkDevDinero,#chkAplicar").attr("checked", false).parent().removeClass("checked");
+                $('#chkAplicar').attr('disabled', false);
+                $('#chkAplicar').change();
             }
         })
         //agregado
@@ -649,7 +664,7 @@ var CAMNGCL = function () {
         })
 
         $('#btnBuscarDocumento').on('click', function () {
-            if (vErrors(["cboEmpresa", "cboEstablecimiento", "txtrazsocial", "txtFechaEmision"])) {
+            if (vErrors(["cboEmpresa", "cboEstablecimiento", "txtrazsocial", "txtFechaEmision", "cboMotivo"])) {
                 mostrarModalBuscarDocumento();
             }
         });
@@ -702,6 +717,14 @@ var CAMNGCL = function () {
             cargarCorreos();
             $('#divMail').modal('show');
         });
+
+        $("#chkAplicar").on("change", function () {
+            if ($(this).is(":checked")) {
+                $("#lblMsgUsable .no").html("");
+            } else {
+                $("#lblMsgUsable .no").html("&nbsp;NO");
+            }
+        });
     }
 
     var cargaInicial = function () {
@@ -748,9 +771,19 @@ var CAMNGCL = function () {
                     //AGREGADO
                     $("#txtMonto").val(datos[0].IMPORTE);
                     $("#txtCodMoneda").val(datos[0].MONEDA_CODE);
-                    
-
-
+                    $("#divLblEstadoPago, #divEstadoPago").attr("style", "display:none");
+                    if (datos[0].DEVUELVE_DINERO == 'S') {
+                        $("#chkDevDinero").attr("checked", true).parent().addClass("checked");
+                    } else {
+                        $("#chkDevDinero").attr("checked", false).parent().removeClass("checked");
+                    }
+                    if (datos[0].APLICA_DOCUMENTO == 'S') {
+                        $("#chkAplicar").attr("checked", true).parent().addClass("checked");
+                        $("#lblMsgUsable .no").html("");
+                    } else {
+                        $("#chkAplicar").attr("checked", false).parent().removeClass("checked");
+                        $("#lblMsgUsable .no").html("&nbsp;NO");
+                    }
                     //LLENAR DETALLES
                     Bloquear("divTblDetalles");
                     var data2 = new FormData();
@@ -795,11 +828,11 @@ var CAMNGCL = function () {
                     $("#txtrazsocial").attr("disabled", "disabled");
                     $("#cboTipoDocumento").attr("disabled", "disabled");
                     $("#cboMoneda").attr("disabled", "disabled");
-                    $("#cboPeriodo").attr("disabled", "disabled");
+                    //$("#cboPeriodo").attr("disabled", "disabled");
                     //BloquearCampos
                     $("#btnBuscarDocumento").attr("style", "display:none");
                     $("#divAgregarDetalles").attr("style", "display:none");
-
+                    $("#chkAplicar,#chkDevDinero").attr('disabled', true);
                     $("#grabar").html("<i class='icon-plus'></i> Nuevo");
                     $("#grabar").attr("href", "?f=CAMNGCL");
                     $("#cancelar").attr("style", "display:none;");
@@ -816,7 +849,7 @@ var CAMNGCL = function () {
     var iniBloqueo = function () {
         Bloquear("cboEmpresa");
         Bloquear("cboEstablecimiento");
-        Bloquear("cboPeriodo");
+        //Bloquear("cboPeriodo");
         Bloquear("cboTipoDocumento");
         Bloquear("cboMoneda");
     }
@@ -831,7 +864,7 @@ var CAMNGCL = function () {
                 fillCboEstablecimiento();
                 filltxtrazsocial();
                 fillCboTipoDocumento();
-                fillCboPeriodo();
+                //fillCboPeriodo();
                 fillCboMotivoSunat();
             }
         }
@@ -854,51 +887,53 @@ var CAMNGCL = function () {
             $("#txtDireccionOrigen").val(gDatos[0].DIRECCION_CLIENTE);
         }
     };
-    var Fin2_CargaPeriodo = function () {
-        if (gDatos != null) {
-            $("#cboPeriodo").select2("val", gDatos[0].MES_PERIODO + "-" + gDatos[0].ANIO_PERIODO)
-            if ($("#cboPeriodo").val() == "") {
-                $("#cboPeriodo").append('<option value="PER">' + gDatos[0].PERIODO_DESC + '</option>')
-                $("#cboPeriodo").select2("val", "PER");
-            }
-        }
-    };
+    //var Fin2_CargaPeriodo = function () {
+    //    if (gDatos != null) {
+    //        $("#cboPeriodo").select2("val", gDatos[0].MES_PERIODO + "-" + gDatos[0].ANIO_PERIODO)
+    //        if ($("#cboPeriodo").val() == "") {
+    //            $("#cboPeriodo").append('<option value="PER">' + gDatos[0].PERIODO_DESC + '</option>')
+    //            $("#cboPeriodo").select2("val", "PER");
+    //        }
+    //    }
+    //};
 
     var cargarTipoDocumento = function () {
-        $.ajax({
-            type: "post",
-            url: "vistas/na/ajax/naminsa.ashx?OPCION=LDOC&PIDM=" + $('#hfPIDM').val(),
-            contenttype: "application/json;",
-            datatype: "json",
-            async: false,
-            success: function (datos) {
-                $('#cboTipoDcto').html('<option></option>');
-                if (datos !== null) {
-                    let sCodDocIdent = "";
-                    for (var i = 0; i < datos.length; i++) {
-                        $('#cboTipoDcto').append('<option value="' + datos[i].CODIGO_DOCUMENTO + '" nroDoc="' + datos[i].NUM_DOC + '">' + datos[i].DESC_DOCUMENTO + '</option>');
-                        sCodDocIdent = datos[i].CODIGO_DOCUMENTO;
-                    }
+        if ($('#hfPIDM').val() != '') {
+            $.ajax({
+                type: "post",
+                url: "vistas/na/ajax/naminsa.ashx?OPCION=LDOC&PIDM=" + $('#hfPIDM').val(),
+                contenttype: "application/json;",
+                datatype: "json",
+                async: false,
+                success: function (datos) {
+                    $('#cboTipoDcto').html('<option></option>');
+                    if (datos !== null) {
+                        let sCodDocIdent = "";
+                        for (var i = 0; i < datos.length; i++) {
+                            $('#cboTipoDcto').append('<option value="' + datos[i].CODIGO_DOCUMENTO + '" nroDoc="' + datos[i].NUM_DOC + '">' + datos[i].DESC_DOCUMENTO + '</option>');
+                            sCodDocIdent = datos[i].CODIGO_DOCUMENTO;
+                        }
 
-                    $("#cboTipoDcto").val("6").change();
-                    if ($("#cboTipoDcto").val() == "") {
-                        $("#cboTipoDcto").val("1").change();
+                        $("#cboTipoDcto").val("6").change();
                         if ($("#cboTipoDcto").val() == "") {
-                            $("#cboTipoDcto").val(sCodDocIdent).change();
+                            $("#cboTipoDcto").val("1").change();
+                            if ($("#cboTipoDcto").val() == "") {
+                                $("#cboTipoDcto").val(sCodDocIdent).change();
+                            }
                         }
                     }
+                    //console.log(datos);
+
+
+
+                    Desbloquear('ventana');
+                },
+                error: function (msg) {
+                    alertCustom('Error al listar direcciones.');
+                    Desbloquear('ventana');
                 }
-                //console.log(datos);
-
-
-
-                Desbloquear('ventana');
-            },
-            error: function (msg) {
-                alertCustom('Error al listar direcciones.');
-                Desbloquear('ventana');
-            }
-        });
+            });
+        }        
     };
 
     return {
@@ -924,18 +959,26 @@ var CAMNGCL = function () {
 //Valida dcto global y otros conceptos -- Daive 
 
 function ValidarTotales() {
-    if ($("#cboMotivo").val() == "004" || $("#cboMotivo").val() == "010" || $("#cboMotivo").val() == "011") {
-        var sumt;
-        if ($("#txtImporteTotal").val() == "") {
-            sumt = 0;
-        } else {
-            sumt = parseFloat($("#txtImporteTotal").val());
-        }
+    //if ($("#cboMotivo").val() == "004" || $("#cboMotivo").val() == "010" || $("#cboMotivo").val() == "011") {
+    var sumt;
+    if ($("#txtImporteTotal").val() == "") {
+        sumt = 0;
+    } else {
+        sumt = parseFloat($("#txtImporteTotal").val());
+    }
+    if ($("#hfPagadoInd").val() == 'S') {
         if (sumt + parseFloat($("#txtSubtotalItem").val()) > parseFloat($("#txtMonto").val())) {
             parseFloat($("#txtSubtotalItem").val(parseFloat($("#txtMonto").val() - sumt)))
 
         }
+    } else {
+        if (sumt + parseFloat($("#txtSubtotalItem").val()) > parseFloat($("#txtMontoPagar").val())) {
+            parseFloat($("#txtSubtotalItem").val(parseFloat($("#txtMontoPagar").val() - sumt)))
+
+        }
     }
+        
+    //}
 }
 
 function AgregarDetalle() {
@@ -987,7 +1030,12 @@ function AgregarDetalle() {
         alertCustom("Seleccione Moneda.");
         $("#cboMoneda").focus();
     }
-
+    $("#divInfo").pulsate({
+        color: "#33AECD",
+        reach: 20,
+        repeat: 5,
+        glow: true
+    });
 }
 
 var ListarTablaDetalles = function () {
@@ -1144,7 +1192,7 @@ function mostrarModalBuscarDocumento() {
     });
 }
 
-function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, moneda, simboloMoneda, scslExonerada, emision) {
+function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, moneda, simboloMoneda, scslExonerada, emision, pagado, pagado_desc, por_pagar_base, por_pagar_alter) {
 
 
     dctoSeleccionado.CODIGO = codigo;
@@ -1199,7 +1247,36 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
     $(".doc_fila").css("background-color", "#f9f9f9 !important");
     $("#doc_fila_" + codigo + "_" + secuencia + "").css("background-color", "#cbcbcb !important");
     $("#_buscarDocumento").modal('hide');
-
+    $("#hfPagadoInd").val(pagado);
+    $("#lblPagoInd").text(pagado_desc);
+    if (pagado != 'S') {
+        $("#divLblMontoPagar,#divMontoPagar").attr("style", "display:inline");
+        if (moneda == '0002') {
+            $("#txtMontoPagar").val(por_pagar_base)
+            $("#txtMontoPagar").pulsate({
+                color: "#33AECD",
+                reach: 20,
+                repeat: 3,
+                glow: true
+            });
+        } else {
+            $("#txtMontoPagar").val(por_pagar_alter)
+            $("#txtMontoPagar").pulsate({
+                color: "#33AECD",
+                reach: 20,
+                repeat: 3,
+                glow: true
+            });
+        }   
+    } else {
+        $("#divLblMontoPagar,#divMontoPagar").attr("style", "display:none");
+        $("#txtMonto").pulsate({
+            color: "#33AECD",
+            reach: 20,
+            repeat: 3,
+            glow: true
+        });
+    }
 }
 
 //---------------------
@@ -1216,7 +1293,8 @@ var precio = 0;
 function GrabarNotaCredito() {
 
 
-    var campos = ['cboEmpresa', 'cboEstablecimiento', 'txtrazsocial', 'txtSerieNota', 'txtNroNota', 'txtFechaEmision', 'cboMotivo', 'cboMoneda', 'cboPeriodo'];
+    var campos = ['cboEmpresa', 'cboEstablecimiento', 'txtrazsocial', 'txtSerieNota', 'txtNroNota', 'txtFechaEmision', 'cboMotivo', 'cboMoneda'];
+    //var campos = ['cboEmpresa', 'cboEstablecimiento', 'txtrazsocial', 'txtSerieNota', 'txtNroNota', 'txtFechaEmision', 'cboMotivo', 'cboMoneda', 'cboPeriodo'];
     if ($("#cboMotivo").val() == "00") {
         campos.push('txtMotivoAdicional');
     }
@@ -1290,23 +1368,26 @@ function GrabarNotaCredito() {
 
         data.append('p_VALOR_CAMBIO', tipoCambioInterno.toString());
         data.append('p_MONTO_USABLE', $("#txtImporteTotal").val());
-        data.append('p_MES_PERIODO', $("#cboPeriodo").val().split("-")[0]);
-        data.append('p_ANIO_PERIODO', $("#cboPeriodo").val().split("-")[1]);
+        //data.append('p_MES_PERIODO', $("#cboPeriodo").val().split("-")[0]);
+        //data.append('p_ANIO_PERIODO', $("#cboPeriodo").val().split("-")[1]);
+        data.append('p_MES_PERIODO', $("#txtFechaEmision").val().split("/")[1]);
+        data.append('p_ANIO_PERIODO', $("#txtFechaEmision").val().split("/")[2]);
         data.append('p_DEVOLVER_DINERO', ($("#chkDevDinero").is(':checked') ? 'S' : 'N'));
-
+        data.append('p_APLICA_DOC_REFERENCIA', ($("#chkAplicar").is(':checked') ? 'S' : 'N'));
+        data.append('p_PAGADO_IND', $("#hfPagadoInd").val());
         //VALIDAR FECHA Y PERIODO
-        var continuar = false;
-        var mesEmision = $("#txtFechaEmision").val().split("/")[1]; //$("#txtFechaEmision").val() :: "10/02/2016"
-        var anioEmision = $("#txtFechaEmision").val().split("/")[2];
-        var mesPeriodo = $("#cboPeriodo").val().split("-")[0];//$("#cboPeriodo").val() :: "1-2016"
-        var anioPeriodo = $("#cboPeriodo").val().split("-")[1];
-        if (parseInt(anioEmision) == parseInt(anioPeriodo)) {
-            if (parseInt(mesEmision) <= parseInt(mesPeriodo)) {
-                continuar = true;
-            }
-        } else if (parseInt(anioEmision) < parseInt(anioPeriodo)) {
-            continuar = true;
-        }
+        //var continuar = false;
+        //var mesEmision = $("#txtFechaEmision").val().split("/")[1]; //$("#txtFechaEmision").val() :: "10/02/2016"
+        //var anioEmision = $("#txtFechaEmision").val().split("/")[2];
+        //var mesPeriodo = $("#cboPeriodo").val().split("-")[0];//$("#cboPeriodo").val() :: "1-2016"
+        //var anioPeriodo = $("#cboPeriodo").val().split("-")[1];
+        //if (parseInt(anioEmision) == parseInt(anioPeriodo)) {
+        //    if (parseInt(mesEmision) <= parseInt(mesPeriodo)) {
+        //        continuar = true;
+        //    }
+        //} else if (parseInt(anioEmision) < parseInt(anioPeriodo)) {
+        //    continuar = true;
+        //}
 
         if (continuar) {
             Bloquear("ventana");
@@ -1331,7 +1412,7 @@ function GrabarNotaCredito() {
                        $("#divAgregarDetalles").attr("style", "display:none");
                        $("#grabar").html("<i class='icon-plus'></i> Nuevo");
                        $("#grabar").attr("href", "?f=CAMNGCL");
-                       $("#grabar,#cancelar").attr("style", "display:none");
+                       $("#cancelar").attr("style", "display:none");
                        $("#imprimir").attr("style", "display:inline-block;");
                        $(".btnEliminarDetalle").remove();
                        $("#txtSerieNota,#txtNroNota").attr("disabled", "disabled");
@@ -1341,8 +1422,8 @@ function GrabarNotaCredito() {
                        $("#txtNroNota").attr("disabled", "disabled");
                        $("#cboTipoDocumento").val(dctoSeleccionado.TIPO_DCTO_CODE).attr("disabled", "disabled");
                        $("#txtFechaEmision").attr("disabled", "disabled");
-
-                       $("#cboPeriodo").attr("disabled", "disabled");
+                       $('#chkAplicar').attr('disabled', true);
+                       //$("#cboPeriodo").attr("disabled", "disabled");
                        $("#cboMoneda").attr("disabled", "disabled");
                        $("#cboEmpresa").attr("disabled", "disabled");
                        $("#cboEstablecimiento").attr("disabled", "disabled");
@@ -1375,8 +1456,9 @@ function GrabarNotaCredito() {
            });
         }
         else {
-            alertCustom("La Fecha de Emisión NO debe exceder al Periodo seleccionado");
-            $("#cboPeriodo").focus();
+            //alertCustom("La Fecha de Emisión NO debe exceder al Periodo seleccionado");
+            alertCustom("Error");
+            //$("#cboPeriodo").focus();
         }
     }    
 };
@@ -1612,7 +1694,9 @@ function ListarNotasCredito() {
         url: "vistas/ca/ajax/camngcl.ashx?OPCION=4" +
             "&p_CTLG_CODE=" + $("#cboEmpresa").val() +
             "&p_SCSL_CODE=" + $("#cboEstablecimiento").val() +
-            "&p_TIPO_IND=C",
+            "&p_TIPO_IND=C" + 
+            "&p_DESDE=" + p_DESDE + 
+            "&p_HASTA=" + p_HASTA,
         contenttype: "application/text;",
         datatype: "json",
         async: true,
@@ -1631,11 +1715,22 @@ function ListarNotasCredito() {
         }
     });
 }
+
 var CALNGCL = function () {
 
     var plugins = function () {
         $('#cboEmpresa').select2();
         $('#cboEstablecimiento').select2();
+        $('#txtDesde').datepicker().change(function () {
+            $('#txtHasta').val((parseInt($(this).val().split("/").reverse().join("")) > parseInt($('#txtHasta').val().split("/").reverse().join(""))) ? "" : $('#txtHasta').val());
+            $('#txtHasta').datepicker('setStartDate', $(this).val());
+        });
+
+        $('#txtHasta').datepicker().on("change", function () {
+            if ($('#txtDesde').val() != "") {
+                $('#txtHasta').datepicker('setStartDate', $('#txtDesde').val());
+            }
+        });
     }
 
     function fillCboEmpresa() {
@@ -1715,6 +1810,8 @@ var CALNGCL = function () {
         });
 
         $('#buscar').on('click', function () {
+            p_DESDE = $("#txtDesde").val();
+            p_HASTA = $("#txtHasta").val();
             ListarNotasCredito();
         });
     }
@@ -1820,10 +1917,10 @@ var CALNGCL = function () {
     var Fin2_CargaEstablecimiento = function () {
 
         $("#cboEstablecimiento").select2("val", $("#ctl00_hddestablecimiento").val()).change();
-        if ($("#cboEstablecimiento").val() != "" && ini) {//Primera Carga
-            ini = false;
-            ListarNotasCredito();
-        }
+        //if ($("#cboEstablecimiento").val() != "" && ini) {//Primera Carga
+        //    ini = false;
+        //    ListarNotasCredito();
+        //}
     };
  
     return {
@@ -1833,11 +1930,34 @@ var CALNGCL = function () {
             plugins();
             fillCboEmpresa();
             eventoControles();
+
+            $("#txtHasta").datepicker({
+                dateFormat: 'dd/mm/yy',
+                firstDay: 1
+            }).datepicker("setDate", new Date());
+
+            var fecha = new Date();
+            var ano = fecha.getFullYear();
+            var mes = fecha.getMonth() + 1;
+
+            if (mes == 1) {
+                mes = 12;
+                ano = ano - 1
+            } else {
+                mes = mes - 1;
+            }
+
+            if (mes >= 10)
+                var fNueva = '01/' + mes + '/' + ano;
+            else
+                var fNueva = '01/0' + mes + '/' + ano;
+
+            $("#txtDesde").val(fNueva);
         }
     };
 }();
 
-function cargarNotaCredito(codigo, codempr) {
+function cargarNotaCredito(codigo) {
     //window.location.href = "?f=CAMNGCL&codigo=" + codigo
     window.open("?f=CAMNGCL&codigo=" + codigo, '_blank');
 }

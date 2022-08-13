@@ -313,7 +313,7 @@ Public Class CPMPGVA : Implements IHttpHandler
 
                 Case "10"
                     Dim p As New Nomade.CA.NotaCredito("Bn")
-                    dt2 = p.ListarNotaCreditoGenerica(String.Empty, empresa, establec, proveedor, "P")
+                    dt2 = p.ListarNotaCreditoGenerica(String.Empty, empresa, establec, proveedor, "P", "0000-00-00", "0000-00-00")
                     dt = p.ListarNotaCredito(String.Empty, 0, String.Empty, empresa, establec, proveedor, "C", String.Empty, String.Empty, String.Empty, String.Empty, String.Empty)
 
                     resb.Append("[")

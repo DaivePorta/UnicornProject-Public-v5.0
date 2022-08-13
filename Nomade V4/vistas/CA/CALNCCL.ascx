@@ -9,6 +9,8 @@
                     <i class="icon-reorder"></i>LISTADO NOTA DE CRÉDITO CLIENTE</h4>
                 <div class="actions">
                     <a class="btn black printlist "><i class="icon-print"></i>&nbsp;Imprimir</a>
+                    <a href="?f=CAMNOCL" class="btn green"><i class="icon-plus"></i>&nbsp;Nuevo</a>
+                    <a href="?f=CALNCCL" class="btn red"><i class="icon-list"></i>&nbsp;Listar</a>
                 </div>
 
             </div>
@@ -50,40 +52,59 @@
                 </div>
 
                 <div class="row-fluid">
-                     <div class="span1">
-                        <%--<div class="control-group">
-                            <label class="control-label" for="cboEmpresa">
-                                Estado</label>
-                        </div>--%>
-                    </div>
-                    <div class="span2"">
-                        <%--<div class="control-group">
-                            <div class="controls">
-                                <select id="cboEstado" class="span12" data-placeholder="Estado">
-                                    <option value="V" selected="selected">VIGENTES</option>
-                                    <option value="A">ANULADOS</option>
-                                    <option value="T">TODOS</option>
-                                </select>
-                            </div>
-                        </div>--%>
-                    </div>
-                    <div class="span7">
-                    </div>
-                    <div class="span2">
+                    <div class="span1">
                         <div class="control-group">
+                                <label id="Label1" class="control-label" for="txtDesde">Desde</label>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div class="span4">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtDesde" data-date-format="dd/mm/yyyy" maxlength="10" />
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="span4">
+                            <div class="control-group">
+                                <label id="Label3" class="control-label" for="txtHasta" style="text-align: center;">Hasta</label>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtHasta" data-date-format="dd/mm/yyyy" maxlength="10" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span1">
+                    </div>
+                    <div class="span1">
+                        <div class="control-group span2">
                             <div class="controls">
                                 <a id="buscar" class="btn blue">FILTRAR</a>
                             </div>
                         </div>
-                    </div>
+                    </div>                    
                 </div>
 
                <div class="row-fluid" style="margin-bottom: 25px; border: solid 1px;">
-                    <div class="span2 offset1">
+                   <br />
+                    <div class="span4 offset1">
                         <div class="controls">
                             <div class="control-label">
                                 <strong>
-                                    <label style="font-weight: 600;"><i class="icon-pushpin" style="color: black"></i>&nbsp;GENERAL</label></strong>
+                                    <label style="font-weight: 600;"><i class="icon-pushpin" style="color: black"></i>&nbsp;NC. GENÉRICA</label></strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div class="controls">
+                            <div class="control-label">
+                                <strong>
+                                    <label style="font-weight: 600;"><i class="icon-pushpin" style="color: blue"></i>&nbsp;NC. CLIENTE</label></strong>
                             </div>
                         </div>
                     </div>
@@ -91,15 +112,7 @@
                         <div class="controls">
                             <div class="control-label">
                                 <strong>
-                                    <label style="font-weight: 600;"><i class="icon-pushpin" style="color: blue"></i>&nbsp;CAMBIO PRODUCTOS</label></strong>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="span2">
-                        <div class="controls">
-                            <div class="control-label">
-                                <strong>
-                                    <label style="font-weight: 600;"><i class="icon-pushpin" style="color: red"></i>&nbsp;ANULADA</label></strong>
+                                    <label style="font-weight: 600;"><i class="icon-pushpin" style="color: red"></i>&nbsp;NC. ANULADA</label></strong>
                             </div>
                         </div>
                     </div>

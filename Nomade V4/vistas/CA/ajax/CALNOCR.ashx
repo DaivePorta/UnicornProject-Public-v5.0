@@ -47,15 +47,21 @@ Public Class CALNOCR : Implements IHttpHandler
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = ncNotaCredito.ListarNotaCredito(If(p_NOCC_CODE = Nothing, "", p_NOCC_CODE), "0", "",
                                                          If(p_CTLG_CODE = Nothing Or p_CTLG_CODE = "undefined", "", p_CTLG_CODE),
-                                                         If(p_SCSL_CODE = Nothing Or p_SCSL_CODE = "undefined", "", p_SCSL_CODE),
-                                                         "",
+                                                         If(p_SCSL_CODE = Nothing Or p_SCSL_CODE = "undefined", "", p_SCSL_CODE),"",
                                                          If(p_COMPRA_VENTA_IND = Nothing, "", p_COMPRA_VENTA_IND), "", "", "", "", "")
                     If Not (dt Is Nothing) Then
                         res = Utilities.Datatable2Json(dt)
                     Else
                         res = "[]"
                     End If
-
+                Case "2.5" 'Lista Cabecera nota de credito con todos sus datos 
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = ncNotaCredito.ListarNotaCredito_2("", "0", "", p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), "", p_COMPRA_VENTA_IND, "", "", "", "", "")
+                    If Not (dt Is Nothing) Then
+                        res = Utilities.Datatable2Json(dt)
+                    Else
+                        res = "[]"
+                    End If
                 Case "3"
                     context.Response.ContentType = "application/text; charset=utf-8"
                     res = GenerarDctoImprimir(p_NOCC_CODE, p_CTLG_CODE)

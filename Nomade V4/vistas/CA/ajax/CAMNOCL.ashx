@@ -1079,7 +1079,7 @@ Public Class CAMNOCL : Implements IHttpHandler
         If Not (dt Is Nothing) Then
             For i As Integer = 0 To dt.Rows.Count - 1
                 If dt.Rows(i)("COMPLETO_IND").ToString = "S" And dt.Rows(i)("ANULADO").ToString = "NO" And dt.Rows(i)("DOCUMENTO").ToString <> "NOTA DE VENTA" Then 'DPORTA "NOTA DE VENTA"
-                    If dt.Rows(i)("NOTA_CREDITO_IND").ToString = "N" And dt.Rows(i)("NOTA_CREDITO_GEN_IND").ToString = "N" Then
+                    If dt.Rows(i)("NOTA_CREDITO_IND").ToString = "N" And dt.Rows(i)("NC_DESTINO_IND").ToString = "N" And dt.Rows(i)("NOTA_CREDITO_GEN_IND").ToString = "N" And dt.Rows(i)("NCG_DESTINO_IND").ToString = "N" Then
                         'VALIDA QUE LA FECHA DE EMISION DE LA NOTA DE CREDITO SEA MENOR O IGUAL AL DOCUMENTO DE ORIGEN
                         Dim continuar As Boolean = False
                         If p_FECHA_EMISION <> "" And dt.Rows(i)("EMISION").ToString() <> "" Then
