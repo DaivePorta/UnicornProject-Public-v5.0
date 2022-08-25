@@ -35,23 +35,23 @@ Public Class EFLEDOC : Implements IHttpHandler
 
             Select Case sOpcion
                 Case "FACT" 'GENERAR FACTURA ELECTRONICA EFAC
-                    Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
-                    onEFFactura.fnGetFactura(sCodEmpresa, sCodVenta)
+                    Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura(sCodEmpresa)
+                    'onEFFactura.fnGetFactura(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
                 Case "BOL" 'GENERAR BOLETA ELECTRONICA EFAC
-                    Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
-                    onEFBoleta.fnGetBoleta(sCodEmpresa, sCodVenta)
+                    Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta(sCodEmpresa)
+                    'onEFBoleta.fnGetBoleta(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
                 Case "VFACT" 'VALIDAR FACTURA EFAC
-                    Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
-                    sResponse = onEFFactura.fnVerificarDoc(sCodEmpresa, sCodVenta)
+                    Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura(sCodEmpresa)
+                    'sResponse = onEFFactura.fnVerificarDoc(sCodEmpresa, sCodVenta)
                 Case "VBOL" 'VALIDAR BOLETA EFAC
-                    Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
-                    sResponse = onEFBoleta.fnVerificarDoc(sCodEmpresa, sCodVenta)
+                    Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta(sCodEmpresa)
+                    'sResponse = onEFBoleta.fnVerificarDoc(sCodEmpresa, sCodVenta)
 
                 Case "NC" 'GENERAR NOTA DE CREDITO ELECTRONICA EFAC
                     Dim onEFNC As New Nomade.Efact.LogNegocio.nEFNC()
-                    onEFNC.fnGetNC(sCodEmpresa, sCodNC)
+                    'onEFNC.fnGetNC(sCodEmpresa, sCodNC)
                     sResponse = "OK"
 
                 ' CREAR DOCUMENTOS
@@ -133,7 +133,7 @@ Public Class EFLEDOC : Implements IHttpHandler
                     sResponse = onDEFNC.fnGetNC(sCodEmpresa, sCodNC)
                 Case "VNC"
                     Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFNC()
-                    sResponse = onEFNC.fnVerificarDoc(sCodEmpresa, sCodNC)
+                    'sResponse = onEFNC.fnVerificarDoc(sCodEmpresa, sCodNC)
 
                 Case "VNCORB" 'VALIDAR NOTA DE CREDITO ORBITUM
                     Dim onEFNC As New Nomade.Efact.LogNegocio.nEFNC()
@@ -144,15 +144,15 @@ Public Class EFLEDOC : Implements IHttpHandler
                     Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFBajaNC()
                     sResponse = onEFNC.fnVerificarBajaDoc(sCodEmpresa, sCodNC)
                 Case "ND"
-                    Dim onEFND As New Nomade.Efact.LogNegocio.nEFND()
-                    onEFND.fnGetND(sCodEmpresa, sCodND)
+                    'Dim onEFND As New Nomade.Efact.LogNegocio.nEFND()
+                    'onEFND.fnGetND(sCodEmpresa, sCodND)
                     sResponse = "OK"
                 Case "BND"
                     Dim onBEFND As New Nomade.Efact.LogNegocio.nEFBajaND()
                     sResponse = onBEFND.fnGetND(sCodEmpresa, sCodND)
                 Case "VND"
-                    Dim onEFND As New NOMADE.Efact.LogNegocio.nEFND()
-                    sResponse = onEFND.fnVerificarDoc(sCodEmpresa, sCodND)
+                    'Dim onEFND As New NOMADE.Efact.LogNegocio.nEFND()
+                    'sResponse = onEFND.fnVerificarDoc(sCodEmpresa, sCodND)
                 Case "VBAJAND"
                     Dim onEFND As New NOMADE.Efact.LogNegocio.nEFBajaND()
                     sResponse = onEFND.fnVerificarBajaDoc(sCodEmpresa, sCodND)

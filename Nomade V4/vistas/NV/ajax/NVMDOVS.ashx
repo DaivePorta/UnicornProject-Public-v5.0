@@ -279,9 +279,9 @@ Public Class NVMDOVS : Implements IHttpHandler
                         msgError = "ERROR: El doc. de venta no está completado"
                     End If
                     res = msgError.ToString()
-                Case "GQR" 'Parametros para guardar el QR
+                Case "GQR_VENTA" 'Parametros para guardar el QR
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    res = nvVenta.GuardarCodigoQR(p_FVBVTAC_CODE, p_IMGQR)
+                    res = nvVenta.GuardarCodigoQR_VENTA(p_FVBVTAC_CODE, p_IMGQR)
                 Case "LVEND" ' LISTAR VENDEDORES POR ROL
 
                     context.Response.ContentType = "application/json; charset=utf-8"
@@ -1616,7 +1616,7 @@ Public Class NVMDOVS : Implements IHttpHandler
         hw.Parse(New StringReader(HTML.ToString))
         document.Close()
 
-        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" Then 'DPORTA 20/05/2022
+        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
             imgCabConQR(FilePath, imgS, imgI, Base64ToImage(dtCabecera(0)("IMAGEN_QR").ToString)) 'SOLO PARA ´DOCS ELECTRÓNICOS
         Else
             imgC(FilePath, imgS, imgI)

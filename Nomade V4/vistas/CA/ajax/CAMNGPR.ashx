@@ -283,9 +283,12 @@ Public Class CAMNGPR : Implements IHttpHandler
 
         If Not (dt_gasto Is Nothing) Then
             For i As Integer = 0 To dt_gasto.Rows.Count - 1
+                Dim beneficiario As String = dt_gasto.Rows(i)("PIDM_BENEF").ToString()
                 Dim doc_ref_code As String() = New String(3) {"0001", "0002", "0003", "0014"}
-                If doc_ref_code.Contains(dt_gasto.Rows(i)("DCTO_CODE").ToString) Then
-                    If dt_gasto.Rows(i)("DCTO_CODE").ToString = p_DCTO_REF_TIPO_CODE Or p_DCTO_REF_TIPO_CODE = "" Then
+                'BUSCA DOCUMENTOS VALIDOS E IDENTIFICA AL BENEFICIARIO POR CODIGO
+                If doc_ref_code.Contains(dt_gasto.Rows(i)("DCTO_CODE").ToString) And beneficiario = USUA_ID.ToString() Then
+                    'AJUSTA LA BUSQUEDA AL TIPO DE DOCUMENTO DE SER NECESARIO
+                    If p_DCTO_REF_TIPO_CODE = dt_gasto.Rows(i)("DCTO_CODE").ToString Or p_DCTO_REF_TIPO_CODE = "" Then
                         'VALIDA QUE LA FECHA DE EMISION DE LA NOTA DE CREDITO SEA MENOR O IGUAL AL DOCUMENTO DE ORIGEN
                         Dim continuar As Boolean = False
                         If p_FECHA_EMISION <> "" And dt_gasto.Rows(i)("FECHA_EMISION").ToString() <> "" Then

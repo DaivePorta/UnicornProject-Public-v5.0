@@ -463,7 +463,7 @@ var NVMANTI = function () {
 
         $('#cbo_coti').on('change', function () {
 
-            console.log('vacio:' + $(this).val());
+            //console.log('vacio:' + $(this).val());
 
             if ($(this).val() !== "") {
                 $('#cbo_moneda').select2('val', $('#cbo_coti option:selected').attr('mone'));
@@ -647,6 +647,7 @@ var NVMANTI = function () {
                 return false;
             }
             if ($(this).is(":checked")) {
+                //fillTxtResponsablePago();
                 $("#txtResponsablePago").removeAttr("disabled");
                 $("#txtResponsablePago").focus();
             } else {
@@ -2334,21 +2335,23 @@ function fillTxtCliente(v_ID, v_value) {
 
     $("#divTxtClientes").html('<input id="txtClientes" class="span12" type="text" placeholder="Cliente" style="text-transform: uppercase" />');
     var selectRazonSocial = $(v_ID);
-    if (asincrono == true) {
-        Bloquear("divFilaCliente");
-    }
+    //if (asincrono == true) {
+    //    Bloquear("divFilaCliente");
+    //}
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+        //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
         contenttype: "application/json;",
         datatype: "json",
         async: asincrono,
         success: function (datos) {
-            if (asincrono == true) {
-                Desbloquear("divFilaCliente");
-            }
+            //if (asincrono == true) {
+            //    Desbloquear("divFilaCliente");
+            //}
             if (datos != null) {
                 textclientes = selectRazonSocial.typeahead({
+                    items: 20,
                     source: function (query, process) {
                         arrayRazonSocial = [];
                         map = {};
@@ -2362,7 +2365,7 @@ function fillTxtCliente(v_ID, v_value) {
                                 '","CODIGO_TIPO_DOCUMENTO":"' + datos[i].CODIGO_TIPO_DOCUMENTO +
                                 '","RUC":"' + datos[i].RUC +
                                 '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL +
-                                '","DIRECCION":"' + datos[i].DIRECCION +
+                                //'","DIRECCION":"' + datos[i].DIRECCION +
                                 '","CODIGO_CATEGORIA":"' + datos[i].CODIGO_CATEGORIA +
                                 '","PIDM":"' + datos[i].PIDM +
                                 '","DIAS":"' + datos[i].DIAS +
@@ -2397,7 +2400,7 @@ function fillTxtCliente(v_ID, v_value) {
                         $("#hfTipoDocumento").val(map[item].TIPO_DOCUMENTO);
                         $("#hfNroDocumento").val(map[item].NRO_DOCUMENTO);
                         $("#hfRUC").val(map[item].RUC);
-                        $("#hfDIR").val(map[item].DIRECCION);
+                        //$("#hfDIR").val(map[item].DIRECCION);
 
 
                         if (map[item].RUC != "") {
@@ -2516,7 +2519,7 @@ function fillTxtCliente(v_ID, v_value) {
         },
         error: function (msg) {
             alertCustom("Clientes no se listaron correctamente");
-            Desbloquear("divFilaCliente");
+            //Desbloquear("divFilaCliente");
         }
     });
 }
@@ -2529,14 +2532,15 @@ function fillTxtResponsablePago() {
     if (jsonClientes.length = 0) {
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG=" + $("#cbo_Empresa").val(),
+            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: asincrono,
             success: function (datos) {
                 if (datos != null) {
                     textclientes = selectRazonSocial.typeahead({
-                        items: 100,
+                        items: 20,
                         source: function (query, process) {
                             arrayRazonSocial = [];
                             map = {};
@@ -2550,7 +2554,7 @@ function fillTxtResponsablePago() {
                                         '","CODIGO_TIPO_DOCUMENTO":"' + datos[i].CODIGO_TIPO_DOCUMENTO +
                                         '","RUC":"' + datos[i].RUC +
                                         '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL +
-                                        '","DIRECCION":"' + datos[i].DIRECCION +
+                                        //'","DIRECCION":"' + datos[i].DIRECCION +
                                         '","CODIGO_CATEGORIA":"' + datos[i].CODIGO_CATEGORIA +
                                         '","PIDM":"' + datos[i].PIDM +
                                         '","DIAS":"' + datos[i].DIAS +
@@ -2619,7 +2623,7 @@ function fillTxtResponsablePago() {
 
     } else {
         textclientes = selectRazonSocial.typeahead({
-            items: 100,
+            items: 20,
             source: function (query, process) {
                 arrayRazonSocial = [];
                 map = {};
@@ -2633,7 +2637,7 @@ function fillTxtResponsablePago() {
                             '","CODIGO_TIPO_DOCUMENTO":"' + jsonClientes[i].CODIGO_TIPO_DOCUMENTO +
                             '","RUC":"' + jsonClientes[i].RUC +
                             '","RAZON_SOCIAL":"' + jsonClientes[i].RAZON_SOCIAL +
-                            '","DIRECCION":"' + jsonClientes[i].DIRECCION +
+                            //'","DIRECCION":"' + jsonClientes[i].DIRECCION +
                             '","CODIGO_CATEGORIA":"' + jsonClientes[i].CODIGO_CATEGORIA +
                             '","PIDM":"' + jsonClientes[i].PIDM +
                             '","DIAS":"' + jsonClientes[i].DIAS +
@@ -3444,7 +3448,7 @@ function CalcularDetraccion() {
 }
 
 function CalcularDatosMonetarios() {
-    console.log('jorge');
+    //console.log('jorge');
     $(".simboloMoneda").html($("#cbo_moneda :selected").attr("simbolo"));
     $(".simboloMoneda2").html($("#cbo_moneda2 :selected").attr("simbolo"));
     $(".simboloMoneda3").html($("#cbo_moneda2 :selected").attr("simbolo"));
@@ -4356,19 +4360,13 @@ function guardarQR() {
 
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmanti.ashx?OPCION=GQR&p_CODE_COTI=" + $("#txtNumDctoComp").val(), //codigodctoglobal -- CUANDO SE DA PRIMERO EN EL BOTON COMPLETAR
+        url: "vistas/nv/ajax/nvmanti.ashx?OPCION=GQR_ANTICIPO&p_CODE_COTI=" + $("#txtNumDctoComp").val(), //codigodctoglobal -- CUANDO SE DA PRIMERO EN EL BOTON COMPLETAR
         data: qrData,
         async: false,
         contentType: false,
         processData: false,
         success: function (res) {
-            if (res != null) {
-                if (res == "OK") {
-                    //exito();
-                } else {
-                    noexito();
-                }
-            } else {
+            if (res != "OK") {
                 noexito();
             }
         },

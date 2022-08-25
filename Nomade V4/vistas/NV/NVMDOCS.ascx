@@ -611,7 +611,7 @@
                                                                 <div class="span7">
                                                                     <div class="control-group">
                                                                         <div class="controls" id="input_desc_prod">
-                                                                            <input id="txt_desc_producto" class="span12" type="text" placeholder="Nombre" />
+                                                                            <input id="txt_desc_producto" class="span12" type="text" placeholder="Descripción de Servicio" />
                                                                         </div>
                                                                     </div>
                                                                 </div>

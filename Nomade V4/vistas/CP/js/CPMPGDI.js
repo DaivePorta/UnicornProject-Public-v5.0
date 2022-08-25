@@ -523,7 +523,7 @@ var CPMPGDI = function () {
         function cargarJson() {
             $.ajax({
                 type: "post",
-                url: "vistas/GL/ajax/GLMLETR.ashx?flag=L",
+                url: "vistas/GL/ajax/GLMLETR.ashx?flag=L-2",
                 contenttype: "application/json;",
                 datatype: "json",
                 async: false,
@@ -701,7 +701,7 @@ var CPMPGDI = function () {
 
             var MedioActual = $(this).val();
 
-            if (MedioActual != null) {
+            if (MedioActual != null && MedioActual != "") {
 
                 $("#txtNroOpe").removeClass("personas").attr("disabled", false);
 
@@ -710,6 +710,7 @@ var CPMPGDI = function () {
                 $("#cbDestino").attr("disabled", false).off("change");
 
                 $("#txtNroOpe").val("");
+                offObjectEvents("txtNroOpe");
                 $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
                 switch (MedioActual) {
 
@@ -922,9 +923,9 @@ var CPMPGDI = function () {
                         break;
                     case "0020"://OTROS: YAPE, PLIN, TUNKI, ETC BILLETERA DIG.
 
-                        //let billetera_dig = $("#cbo_Det_Origen :selected").attr("billetera_dig");
+                        let billetera_dig = $("#cbo_Det_Origen :selected").attr("billetera_dig");
 
-                        //if (billetera_dig == 'S') {
+                        if (billetera_dig == 'S') {
                             $("#lbl_detalle3").html("Destino de Pago");
                             //$("#lbl_detalle4").html("Nro. Op.");
                             $("#lbl_detalle4").html("App - Nro. Celular");
@@ -957,9 +958,9 @@ var CPMPGDI = function () {
                                 //$("#txtNroOpe").val("PLIN  -");
                                 mascespecial("txtNroOpe", "PLIN  -", 16);
                             }
-                        //} else {
-                        //    infoCustom2("La cuenta origen seleccionada no tiene asociada una Billetera digital");
-                        //}                        
+                        } else {
+                            infoCustom2("La cuenta origen seleccionada no tiene asociada una Billetera digital");
+                        }
 
                         break;
 
@@ -1167,7 +1168,7 @@ function pagar() {
             switch ($("#cboMedioPago").val()) {
                 case "0003": //transferencia
 
-                    det_desc = "*" + objData.PERSONA.NOMBRE;
+                    det_desc = "TRANSFERENCIA*" + "/" + objData.PERSONA.NOMBRE;
 
                     break;
 
@@ -1180,33 +1181,31 @@ function pagar() {
 
                     break;
 
-
-
                 case "0005": // tarjeta de debito
 
                     det_desc = objData.PERSONA.NOMBRE + "/" + $("#cbDestino :selected").html();
 
                     break;
                 case "0020": // OTROS (BILLETERA DIGITAL) DPORTA 09/12/2021
+
                     det_desc = "DEV. BILLETERA DIGITAL*" + "/" + objData.PERSONA.NOMBRE;
                     break;
             }
         } else if (ind_tipo == "C") {
-
-
 
             cod_ape = $("#cbo_Det_Origen :selected").attr("codigo");
 
         }
 
         if ($("#PgDvDesc").html() == 'Devolucion Dinero Venta') {
+
             var descripcion = ind_tipo == "C" ? "DEVOLUCION A CLIENTE" : det_desc;
+
         } else {
+
             var descripcion = ind_tipo == "C" ? "PAGO A BENEFICIARIO" : det_desc;
+
         }
-
-        
-
 
         $.ajax({ 
             type: "post",
@@ -1330,9 +1329,9 @@ function consultaDeudas() {
     $.ajax({
         type: "post",
         url: "vistas/CP/ajax/CPMPGDI.ASHX",
-        data: { flag: 4, empresa: $("#slcEmpresa").val(), estable: $("#slcSucural").val() },
+        data: { flag: 4.1, empresa: $("#slcEmpresa").val(), estable: $("#slcSucural").val() },
         async: true,
-        beforeSend: function () { Bloquear($($("#tblBandeja").parents("div")[0]),"Obteniendo Gastos por Pagar ..."); },
+        beforeSend: function () { Bloquear($($("#tblBandeja").parents("div")[0]), "Obteniendo Gastos por Pagar ..."); },
         success: function (datos) {
             if (datos != "" && datos != null && datos != "[-]") {
                 var json = $.parseJSON(datos);
@@ -1372,7 +1371,7 @@ function consultaDeudas2() {
     $.ajax({
         type: "post",
         url: "vistas/CP/ajax/CPMPGDI.ASHX",
-        data: { flag: 4, empresa: $("#slcEmpresa").val(), estable: $("#slcSucural").val() },
+        data: { flag: 4.1, empresa: $("#slcEmpresa").val(), estable: $("#slcSucural").val() },
         async: true,
         beforeSend: function () { Bloquear($($("#tblBandeja").parents("div")[0]), "Obteniendo Gastos por Pagar ..."); },
         success: function (datos) {

@@ -348,6 +348,72 @@ Public Class NVMDOCV : Implements IHttpHandler
                     End If
                     res = resb.ToString()
 
+                Case "2.5" 'Listar Clientes más rápido
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = nceCliente.ListarCliente2(If(PIDM = Nothing, "0", PIDM), "A", If(CTLG_CODE = Nothing, "", CTLG_CODE), "S")
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""RAZON_SOCIAL"" :" & """" & MiDataRow("RAZON_SOCIAL").ToString & """,")
+                            resb.Append("""RUC"" :" & """" & MiDataRow("NRO_RUC").ToString & """,")
+                            resb.Append("""CODIGO_TIPO_DOCUMENTO"" :" & """" & MiDataRow("CODIGO_TIPO_DOCUMENTO").ToString & """,")
+                            resb.Append("""TIPO_DOCUMENTO"" :" & """" & MiDataRow("TIPO_DOCUMENTO").ToString & """,")
+                            resb.Append("""NRO_DOCUMENTO"" :" & """" & MiDataRow("NRO_DOCUMENTO").ToString & """,")
+                            'resb.Append("""DIRECCION"" :" & """" & MiDataRow("DIRECCION").ToString & """,")
+                            resb.Append("""ID"" :" & """" & MiDataRow("ID").ToString & """,")
+                            resb.Append("""DIAS"" :" & """" & MiDataRow("DIAS").ToString & """,")
+                            resb.Append("""AGENTE_RETEN_IND"" :" & """" & MiDataRow("AGENTE_RETEN_IND").ToString & """,")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            resb.Append("""CODIGO_CATEGORIA"" :" & """" & MiDataRow("CODIGO_CATEGORIA").ToString & """,")
+                            resb.Append("""CATE_DESC"" :" & """" & MiDataRow("CATE_DESC").ToString & """,")
+                            resb.Append("""DEUDA"" :" & """" & MiDataRow("DEUDA").ToString & """,")
+                            resb.Append("""PPBIDEN_CONDICION_SUNAT"" :" & """" & MiDataRow("PPBIDEN_CONDICION_SUNAT").ToString & """,")
+                            'resb.Append("""PPBIDEN_ESTADO_SUNAT"" :" & """" & MiDataRow("PPBIDEN_ESTADO_SUNAT").ToString & """,")
+                            'resb.Append("""TELEFONO"" :" & """" & MiDataRow("TELEFONO").ToString & """")
+                            resb.Append("""PPBIDEN_ESTADO_SUNAT"" :" & """" & MiDataRow("PPBIDEN_ESTADO_SUNAT").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
+
+                Case "2.6" 'Listar resposable pago más rápido
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = nceCliente.ListarCliente2(If(PIDM = Nothing, "0", PIDM), "A", If(CTLG_CODE = Nothing, "", CTLG_CODE), "R")
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""RAZON_SOCIAL"" :" & """" & MiDataRow("RAZON_SOCIAL").ToString & """,")
+                            'resb.Append("""RUC"" :" & """" & MiDataRow("NRO_RUC").ToString & """,")
+                            'resb.Append("""CODIGO_TIPO_DOCUMENTO"" :" & """" & MiDataRow("CODIGO_TIPO_DOCUMENTO").ToString & """,")
+                            'resb.Append("""TIPO_DOCUMENTO"" :" & """" & MiDataRow("TIPO_DOCUMENTO").ToString & """,")
+                            'resb.Append("""NRO_DOCUMENTO"" :" & """" & MiDataRow("NRO_DOCUMENTO").ToString & """,")
+                            'resb.Append("""DIRECCION"" :" & """" & MiDataRow("DIRECCION").ToString & """,")
+                            'resb.Append("""ID"" :" & """" & MiDataRow("ID").ToString & """,")
+                            resb.Append("""DIAS"" :" & """" & MiDataRow("DIAS").ToString & """,")
+                            'resb.Append("""AGENTE_RETEN_IND"" :" & """" & MiDataRow("AGENTE_RETEN_IND").ToString & """,")
+                            'resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            'resb.Append("""CODIGO_CATEGORIA"" :" & """" & MiDataRow("CODIGO_CATEGORIA").ToString & """,")
+                            'resb.Append("""CATE_DESC"" :" & """" & MiDataRow("CATE_DESC").ToString & """,")
+                            'resb.Append("""DEUDA"" :" & """" & MiDataRow("DEUDA").ToString & """,")
+                            'resb.Append("""PPBIDEN_CONDICION_SUNAT"" :" & """" & MiDataRow("PPBIDEN_CONDICION_SUNAT").ToString & """,")
+                            ''resb.Append("""PPBIDEN_ESTADO_SUNAT"" :" & """" & MiDataRow("PPBIDEN_ESTADO_SUNAT").ToString & """,")
+                            ''resb.Append("""TELEFONO"" :" & """" & MiDataRow("TELEFONO").ToString & """")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
+
                 Case "3" 'Listar Unidad de medida
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = nmUnidadMedida.ListarUnidadMedida("", "A")
@@ -413,9 +479,9 @@ Public Class NVMDOCV : Implements IHttpHandler
                 '    End If
                 '    res = resb.ToString()
 
-                Case "GQR" 'Parametros para guardar el QR
+                Case "GQR_VENTA" 'Parametros para guardar el QR
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    res = nvVenta.GuardarCodigoQR(p_FVBVTAC_CODE, p_IMGQR)
+                    res = nvVenta.GuardarCodigoQR_VENTA(p_FVBVTAC_CODE, p_IMGQR)
                 Case "4" 'Obtener precio producto             
                     context.Response.ContentType = "application/json; charset=utf-8"
                     'Dim naAlmacen As New Nomade.NA.NAConfAlmacenes("Bn")
@@ -2419,7 +2485,7 @@ Public Class NVMDOCV : Implements IHttpHandler
         'XMLWorkerHelper.GetInstance().ParseXHtml(writer, pdfDoc, sr)
         'pdfDoc.Close()
 
-        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" Then 'DPORTA 20/05/2022
+        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
             imgCabConQR(FilePath, imgS, imgI, Base64ToImage(dtCabecera(0)("IMAGEN_QR").ToString)) 'SOLO PARA ´DOCS ELECTRÓNICOS
         Else
             imgC(FilePath, imgS, imgI)

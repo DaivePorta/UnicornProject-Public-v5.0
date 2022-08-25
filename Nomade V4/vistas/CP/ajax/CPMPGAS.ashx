@@ -383,7 +383,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                 Case "G" 'CREAR PROVISION DE GASTO UNICOY PROGRAMADO
                     context.Response.ContentType = "text/html"
                     Dim r As String = ""
-                    r = Verifica_Existe_Provision(p_PIDM_BENEFICIARIO, p_SERIE, p_NUMERO, "1", "")
+                    r = Verifica_Existe_Provision(p_PIDM_BENEFICIARIO, p_SERIE, p_NUMERO, "1", "", p_TIPO_DCTO)
                     If r = "C" Then
                         res = Crear_Provision_Gasto(p_CONC_CODE, p_CTLG_CODE, p_DATO_FRECUENCIA, p_DESC_GASTO,
                                                p_ESTADO_IND, IIf(Utilities.fechaLocal(p_FECHA_UNICA) = "", Nothing, Utilities.fechaLocal(p_FECHA_UNICA)), IIf(p_FRECUENCIA = "", Nothing, p_FRECUENCIA), p_MONTO,
@@ -399,7 +399,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                 Case "AT" 'ACTUALIZAR/MODIFICAR PROVISION GASTO UNICO
                     context.Response.ContentType = "text/html"
                     Dim r As String = ""
-                    r = Verifica_Existe_Provision(p_PIDM_BENEFICIARIO, p_SERIE, p_NUMERO, "3", p_CODE)
+                    r = Verifica_Existe_Provision(p_PIDM_BENEFICIARIO, p_SERIE, p_NUMERO, "3", p_CODE, p_TIPO_DCTO)
                     If r = "C" Then
                         res = Actualizar_Provision_Gasto(p_CONC_CODE, p_CTLG_CODE, p_DATO_FRECUENCIA, p_DESC_GASTO,
                                              p_ESTADO_IND, IIf(Utilities.fechaLocal(p_FECHA_UNICA) = "", Nothing, Utilities.fechaLocal(p_FECHA_UNICA)), IIf(p_FRECUENCIA = "", Nothing, p_FRECUENCIA), p_MONTO,
@@ -536,7 +536,7 @@ Public Class CPMPGAS : Implements IHttpHandler
 
                     context.Response.ContentType = "text/html"
                     Dim r As String = ""
-                    r = Verifica_Existe_Provision(p_PIDM_BENEFICIARIO, p_SERIE, p_NUMERO, "1", "")
+                    r = Verifica_Existe_Provision(p_PIDM_BENEFICIARIO, p_SERIE, p_NUMERO, "1", "", p_TIPO_DCTO)
                     If r = "C" Then
                         'CREA PROVISION
                         cod_prov = Crear_Provision_Gasto(p_CONC_CODE, p_CTLG_CODE, p_DATO_FRECUENCIA, p_DESC_GASTO,
@@ -782,14 +782,14 @@ Public Class CPMPGAS : Implements IHttpHandler
 
 
     Public Function Verifica_Existe_Provision(ByVal p_PIDM_BENEFICIARIO As String, ByVal p_SERIE As String,
-                                        ByVal p_NUMERO As String, p_TIPO As String, p_COD_GASTO As String) As String
+                                        ByVal p_NUMERO As String, p_TIPO As String, p_COD_GASTO As String, ByVal p_TIPO_DCTO As String) As String
 
         Dim Datos As String
         Dim CPCuentaPorPagar As New Nomade.CP.CPCuentaPorPagar("Bn")
         Datos = CPCuentaPorPagar.Verificar_Provision_Gasto(p_PIDM_BENEFICIARIO,
                                                        IIf(p_SERIE = "", Nothing, p_SERIE),
                                                        IIf(p_NUMERO = "", Nothing, p_NUMERO),
-                                                       p_TIPO, p_COD_GASTO)
+                                                       p_TIPO, p_COD_GASTO, IIf(p_TIPO_DCTO = "", Nothing, p_TIPO_DCTO))
         CPCuentaPorPagar = Nothing
         Return Datos
     End Function

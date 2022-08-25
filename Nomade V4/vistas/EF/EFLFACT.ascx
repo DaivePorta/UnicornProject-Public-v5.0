@@ -101,12 +101,12 @@
                             <div class="controls">
                                 <select id="cboEmision" class="span12" data-placeholder="Emision">
                                     <option value="">TODOS</option>
+                                    <option value="N">POR PROCESAR</option>
+                                    <option value="G">CSV GENERADO</option>
+                                    <option value="E">CSV ENVIADO</option>
                                     <option value="P">PENDIENTE</option>
                                     <option value="S">ENVIADOS</option>
-                                    <option value="N">NO ENVIADOS</option>
-                                    <option value="X">ERROR</option>                                  
-                                    <option value="B">DE BAJA</option>                          
-                                    <option value="Q">PENDIENTE DE BAJA</option>
+                                    <option value="X">ERROR</option>
                                 </select>
                             </div>
                         </div>
@@ -172,6 +172,7 @@
                                     <th>FECHA EMISIÓN</th>
                                     <th>TOTAL</th>
                                     <th>ESTADO</th>
+                                    <th>FACT_IND</th>
                                     <th></th>                                    
                                 </tr>
                             </thead>

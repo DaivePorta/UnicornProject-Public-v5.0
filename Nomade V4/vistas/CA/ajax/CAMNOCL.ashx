@@ -331,10 +331,10 @@ Public Class CAMNOCL : Implements IHttpHandler
                         deuda = "NO_ENCONTRADO"
                     End If
                     res = deuda
-                Case "GQR" 'Parametros para guardar el QR
+                Case "GQR_NCC" 'Parametros para guardar el QR NOTA DE CRÉDITO CLIENTE
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    Dim nvVenta As New Nomade.NV.NVVenta("Bn")
-                    res = nvVenta.GuardarCodigoQR(p_NOCC_CODE, p_IMGQR)
+                    'Dim nvVenta As New Nomade.NV.NVVenta("Bn")
+                    res = caNotaCredito.GuardarCodigoQR_NCC(p_NOCC_CODE, p_IMGQR)
                 Case "GENERAR_PDF" 'DPORTA
                     Dim msgError As String = "OK"
                     Dim dtCabecera As New DataTable
@@ -922,7 +922,7 @@ Public Class CAMNOCL : Implements IHttpHandler
         hw.Parse(New StringReader(HTML.ToString))
         document.Close()
 
-        If dtCabecera.Rows(0)("IND_ELECTRONICO") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" Then 'DPORTA 20/05/2022
+        If dtCabecera.Rows(0)("IND_ELECTRONICO") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
             imgCabConQR(FilePath, imgS, imgI, Base64ToImage(dtCabecera(0)("IMAGEN_QR").ToString)) 'SOLO PARA ´DOCS ELECTRÓNICOS
         Else
             imgC(FilePath, imgS, imgI)

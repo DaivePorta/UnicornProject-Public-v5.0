@@ -202,9 +202,13 @@ Public Class NomadeHub
     ''' <remarks></remarks>
     Private Function GetMyUserPidm() As Integer
         Dim pidm As Integer
-        
+
         Try
-            pidm = CookieChat.GetUserChatFromCookie(Me.Context.Request).Pidm
+            If (CookieChat.GetUserChatFromCookie(Me.Context.Request) IsNot Nothing) Then
+                pidm = CookieChat.GetUserChatFromCookie(Me.Context.Request).Pidm
+            Else
+                pidm = 0
+            End If
         Catch ex As Exception
             pidm = 0
         End Try

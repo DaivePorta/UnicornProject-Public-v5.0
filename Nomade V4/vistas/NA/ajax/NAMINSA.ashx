@@ -968,10 +968,10 @@ Public Class NAMINSA : Implements IHttpHandler
                         resb.Append("}]")
                         res = resb.ToString()
                     End If
-                Case "GQR" 'Parametros para guardar el QR
+                Case "GQR_GRE" 'Parametros para guardar el QR GUIA REMISIÓN ELECTRÓNICA
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    Dim nvVenta As New Nomade.NV.NVVenta("Bn")
-                    res = nvVenta.GuardarCodigoQR(ISAC_CODE, p_IMGQR)
+                    Dim caTipoMov As New Nomade.NA.NATipoMovimiento("Bn")
+                    res = caTipoMov.GuardarCodigoQR_GRE(ISAC_CODE, p_IMGQR)
                 Case "G"
                     context.Response.ContentType = "application/json; charset=utf-8"
                     PIDM_SOLICITANTE = context.Request("PIDM_SOLICITANTE")

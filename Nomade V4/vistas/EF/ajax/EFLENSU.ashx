@@ -37,22 +37,22 @@ Public Class EFACTEL : Implements IHttpHandler
             Select Case sOpcion
                 Case "FACT" 'GENERAR FACTURA ELECTRONICA EFAC
                     Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
-                    onEFFactura.fnGetFactura(sCodEmpresa, sCodVenta)
+                    'onEFFactura.fnGetFactura(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
                 Case "BOL" 'GENERAR BOLETA ELECTRONICA EFAC
                     Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
-                    onEFBoleta.fnGetBoleta(sCodEmpresa, sCodVenta)
+                    'onEFBoleta.fnGetBoleta(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
                 Case "VFACT" 'VALIDAR FACTURA EFAC
                     Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
-                    sResponse = onEFFactura.fnVerificarDoc(sCodEmpresa, sCodVenta)
+                    'sResponse = onEFFactura.fnVerificarDoc(sCodEmpresa, sCodVenta)
                 Case "VBOL" 'VALIDAR BOLETA EFAC
                     Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
-                    sResponse = onEFBoleta.fnVerificarDoc(sCodEmpresa, sCodVenta)
+                    'sResponse = onEFBoleta.fnVerificarDoc(sCodEmpresa, sCodVenta)
 
                 Case "NC" 'GENERAR NOTA DE CREDITO ELECTRONICA EFAC
                     Dim onEFNC As New Nomade.Efact.LogNegocio.nEFNC()
-                    onEFNC.fnGetNC(sCodEmpresa, sCodNC)
+                    'onEFNC.fnGetNC(sCodEmpresa, sCodNC)
                     sResponse = "OK"
 
                 ' CREAR DOCUMENTOS
@@ -82,8 +82,8 @@ Public Class EFACTEL : Implements IHttpHandler
                     sResponse = "OK"
 
                 Case "ND_ORBI" 'GENERAR NOTA DE DEBITO ORBITUM FACTURADOR V1.4
-                    Dim onEFND As New Nomade.Efact.LogNegocio.nEFND()
-                    onEFND.fnGetND(sCodEmpresa, sCodND)
+                    'Dim onEFND As New Nomade.Efact.LogNegocio.nEFND()
+                    'onEFND.fnGetND(sCodEmpresa, sCodND)
                     sResponse = "OK"
 
                 Case "GUIA_REMI_ORBI" 'GENERAR GUIA DE REMISION ELECTRONICA ORBITUM FACTURADOR V1.4
@@ -146,22 +146,22 @@ Public Class EFACTEL : Implements IHttpHandler
                     Dim onDEFNC As New Nomade.Efact.LogNegocio.nEFBajaNC()
                     sResponse = onDEFNC.fnGetNC(sCodEmpresa, sCodNC)
                 Case "VNC"
-                    Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFNC()
-                    sResponse = onEFNC.fnVerificarDoc(sCodEmpresa, sCodNC)
+                    'Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFNC()
+                    'sResponse = onEFNC.fnVerificarDoc(sCodEmpresa, sCodNC)
 
                 Case "VBAJANC"
                     Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFBajaNC()
                     sResponse = onEFNC.fnVerificarBajaDoc(sCodEmpresa, sCodNC)
                 Case "ND"
-                    Dim onEFND As New Nomade.Efact.LogNegocio.nEFND()
-                    onEFND.fnGetND(sCodEmpresa, sCodND)
+                    'Dim onEFND As New Nomade.Efact.LogNegocio.nEFND()
+                    'onEFND.fnGetND(sCodEmpresa, sCodND)
                     sResponse = "OK"
                 Case "BND"
                     Dim onBEFND As New Nomade.Efact.LogNegocio.nEFBajaND()
                     sResponse = onBEFND.fnGetND(sCodEmpresa, sCodND)
                 Case "VND"
-                    Dim onEFND As New NOMADE.Efact.LogNegocio.nEFND()
-                    sResponse = onEFND.fnVerificarDoc(sCodEmpresa, sCodND)
+                    'Dim onEFND As New NOMADE.Efact.LogNegocio.nEFND()
+                    'sResponse = onEFND.fnVerificarDoc(sCodEmpresa, sCodND)
                 Case "VBAJAND"
                     Dim onEFND As New NOMADE.Efact.LogNegocio.nEFBajaND()
                     sResponse = onEFND.fnVerificarBajaDoc(sCodEmpresa, sCodND)

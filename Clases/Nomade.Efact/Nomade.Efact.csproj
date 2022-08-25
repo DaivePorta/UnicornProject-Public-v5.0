@@ -86,6 +86,7 @@
     <Compile Include="LogNegocio\nEFFactura.cs" />
     <Compile Include="LogNegocio\nEFNC.cs" />
     <Compile Include="LogNegocio\nEFND.cs" />
+    <Compile Include="Models\ResponseEfact.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1983,8 +1983,7 @@ var CPMPGAS = function () {
             $("#txtcuenta").val('');
         });
 
-        $("#add_detalle").on("click", function () {
-
+        $("#add_detalle").on("click", function () {            
             if (vErrors(['cbo_gasto', 'cbo_subgasto', 'txt_centro_costo', 'txtcuenta', 'txtSubTotal'])) {
                 let codGasto = $("#cbo_gasto").val();
                 let descGasto = $("#cbo_gasto option:selected").text();
@@ -2028,12 +2027,13 @@ var CPMPGAS = function () {
                 objProd.SUB_MONTO = $("#cbo_moneda option:selected").attr("simbolo") + ' ' + sSubTotal;
 
                 //let tipoDocCode = $("#cboSerieDocVenta :selected").attr("data-tipoDocCode");//DPORTA SIN-IMPUESTOS
-                //if (tipoDocCode == '0001') {
-                objProd.DETRACCION = parseFloat(detraccion) * (sSubTotal);//DPORTA 17/01/2022
-                objProd.SUB_DETRACCION = $("#cbo_moneda option:selected").attr("simbolo") + ' ' + parseFloat(detraccion) * (sSubTotal);
-                //} else {
-                //    detraccion = parseFloat(0) * (totalNeto);
-                //}
+                if ($('#cbo_documento').val()  == '0001') { //DPORTA 18/08/2022
+                    objProd.DETRACCION = parseFloat(detraccion) * (sSubTotal);//DPORTA 17/01/2022
+                    objProd.SUB_DETRACCION = $("#cbo_moneda option:selected").attr("simbolo") + ' ' + parseFloat(detraccion) * (sSubTotal);
+                } else {
+                    objProd.DETRACCION = parseFloat(0) * (sSubTotal);//DPORTA 17/01/2022
+                    objProd.SUB_DETRACCION = $("#cbo_moneda option:selected").attr("simbolo") + ' ' + parseFloat(0) * (sSubTotal);
+                }
                 objProd.TOTAL_NETO = sSubTotal;//DPORTA 17/01/2022
                 objProd.SUB_TOTAL_NETO = $("#cbo_moneda option:selected").attr("simbolo") + ' ' + sSubTotal;
 
@@ -2289,8 +2289,16 @@ var CPMPGAS = function () {
             if (cod_doc == '0000' || cod_doc == '0002' || cod_doc == '0003' || cod_doc == '0016'
                 || cod_doc == '0006' || cod_doc == '0010' || cod_doc == '0020' || cod_doc == '0100') {
                 $('#cbx_destino').select2('val', 'OTRTRI');
+                oTable.fnClearTable();
+                detallesGasto = [];
+                dTotal = 0;
+                $("#txt_monto, #txt_detraccion, #txt_importePagar").val("")
             } else {
                 $('#cbx_destino').select2('val', 'DSTGRA');
+                oTable.fnClearTable();
+                detallesGasto = [];
+                dTotal = 0;
+                $("#txt_monto, #txt_detraccion, #txt_importePagar").val("")
             }
 
         });
@@ -3332,7 +3340,7 @@ var Guardar = function () {
                         exito();
                     }
                     if (datos == "X") {
-                        infoCustom2("DISCULPA! La provisión con el número de documento ya ha sido registrada anteriormente en el sistema.")
+                        noexitoCustom("DISCULPA! La provisión con el número de documento ya ha sido registrada anteriormente en el sistema.")
                     }
                     if (datos == "ERROR") {//ERROR DESDE BD                        
                         noexito();

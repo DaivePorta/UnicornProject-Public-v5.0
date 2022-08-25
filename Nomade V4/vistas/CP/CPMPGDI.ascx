@@ -26,9 +26,9 @@
                 <h4>
                     <i class="icon-reorder"></i>PAGOS DIVERSOS</h4>
                 <div class="actions">
+                    <a class="btn black printlist "><i class="icon-print"></i>Imprimir</a>
                     <a href="?f=cpmpgdi" class="btn green"><i class="icon-plus"></i>Nuevo</a>
-                    <a href="?f=cplpgdi" class="btn red"><i class="icon-list"></i>Listar</a>
-                    <a style="margin-top: -10px;" class="btn black printlist "><i class="icon-print"></i>Imprimir</a>
+                    <a href="?f=cplpgdi" class="btn red"><i class="icon-list"></i>Listar</a>                    
                 </div>
 
             </div>

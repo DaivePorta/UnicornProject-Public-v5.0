@@ -202,6 +202,8 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim otrosMediosPagosDolares As Decimal = 0
         Dim devolucionSoles As Decimal = 0
         Dim devolucionDolares As Decimal = 0
+        Dim devAmorNCSoles As Decimal = 0
+        Dim devAmorNCDolares As Decimal = 0
         'crédito
         Dim efectivoIngresoSolesC As Decimal = 0
         Dim efectivoIngresoDolaresC As Decimal = 0
@@ -257,7 +259,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) And Not (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -265,11 +267,19 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEVOLUCIÓN A CLIENTE
-                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("SI") Then
+                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y") Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             devolucionSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
                             devolucionDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                        End If
+                    End If
+                    ' AMORTIZACIÓN POR NOTA DE CRÉDITO A CLIENTE
+                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X") Then
+                        If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                            devAmorNCSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                        Else
+                            devAmorNCDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         End If
                     End If
                     ' SOLO EL MONTO DE VENTAS AL CRÉDITO
@@ -428,6 +438,13 @@ Public Class NVLREMO : Implements IHttpHandler
         tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>DEVOLUCIÓN AL CLIENTE</strong></td>")
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionSoles, simbMonedaBase)
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionDolares, simbMonedaAlterna)
+        tabla.AppendFormat("</tr>")
+
+        'Fila 5.9 DEVOLUCION POR NC MEDIANTE AMORTIZACION A CLIENTE
+        tabla.AppendFormat("<tr>")
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>AMORTIZACIÓN NC AL CLIENTE</strong></td>")
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devAmorNCSoles, simbMonedaBase)
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devAmorNCDolares, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
         'Fila 6 TOTAL CRÉDITO
@@ -771,6 +788,8 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim otrosMediosPagosDolares As Decimal = 0
         Dim devolucionSoles As Decimal = 0
         Dim devolucionDolares As Decimal = 0
+        Dim devAmorNCSoles As Decimal = 0
+        Dim devAmorNCDolares As Decimal = 0
         If (dt Is Nothing) Then
             'No hay datos     
         Else
@@ -809,7 +828,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dt.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) Then
+                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dt.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) And Not (dt.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dt.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
                         If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
                         Else
@@ -817,11 +836,19 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEVOLUCIÓN A CLIENTE
-                    If dt.Rows(i)("DEV_CLIENTE").ToString().Equals("SI") Then
+                    If dt.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dt.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y") Then
                         If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             devolucionSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
                         Else
                             devolucionDolares += Convert.ToDecimal(dt.Rows(i)("MONTO"))
+                        End If
+                    End If
+                    ' AMORTIZACIÓN POR NOTA DE CRÉDITO A CLIENTE
+                    If dt.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dt.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X") Then
+                        If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                            devAmorNCSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
+                        Else
+                            devAmorNCDolares += Convert.ToDecimal(dt.Rows(i)("MONTO"))
                         End If
                     End If
                     ' SOLO EL MONTO DE VENTAS AL CRÉDITO
@@ -905,6 +932,13 @@ Public Class NVLREMO : Implements IHttpHandler
         resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>DEVOLUCIÓN AL CLIENTE</strong></td>")
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionSoles, simbMonedaBase)
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionDolares, simbMonedaAlterna)
+        resb.AppendFormat("</tr>")
+
+        'Fila 5.9 DEVOLUCION POR NC MEDIANTE AMORTIZACION A CLIENTE
+        resb.AppendFormat("<tr>")
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>AMORTIZACIÓN NC AL CLIENTE</strong></td>")
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devAmorNCSoles, simbMonedaBase)
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devAmorNCDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
         'Fila 6 TOTAL CRÉDITO
@@ -1413,6 +1447,8 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim otrosMediosPagosDolares As Decimal = 0
         Dim devolucionSoles As Decimal = 0
         Dim devolucionDolares As Decimal = 0
+        Dim devAmorNCSoles As Decimal = 0
+        Dim devAmorNCDolares As Decimal = 0
         'crédito
         Dim efectivoIngresoSolesC As Decimal = 0
         Dim efectivoIngresoDolaresC As Decimal = 0
@@ -1468,7 +1504,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) And Not (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -1476,11 +1512,19 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEVOLUCIÓN A CLIENTE
-                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("SI") Then
+                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y") Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             devolucionSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
                             devolucionDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                        End If
+                    End If
+                    ' AMORTIZACIÓN POR NOTA DE CRÉDITO A CLIENTE
+                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X") Then
+                        If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                            devAmorNCSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                        Else
+                            devAmorNCDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         End If
                     End If
                     ' SOLO EL MONTO DE VENTAS AL CRÉDITO
@@ -1639,6 +1683,13 @@ Public Class NVLREMO : Implements IHttpHandler
         tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>DEVOLUCIÓN AL CLIENTE</strong></td>")
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", devolucionSoles, simbMonedaBase)
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", devolucionDolares, simbMonedaAlterna)
+        tabla.AppendFormat("</tr>")
+
+        'Fila 5.9 DEVOLUCION POR NC MEDIANTE AMORTIZACION A CLIENTE
+        tabla.AppendFormat("<tr>")
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>AMORTIZACIÓN NC AL CLIENTE</strong></td>")
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;''>{1}{0:N}</td>", devAmorNCSoles, simbMonedaBase)
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;''>{1}{0:N}</td>", devAmorNCDolares, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
         'Fila 6 TOTAL CRÉDITO
@@ -1945,6 +1996,8 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim otrosMediosPagosDolares As Decimal = 0
         Dim devolucionSoles As Decimal = 0
         Dim devolucionDolares As Decimal = 0
+        Dim devAmorNCSoles As Decimal = 0
+        Dim devAmorNCDolares As Decimal = 0
         'crédito
         Dim efectivoIngresoSolesC As Decimal = 0
         Dim efectivoIngresoDolaresC As Decimal = 0
@@ -2000,7 +2053,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) And Not (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -2008,11 +2061,19 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEVOLUCIÓN A CLIENTE
-                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("SI") Then
+                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y") Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             devolucionSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
                             devolucionDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                        End If
+                    End If
+                    ' AMORTIZACIÓN POR NOTA DE CRÉDITO A CLIENTE
+                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X") Then
+                        If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                            devAmorNCSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                        Else
+                            devAmorNCDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         End If
                     End If
                     ' SOLO EL MONTO DE VENTAS AL CRÉDITO
@@ -2183,6 +2244,13 @@ Public Class NVLREMO : Implements IHttpHandler
         resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'>DEVOLUCIÓN AL CLIENTE</td>")
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionSoles, simbMonedaBase)
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionDolares, simbMonedaAlterna)
+        resb.AppendFormat("</tr>")
+
+        'Fila 5.9 DEVOLUCION POR NC MEDIANTE AMORTIZACION A CLIENTE
+        resb.AppendFormat("<tr>")
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'>AMORTIZACIÓN NC AL CLIENTE</td>")
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devAmorNCSoles, simbMonedaBase)
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devAmorNCDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
         'Fila 6 TOTAL CRÉDITO

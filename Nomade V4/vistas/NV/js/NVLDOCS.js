@@ -491,7 +491,7 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc, electronicInd) {
                     $("#divDctoImprimir").html(datos);
                     setTimeout(function () {
                         window.print();
-                    }, 0000000000000001)
+                    }, 0.0000000000000001)
 
                 } else {
                     noexito();
@@ -522,7 +522,7 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc, electronicInd) {
                         $("#divDctoImprimir").html(datos);
                         setTimeout(function () {
                             window.print();
-                        }, 0000000000000001)
+                        }, 0.0000000000000001)
 
                     } else {
                         noexito();
@@ -619,7 +619,7 @@ function imprimirListaDctosVenta() {
                 $("#divDctoImprimir").prepend("<h4 class='arial'>" + nomEmpresa + "</h4>")
                 setTimeout(function () {
                     window.print();
-                }, 0000000000000001);
+                }, 0.0000000000000001);
             }
         },
         error: function (msg) {

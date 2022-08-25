@@ -207,6 +207,24 @@ Public Class NRMLETR : Implements IHttpHandler
                     End If
                     res = resb.ToString()
 
+                Case "L-2"
+                    Dim q As New Nomade.NC.NCPersona("Bn")
+                    dt = q.listar_Persona("X")
+
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            resb.Append("""NOMBRE"" :" & """" & MiDataRow("NOMBRE").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
 
                 Case "LN" ' PERSONAS NATURALES
                     Dim q As New Nomade.NC.NCPersona("Bn")

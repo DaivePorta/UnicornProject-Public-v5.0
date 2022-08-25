@@ -701,6 +701,29 @@
         Return msg
     End Function
 
+    'Gurda la ruta de la imagen del QR convertida a base64
+    Public Function GuardarCodigoQR_GRE(ByVal p_CODE As String, ByVal p_IMGQR As String) As String
+        Try
+
+            Dim msg As String
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("GUARDAR_QR_GRE", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_IMGQR", p_IMGQR, ParameterDirection.Input, 253))
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+
+            msg = "OK"
+
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
     Public Function ELIMINAR_DCTO_ALMACEN(ByVal p_ISAC_CODE As String) As String
         Try
             Dim msg As String

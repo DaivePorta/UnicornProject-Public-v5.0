@@ -544,37 +544,37 @@ Public Class NRMGEPR : Implements IHttpHandler
                 resb.Append("}")
                 resb.Append("]")
                 res = resb.ToString()
-            Case "LCLIENTE" 'DPORTA
-                context.Response.ContentType = "application/json; charset=utf-8"
-                Dim p As New Nomade.NC.NCECliente("Bn")
-                Dim dt As New DataTable
-                Dim sb As New StringBuilder()
-                dt = p.ListarCliente2(0, String.Empty, CTLG_CODE, "S")
-                If Not dt Is Nothing Then
-                    sb.Append("[")
-                    For Each row As DataRow In dt.Rows
-                        sb.Append("{")
-                        sb.Append("""ID"":""" & row("ID").ToString & """,")
-                        sb.Append("""RAZON_SOCIAL"":""" & row("RAZON_SOCIAL").ToString & """,")
-                        sb.Append("""TIPO"":""" & row("TIPO").ToString & """,")
-                        sb.Append("""CODIGO_TIPO_DOCUMENTO"":""" & row("CODIGO_TIPO_DOCUMENTO").ToString & """,")
-                        sb.Append("""TIPO_DOCUMENTO"":""" & row("TIPO_DOCUMENTO").ToString & """,")
-                        sb.Append("""NRO_DOCUMENTO"":""" & row("NRO_DOCUMENTO").ToString & """,")
-                        sb.Append("""NRO_RUC"":""" & row("NRO_RUC").ToString & """,")
-                        sb.Append("""CATE_DESC"":""" & row("CATE_DESC").ToString & """,")
-                        sb.Append("""ESTADO"":""" & row("ESTADO").ToString & """,")
-                        sb.Append("""TELEFONO"":""" & row("TELEFONO").ToString & """,")
-                        sb.Append("""FECHA_INICIO"":{""display"":""" & row("FECHA_INICIO").ToString & """,""order"":""" & String.Join("", row("FECHA_INICIO").ToString.Split("/").Reverse()) & """},")
-                        sb.Append("""CTLG_DESC"":""" & row("CTLG_DESC").ToString & """,")
-                        sb.Append("""EMPRESA"":""" & row("EMPRESA").ToString & """,")
-                        sb.Append("""DIRECCION"":""" & row("DIRECCION").ToString & """")
-                        sb.Append("},")
-                    Next
-                    sb.Append("-")
-                    sb.Replace("},-", "}")
-                    sb.Append("]")
-                End If
-                res = sb.ToString()
+            'Case "LCLIENTE" 'DPORTA
+            '    context.Response.ContentType = "application/json; charset=utf-8"
+            '    Dim p As New Nomade.NC.NCECliente("Bn")
+            '    Dim dt As New DataTable
+            '    Dim sb As New StringBuilder()
+            '    dt = p.ListarCliente2(0, String.Empty, CTLG_CODE, "S")
+            '    If Not dt Is Nothing Then
+            '        sb.Append("[")
+            '        For Each row As DataRow In dt.Rows
+            '            sb.Append("{")
+            '            sb.Append("""ID"":""" & row("ID").ToString & """,")
+            '            sb.Append("""RAZON_SOCIAL"":""" & row("RAZON_SOCIAL").ToString & """,")
+            '            sb.Append("""TIPO"":""" & row("TIPO").ToString & """,")
+            '            sb.Append("""CODIGO_TIPO_DOCUMENTO"":""" & row("CODIGO_TIPO_DOCUMENTO").ToString & """,")
+            '            sb.Append("""TIPO_DOCUMENTO"":""" & row("TIPO_DOCUMENTO").ToString & """,")
+            '            sb.Append("""NRO_DOCUMENTO"":""" & row("NRO_DOCUMENTO").ToString & """,")
+            '            sb.Append("""NRO_RUC"":""" & row("NRO_RUC").ToString & """,")
+            '            sb.Append("""CATE_DESC"":""" & row("CATE_DESC").ToString & """,")
+            '            sb.Append("""ESTADO"":""" & row("ESTADO").ToString & """,")
+            '            sb.Append("""TELEFONO"":""" & row("TELEFONO").ToString & """,")
+            '            sb.Append("""FECHA_INICIO"":{""display"":""" & row("FECHA_INICIO").ToString & """,""order"":""" & String.Join("", row("FECHA_INICIO").ToString.Split("/").Reverse()) & """},")
+            '            sb.Append("""CTLG_DESC"":""" & row("CTLG_DESC").ToString & """,")
+            '            sb.Append("""EMPRESA"":""" & row("EMPRESA").ToString & """,")
+            '            sb.Append("""DIRECCION"":""" & row("DIRECCION").ToString & """")
+            '            sb.Append("},")
+            '        Next
+            '        sb.Append("-")
+            '        sb.Replace("},-", "}")
+            '        sb.Append("]")
+            '    End If
+            '    res = sb.ToString()
             Case "LCLIENTE3" 'DPORTA
                 context.Response.ContentType = "application/json; charset=utf-8"
                 Dim p As New Nomade.NC.NCECliente("Bn")

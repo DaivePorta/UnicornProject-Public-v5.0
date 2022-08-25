@@ -621,8 +621,9 @@ var NVMDOVR = function () {
                 return false;
             }
             if ($(this).is(":checked")) {
+                //fillTxtResponsablePago();
                 $("#txtResponsablePago").removeAttr("disabled");
-                $("#txtResponsablePago").focus();
+                $("#txtResponsablePago").focus();                
             } else {
                 $("#txtResponsablePago").attr("disabled", "disabled");
                 $("#txtResponsablePago").val("");
@@ -3068,7 +3069,7 @@ var productos = [];
 var ajaxProducto = null;
 function filltxtdescproducto(seriado) {
     $('#input_cod_prod').html('<input id="txt_cod_producto" disabled="disabled" class="span6" type="text" style="margin-right: 4px" /><input id="txt_cod_a_producto" class="span6" type="text" style="margin-left:-2px;" placeholder="Código"/>');
-    $("#input_desc_prod").html("<input id='txt_desc_producto' class='span12' type='text' placeholder='Nombre' />");
+    $("#input_desc_prod").html("<input id='txt_desc_producto' class='span12' type='text' placeholder='Descripción de Producto o Servicio' />");
 
     //Bloquear("form_add_prod")
     Bloquear("input_cod_prod");
@@ -3102,6 +3103,7 @@ function filltxtdescproducto(seriado) {
 
                             for (var i = 0; i < datos.length; i++) {
                                 array.push(datos[i].DESC_ADM);
+                                array.sort();
                                 var obj = {};
                                 obj.DESC_ADM = datos[i].DESC_ADM;
                                 obj.CODIGO = datos[i].CODIGO;
@@ -3535,7 +3537,7 @@ function InsertarValorCambioOficial(monecode) {
                     },
                     error: function (msg) {
                         $("#msgSunat").html("Ocurrió un error al obtener tipo de Cambio.");
-                        console.log("Error al obtener datos de SUNAT.");
+                        //console.log("Error al obtener datos de SUNAT.");
                     }
                 });
             }
@@ -3617,7 +3619,8 @@ function fillTxtCliente(v_ID, v_value) {
     //}
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+        //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
         contenttype: "application/json;",
         datatype: "json",
         async: asincrono,
@@ -3642,7 +3645,7 @@ function fillTxtCliente(v_ID, v_value) {
                             obj.CODIGO_TIPO_DOCUMENTO = datos[i].CODIGO_TIPO_DOCUMENTO;
                             obj.RUC = datos[i].RUC;
                             obj.RAZON_SOCIAL = datos[i].RAZON_SOCIAL;
-                            obj.DIRECCION = datos[i].DIRECCION;
+                            //obj.DIRECCION = datos[i].DIRECCION;
                             obj.CODIGO_CATEGORIA = datos[i].CODIGO_CATEGORIA;
                             obj.CATE_DESC = datos[i].CATE_DESC;
                             obj.DEUDA = datos[i].DEUDA;
@@ -3681,7 +3684,7 @@ function fillTxtCliente(v_ID, v_value) {
                             $("#hfTipoDocumento").val(jsonPredeterminado.TIPO_DOCUMENTO);
                             $("#hfNroDocumento").val(jsonPredeterminado.NRO_DOCUMENTO);
                             $("#hfRUC").val(jsonPredeterminado.RUC);
-                            $("#hfDIR").val(jsonPredeterminado.DIRECCION);
+                            //$("#hfDIR").val(jsonPredeterminado.DIRECCION);
 
                             $("#hfcod_cate2").val(jsonPredeterminado.CODIGO_CATEGORIA);
                             $("#hfdes_cate2").val(jsonPredeterminado.CATE_DESC);
@@ -3816,7 +3819,7 @@ function fillTxtCliente(v_ID, v_value) {
                         $("#hfTipoDocumento").val(map[item].TIPO_DOCUMENTO);
                         $("#hfNroDocumento").val(map[item].NRO_DOCUMENTO);
                         $("#hfRUC").val(map[item].RUC);
-                        $("#hfDIR").val(map[item].DIRECCION);
+                        //$("#hfDIR").val(map[item].DIRECCION);
 
                         cod_cate_clie = map[item].CODIGO_CATEGORIA;
                         des_cate_clie = map[item].CATE_DESC;
@@ -3993,7 +3996,8 @@ function fillTxtCliente2(v_ID, v_value) {
     }
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+        //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
         contenttype: "application/json;",
         datatype: "json",
         async: asincrono,
@@ -4018,7 +4022,7 @@ function fillTxtCliente2(v_ID, v_value) {
                             obj.CODIGO_TIPO_DOCUMENTO = datos[i].CODIGO_TIPO_DOCUMENTO;
                             obj.RUC = datos[i].RUC;
                             obj.RAZON_SOCIAL = datos[i].RAZON_SOCIAL;
-                            obj.DIRECCION = datos[i].DIRECCION;
+                            //obj.DIRECCION = datos[i].DIRECCION;
                             obj.CODIGO_CATEGORIA = datos[i].CODIGO_CATEGORIA;
                             obj.CATE_DESC = datos[i].CATE_DESC;
                             obj.DEUDA = datos[i].DEUDA;
@@ -4057,7 +4061,7 @@ function fillTxtCliente2(v_ID, v_value) {
                             $("#hfTipoDocumento").val(jsonPredeterminado.TIPO_DOCUMENTO);
                             $("#hfNroDocumento").val(jsonPredeterminado.NRO_DOCUMENTO);
                             $("#hfRUC").val(jsonPredeterminado.RUC);
-                            $("#hfDIR").val(jsonPredeterminado.DIRECCION);
+                            //$("#hfDIR").val(jsonPredeterminado.DIRECCION);
 
                             $("#hfcod_cate2").val(jsonPredeterminado.CODIGO_CATEGORIA);
                             $("#hfdes_cate2").val(jsonPredeterminado.CATE_DESC);
@@ -4192,7 +4196,7 @@ function fillTxtCliente2(v_ID, v_value) {
                         $("#hfTipoDocumento").val(map[item].TIPO_DOCUMENTO);
                         $("#hfNroDocumento").val(map[item].NRO_DOCUMENTO);
                         $("#hfRUC").val(map[item].RUC);
-                        $("#hfDIR").val(map[item].DIRECCION);
+                        //$("#hfDIR").val(map[item].DIRECCION);
 
                         cod_cate_clie = map[item].CODIGO_CATEGORIA;
                         des_cate_clie = map[item].CATE_DESC;
@@ -4363,7 +4367,8 @@ function fillTxtResponsablePago() {
     if (jsonClientes.length = 0) {
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG=" + $("#cbo_Empresa").val(),
+            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: asincrono,
@@ -4384,7 +4389,7 @@ function fillTxtResponsablePago() {
                                         '","CODIGO_TIPO_DOCUMENTO":"' + datos[i].CODIGO_TIPO_DOCUMENTO +
                                         '","RUC":"' + datos[i].RUC +
                                         '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL +
-                                        '","DIRECCION":"' + datos[i].DIRECCION +
+                                        //'","DIRECCION":"' + datos[i].DIRECCION +
                                         '","CODIGO_CATEGORIA":"' + datos[i].CODIGO_CATEGORIA +
                                         '","PIDM":"' + datos[i].PIDM +
                                         '","DIAS":"' + datos[i].DIAS +
@@ -4468,7 +4473,7 @@ function fillTxtResponsablePago() {
                             '","CODIGO_TIPO_DOCUMENTO":"' + jsonClientes[i].CODIGO_TIPO_DOCUMENTO +
                             '","RUC":"' + jsonClientes[i].RUC +
                             '","RAZON_SOCIAL":"' + jsonClientes[i].RAZON_SOCIAL +
-                            '","DIRECCION":"' + jsonClientes[i].DIRECCION +
+                            //'","DIRECCION":"' + jsonClientes[i].DIRECCION +
                             '","CODIGO_CATEGORIA":"' + jsonClientes[i].CODIGO_CATEGORIA +
                             '","PIDM":"' + jsonClientes[i].PIDM +
                             '","DIAS":"' + jsonClientes[i].DIAS +
@@ -7074,7 +7079,7 @@ function ListarAnticipos() {
         contenttype: "application/json;",
         async: false,
         success: function (datos) {
-            console.log(datos);
+            //console.log(datos);
             tabla_det.fnClearTable();
             if (!isEmpty(datos)) {
                 var seleccionindice = new Array();
@@ -9717,19 +9722,13 @@ function guardarQR() {
 
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=GQR&p_FVBVTAC_CODE=" + $("#txtNumDctoComp").val(),
+        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=GQR_VENTA&p_FVBVTAC_CODE=" + $("#txtNumDctoComp").val(),
         data: qrData,
         async: false,
         contentType: false,
         processData: false,
         success: function (res) {
-            if (res != null) {
-                if (res == "OK") {
-                    //exito();
-                } else {
-                    noexito();
-                }
-            } else {
+            if (res != "OK") {
                 noexito();
             }
         },

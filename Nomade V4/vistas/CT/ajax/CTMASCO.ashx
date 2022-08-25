@@ -633,18 +633,18 @@ Public Class CTMASCO : Implements IHttpHandler
     End Sub
 
 
-    Public Function Verifica_Existe_Provision(ByVal p_PIDM_BENEFICIARIO As String, ByVal p_SERIE As String,
-                                        ByVal p_NUMERO As String, p_TIPO As String, p_COD_GASTO As String) As String
+    'Public Function Verifica_Existe_Provision(ByVal p_PIDM_BENEFICIARIO As String, ByVal p_SERIE As String,
+    '                                    ByVal p_NUMERO As String, p_TIPO As String, p_COD_GASTO As String, ByVal p_COD_DOCUMENTO As String) As String
 
-        Dim Datos As String
-        Dim CPCuentaPorPagar As New Nomade.CP.CPCuentaPorPagar("Bn")
-        Datos = CPCuentaPorPagar.Verificar_Provision_Gasto(p_PIDM_BENEFICIARIO,
-                                                       IIf(p_SERIE = "", Nothing, p_SERIE),
-                                                       IIf(p_NUMERO = "", Nothing, p_NUMERO),
-                                                       p_TIPO, p_COD_GASTO)
-        CPCuentaPorPagar = Nothing
-        Return Datos
-    End Function
+    '    Dim Datos As String
+    '    Dim CPCuentaPorPagar As New Nomade.CP.CPCuentaPorPagar("Bn")
+    '    Datos = CPCuentaPorPagar.Verificar_Provision_Gasto(p_PIDM_BENEFICIARIO,
+    '                                                   IIf(p_SERIE = "", Nothing, p_SERIE),
+    '                                                   IIf(p_NUMERO = "", Nothing, p_NUMERO),
+    '                                                   p_TIPO, p_COD_GASTO, IIf(p_COD_DOCUMENTO = "", Nothing, p_COD_DOCUMENTO))
+    '    CPCuentaPorPagar = Nothing
+    '    Return Datos
+    'End Function
 
     Public Function vChar(ByVal campo As String) As String
         Dim res As String

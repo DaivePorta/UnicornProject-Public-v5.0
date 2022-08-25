@@ -156,7 +156,7 @@ Public Class CAMASCR : Implements IHttpHandler
 
                     If res = "EXITO" Then
                         res = p.RendirCuentaAsignacion(ctlg_code, scsl_code, asig_code, text_comp, mone_code, mont_caja, caja_code, usua_id,
-                                                 tipo_camb, pidm_empl, codigo_apertura, "0101", monto)
+                                                 tipo_camb, pidm_empl, codigo_apertura, "0100", monto)
 
                     End If
 

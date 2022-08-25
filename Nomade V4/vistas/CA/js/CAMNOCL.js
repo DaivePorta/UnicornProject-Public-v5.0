@@ -1620,19 +1620,13 @@ function guardarQR() {
 
     $.ajax({
         type: "post",
-        url: "vistas/ca/ajax/camnocl.ashx?OPCION=GQR&p_NOCC_CODE=" + $("#hfCodigoNotaCredito").val(), //CUANDO SE PRESIONA EL BOTON COMPLETAR
+        url: "vistas/ca/ajax/camnocl.ashx?OPCION=GQR_NCC&p_NOCC_CODE=" + $("#hfCodigoNotaCredito").val(), //CUANDO SE PRESIONA EL BOTON COMPLETAR
         data: qrData,
         async: false,
         contentType: false,
         processData: false,
         success: function (res) {
-            if (res != null) {
-                if (res == "OK") {
-                    //exito();
-                } else {
-                    noexito();
-                }
-            } else {
+            if (res != "OK") {
                 noexito();
             }
         },

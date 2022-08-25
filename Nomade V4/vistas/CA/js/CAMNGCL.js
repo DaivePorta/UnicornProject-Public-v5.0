@@ -1472,19 +1472,13 @@ function guardarQR() {
 
     $.ajax({
         type: "post",
-        url: "vistas/ca/ajax/camngcl.ashx?OPCION=GQR&p_CODE=" + $("#hfCodigoNotaCredito").val(), //CUANDO SE PRESIONA EL BOTON COMPLETAR
+        url: "vistas/ca/ajax/camngcl.ashx?OPCION=GQR_NCG&p_CODE=" + $("#hfCodigoNotaCredito").val(), //CUANDO SE PRESIONA EL BOTON COMPLETAR
         data: qrData,
         async: false,
         contentType: false,
         processData: false,
         success: function (res) {
-            if (res != null) {
-                if (res == "OK") {
-                    //exito();
-                } else {
-                    noexito();
-                }
-            } else {
+            if (res != "OK") {
                 noexito();
             }
         },
@@ -1875,7 +1869,16 @@ var CALNGCL = function () {
                      },
                  }
             ],
-            order: ["0", "desc"],
+            order: [[6, 'desc']],
+            sDom: 'T<"clear">lfrtip',
+            oTableTools: {
+                sSwfPath: "recursos/plugins/swf/copy_csv_xls_pdf.swf",
+                aButtons: [
+                    { "sExtends": "copy", "sButtonText": "Copiar" },
+                    { "sExtends": "pdf", "sPdfOrientation": "landscape", "sButtonText": "Exportar a PDF" },
+                    { "sExtends": "xls", "sButtonText": "Exportar a Excel" }
+                ]
+            },
             oLanguage: {
                 "sEmptyTable": "No hay datos disponibles en la tabla.",
                 "sZeroRecords": "No hay datos disponibles en la tabla."
@@ -1885,7 +1888,6 @@ var CALNGCL = function () {
 
         oTable = iniciaTabla('tblNotasCredito', parms);
         $('#tblNotasCredito').removeAttr('style');
-
 
         $('#tblNotasCredito tbody').on('click', 'tr', function () {
             if ($(this).hasClass('selected')) {

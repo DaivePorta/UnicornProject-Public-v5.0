@@ -369,9 +369,9 @@ Public Class NVMDOVR : Implements IHttpHandler
                 '    End If
                 '    res = resb.ToString()
 
-                Case "GQR" 'Parametros para guardar el QR
+                Case "GQR_VENTA" 'Parametros para guardar el QR
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    res = nvVenta.GuardarCodigoQR(p_FVBVTAC_CODE, p_IMGQR)
+                    res = nvVenta.GuardarCodigoQR_VENTA(p_FVBVTAC_CODE, p_IMGQR)
                 Case "LVRA" ' Obtiene tabla con documentos de venta
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = nvVenta.ListarDocVenta_Rap("", CLIENTE, NUM_DCTO, DCTO_CODE, VENDEDOR, ESTADO, PRODUCTO, SERIE_DCTO, Utilities.fechaLocal(DESDE), Utilities.fechaLocal(HASTA), CTLG_CODE, SCSL_CODE, p_COMPLETO_IND)

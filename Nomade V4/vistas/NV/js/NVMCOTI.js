@@ -532,6 +532,7 @@ var NVMCOTI = function () {
                 return false;
             }
             if ($(this).is(":checked")) {
+                //fillTxtResponsablePago();
                 $("#txtResponsablePago").removeAttr("disabled");
                 $("#txtResponsablePago").focus();
             } else {
@@ -2252,7 +2253,8 @@ function fillTxtCliente(v_ID, v_value) {
     //}
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG=" + $("#cbo_Empresa").val(),
+        //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
         contenttype: "application/json;",
         datatype: "json",
         async: asincrono,
@@ -2276,7 +2278,7 @@ function fillTxtCliente(v_ID, v_value) {
                                 '","CODIGO_TIPO_DOCUMENTO":"' + datos[i].CODIGO_TIPO_DOCUMENTO +
                                 '","RUC":"' + datos[i].RUC +
                                 '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL +
-                                '","DIRECCION":"' + datos[i].DIRECCION +
+                                //'","DIRECCION":"' + datos[i].DIRECCION +
                                 '","CODIGO_CATEGORIA":"' + datos[i].CODIGO_CATEGORIA +
                                 '","PIDM":"' + datos[i].PIDM +
                                 '","DIAS":"' + datos[i].DIAS +
@@ -2305,7 +2307,7 @@ function fillTxtCliente(v_ID, v_value) {
                         $("#hfTipoDocumento").val(map[item].TIPO_DOCUMENTO);
                         $("#hfNroDocumento").val(map[item].NRO_DOCUMENTO);
                         $("#hfRUC").val(map[item].RUC);
-                        $("#hfDIR").val(map[item].DIRECCION);
+                        //$("#hfDIR").val(map[item].DIRECCION);
 
 
                         if (map[item].RUC != "") {
@@ -2501,13 +2503,15 @@ function fillTxtResponsablePago() {
     if (jsonClientes.length = 0) {
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG=" + $("#cbo_Empresa").val(),
+            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: asincrono,
             success: function (datos) {
                 if (datos != null) {
                     textclientes = selectRazonSocial.typeahead({
+                        items: 20,
                         source: function (query, process) {
                             arrayRazonSocial = [];
                             map = {};
@@ -2521,7 +2525,7 @@ function fillTxtResponsablePago() {
                                         '","CODIGO_TIPO_DOCUMENTO":"' + datos[i].CODIGO_TIPO_DOCUMENTO +
                                         '","RUC":"' + datos[i].RUC +
                                         '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL +
-                                        '","DIRECCION":"' + datos[i].DIRECCION +
+                                        //'","DIRECCION":"' + datos[i].DIRECCION +
                                         '","CODIGO_CATEGORIA":"' + datos[i].CODIGO_CATEGORIA +
                                         '","PIDM":"' + datos[i].PIDM +
                                         '","DIAS":"' + datos[i].DIAS +
@@ -2590,6 +2594,7 @@ function fillTxtResponsablePago() {
 
     } else {
         textclientes = selectRazonSocial.typeahead({
+            items: 20,
             source: function (query, process) {
                 arrayRazonSocial = [];
                 map = {};
@@ -2603,7 +2608,7 @@ function fillTxtResponsablePago() {
                             '","CODIGO_TIPO_DOCUMENTO":"' + jsonClientes[i].CODIGO_TIPO_DOCUMENTO +
                             '","RUC":"' + jsonClientes[i].RUC +
                             '","RAZON_SOCIAL":"' + jsonClientes[i].RAZON_SOCIAL +
-                            '","DIRECCION":"' + jsonClientes[i].DIRECCION +
+                            //'","DIRECCION":"' + jsonClientes[i].DIRECCION +
                             '","CODIGO_CATEGORIA":"' + jsonClientes[i].CODIGO_CATEGORIA +
                             '","PIDM":"' + jsonClientes[i].PIDM +
                             '","DIAS":"' + jsonClientes[i].DIAS +
@@ -2794,8 +2799,8 @@ function AgregarDetalleVenta() {
             CalcularDetraccion();
             CalcularDatosMonetarios();
             $("#lblImporteCobrar").html($("#txt_monto_total").val());
-            console.log(detallesVenta);
-            console.log(detallesBonificacion);
+            //console.log(detallesVenta);
+            //console.log(detallesBonificacion);
         }
     } else if ($("#chkBonificacion").is(":checked")) // DETALLE BONIFICACION
     {
@@ -3108,7 +3113,7 @@ function ObtenerProductoCompleto(codeProd, cliePidm) {
         async: false,
         success: function (datos) {
             if (datos != null && datos.length != 0) {
-                console.log(datos);
+                //console.log(datos);
                 var prod = "";
                 prod = '{';
                 prod += '"ITEM":"",';
@@ -6833,7 +6838,7 @@ function cargarCabeceraPlantilla(codigo) {
         cache: false
     })
         .success(function (datos) {
-            console.log(datos);
+            //console.log(datos);
             $("#cboDocumentoVenta").select2('val', datos[0].DOCUMENTO).change();
             $("#cbo_modo_pago").select2('val', datos[0].MODO_PAGO).change();
             $("#nombre_plantilla").html(datos[0].DESCRIPCION);

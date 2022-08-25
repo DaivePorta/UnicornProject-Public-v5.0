@@ -13,6 +13,8 @@ Public Class EFACTEL : Implements IHttpHandler
     Private sCodNC As String
     Private sCodND As String
     Dim sRuta, sNroDoc As String
+    Private jsonDocumentos As String
+    Private listDocumentos As List(Of String)
 
     Dim resb As New StringBuilder
     Dim dt As DataTable
@@ -32,67 +34,68 @@ Public Class EFACTEL : Implements IHttpHandler
             sNroDoc = context.Request("sNroDoc")
             sDesde = context.Request("sDesde")
             sHasta = context.Request("sHasta")
+            jsonDocumentos = context.Request("jsonDocumentos")
+            If (Not String.IsNullOrEmpty(jsonDocumentos)) Then
+                listDocumentos = New Script.Serialization.JavaScriptSerializer().Deserialize(Of List(Of String))(jsonDocumentos)
+            End If
 
             Select Case sOpcion
                 Case "FACT"
-                    Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
-                    onEFFactura.FnGetFactura(sCodEmpresa, sCodVenta)
+                    Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura(sCodEmpresa)
+                    onEFFactura.ProcesarListDoc(sCodEmpresa, listDocumentos)
                     sResponse = "OK"
-                Case "BFACT"
-                    Dim onDEFFactura As New Nomade.Efact.LogNegocio.nEFBajaFactura()
-                    sResponse = onDEFFactura.fnGetFactura(sCodEmpresa, sCodVenta)
-                Case "VFACT"
-                    Dim onEFFactura As New NOMADE.Efact.LogNegocio.nEFFactura()
-                    sResponse = onEFFactura.fnVerificarDoc(sCodEmpresa, sCodVenta)
-                Case "VBAJAFACT"
-                    Dim onEFFactura As New NOMADE.Efact.LogNegocio.nEFBajaFactura()
-                    sResponse = onEFFactura.fnVerificarBajaDoc(sCodEmpresa, sCodVenta)
+                'Case "BFACT"
+                '    Dim onDEFFactura As New Nomade.Efact.LogNegocio.nEFBajaFactura()
+                '    sResponse = onDEFFactura.fnGetFactura(sCodEmpresa, sCodVenta)
+                'Case "VBAJAFACT"
+                '    Dim onEFFactura As New NOMADE.Efact.LogNegocio.nEFBajaFactura()
+                '    sResponse = onEFFactura.fnVerificarBajaDoc(sCodEmpresa, sCodVenta)
                 Case "BOL"
-                    Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
-                    onEFBoleta.FnGetBoleta(sCodEmpresa, sCodVenta)
+                    Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta(sCodEmpresa)
+                    onEFBoleta.ProcesarListDoc(sCodEmpresa, listDocumentos)
                     sResponse = "OK"
-                Case "BBOL"
-                    Dim onBEFBoleta As New Nomade.Efact.LogNegocio.nEFBajaBoleta()
-                    sResponse = onBEFBoleta.fnGetBoleta(sCodEmpresa, sCodVenta)
-                Case "VBOL"
-                    Dim onEFBoleta As New NOMADE.Efact.LogNegocio.nEFBoleta()
-                    sResponse = onEFBoleta.fnVerificarDoc(sCodEmpresa, sCodVenta)
-                Case "VBAJABOL"
-                    Dim onEFBoleta As New NOMADE.Efact.LogNegocio.nEFBajaBoleta()
-                    sResponse = onEFBoleta.fnVerificarBajaDoc(sCodEmpresa, sCodVenta)
+                'Case "BBOL"
+                '    Dim onBEFBoleta As New Nomade.Efact.LogNegocio.nEFBajaBoleta()
+                '    sResponse = onBEFBoleta.fnGetBoleta(sCodEmpresa, sCodVenta)
+                'Case "VBAJABOL"
+                '    Dim onEFBoleta As New NOMADE.Efact.LogNegocio.nEFBajaBoleta()
+                '    sResponse = onEFBoleta.fnVerificarBajaDoc(sCodEmpresa, sCodVenta)
                 Case "NC"
-                    Dim onEFNC As New Nomade.Efact.LogNegocio.nEFNC()
-                    onEFNC.fnGetNC(sCodEmpresa, sCodNC)
+                    Dim onEFNC As New Nomade.Efact.LogNegocio.nEFNC(sCodEmpresa)
+                    onEFNC.ProcesarListDoc(sCodEmpresa, listDocumentos)
                     sResponse = "OK"
-                Case "BNC"
-                    Dim onDEFNC As New Nomade.Efact.LogNegocio.nEFBajaNC()
-                    sResponse = onDEFNC.fnGetNC(sCodEmpresa, sCodNC)
-                Case "VNC"
-                    Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFNC()
-                    sResponse = onEFNC.fnVerificarDoc(sCodEmpresa, sCodNC)
-                Case "VBAJANC"
-                    Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFBajaNC()
-                    sResponse = onEFNC.fnVerificarBajaDoc(sCodEmpresa, sCodNC)
+                'Case "BNC"
+                '    Dim onDEFNC As New Nomade.Efact.LogNegocio.nEFBajaNC()
+                '    sResponse = onDEFNC.fnGetNC(sCodEmpresa, sCodNC)
+                'Case "VBAJANC"
+                '    Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFBajaNC()
+                '    sResponse = onEFNC.fnVerificarBajaDoc(sCodEmpresa, sCodNC)
                 Case "ND"
-                    Dim onEFND As New Nomade.Efact.LogNegocio.nEFND()
-                    onEFND.fnGetND(sCodEmpresa, sCodND)
+                    Dim onEFND As New Nomade.Efact.LogNegocio.nEFND(sCodEmpresa)
+                    onEFND.ProcesarListDoc(sCodEmpresa, listDocumentos)
                     sResponse = "OK"
-                Case "BND"
-                    Dim onBEFND As New Nomade.Efact.LogNegocio.nEFBajaND()
-                    sResponse = onBEFND.fnGetND(sCodEmpresa, sCodND)
-                Case "VND"
-                    Dim onEFND As New NOMADE.Efact.LogNegocio.nEFND()
-                    sResponse = onEFND.fnVerificarDoc(sCodEmpresa, sCodND)
-                Case "VBAJAND"
-                    Dim onEFND As New NOMADE.Efact.LogNegocio.nEFBajaND()
-                    sResponse = onEFND.fnVerificarBajaDoc(sCodEmpresa, sCodND)
+                'Case "BND"
+                '    Dim onBEFND As New Nomade.Efact.LogNegocio.nEFBajaND()
+                '    sResponse = onBEFND.fnGetND(sCodEmpresa, sCodND)
+                'Case "VBAJAND"
+                '    Dim onEFND As New NOMADE.Efact.LogNegocio.nEFBajaND()
+                '    sResponse = onEFND.fnVerificarBajaDoc(sCodEmpresa, sCodND)
                 Case "MEFACT"
-                    Dim EF As New NOMADE.EF.EFFactElectronica("BN")
+                    Dim EF As New Nomade.EF.EFFactElectronica("BN")
                     sResponse = EF.ModificarEstadoDocumento(sCodVenta, sTipoDoc)
                 Case "BLFE"
                     context.Response.ContentType = "application/json; charset=utf-8"
-                    Dim EF As New NOMADE.EF.EFFactElectronica("BN")
+                    Dim EF As New Nomade.EF.EFFactElectronica("BN")
                     dt = EF.ListarDocumentosElectronicos(sCodEmpresa, sSucursal, sTipoDoc, sCliente, sEmision, Utilities.fechaLocal(sDesde), Utilities.fechaLocal(sHasta))
+                    If Not dt Is Nothing Then
+                        sResponse = Utilities.Datatable2Json(dt)
+                    Else
+                        sResponse = "[]"
+                    End If
+                Case "BLFEFACT"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    Dim EF As New Nomade.EF.EFFactElectronica("BN")
+                    dt = EF.ListarDocumentosElectronicosEFACT(sCodEmpresa, sSucursal, sTipoDoc, sCliente, sEmision, Utilities.fechaLocal(sDesde), Utilities.fechaLocal(sHasta))
                     If Not dt Is Nothing Then
                         sResponse = Utilities.Datatable2Json(dt)
                     Else
@@ -100,10 +103,9 @@ Public Class EFACTEL : Implements IHttpHandler
                     End If
                 Case "SUBIR_EFACT"
                     Dim Efact As New Nomade.Efact.Conexion.Conexion()
-                    sResponse = Efact.FnSubirArchivo(sRuta)
-
+                    sResponse = Efact.fnSubirArchivo(sRuta)
                 Case "BAJAR_EFACT"
-                    Dim Efact As New NOMADE.Efact.Conexion.Conexion()
+                    Dim Efact As New Nomade.Efact.Conexion.Conexion()
                     Dim sRutaDescarga = ConfigurationManager.AppSettings("path_efact") & "out\"
                     Select Case sTipoDoc
                         Case "0001" ' factura
@@ -115,13 +117,11 @@ Public Class EFACTEL : Implements IHttpHandler
                         Case "0008" 'nota debito
                             sRutaDescarga &= "debitnote\08"
                     End Select
-                    sResponse = Efact.FnDescargaArchivo(sRutaDescarga & sNroDoc & ".xml")
-
+                    sResponse = Efact.fnDescargaArchivo(sRutaDescarga & sNroDoc & ".xml")
                 Case "TEST_CONEC_FTP_EFACT"
-                    Dim oConexion As New NOMADE.Efact.Conexion.Conexion()
+                    Dim oConexion As New Nomade.Efact.Conexion.ConnectionSFTP()
                     oConexion.FnTestConexionFTP()
                     sResponse = "OK"
-
                 Case Else
 
             End Select

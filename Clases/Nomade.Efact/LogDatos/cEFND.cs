@@ -195,5 +195,25 @@ namespace Nomade.Efact.LogDatos
                 throw ex;
             }
         }
+
+        public string Actualizar_ELECT_IND_ND_EFACT(string p_CTLG_CODE, string p_ND_CODE, string p_ELECT_IND)
+        {
+            try
+            {
+                IDbCommand newCommand = this.cn.GetNewCommand("EFAC_ACTUALIZAR_ELECT_IND_ND_EFACT", CommandType.StoredProcedure);
+                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_CTLG", p_CTLG_CODE, ParameterDirection.Input, (DbType)253, 0));
+                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_ND_CODE", p_ND_CODE, ParameterDirection.Input, (DbType)253, 0));
+                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_ELECT_IND", p_ELECT_IND, ParameterDirection.Input, (DbType)253, 0));
+                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_RPTA", string.Empty, ParameterDirection.Output, (DbType)253, 0));
+                newCommand = cn.Ejecuta_parms(newCommand);
+
+                string sRpta = ((IDataParameter)newCommand.Parameters["@p_RPTA"]).Value.ToString();
+                return sRpta;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

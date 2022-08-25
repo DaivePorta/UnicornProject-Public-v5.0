@@ -35,8 +35,6 @@ Public Class CPMAGAS : Implements IHttpHandler
 
         USUA_ID = context.Request("USUA_ID")
 
-
-
         p_FECHA_APROBACION = context.Request("p_FECHA_APROBACION")
         p_DETALLE_GASTO = vChar(context.Request("p_DETALLE_GASTO"))
         p_FECHA_OPERACION = context.Request("p_FECHA_OPERACION")
@@ -101,7 +99,7 @@ Public Class CPMAGAS : Implements IHttpHandler
                     Dim res_arr(3) As String
                     Dim res_json As New StringBuilder
                     Dim r As String = ""
-                    r = Verifica_Existe_Provision(CInt(p_PIDM), p_SERIE, p_NRO_DCTO_REF, "2", p_CODE_REF_GASTO)
+                    r = Verifica_Existe_Provision(CInt(p_PIDM), p_SERIE, p_NRO_DCTO_REF, "2", p_CODE_REF_GASTO, p_DCTO_CODE)
                     If r = "C" Then 'C = NO EXISTE
                         res_arr = Crear_Aprobacion_Gasto(p_CODE_REF_GASTO, p_ESTADO, p_MONTO, p_FECHA_APROBACION, p_FECHA_OPERACION, p_USUA_ID, p_GLOSA, p_FECHA_VENCIMIENTO,
                                                          p_NRO_DCTO_REF, p_SERIE, p_DCTO_CODE, p_CENTRO_COSTO_CODE, p_CENTRO_COSTO_CABECERA, p_IND_COMPRAS, p_MES_TRIB, p_ANIO_TRIB,
@@ -548,14 +546,14 @@ Public Class CPMAGAS : Implements IHttpHandler
     End Function
 
     Public Function Verifica_Existe_Provision(ByVal p_PIDM As String, ByVal p_SERIE As String,
-                                   ByVal p_NRO_DCTO_REF As String, p_TIPO As String, p_COD_GASTO As String) As String
+                                   ByVal p_NRO_DCTO_REF As String, p_TIPO As String, p_COD_GASTO As String, ByVal p_DCTO_CODE As String) As String
 
         Dim Datos As String
         Dim CPCuentaPorPagar As New Nomade.CP.CPCuentaPorPagar("Bn")
         Datos = CPCuentaPorPagar.Verificar_Provision_Gasto(p_PIDM,
                                                        IIf(p_SERIE = "", Nothing, p_SERIE),
                                                        IIf(p_NRO_DCTO_REF = "", Nothing, p_NRO_DCTO_REF),
-                                                       p_TIPO, p_COD_GASTO)
+                                                       p_TIPO, p_COD_GASTO, IIf(p_DCTO_CODE = "", Nothing, p_DCTO_CODE))
         CPCuentaPorPagar = Nothing
         Return Datos
     End Function

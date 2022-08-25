@@ -621,7 +621,16 @@ var CALNCCL = function () {
                      },
                  }
             ],
-            order: ["0", "desc"],
+            order: [[7, 'desc']],
+            sDom: 'T<"clear">lfrtip',
+            oTableTools: {
+                sSwfPath: "recursos/plugins/swf/copy_csv_xls_pdf.swf",
+                aButtons: [
+                    { "sExtends": "copy", "sButtonText": "Copiar" },
+                    { "sExtends": "pdf", "sPdfOrientation": "landscape", "sButtonText": "Exportar a PDF" },
+                    { "sExtends": "xls", "sButtonText": "Exportar a Excel" }
+                ]
+            },
             oLanguage: {
                 "sEmptyTable": "No hay datos disponibles en la tabla.",
                 "sZeroRecords": "No hay datos disponibles en la tabla."

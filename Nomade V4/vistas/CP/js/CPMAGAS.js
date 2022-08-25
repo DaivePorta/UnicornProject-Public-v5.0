@@ -2204,12 +2204,13 @@ var CPMAGAS = function () {
                 objProd.SUB_MONTO = SIMB_MONEDA + ' ' + formatoMiles(sSubTotal);
 
                 //let tipoDocCode = $("#cboSerieDocVenta :selected").attr("data-tipoDocCode");//DPORTA SIN-IMPUESTOS
-                //if (tipoDocCode == '0001') {
-                objProd.DETRACCION = parseFloat(detraccion) * (sSubTotal);//DPORTA 17/01/2022
-                objProd.SUB_DETRACCION = SIMB_MONEDA + ' ' + formatoMiles(detraccion * sSubTotal);
-                //} else {
-                //    detraccion = parseFloat(0) * (totalNeto);
-                //}
+                if ($('#cbo_documento').val() == '0001') { //DPORTA 18/08/2022
+                    objProd.DETRACCION = parseFloat(detraccion) * (sSubTotal);//DPORTA 17/01/2022
+                    objProd.SUB_DETRACCION = SIMB_MONEDA + ' ' + formatoMiles(detraccion * sSubTotal);
+                } else {
+                    objProd.DETRACCION = parseFloat(0) * (sSubTotal);//DPORTA 17/01/2022
+                    objProd.SUB_DETRACCION = SIMB_MONEDA + ' ' + formatoMiles(0 * sSubTotal);
+                }
                 objProd.TOTAL_NETO = sSubTotal;//DPORTA 17/01/2022
                 objProd.SUB_TOTAL_NETO = SIMB_MONEDA + ' ' + formatoMiles(sSubTotal);
 

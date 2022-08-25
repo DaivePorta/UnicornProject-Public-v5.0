@@ -1,5 +1,11 @@
 ﻿var EFLFACT = function () {
 
+    const POR_PROCESAR_IND = 'N';
+    const CSV_GENERADO_IND = 'G';
+    const CSV_ENVIADO_IND = 'E';
+    const PROCESADO_IND = 'S';
+    const CSV_CON_ERROR_IND = 'X';
+
     var bUltimo = false;
 
     var plugins = function () {        
@@ -135,7 +141,11 @@
                     data: null,
                     defaultContent: "<input type='checkbox' name='chkSelect' class='chkSelect'/>",
                     createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).css('text-align', 'center');
+                        if (rowData.ANULADO_IND === 'N') {
+                            $(td).css('text-align', 'center');
+                        } else {
+                            $(td).html("");
+                        }
                     }
                 },
                 {
@@ -143,30 +153,24 @@
                         $(td).attr("align", "center");
                         $(td).attr('style', 'font-size:12px')
                     }
-
-
                 },
                 {
                     data: "DOC_CLIENTE", createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr("align", "center");
                         $(td).attr('style', 'font-size:12px')
                     }
-
                 },
                 {
                     data: "CLIENTE", createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr("align", "left");
                         $(td).attr('style', 'font-size:12px')
                     }
-
                 },
                 {
                     data: "DOCUMENTO", createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr("align", "center");
                         $(td).attr('style', 'font-size:12px')
                     }
-
-
                 },
                 {
                     data: "FECHA_EMISION",                   
@@ -184,33 +188,31 @@
                 {
                     data: "ESTADO_ELECT", createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr("align", "center");
-                        $(td).attr('style', 'font-size:12px')
+                        $(td).attr('style', 'font-size:12px');
+                        $(td).data('FactElecInd', rowData.FactElecInd);
+                        $(td).data('AnuladoInd', rowData.ANULADO_IND);
                     }
-
+                },
+                {
+                    data: "FactElecInd", createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr("align", "center");
+                        $(td).attr('style', 'font-size:12px');
+                    },
+                    visible: false
                 },
                 {
                     data: null, createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr('align', 'center')                      
                         let buttons = "";
-                        if (rowData.ANULADO_IND === 'S' && rowData.ESTADO_ELECT!=="DE BAJA") {
-                            buttons += `<button type="button" class='btn btnTbl black' action="baja" data-toggle="tooltip" data-placement="bottom" title="Dar de Baja"><i class='fa fa-thumbs-down'></i></button>`;
-                        }
-                        if ((rowData.ESTADO_ELECT == 'NO ENVIADO' || rowData.ESTADO_ELECT == 'ERROR') && rowData.ANULADO_IND === 'N') {
-                            buttons += `<button type="button" class='btn btnTbl green' action="enviar" data-toggle="tooltip" data-placement="bottom" title="Enviar"><i class='fa fa-paper-plane'></button>`;                           
+                        //if (rowData.ANULADO_IND === 'S' && rowData.ESTADO_ELECT!=="DE BAJA") {
+                        //    buttons += `<button type="button" class='btn btnTbl black' action="baja" data-toggle="tooltip" data-placement="bottom" title="Dar de Baja"><i class='fa fa-thumbs-down'></i></button>`;
+                        //}
+                        //else
+                        if (rowData.ANULADO_IND === 'N' && (rowData.FactElecInd == POR_PROCESAR_IND || rowData.FactElecInd == CSV_CON_ERROR_IND || rowData.FactElecInd == CSV_GENERADO_IND || rowData.FactElecInd == CSV_ENVIADO_IND))
+                        {
+                            buttons += `<button type="button" class='btn btnTbl green' action="procesar" data-toggle="tooltip" data-placement="bottom" title="Procesar"><i class="fa fa-gear"></i></button>`;
                         } else {
-                            if (rowData.ESTADO_ELECT == 'ENVIADO') {                             
-                                buttons += `<button type="button" class='btn btnTbl red' action="ver" data-toggle="tooltip" data-placement="bottom" title="Ver Documento"><i class='fa fa-file-pdf-o'></i></button>`;                                                           
-                            } else {
-                                if (rowData.ESTADO_ELECT == 'PENDIENTE') {
-                                    buttons = `<button type="button" class='btn btnTbl blue' action="verificar"  data-toggle="tooltip" data-placement="bottom" title="Verificar"><i class="fa fa-clock-o"></i></button>`;                                   
-                                } else {
-                                    if (rowData.ESTADO_ELECT == 'PENDIENTE DE BAJA') {
-                                        buttons = `<button type="button" class='btn btnTbl blue' action="verificar_baja"  data-toggle="tooltip" data-placement="bottom" title="Verificar"><i class="fa fa-clock-o"></i></button>`;      
-                                    } else {
-                                        $(td).html("")
-                                    }
-                                }
-                            }
+                            $(td).html("");
                         }
                         $(td).html(buttons);
                     },
@@ -233,21 +235,23 @@
 
             switch ($(this).attr("action")) {
 
-                case "enviar":
+                case "procesar":
                     $('#divConfirmacion').modal('show');
                     $('#divDocElegido').attr('style', 'display:block;');
                     $('#divDocTodos').attr('style', 'display:none;');
                     $('#btnEnviar').show();
                     $('#btnConfirmarEnviarTodos').hide();
                     $('#btnEnviarBaja').hide();
-                    $('#div_title').html('¿Esta seguro de enviar el documento ' + row.COD_DOCUMENTO + '?');
+                    $('#div_title').html('¿Esta seguro de procesar el documento ' + row.COD_DOCUMENTO + '?');
                     $('#lblDocumento').html(row.DOCUMENTO);
                     $('#lblCliente').html(row.CLIENTE);
                     $('#lblFecha').html(row.FECHA_EMISION.display);
                     $('#lblMonto').html(row.TOTAL);
                     $('#btnEnviar').on('click', function () { // boton del modal
                         bUltimo = true;
-                        GenerarDocFacturacion(documento);
+                        var arrayDocumentos = [];
+                        arrayDocumentos.push(documento);
+                        GenerarDocFacturacion(arrayDocumentos);
                     });
                     break;
                 case "baja":
@@ -270,172 +274,12 @@
                 case "ver":
                     fnDescargarArchivoEfact(sCodTipoDoc, row.DOCUMENTO.toString().split("/")[1]);
                     break;
-                case "verificar":
-                    fnVerificarDoc(documento);
-                    break;
                 case "verificar_baja":
                     fnVerificarBajaDoc(documento);
                     break;
             }
             
         });
-    };
-
-    var fnVerificarDoc = function (documento) {
-
-        var sCodEmpresa = $("#cboEmpresa").val();
-        var sCodTipoDoc = $("#cboDocumento").val();
-
-        if (sCodTipoDoc == '0001' || sCodTipoDoc == '0003') {
-            if (sCodTipoDoc == '0001') {
-                var sOpcion = 'VFACT';
-            } else {
-                if (sCodTipoDoc == '0003') {
-                    var sOpcion = 'VBOL';
-                }
-            }
-            var sCodVenta = documento;
-            var sRuta = "vistas/EF/ajax/EFACTEL.ashx?sOpcion=" + sOpcion + "&sCodEmpresa=" + sCodEmpresa + "&sCodVenta=" + sCodVenta;
-            $.ajax({
-                type: "post",
-                url: sRuta,
-                contenttype: "application/json;",
-                datatype: "json",
-                async: true,
-                beforeSend: function () { Bloquear("contenedor"); },
-                success: function (datos) {
-                    if (isEmpty(datos)) {
-                        alertCustom("Error al Enviar Documento Electrónico");
-                        return;
-                    }
-                    let iIndice = datos.indexOf("[Advertencia]");
-                    if (iIndice >= 0) {
-                        alertCustom(datos);
-                        return;
-                    }
-                    if (datos.indexOf("[Error]") >= 0) {
-                        alertCustom(datos);
-                        return;
-                    }
-
-                    if (datos === "OK") {
-                        exitoCustom("La verificación se completó con éxito. El documento se envio correctamente.");
-                    } else {
-                        infoCustom("El documento no pudo ser enviado.");
-                    }
-
-                    //fnSubirArchivoEfact(datos.replace(".xml", ".zip"));                    
-
-                    $("#divConfirmacion").modal('hide');
-                },
-                error: function (msg) {
-                    noexito();
-                },
-                complete: function () {
-                    Desbloquear("contenedor");
-                    if (bUltimo) {
-                        bUltimo = false;
-                        $('#btnFiltrarFactElec').click();
-                    }
-                }
-            });
-        } else {
-            if (sCodTipoDoc == '0007') {   // NOTA DE CREDITO                
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFACTEL.ashx?sOpcion=VNC&sCodEmpresa=" + sCodEmpresa + "&sCodNC=" + sCodVenta
-
-                $.ajax({
-                    type: "post",
-                    url: sRuta,
-                    contenttype: "application/json;",
-                    datatype: "json",
-                    async: true,
-                    beforeSend: function () { Bloquear("contenedor") },
-                    success: function (datos) {
-                        if (isEmpty(datos)) {
-                            alertCustom("Error al Enviar Documento Eletrónico");
-                            return;
-                        }
-                        let iIndice = datos.indexOf("[Advertencia]");
-                        if (iIndice >= 0) {
-                            alertCustom(datos);
-                            return;
-                        }
-                        if (datos.indexOf("[Error]") >= 0) {
-                            alertCustom(datos);
-                            return;
-                        }
-
-                        if (datos === "OK") {
-                            exitoCustom("La verificación se completó con éxito. El documento se envio correctamente.");
-                        } else {
-                            infoCustom("El documento no pudo ser enviado.");
-                        }
-                        
-                        //fnSubirArchivoEfact(datos.replace(".xml", ".zip"));    
-                        $("#divConfirmacion").modal('hide');
-                    },
-                    error: function (msg) {
-                        noexito();
-                    },
-                    complete: function () {
-                        Desbloquear("contenedor");
-                        if (bUltimo) {
-                            bUltimo = false;
-                            $('#btnFiltrarFactElec').click();
-                        }
-                    }
-                });
-            } else {
-                if (sCodTipoDoc == '0008') {   // NOTA DE DEBITO
-                    var sOpcion = 'FACT';
-                    var sCodVenta = documento;
-                    let sRuta = "vistas/EF/ajax/EFACTEL.ashx?sOpcion=VND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
-
-                    $.ajax({
-                        type: "post",
-                        url: sRuta,
-                        contenttype: "application/json;",
-                        datatype: "json",
-                        async: true,
-                        beforeSend: function () { Bloquear("contenedor") },
-                        success: function (datos) {
-                            if (isEmpty(datos)) {
-                                alertCustom("Error al Enviar Documento Eletrónico");
-                                return;
-                            }
-                            let iIndice = datos.indexOf("[Advertencia]");
-                            if (iIndice >= 0) {
-                                alertCustom(datos);
-                                return;
-                            }
-                            if (datos.indexOf("[Error]") >= 0) {
-                                alertCustom(datos);
-                                return;
-                            }
-
-                            if (datos === "OK") {
-                                exitoCustom("La verificación se completó con éxito. El documento se envio correctamente.");
-                            } else {
-                                infoCustom("El documento no pudo ser enviado.");
-                            }
-                            //fnSubirArchivoEfact(datos.replace(".xml", ".zip"));    
-                            $("#divConfirmacion").modal('hide');
-                        },
-                        error: function (msg) {
-                            noexito();
-                        },
-                        complete: function () {
-                            Desbloquear("contenedor");
-                            if (bUltimo) {
-                                bUltimo = false;
-                                $('#btnFiltrarFactElec').click();
-                            }
-                        }
-                    });
-                }
-            }
-        }
     };
 
     var fnVerificarBajaDoc = function (documento) {
@@ -593,24 +437,16 @@
         }
     };
 
-    var GenerarDocFacturacion = function (documento) {
+    var GenerarDocFacturacion = function (arrayDocumentos) {
         
         var sCodEmpresa = $("#cboEmpresa").val();
         var sCodTipoDoc = $("#cboDocumento").val();
+        var jsonDocumentos = JSON.stringify(arrayDocumentos);
 
         if (sCodTipoDoc == '0001' || sCodTipoDoc == '0003') {
-            if (sCodTipoDoc == '0001') {
-                var sOpcion = 'FACT';
-            } else {
-                if (sCodTipoDoc == '0003') {
-                    var sOpcion = 'BOL';
-                }
-            }
-            var sCodVenta = documento;
-            var sRuta = "vistas/EF/ajax/EFACTEL.ashx?sOpcion=" + sOpcion + "&sCodEmpresa=" + sCodEmpresa + "&sCodVenta=" + sCodVenta;
             $.ajax({
                 type: "post",
-                url: sRuta,
+                url: "vistas/EF/ajax/EFACTEL.ashx?sOpcion=" + (sCodTipoDoc == '0001' ? 'FACT' : 'BOL') + "&sCodEmpresa=" + sCodEmpresa + "&jsonDocumentos=" + jsonDocumentos,
                 contenttype: "application/json;",
                 datatype: "json",
                 async: true,
@@ -630,7 +466,6 @@
                         return;
                     }
 
-                    fnVerificarDoc(documento);
                     $("#divConfirmacion").modal('hide');
                 },
                 error: function (msg) {
@@ -639,17 +474,14 @@
                 },
                 complete: function () {
                     Desbloquear("divConfirmacion");
-                
+                    $('#btnFiltrarFactElec').click();
                 }
             });
         } else {
             if (sCodTipoDoc == '0007') {   // NOTA DE CREDITO                
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFACTEL.ashx?sOpcion=NC&sCodEmpresa=" + sCodEmpresa + "&sCodNC=" + sCodVenta
-
                 $.ajax({
                     type: "post",
-                    url: sRuta,
+                    url: "vistas/EF/ajax/EFACTEL.ashx?sOpcion=NC&sCodEmpresa=" + sCodEmpresa + "&jsonDocumentos=" + jsonDocumentos,
                     contenttype: "application/json;",
                     datatype: "json",
                     async: true,
@@ -668,8 +500,6 @@
                             alertCustom(datos);
                             return;
                         }
-
-                        fnVerificarDoc(documento);
                      
                         $("#divConfirmacion").modal('hide');
                     },
@@ -679,18 +509,14 @@
                     },
                     complete: function () {
                         Desbloquear("divConfirmacion");
-                    
+                        $('#btnFiltrarFactElec').click();
                     }
                 });
             } else {
                 if (sCodTipoDoc == '0008') {   // NOTA DE DEBITO
-                    var sOpcion = 'FACT';
-                    var sCodVenta = documento;
-                    let sRuta = "vistas/EF/ajax/EFACTEL.ashx?sOpcion=ND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
-
                     $.ajax({
                         type: "post",
-                        url: sRuta,
+                        url: "vistas/EF/ajax/EFACTEL.ashx?sOpcion=ND&sCodEmpresa=" + sCodEmpresa + "&jsonDocumentos=" + jsonDocumentos,
                         contenttype: "application/json;",
                         datatype: "json",
                         async: true,
@@ -709,8 +535,7 @@
                                 alertCustom(datos);
                                 return;
                             }
-
-                            fnVerificarDoc(documento);                            
+                       
                             $("#divConfirmacion").modal('hide');
                         },
                         error: function (msg) {
@@ -719,7 +544,7 @@
                         },
                         complete: function () {
                             Desbloquear("divConfirmacion");
-                         
+                            $('#btnFiltrarFactElec').click();
                         }
                     });
                 }
@@ -921,33 +746,23 @@
         });
 
         $('#btnConfirmarEnviarTodos').on('click', function () {
-            var aDetalle = []
             if (oTable.fnGetData().length == 0) {
                 return "";
             }
+            var arrayDocumentos = [];
             $('#tblDocumento tbody').children().each(function (i) {
-                var oDetalle = {};
                 var COD_DOCUMENTO = $(this).find('td').eq(1).text();
-                var ESTADO_ELECT = $(this).find('td').eq(7).text();
+                var FactElecInd = $(this).find('td').eq(7).data('FactElecInd');
+                var AnuladoInd = $(this).find('td').eq(7).data('AnuladoInd');
                 bValSelect = ($(this).find('input[type="checkbox"]').is(':checked') ? true : false);
-                if (bValSelect) {
-                    oDetalle.COD_DOCUMENTO = COD_DOCUMENTO
-                    oDetalle.ESTADO_ELECT = ESTADO_ELECT
-                    aDetalle.push(oDetalle);
+                if (bValSelect && AnuladoInd === 'N' && (FactElecInd == POR_PROCESAR_IND || FactElecInd == CSV_GENERADO_IND || FactElecInd == CSV_ENVIADO_IND || FactElecInd == CSV_CON_ERROR_IND)) {
+                    arrayDocumentos.push(COD_DOCUMENTO);
                 }
             });
-            if (aDetalle.length <= 0) {
+            if (arrayDocumentos.length == 0) {
                 infoCustom("Seleccione por lo menos un documento...!");
             } else {
-                let iNroReg = aDetalle.length;
-                for (var i = 0; i < iNroReg; i++) {
-                    if (i === iNroReg - 1) {
-                        bUltimo = true;
-                    }
-                    if (aDetalle[i].ESTADO_ELECT == 'NO ENVIADO' || aDetalle[i].ESTADO_ELECT == 'ERROR') {
-                        GenerarDocFacturacion(aDetalle[i].COD_DOCUMENTO);
-                    }
-                }
+                GenerarDocFacturacion(arrayDocumentos);
             }
         });
 
@@ -971,7 +786,7 @@
                 var emi = $('#cboEmision').val();
                 $.ajax({
                     type: "post",
-                    url: "vistas/EF/ajax/EFACTEL.ashx?sOpcion=BLFE&sCodEmpresa=" + emp + "&sSucursal=" + suc + "&sTipoDoc=" + doc + "&sCliente=" + cli + "&sEmision=" + emi + "&sDesde=" + des + "&sHasta=" + has,
+                    url: "vistas/EF/ajax/EFACTEL.ashx?sOpcion=BLFEFACT&sCodEmpresa=" + emp + "&sSucursal=" + suc + "&sTipoDoc=" + doc + "&sCliente=" + cli + "&sEmision=" + emi + "&sDesde=" + des + "&sHasta=" + has,
                     contenttype: "application/json;",
                     datatype: "json",
                     async: true,
@@ -1154,9 +969,9 @@
 
 }();
 
-var EnviarDocumento = function (documento) {
-    GenerarDocFacturacion(documento);
-}
+//var EnviarDocumento = function (documento) {
+//    GenerarDocFacturacion(documento, true);
+//}
 
 var AnularDocumento = function (documento) {
     alert('Anular documento');

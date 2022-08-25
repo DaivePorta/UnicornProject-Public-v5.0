@@ -128,10 +128,10 @@ Public Class CAMNGCL : Implements IHttpHandler
                 '    End If
                 '    res = resb.ToString()
 
-                Case "GQR" 'Parametros para guardar el QR
+                Case "GQR_NCG" 'Parametros para guardar el QR
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    Dim nvVenta As New Nomade.NV.NVVenta("Bn")
-                    res = nvVenta.GuardarCodigoQR(p_CODE, p_IMGQR)
+                    'Dim nvVenta As New Nomade.NV.NVVenta("Bn")
+                    res = caNotaCredito.GuardarCodigoQR_NCG(p_CODE, p_IMGQR)
                 Case "GENERAR_PDF" 'DPORTA
                     Dim msgError As String = "OK"
                     Dim dtCabecera As New DataTable
@@ -775,7 +775,7 @@ Public Class CAMNGCL : Implements IHttpHandler
         hw.Parse(New StringReader(HTML.ToString))
         document.Close()
 
-        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" Then 'DPORTA 20/05/2022
+        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
             imgCabConQR(FilePath, imgS, imgI, Base64ToImage(dtCabecera(0)("IMAGEN_QR").ToString)) 'SOLO PARA ´DOCS ELECTRÓNICOS
         Else
             imgC(FilePath, imgS, imgI)

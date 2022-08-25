@@ -1037,11 +1037,8 @@
         End Try
     End Function
 
-
-
-
     Public Function Verificar_Provision_Gasto(ByVal p_PIDM_BENEFICIARIO As String, ByVal p_SERIE As String,
-                                        ByVal p_NUMERO As String, p_TIPO As String, p_COD_GASTO As String) As String
+                                        ByVal p_NUMERO As String, p_TIPO As String, p_COD_GASTO As String, ByVal p_TIPO_DCTO As String) As String
         Try
             Dim msg As String
 
@@ -1050,15 +1047,12 @@
 
             cmd = cn.GetNewCommand("PFS_VERIFICAR_PROVISION_GASTO", CommandType.StoredProcedure)
 
-
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM_BENEFICIARIO", p_PIDM_BENEFICIARIO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SERIE", p_SERIE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUMERO", p_NUMERO, ParameterDirection.Input, 253))
-
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO", p_TIPO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_COD_GASTO", p_COD_GASTO, ParameterDirection.Input, 253))
-
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_DCTO", p_TIPO_DCTO, ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_SALIDA", String.Empty, ParameterDirection.Output, 253))
             cmd1 = cn.Ejecuta_parms(cmd)
@@ -1070,7 +1064,6 @@
             Throw (ex)
         End Try
     End Function
-
 
     Public Function Listar_Deudas_afp(p_CTLG_CODE As String, p_COD_AFP_SUNAT As String, p_PERIODO_INI As String, p_PERIODO_FIN As String) As DataTable
         Try

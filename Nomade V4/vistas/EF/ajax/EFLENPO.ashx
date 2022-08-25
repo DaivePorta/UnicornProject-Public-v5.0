@@ -35,54 +35,54 @@ Public Class EFACTEL : Implements IHttpHandler
 
             Select Case sOpcion
                 Case "FACT"
-                    Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura()
-                    onEFFactura.fnGetFactura(sCodEmpresa, sCodVenta)
+                    Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura(sCodEmpresa)
+                    'onEFFactura.fnGetFactura(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
                 Case "BFACT"
                     Dim onDEFFactura As New Nomade.Efact.LogNegocio.nEFBajaFactura()
                     sResponse = onDEFFactura.fnGetFactura(sCodEmpresa, sCodVenta)
                 Case "VFACT"
-                    Dim onEFFactura As New NOMADE.Efact.LogNegocio.nEFFactura()
-                    sResponse = onEFFactura.fnVerificarDoc(sCodEmpresa, sCodVenta)
+                    Dim onEFFactura As New Nomade.Efact.LogNegocio.nEFFactura(sCodEmpresa)
+                    'sResponse = onEFFactura.fnVerificarDoc(sCodEmpresa, sCodVenta)
                 Case "VBAJAFACT"
                     Dim onEFFactura As New NOMADE.Efact.LogNegocio.nEFBajaFactura()
                     sResponse = onEFFactura.fnVerificarBajaDoc(sCodEmpresa, sCodVenta)
                 Case "BOL"
-                    Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta()
-                    onEFBoleta.fnGetBoleta(sCodEmpresa, sCodVenta)
+                    Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta(sCodEmpresa)
+                    'onEFBoleta.fnGetBoleta(sCodEmpresa, sCodVenta)
                     sResponse = "OK"
                 Case "BBOL"
                     Dim onBEFBoleta As New Nomade.Efact.LogNegocio.nEFBajaBoleta()
                     sResponse = onBEFBoleta.fnGetBoleta(sCodEmpresa, sCodVenta)
                 Case "VBOL"
-                    Dim onEFBoleta As New NOMADE.Efact.LogNegocio.nEFBoleta()
-                    sResponse = onEFBoleta.fnVerificarDoc(sCodEmpresa, sCodVenta)
+                    Dim onEFBoleta As New Nomade.Efact.LogNegocio.nEFBoleta(sCodEmpresa)
+                    'sResponse = onEFBoleta.fnVerificarDoc(sCodEmpresa, sCodVenta)
                 Case "VBAJABOL"
                     Dim onEFBoleta As New NOMADE.Efact.LogNegocio.nEFBajaBoleta()
                     sResponse = onEFBoleta.fnVerificarBajaDoc(sCodEmpresa, sCodVenta)
                 Case "NC"
-                    Dim onEFNC As New Nomade.Efact.LogNegocio.nEFNC()
-                    onEFNC.fnGetNC(sCodEmpresa, sCodNC)
+                    'Dim onEFNC As New Nomade.Efact.LogNegocio.nEFNC()
+                    'onEFNC.fnGetNC(sCodEmpresa, sCodNC)
                     sResponse = "OK"
                 Case "BNC"
                     Dim onDEFNC As New Nomade.Efact.LogNegocio.nEFBajaNC()
                     sResponse = onDEFNC.fnGetNC(sCodEmpresa, sCodNC)
                 Case "VNC"
-                    Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFNC()
-                    sResponse = onEFNC.fnVerificarDoc(sCodEmpresa, sCodNC)
+                    'Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFNC()
+                    'sResponse = onEFNC.fnVerificarDoc(sCodEmpresa, sCodNC)
                 Case "VBAJANC"
                     Dim onEFNC As New NOMADE.Efact.LogNegocio.nEFBajaNC()
                     sResponse = onEFNC.fnVerificarBajaDoc(sCodEmpresa, sCodNC)
                 Case "ND"
-                    Dim onEFND As New Nomade.Efact.LogNegocio.nEFND()
-                    onEFND.fnGetND(sCodEmpresa, sCodND)
+                    'Dim onEFND As New Nomade.Efact.LogNegocio.nEFND()
+                    'onEFND.fnGetND(sCodEmpresa, sCodND)
                     sResponse = "OK"
                 Case "BND"
                     Dim onBEFND As New Nomade.Efact.LogNegocio.nEFBajaND()
                     sResponse = onBEFND.fnGetND(sCodEmpresa, sCodND)
                 Case "VND"
-                    Dim onEFND As New NOMADE.Efact.LogNegocio.nEFND()
-                    sResponse = onEFND.fnVerificarDoc(sCodEmpresa, sCodND)
+                    'Dim onEFND As New NOMADE.Efact.LogNegocio.nEFND()
+                    'sResponse = onEFND.fnVerificarDoc(sCodEmpresa, sCodND)
                 Case "VBAJAND"
                     Dim onEFND As New NOMADE.Efact.LogNegocio.nEFBajaND()
                     sResponse = onEFND.fnVerificarBajaDoc(sCodEmpresa, sCodND)

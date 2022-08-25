@@ -511,7 +511,7 @@
                                     <!-- MENSAJES -->
                                     <div class="span8 ">
                                          <div class="row-fluid">
-                                            <div class="span9 alert alert-info" id="divInfo">
+                                            <div class="span10 alert alert-info" id="divInfo">
                                                 <%--<p id="lblMsgDeuda">* Documento Referenciado tiene una deuda de: <strong id="lblDeuda">...</strong></p>--%>
                                                 <p id="lblMsgUsable">* La Nota de Crédito<strong class="no">&nbsp;NO</strong>&nbsp;se utilizará en el mismo Documento Referenciado.</p>
                                                 <p id="lblMsgDespacho">* La Nota de Crédito<strong class="si">&nbsp;NO</strong>&nbsp;realizará movimientos de Inventario y Kárdex.</p>

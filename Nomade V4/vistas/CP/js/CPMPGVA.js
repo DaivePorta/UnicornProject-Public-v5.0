@@ -909,7 +909,7 @@ var CPMPGVA = function () {
                     $("#lbl_detalle4").html("Persona Recibe");
 
 
-                    $("#cbDestino").html("<option>ENTREGA DIRECTA A PROVEEDOR</option>").attr("disabled", true).select2();
+                    $("#cbDestino").html("<option>ENTREGA DIRECTA A BENEFICIARIO</option>").attr("disabled", true).select2();
 
                     $(".mPersona").css("display", "block");
 
@@ -1753,6 +1753,12 @@ function cargatablavacia() {
                 }
             },
             {
+                data: "OPERACION",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
                 data: "FECHA_VENCIMIENTO",
                 createdCell: function (td, cellData, rowData, row, col) {
                     $(td).attr('align', 'center');
@@ -1821,13 +1827,11 @@ function cargatablavacia() {
 
                 }
             }
-
-
         ],
         "scrollY": "280px",
         "scrollCollapse": false,
         "paginate": false,
-        "order": [[2, 'asc'], [5, 'asc']],
+        "order": [[3, 'desc'], [6, 'desc']],
 
         info: false
 
@@ -2256,9 +2260,6 @@ function pagar() {
 
                 });
 
-
-
-
                 //var p_caja = "";         
                 var p_caja = $("#cbo_Det_Origen").val(); // origen
                 var cod_ape = "";
@@ -2269,7 +2270,6 @@ function pagar() {
                 var p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
                 var p_flag = 1;
                 var adicional = "";
-
 
                 var det_desc = "", pidm_cta = "", cta = "", compl = "";
 
@@ -2311,13 +2311,18 @@ function pagar() {
                     }
                 } else if (ind_tipo == "C") {
 
-
-
                     cod_ape = $("#cbo_Det_Origen :selected").attr("codigo");
 
                 }
+                if (json_ordenado.DESCRIPCION == 'GASTO') {
 
-                var descripcion = ind_tipo == "C" ? "PAGO A PROVEEDOR" : det_desc;
+                    var descripcion = ind_tipo == "C" ? "PAGO A BENEFICIARIO" : det_desc;
+
+                } else {
+
+                    var descripcion = ind_tipo == "C" ? "DEVOLUCION A CLIENTE" : det_desc;
+                }
+                
             } else {
 
                 var p_flag = 1.6;

@@ -96,7 +96,7 @@ var NVLREMO = function () {
             mes = 12;
             ano = ano - 1
         } else {
-            mes = mes - 1;
+            // mes = mes - 1;
         }
 
         if (mes >= 10)
@@ -117,6 +117,7 @@ var NVLREMO = function () {
         });
 
         $('#btnBuscar').on('click', function () {
+            Bloquear($("#contenedor"), "Generando Reporte Monetario ...")
             VentasContado($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
             CobroVentasCredito($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
             ResumenDetallesMovimientosCaja($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
@@ -408,6 +409,8 @@ var NVLREMO = function () {
                     oTable.fnAddData(datos);
                     oTable.fnAdjustColumnSizing();
                 }
+            } else {
+                oTable.fnClearTable();
             }
             Desbloquear("detalles");
         }).error(function () {
@@ -450,6 +453,7 @@ function VentasContado(empresa, establecimiento) {
         async: true
     }).success(function (datos) {
         Desbloquear("divTotales");
+        //Desbloquear('contenedor');
         if (datos != null) {
             $("#divTotales").html(datos);
             if ($("#datosMoba").val() != undefined) {
@@ -462,6 +466,7 @@ function VentasContado(empresa, establecimiento) {
         }
     }).error(function () {
         Desbloquear("divTotales");
+        //Desbloquear('contenedor');
         alertCustom("Error al listar. Por favor intente nuevamente.");
     });
 }
@@ -474,7 +479,7 @@ function CobroVentasCredito(empresa, establecimiento) {
     data.append('p_DESDE', $("#txtDesde").val());
     data.append('p_HASTA', $("#txtHasta").val());
 
-    Bloquear('divTotalesCobroVentasCredito');
+    //Bloquear('divTotalesCobroVentasCredito');
     var jqxhr = $.ajax({
         type: "POST",
         url: "vistas/NV/ajax/NVLREMO.ASHX",
@@ -484,7 +489,8 @@ function CobroVentasCredito(empresa, establecimiento) {
         cache: false,
         async: true
     }).success(function (datos) {
-        Desbloquear("divTotalesCobroVentasCredito");
+        //Desbloquear("divTotalesCobroVentasCredito");
+        Desbloquear('contenedor');
         if (datos != null) {
             $("#divTotalesCobroVentasCredito").html(datos);
             if ($("#datosMoba").val() != undefined) {
@@ -493,7 +499,8 @@ function CobroVentasCredito(empresa, establecimiento) {
             }
         }
     }).error(function () {
-        Desbloquear("divTotalesCobroVentasCredito");
+        //Desbloquear("divTotalesCobroVentasCredito");
+        Desbloquear('contenedor');
         alertCustom("Error al listar. Por favor intente nuevamente.");
     });
 }

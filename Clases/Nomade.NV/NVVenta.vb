@@ -937,14 +937,37 @@
     '    End Try
     'End Function
     'Gurda la ruta de la imagen del QR convertida a base64
-    Public Function GuardarCodigoQR(ByVal p_CODE As String, ByVal p_IMGQR As String) As String
+    Public Function GuardarCodigoQR_VENTA(ByVal p_CODE As String, ByVal p_IMGQR As String) As String
         Try
 
             Dim msg As String
             Dim cmd As IDbCommand
             Dim cmd1 As IDbCommand
 
-            cmd = cn.GetNewCommand("GUARDAR_QR", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("GUARDAR_QR_VENTA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_IMGQR", p_IMGQR, ParameterDirection.Input, 253))
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+
+            msg = "OK"
+
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    'Gurda la ruta de la imagen del QR convertida a base64
+    Public Function GuardarCodigoQR_ANTICIPO(ByVal p_CODE As String, ByVal p_IMGQR As String) As String
+        Try
+
+            Dim msg As String
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("GUARDAR_QR_ANTICIPO", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMGQR", p_IMGQR, ParameterDirection.Input, 253))
 

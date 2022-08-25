@@ -1,4 +1,6 @@
-﻿using Nomade.Efact.Conexion;
+﻿using Newtonsoft.Json;
+using Nomade.Efact.Conexion;
+using Nomade.Efact.Models;
 using Nomade.NB;
 using System;
 using System.Collections.Generic;
@@ -24,16 +26,31 @@ namespace Nomade.Efact.LogNegocio
         private string sPath_Orbitum5 = ConfigurationManager.AppSettings["path_fac_empresa5"];
         private string sPath_Orbitum = "";
 
-        private readonly string sDelimitador = "FF00FF";
+        private readonly string Delimitador = "FF00FF";
+        private readonly string RucEmpresa = "";
+
+        private const string EXTENSION_CSV = "csv";
+        private const string EXTENSION_XML = "xml";
+        private const string EXTENSION_JSON = "json";
+        private const string POR_PROCESAR_IND = "N";
+        private const string CSV_GENERADO_IND = "G";
+        private const string CSV_ENVIADO_IND = "E";
+        private const string PROCESADO_IND = "S";
+        private const string CSV_CON_ERROR_IND = "X";
+        private const string CODIGO_SUNAT_FACTURA = "01";
+
 
         public nEFFactura()
+        { }
+        public nEFFactura(string p_CTLG_CODE)
         {
             if (!Directory.Exists(In_LocalPathEfact)) Directory.CreateDirectory(In_LocalPathEfact);
             if (!Directory.Exists(Out_LocalPathEfact)) Directory.CreateDirectory(Out_LocalPathEfact);
             if (!Directory.Exists(Error_LocalPathEfact)) Directory.CreateDirectory(Error_LocalPathEfact);
+            RucEmpresa = ObtenerRucEmpresa(p_CTLG_CODE);
         }
 
-        public void FnGetFactura(string p_CTLG_CODE, string p_VTAC_CODE)
+        private void FnGetFactura(string p_CTLG_CODE, string p_VTAC_CODE)
         {
             try
             {
@@ -54,22 +71,14 @@ namespace Nomade.Efact.LogNegocio
                 {
                     throw new ArgumentException("[Advertencia]: La serie del documento no es válida para facturación electrónica.");
                 }
-                else if (sIndElect.Equals("P"))
+                else if (sIndElect.Equals(PROCESADO_IND))
                 {
-                    throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento se encuentra Pendiente de validación.");
+                    throw new ArgumentException("[Advertencia]: El documento ya fue procesado.");
                 }
-                //else if (sIndElect.Equals("X"))
+                //else if (sIndElect.Equals("B"))
                 //{
-                //    throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento se encuentra tuvo errores de validación.");
+                //    throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento fué comunicado para baja.");
                 //}
-                else if (sIndElect.Equals("S"))
-                {
-                    throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento fué validado correctamente.");
-                }
-                else if (sIndElect.Equals("B"))
-                {
-                    throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento fué comunicado para baja.");
-                }
 
                 string sMoneda = "";
 
@@ -1000,8 +1009,7 @@ namespace Nomade.Efact.LogNegocio
                 }
                 // Fin: FILA 9 - DATOS DE LA LÍNEA
 
-                //string sNombreArchivo = directory + s4C + "-" + "01" + "-" + s1B + ".csv";
-                string sNombreArchivo = In_LocalPathEfact + FnGetNombreArchivo(p_CTLG_CODE, "01", s1B, "csv");
+                string sNombreArchivo = In_LocalPathEfact + FnGetNombreArchivo(CODIGO_SUNAT_FACTURA, s1B, EXTENSION_CSV);
 
                 // verificar si existe archivo
                 if (File.Exists(sNombreArchivo))
@@ -1019,7 +1027,7 @@ namespace Nomade.Efact.LogNegocio
                     fila7_Leyendas + ((char)10) + 
                     fila8_AdicionalesGlobales + ((char)10) + 
                     fila9_DatosLinea + ((char)10) + 
-                    sDelimitador;
+                    Delimitador;
 
 
                 // Crear el archivo
@@ -1030,7 +1038,7 @@ namespace Nomade.Efact.LogNegocio
                     oFileStream.Write(abDatosDoc, 0, abDatosDoc.Length);
                 }
 
-                string sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "P");
+                string sRespuesta = ocEFFactura.Actualizar_ELECT_IND_FACT_BOL_EFACT(p_CTLG_CODE, p_VTAC_CODE, CSV_GENERADO_IND);
 
             }
             catch (Exception ex)
@@ -1039,19 +1047,22 @@ namespace Nomade.Efact.LogNegocio
             }
         }
 
-        private string FnGetNombreArchivo(string p_CTLG_CODE, string p_Tipo_Doc, string p_Serie_Y_Numero, string p_Extension_Sin_Punto)
+        private string FnGetNombreArchivo(string p_Tipo_Doc, string p_Serie_Y_Numero, string p_Extension_Sin_Punto)
+        {
+            return RucEmpresa + "-" + p_Tipo_Doc + "-" + p_Serie_Y_Numero + "." + p_Extension_Sin_Punto;
+        }
+
+        private string ObtenerRucEmpresa(string p_CTLG_CODE)
         {
             cEFFactura ocEFFactura = new cEFFactura("Bn");
             DataTable oDT_DatosEmpresa = ocEFFactura.fnListarDatosEmpresa(p_CTLG_CODE);
-            string rucEmpresa = "";
-            if(oDT_DatosEmpresa != null)
+            if (oDT_DatosEmpresa != null)
             {
                 DataRow oDR_DatosEmpresa = oDT_DatosEmpresa.NewRow();
                 oDR_DatosEmpresa = oDT_DatosEmpresa.Rows[0];
-                rucEmpresa = oDR_DatosEmpresa["5C"].ToString(); // Nro de RUC de la Empresa   
+                return oDR_DatosEmpresa["5C"].ToString(); // Nro de RUC de la Empresa   
             }
-
-            return rucEmpresa + "-" + p_Tipo_Doc + "-" + p_Serie_Y_Numero + "." + p_Extension_Sin_Punto;
+            return "";
         }
 
 
@@ -1811,9 +1822,23 @@ namespace Nomade.Efact.LogNegocio
             }
         }
 
-        public string fnVerificarDoc(string p_CTLG_CODE, string p_VTAC_CODE)
+        public void ProcesarListDoc(string p_CTLG_CODE, List<string> listDocumentos)
         {
-            string sRespuesta = "";
+            try
+            {
+                foreach(var item in listDocumentos)
+                {
+                    ProcesarDoc(p_CTLG_CODE, item);
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        public string ProcesarDoc(string p_CTLG_CODE, string p_VTAC_CODE)
+        {
             try
             {
                 cEFFactura ocEFFactura = new cEFFactura("Bn");
@@ -1828,60 +1853,37 @@ namespace Nomade.Efact.LogNegocio
                 DataRow oDR_DatosDoc = oDT_Doc.NewRow();
                 oDR_DatosDoc = oDT_Doc.Rows[0];
                 string sSerieNroDoc = oDR_DatosDoc["NroSerieDoc"].ToString(); // Serie y Nro del Documento
+                string factElectInd = oDR_DatosDoc["FactElecInd"].ToString();
 
-                //string sNombreArchivo = directory + "01" + sSerieNroDoc + ".xml";
-                string sNombreArchivo = Out_LocalPathEfact + FnGetNombreArchivo(p_CTLG_CODE, "01", sSerieNroDoc, "xml");
+                string rutaArchivoCSV = In_LocalPathEfact + FnGetNombreArchivo(CODIGO_SUNAT_FACTURA, sSerieNroDoc, EXTENSION_CSV);
+                string rutaArchivoJSON = rutaArchivoCSV.Replace("." + EXTENSION_CSV, "." + EXTENSION_JSON);
 
-                if (File.Exists(sNombreArchivo))
+                ConnectionSFTP connectionSFTP = new ConnectionSFTP();
+
+                if (!string.IsNullOrEmpty(factElectInd) 
+                    && (factElectInd.Equals(POR_PROCESAR_IND) || factElectInd.Equals(CSV_CON_ERROR_IND) || factElectInd.Equals(CSV_GENERADO_IND)  || factElectInd.Equals(CSV_ENVIADO_IND)))
                 {
-                    string sRutaArchivo = sNombreArchivo;
-                    sRutaArchivo = sRutaArchivo.Replace(".xml", ".zip");
-                    bool bUpLoadOk = false;
-                    try
+                    if (factElectInd.Equals(POR_PROCESAR_IND) || factElectInd.Equals(CSV_CON_ERROR_IND) || factElectInd.Equals(CSV_GENERADO_IND))
                     {
-                        ConnectionSFTP oConexion = new ConnectionSFTP();
-                        oConexion.FnSubirArchivo(sRutaArchivo);
-                        bUpLoadOk = true;
+                        if (factElectInd.Equals(POR_PROCESAR_IND) || factElectInd.Equals(CSV_CON_ERROR_IND) || !File.Exists(rutaArchivoCSV))
+                        {
+                            FnGetFactura(p_CTLG_CODE, p_VTAC_CODE);
+                        }
+                        connectionSFTP.FnSubirArchivo(rutaArchivoCSV);
+                        ocEFFactura.Actualizar_ELECT_IND_FACT_BOL_EFACT(p_CTLG_CODE, p_VTAC_CODE, CSV_ENVIADO_IND);
                     }
-                    catch (Exception)
+                    if (connectionSFTP.FnExisteArchivo(Path.GetFileName(rutaArchivoJSON)))
                     {
-
-                    }
-                    if (bUpLoadOk)
-                    {
-                        sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "S");
-                        sRespuesta = "OK";
+                        var responseEFact = JsonConvert.DeserializeObject<ResponseEfact>(connectionSFTP.FnObtenerContenidoArchivo(Path.GetFileName(rutaArchivoJSON)));
+                        if(responseEFact.Code.Equals("0")) ocEFFactura.Actualizar_ELECT_IND_FACT_BOL_EFACT(p_CTLG_CODE, p_VTAC_CODE, PROCESADO_IND);
+                        else ocEFFactura.Actualizar_ELECT_IND_FACT_BOL_EFACT(p_CTLG_CODE, p_VTAC_CODE, CSV_CON_ERROR_IND);
                     }
                     else
                     {
-                        sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "P");
+                        return "[Advertencia]: El documento " + sSerieNroDoc + " ha sido enviado a EFact pero aún no es procesado.";
                     }
                 }
-                else
-                {
-
-                    sNombreArchivo = In_LocalPathEfact + FnGetNombreArchivo(p_CTLG_CODE, "01", sSerieNroDoc, "csv");
-                    //sNombreArchivo = directory + "01" + sSerieNroDoc + ".csv";
-
-                    if (File.Exists(sNombreArchivo))
-                    {
-                        sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "P");
-                    }
-                    else
-                    {
-                        sNombreArchivo = Error_LocalPathEfact + FnGetNombreArchivo(p_CTLG_CODE, "01", sSerieNroDoc, "csv");
-                        //sNombreArchivo = LocalPathEfact + @"err\invoice\" + "01" + sSerieNroDoc + ".csv";
-                        if (File.Exists(sNombreArchivo))
-                        {
-                            sRespuesta = ocEFFactura.fnActualizar_ELECT_IND_FACT_BOL(p_CTLG_CODE, p_VTAC_CODE, "X");
-                        }
-                        else
-                        {
-                            sRespuesta = "[Advertencia]: No se encontró el archivo generado";
-                        }
-                    }
-                }
-                return sRespuesta;
+                return "OK";
             }
             catch (Exception ex)
             {

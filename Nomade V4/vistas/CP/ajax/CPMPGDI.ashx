@@ -121,8 +121,6 @@ Public Class CPMPGDI : Implements IHttpHandler
                         res = GenerarSelect(SortDataTableColumn(dt, "razon_social", "ASC"), "pidm", "razon_social", "PROVEEDOR")
                     End If
 
-
-
                 Case "4"
                     Dim DeudasPagoDiversos As New Nomade.CP.CPPagosDiversos("Bn")
                     Dim dt As DataTable
@@ -155,18 +153,54 @@ Public Class CPMPGDI : Implements IHttpHandler
                                 resb.Append("},")
                             End If
                         Next
-
-
                         resb.Append("-")
                         resb.Replace("},-", "}")
-
-
                         resb.Append("]")
                         res = resb.ToString()
                     Else
                         res = ""
                     End If
 
+                Case "4.1" 'DPORTA 14/08/2022
+                    Dim DeudasPagoDiversos As New Nomade.CP.CPPagosDiversos("Bn")
+                    Dim dt As DataTable
+                    Dim resb As New StringBuilder
+
+                    dt = DeudasPagoDiversos.ListarDeudasActualesDiversas2(empresa, "N", String.Empty, 0, estable)
+                    If Not dt Is Nothing Then
+                        resb.Append("[")
+
+                        For Each row As DataRow In dt.Rows
+
+                            If row("ES_EMPLEADO").ToString = "N" Then
+
+                                resb.Append("{")
+                                resb.Append("""CODIGO"":""" & row("CODIGO").ToString & """,")
+                                resb.Append("""MODULO"":{""CODIGO"":""" & row("MODULO_CODE").ToString & """,""NOMBRE"":""" & row("MODULO_DESC_CORTA").ToString & """},")
+                                resb.Append("""FECHA_VENCIMIENTO"":{""display"":""" & row("FECHA_VENCIMIENTO").ToString & """,""order"":""" & String.Join("", row("FECHA_VENCIMIENTO").ToString.Split("/").Reverse()) & """},")
+                                resb.Append("""MONTO_MONE_BASE"":""" & row("MONTO_MONE_BASE").ToString & """,")
+                                resb.Append("""DESCRIPCION"":""" & row("DESCRIPCION").ToString & """,")
+                                resb.Append("""MONTO_MONE_ALTER"":""" & row("MONTO_MONE_ALTER").ToString & """,")
+                                resb.Append("""PERSONA"":{""CODIGO"":""" & row("PIDM_PERSONA").ToString & """,""NOMBRE"":""" & row("PERSONA").ToString & """},")
+                                resb.Append("""ES_MONEDA_BASE"":""" & row("ES_MONEDA_BASE").ToString & """,")
+                                resb.Append("""DOCUMENTO"":""" & row("DOCUMENTO").ToString & """,")
+                                resb.Append("""CONCEPTO"":""" & row("CONCEPTO").ToString & """,")
+                                resb.Append("""MODALIDAD_PAGO"":""" & row("MODALIDAD_PAGO").ToString & """,")
+                                resb.Append("""TIPO_GASTO_COD"":""" & row("TIPO_GASTO_COD").ToString & """,")
+                                resb.Append("""SOLICITANTE"" :" & """" & row("SOLICITANTE") & """,")
+                                resb.Append("""VALOR_CAMBIO_DCTO"":""" & row("VALOR_CAMBIO_DCTO").ToString & """,")
+                                resb.Append("""VALOR_TIPO_CAMBIO"":""" & row("VALOR_TIPO_CAMBIO").ToString & """")
+                                resb.Append("},")
+                            End If
+                        Next
+
+                        resb.Append("-")
+                        resb.Replace("},-", "}")
+                        resb.Append("]")
+                        res = resb.ToString()
+                    Else
+                        res = ""
+                    End If
 
                 Case "4.5" 'lista amortizaciones (detalles de filas de tabla) DESDE fabampr
 
@@ -187,7 +221,6 @@ Public Class CPMPGDI : Implements IHttpHandler
                         Next
                         resb.Append("-")
                         resb.Replace("},-", "}")
-
                         resb.Append("]")
                         res = resb.ToString()
                     Else
@@ -298,7 +331,7 @@ Public Class CPMPGDI : Implements IHttpHandler
                     res += "<option pidm=""" & dt.Rows(i)("PIDM").ToString() & """ value=""" & dt.Rows(i)(cvalue).ToString() & """>" & dt.Rows(i)(chtml).ToString() & "</option>"
                 Else
                     If clase = "CTABANC" Then
-                        res += "<option monto=""" & dt.Rows(i)("SALDO") & """ banco=""" & dt.Rows(i)("BANC_CODE") & """ moneda=""" & dt.Rows(i)("MONE_CODE").ToString() & """ pidm=""" & dt.Rows(i)("PIDM").ToString() & """ value=""" & dt.Rows(i)(cvalue).ToString() & """>" & dt.Rows(i)(chtml).ToString() & "</option>"
+                        res += "<option monto=""" & dt.Rows(i)("SALDO") & """ banco=""" & dt.Rows(i)("BANC_CODE") & """ moneda=""" & dt.Rows(i)("MONE_CODE").ToString() & """ pidm=""" & dt.Rows(i)("PIDM").ToString() & """ billetera_dig=""" & dt.Rows(i)("BILLETERA_DIG").ToString() & """ value=""" & dt.Rows(i)(cvalue).ToString() & """>" & dt.Rows(i)(chtml).ToString() & "</option>"
                     Else
                         If clase = "MONEDA" Then
                             res += "<option tipo=""" & dt.Rows(i)("TIPO").ToString() & """ value=""" & dt.Rows(i)(cvalue).ToString() & """>" & dt.Rows(i)(chtml).ToString() & "</option>"

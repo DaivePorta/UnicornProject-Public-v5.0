@@ -19,7 +19,7 @@
     <div class="span12 ">
         <div class="portlet box blue" id="ventana">
             <div class="portlet-title">
-                <h4><i class="icon-reorder"></i>GASTOS POR PAGAR </h4>
+                <h4><i class="icon-reorder"></i>GASTOS POR PAGAR Y DEVOLUCIONES VENTA</h4>
                 <div class="actions">
 
                     <a href="?f=CPMPGVA" class="btn green"><i class="icon-plus"></i>Nuevo</a>
@@ -45,13 +45,13 @@
 
                     <div class="span1">
 
-                        <label>Proveedor</label>
+                        <label>Proveedor / Cliente</label>
 
                     </div>
                     <div class="span3">
                         <div class="control-group">
                             <div class="controls">
-                                <select id="cboProveedores" class="span12 obligatorio" data-placeholder="PROVEEDOR">
+                                <select id="cboProveedores" class="span12 obligatorio" data-placeholder="PROVEEDOR / CLIENTE">
                                     <option></option>
                                 </select>
                             </div>
@@ -198,6 +198,7 @@
                                 <tr align="center">
                                     <th></th>
                                     <th>Documento</th>
+                                    <th>Operación</th>
                                     <th>Fecha Venc.</th>
                                     <th>Monto S/.</th>
                                     <th>Monto US$.</th>

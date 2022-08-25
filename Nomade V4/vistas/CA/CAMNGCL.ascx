@@ -570,7 +570,7 @@
                             <!-- MENSAJES -->
                             <div class="span6 ">
                                     <div class="row-fluid">
-                                    <div class="span9 alert alert-info" id="divInfo">
+                                    <div class="span10 alert alert-info" id="divInfo">
                                         <p id="lblMsgUsable">* La Nota de Crédito<strong class="no">&nbsp;NO</strong>&nbsp;se utilizará en el mismo Documento Referenciado.</p>                                        
                                     </div>
                                 </div>
