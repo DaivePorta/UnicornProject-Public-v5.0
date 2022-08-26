@@ -1239,6 +1239,14 @@ var NVMDOVR = function () {
             $('#divMail').modal('show');
         });
 
+        //WHATSAPP
+        $('#btnWhatsapp').click(function (e) {
+            $('#txtcontenidoWhatsapp').attr('disabled', false);
+            $('#txtcontenidoWhatsapp').val("");
+            cargarTelefonos();
+            $('#divWhatsapp').modal('show');
+        });
+
         $("#btnHabido").on("click", function () {
             if (vErrors(["cboTipoDoc", "txtNroDctoCliente"])) {
                 if ($("#cboTipoDoc").val() == "6") {
@@ -1800,6 +1808,7 @@ var NVMDOVR = function () {
                         $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
                         $(".btnImprimir").show();
                         $('#btnMail').removeClass('hidden');
+                        $('#btnWhatsapp').removeClass('hidden');
 
                         $("#lblCopia").css("display", "inline-block");
                         $("#divBtnsMantenimiento").attr("style", "display:none");
@@ -9661,6 +9670,7 @@ function GrabarCompletarDctoVenta() {
                                         $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
                                         $(".btnImprimir").show();
                                         $('#btnMail').removeClass('hidden');
+                                        $('#btnWhatsapp').removeClass('hidden');
                                         //$('#btnEFac').removeClass('hidden');
                                         $("#lblCopia").css("display", "inline-block");
                                         $("#lblCopia").css("display", "inline-block");
@@ -14540,6 +14550,89 @@ function enviarCorreo() {
     }
 };
 
+
+function cargarTelefonos() {
+    $.ajax({
+        type: 'post',
+        url: 'vistas/na/ajax/naminsa.ashx?OPCION=LTELEFONOS',
+        async: false
+    }).done(function (data) {
+        data = JSON.parse(data);
+
+        $('#cboClienteWhatsapp').selectize({
+            persist: false,
+            maxItems: null,
+            valueField: 'telefono',
+            labelField: 'name',
+            searchField: ['name', 'telefono'],
+            options: data,
+            render: {
+                item: function (item, escape) {
+                    return '<div>' +
+                        (item.name ? '<span class="name">' + escape(item.name) + '</span>&nbsp;' : '') +
+                        (item.telefono ? '<span class="telefono">' + escape(item.telefono) + '</span>' : '') +
+                        '</div>';
+                },
+                option: function (item, escape) {
+                    var label = item.name || item.telefono;
+                    var caption = item.name ? item.telefono : null;
+                    return '<div style="padding: 2px">' +
+                        '<span class="label" style="display: block; font-size: 14px; background-color: inherit; color: inherit; text-shadow: none">' + escape(label) + '</span>' +
+                        (caption ? '<span class="caption" style="display: block; font-size: 12px; margin: 2px 5px">' + escape(caption) + '</span>' : '') +
+                        '</div>';
+                }
+            },
+        });
+        $('.selectize-control').css('margin-left', '0px').css('margin-bottom', '15px');
+        $('.selectize-dropdown').css('margin-left', '0px');
+
+        for (var c in data) {
+            if (data[c].codigo === $('#hfPIDM').val()) {
+                $("#cboClienteWhatsapp")[0].selectize.setValue(data[c].telefono);
+                break;
+            }
+        }
+    });
+}
+function enviarWhatsapp() {
+
+    var telefonos = $("#cboClienteWhatsapp").val();
+    var nombres = $("#cboClienteWhatsapp").text();
+
+    if (vErrors(['cboClienteWhatsapp'])) {
+        $('#btnEnviarWhatsapp').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
+        RECIPIENT_PHONE_NUMBER = telefonos.toString();
+        w_NAME = nombres.toString();
+        $.ajax({
+            type: "post",
+            url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=whatsapp" +
+                "&p_CODE=" + $('#txtNumDctoComp').val() +
+                "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
+                "&RECIPIENT_PHONE_NUMBER=" + RECIPIENT_PHONE_NUMBER +
+                "&w_NAME=" + w_NAME +
+                "&MENSAJEWHATSAPP=" + $('#txtContenidoWhatsapp').val(),
+            contentType: "application/json;",
+            dataType: false,
+            success: function (datos) {
+                if (datos = "undefined") {
+                    datos = ""
+                }
+                if (datos.indexOf("error") >= 0) {
+                    alertCustom("El mensaje no se envio correctamente");
+                } else {
+                    exito();
+                }
+                $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+                setTimeout(function () { $('#divMail').modal('hide'); }, 25);
+
+            },
+            error: function (msg) {
+                alertCustom('Ocurrió un error en el servidor al intentar enviar el mensaje. Por favor, inténtelo nuevamente.');
+                $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+            }
+        });
+    }
+};
 
 valor_muestra = NaN
 function GetValorMuestra(ctlg) {

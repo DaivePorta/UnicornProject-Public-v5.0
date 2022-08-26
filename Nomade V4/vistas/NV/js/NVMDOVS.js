@@ -6121,6 +6121,7 @@ function GrabarCompletarDctoVenta() {
                                         $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
                                         $(".btnImprimir").show();
                                         $('#btnMail').removeClass('hidden');
+                                        $('#btnWhatsapp').removeClass('hidden');
                                         //$('#btnEFac').removeClass('hidden');
                                         $("#lblCopia").css("display", "inline-block");
                                         //$("#lblCopia").css("display", "inline-block");
@@ -9111,12 +9112,6 @@ function cargarTelefonos() {
         async: false
     }).done(function (data) {
         data = JSON.parse(data);
-        //for (var u in data) {
-        //    if (data[u].usuario === $('#ctl00_txtus').val()) {
-        //        $('#txtRemitente').val(data[u].email);
-        //        break;
-        //    }
-        //}
 
         $('#cboClienteWhatsapp').selectize({
             persist: false,
@@ -9153,13 +9148,45 @@ function cargarTelefonos() {
         }
     });
 }
+
 function enviarWhatsapp() {
-    var numeroWhatsapp = $("#cboClienteWhatsapp").val();
-    var mensaje = $("#txtContenidoWhatsapp").val();
 
-    var urlWa = "https://wa.me/" + numeroWhatsapp + "/?text=" + encodeURIComponent(mensaje);
+    var telefonos = $("#cboClienteWhatsapp").val();
+    var nombres = $("#cboClienteWhatsapp").text();
 
-    window.open(urlWa)
+    if (vErrors(['cboClienteWhatsapp'])) {
+        $('#btnEnviarWhatsapp').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
+        RECIPIENT_PHONE_NUMBER = telefonos.toString();
+        w_NAME = nombres.toString();
+        $.ajax({
+            type: "post",
+            url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=whatsapp" +
+                "&p_CODE=" + $('#txtNumDctoComp').val() +
+                "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
+                "&RECIPIENT_PHONE_NUMBER=" + RECIPIENT_PHONE_NUMBER +
+                "&w_NAME=" + w_NAME +
+                "&MENSAJEWHATSAPP=" + $('#txtContenidoWhatsapp').val(),
+            contentType: "application/json;",
+            dataType: false,
+            success: function (datos) {
+                if (datos = "undefined") {
+                    datos = ""
+                }
+                if (datos.indexOf("error") >= 0) {
+                    alertCustom("El mensaje no se envio correctamente");
+                } else {
+                    exito();
+                }
+                $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+                setTimeout(function () { $('#divMail').modal('hide'); }, 25);
+
+            },
+            error: function (msg) {
+                alertCustom('Ocurrió un error en el servidor al intentar enviar el mensaje. Por favor, inténtelo nuevamente.');
+                $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+            }
+        });
+    }
 };
 
 flagCargaPlugMaps = false;

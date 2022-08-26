@@ -35,8 +35,13 @@ Public Class NVMDOCV : Implements IHttpHandler
 
     Dim p_ESTADO_IND As String
     Dim p_CLIE_DOID_NRO As String
+
     'CORREO
     Dim NREMITENTE, DESTINATARIOS, ASUNTO, MENSAJE As String
+
+    'WHATSAPP CLOUD API
+    Dim RECIPIENT_PHONE_NUMBER, MENSAJEWHATSAPP, w_NAME As String
+
     'PDF 
     Dim imagen As String
 
@@ -64,7 +69,7 @@ Public Class NVMDOCV : Implements IHttpHandler
     Dim dt As DataTable
 
     Dim res, cod, msg As String
-    Dim resb As New StringBuilder
+    Dim resb, resb_media As New StringBuilder
     Dim resArray As Array
     Dim GRUP_PROD, SUBGRUPO_CODE As String
     Dim MARCA_CODE As String
@@ -192,6 +197,11 @@ Public Class NVMDOCV : Implements IHttpHandler
         SUBGRUPO_CODE = context.Request("SUBGRUPO_CODE")
         MARCA_CODE = context.Request("MARCA_CODE")
         'USADO EN PDF: p_CTLG_CODE, p_USUA_ID
+
+        'WHATSAPP CLOUD API
+        RECIPIENT_PHONE_NUMBER = context.Request("RECIPIENT_PHONE_NUMBER")
+        MENSAJEWHATSAPP = context.Request("MENSAJEWHATSAPP")
+        w_NAME = context.Request("w_NAME")
 
         p_ALMACENABLE = context.Request("p_ALMACENABLE")
 
@@ -1845,9 +1855,12 @@ Public Class NVMDOCV : Implements IHttpHandler
                     'CAMBIAR EL primer NREMITENTE POR EL NOMBRE DEL USUARIO
                     'If Not My.Computer.FileSystem.FileExists(HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf") Then
                     ' email.enviar(NREMITENTE, NREMITENTE, DESTINATARIOS, ASUNTO, MENSAJE)
-                    GenerarPDF(p_CODE)
-                    'End If
                     Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf"
+                    If File.Exists(datoAj) Then
+                    Else
+                        GenerarPDF(p_CODE)
+                        datoAj = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf"
+                    End If
 
                     MENSAJE += "<br/>"
                     Dim documento As String = ""
@@ -1862,6 +1875,23 @@ Public Class NVMDOCV : Implements IHttpHandler
 
                     email.enviar(NREMITENTE, NREMITENTE, DESTINATARIOS, ASUNTO, MENSAJE, datoAj)
 
+                Case "whatsapp"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    Dim enviarMensajeWhatsapp As New Nomade.Mail.NomadeMail("Bn")
+
+                    Dim f_Name As String = w_NAME.Substring(0, w_NAME.IndexOf(" "))
+                    Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf"
+
+                    'Debido a que el usuario puede usar enviarMail y enviarWhatsapp al mismo tiempo, y ambos usan el mismo pdf, se asume por defecto que el pdf existe
+
+                    If File.Exists(datoAj) Then
+                    Else
+                        GenerarPDF(p_CODE)
+                        datoAj = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf"
+                    End If
+
+                    enviarMensajeWhatsapp.enviarMultimedia(RECIPIENT_PHONE_NUMBER, datoAj, p_CODE)
+                    enviarMensajeWhatsapp.enviarMensaje(RECIPIENT_PHONE_NUMBER, MENSAJEWHATSAPP, p_CODE, f_Name, datoAj)
 
                 Case "GET_DOC_VTA"
                     context.Response.ContentType = "application/json; charset=utf-8"

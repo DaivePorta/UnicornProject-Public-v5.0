@@ -1,11 +1,11 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NVMDOCS.ascx.vb" Inherits="vistas_NV_NVMDOCS" %>
 <style type="text/css">
-    #divMail, #divBuscarDoc, #divBuscarDocOS, #_buscarDocumento, #divLetras, #divAnticipos,#mapaModal {
+    #divMail, #divBuscarDoc, #divWhatsapp, #divBuscarDocOS, #_buscarDocumento, #divLetras, #divAnticipos,#mapaModal {
         margin-left: 0px !important;
     }
 
     @media (max-width:900px) {
-        #divMail, #divBuscarDoc, #divBuscarDocOS, #_buscarDocumento, #divLetras, #divAnticipos,#mapaModal {
+        #divMail, #divBuscarDoc, #divWhatsapp, #divBuscarDocOS, #_buscarDocumento, #divLetras, #divAnticipos,#mapaModal {
             left: 5% !important;
             width: 90% !important;
         }
@@ -114,6 +114,7 @@
             <div class="portlet-title">
                 <h4><i class="icon-reorder"></i>DOCUMENTO VENTA SERVICIOS</h4>
                 <div class="actions">
+                    <a class="btn green hidden" id="btnWhatsapp"><i class="icon-phone"></i>&nbsp;Whatsapp</a>
                     <a class="btn purple hidden" id="btnMail"><i class="icon-envelope"></i>&nbsp;Enviar Mail</a>
                     <a class="btn black btnImprimir" href="javascript:ImprimirDctoVenta();"; style="display: none;"><i class="icon-print"></i>&nbsp;Imprimir</a>
                     <a class="btn green" onclick="javascript:NuevaVenta();"><i class="icon-plus"></i>&nbsp;Nuevo</a>
@@ -2128,6 +2129,43 @@
     </div>
     <div class="modal-footer">
         <button class="btn green" type="button" onclick="enviarCorreo()" id="btnEnviarCorreo"><i class="icon-plane"></i>&nbsp;Enviar</button>
+    </div>
+</div>
+
+<div id="divWhatsapp" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 60%; left: 20%;" aria-hidden="true">
+    <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
+        <button type="button" class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
+            <i class="icon-remove"></i>
+        </button>
+        <h4 id="divWhatsapp_title"><i class="icon-pencil" style="line-height: initial;"></i>&nbsp;Redactar Whatsapp</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row-fluid">
+            <div class="span12" id="divWhatsapp_body">
+                <div class="row-fluid">
+                    <div class="span2">
+                        <div class="control-group">
+                            <label class="control-label">Para:</label>
+                        </div>
+                    </div>
+                    <div class="span10">
+                        <div class="control-group">
+                            <div class="controls">
+                                <select multiple class="span12" id="cboClienteWhatsapp"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12" style="padding: 10px; border: thin inset">
+                        <textarea style="border: none; width: 99%; height: 80px" placeholder="Escriba aquí su mensaje" id="txtContenidoWhatsapp"></textarea><hr style="margin: 8px 0px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn green" type="button" onclick="enviarWhatsapp()" id="btnEnviarWhatsapp"><i class="icon-plane"></i>&nbsp;Enviar</button>
     </div>
 </div>
 
