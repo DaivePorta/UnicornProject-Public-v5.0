@@ -150,12 +150,14 @@ var NALAPES = function () {
 
                                     $('#btnGenerarAsiento').click();
                                 }
-                                if ($('#hfElectronicoInd').val() == 'S') {
-                                    $("#hfCodigoNaminsa").val($('#txtNumDctoAlmc').val());
-                                    var miCodigoQR = new QRCode("codigoQR");
-                                    miCodigoQR.makeCode(data[0].DATOS_QR);
-                                    setTimeout(guardarQR, 0.0000000000000001);
-                                }    
+                                //if ($('#hfElectronicoInd').val() == 'S') {
+                                //    $("#hfCodigoNaminsa").val($('#txtNumDctoAlmc').val());
+                                //    var miCodigoQR = new QRCode("codigoQR");
+                                //    miCodigoQR.makeCode(data[0].DATOS_QR);
+                                //    $('#codigoQR').hide();
+                                //    //setTimeout(guardarQR, 0.0000000000000001);
+                                //    setTimeout(guardarQR, 500);
+                                //}    
                                 listarMovimientos();
                                 $("#divDetalles").modal('hide');
                             }

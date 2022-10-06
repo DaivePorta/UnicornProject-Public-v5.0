@@ -9112,13 +9112,14 @@ function CompletarDctoVenta() {
                                     if ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) {
                                         $("#txt_comentario").val("Orden de Servicio");
                                     }
-                                    let formato = $("#cboSerieDocVenta :selected").attr("data-formato");//DPORTA
-                                    if (formato == 'E') {//DPORTA
-                                        var miCodigoQR = new QRCode("codigoQR");
-                                        miCodigoQR.makeCode(datos[0].DATOS_QR);
-                                        //$('#codigoQR').hide();
-                                        setTimeout(guardarQR, 0.0000000000000001);
-                                    }
+                                    //let formato = $("#cboSerieDocVenta :selected").attr("data-formato");//DPORTA
+                                    //if (formato == 'E') {//DPORTA
+                                    //    var miCodigoQR = new QRCode("codigoQR");
+                                    //    miCodigoQR.makeCode(datos[0].DATOS_QR);
+                                    //    $('#codigoQR').hide();
+                                    //    //setTimeout(guardarQR, 0.0000000000000001);
+                                    //    setTimeout(guardarQR, 500);
+                                    //}
                                     BloquearCampos();
                                     $("#rbRedondeo,#rbDescuento,#rbAplicaDescuento").attr("disabled", "disabled");
                                     if (prmtACON == "SI") {
@@ -9374,7 +9375,8 @@ function BuscarDocumentoOrigen(btn) {
                         tbody.html('');
                         if (datos != null) {
                             for (var i = 0; i < datos.length; i++) {
-                                tbody.append('<tr><td style="text-align: center">' + datos[i].CODIGO + '</td><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].CLIENTE + '</td><td style="text-align: center">' + datos[i].VALOR_TOTAL_OS + '</td><td style="text-align: center">' + datos[i].FECHA + '</td><td style="text-align: center">' + datos[i].NOMBRE_ABOGADO + '</td><td style="text-align: center">' + datos[i].PIDM_ABOGADO + '</td></tr>');
+                                //tbody.append('<tr><td style="text-align: center">' + datos[i].CODIGO + '</td><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].CLIENTE + '</td><td style="text-align: center">' + datos[i].VALOR_TOTAL_OS + '</td><td style="text-align: center">' + datos[i].NOMBRE_ABOGADO + '</td><td style="text-align: center">' + datos[i].FECHA + '</td><td style="text-align: center">' + datos[i].PIDM_ABOGADO + '</td></tr>');
+                                tbody.append('<tr><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].CLIENTE + '</td><td style="text-align: center">' + datos[i].VALOR_TOTAL_OS + '</td><td style="text-align: center">' + datos[i].NOMBRE_ABOGADO + '</td><td style="text-align: center">' + datos[i].FECHA + '</td><td style="text-align: center">' + datos[i].PIDM_ABOGADO + '</td></tr>');
                             }
                         }
                     },
@@ -9383,7 +9385,7 @@ function BuscarDocumentoOrigen(btn) {
                     }
                 });
 
-                tabla = $('#tblDocumentosOS').dataTable({ info: false, responsive: true, order: [[0, 'desc']], ordering: false });
+                tabla = $('#tblDocumentosOS').dataTable({ info: false, responsive: true, order: [[0, 'desc']], ordering: true });
                 $(tbody).css('cursor', 'pointer');
 
                 $('#tblDocumentosOS_wrapper').find(':last').remove();
@@ -9406,12 +9408,12 @@ function BuscarDocumentoOrigen(btn) {
                     var indice = tabla.fnGetPosition(this);
                     var fila = tabla.fnGetData(indice);
                     try {
-                        var cod_doc = fila[0];
-                        var nro_doc = fila[1].split('-');
+                        var nro_doc = fila[0].split('-');
+                        var cod_doc = nro_doc[1];
                         var serie = nro_doc[0];
                         var nro = nro_doc[1];
-                        var clinteRef = fila[2];
-                        var pidm_abogado = fila[6];
+                        var clinteRef = fila[1];
+                        var pidm_abogado = fila[5];
 
                         if (typeof cod_doc != "undefined") {
 
@@ -10684,15 +10686,14 @@ function ActualizaPrecioEstandarDetalle(campo, valor, indice) {
             precioMinimo = valor;
         }
 
-
         //if (parseFloat($(campo).val()) < parseFloat(precioMinimo) || $(campo).val().trim() == "") {
-        //    infoCustom2("El valor ingresado no puede ser menor al precio mínimo: " + parseFloat(precioMinimo).toFixed(2))
-        //    $(campo).val(parseFloat(precioMinimo).toFixed(2));
+        //    infoCustom2("El valor ingresado no puede ser menor al precio mínimo: " + parseFloat(precioMinimo).toFixed(prmtDIGP))
+        //    $(campo).val(parseFloat(precioMinimo).toFixed(prmtDIGP));
         //    $(campo).focus();
         //} else {
         //var factor = calcula_factor_conversion(detallesVenta[indice].CODE_UNIDAD_PROD_BASE, detallesVenta[indice].CODE_UNIDAD) // factor conversion unidades
         //Calcular 01-TOTAL BRUTO, 02-DESCUENTO, 03-TOTAL NETO, 04-DETRACCION,05-ISC
-        var totalBruto = (parseFloat(detallesVenta[indice].CANTIDAD)) * parseFloat(valor);
+        var totalBruto = (parseFloat(detallesVenta[indice].CANTIDAD)) * parseFloat(valor).toFixed(prmtDIGP);
         var montoDescuento = 0;
 
         if ($("#cbo_Sucursal :selected").attr("data-exonerado") == "SI") {
@@ -10708,10 +10709,10 @@ function ActualizaPrecioEstandarDetalle(campo, valor, indice) {
                 montoDescuento = (totalBruto / (decimalIGV + 1)) * (parseFloat(detallesVenta[indice].DESCUENTO) / 100);
             }
         }
-            /*00*/detallesVenta[indice].PRECIO_DETALLE = parseFloat(valor).toFixed(2);
-            /*01*/detallesVenta[indice].TOTAL_BRUTO = totalBruto.toFixed(2);
-            /*02*/detallesVenta[indice].MONTO_DESCUENTO = montoDescuento.toFixed(2);
-            /*03*/detallesVenta[indice].TOTAL_NETO = (totalBruto - montoDescuento).toFixed(2);
+            /*00*/detallesVenta[indice].PRECIO_DETALLE = parseFloat(valor).toFixed(prmtDIGP);
+            /*01*/detallesVenta[indice].TOTAL_BRUTO = totalBruto.toFixed(prmtDIGP);
+            /*02*/detallesVenta[indice].MONTO_DESCUENTO = montoDescuento.toFixed(prmtDIGP);
+            /*03*/detallesVenta[indice].TOTAL_NETO = (totalBruto - montoDescuento).toFixed(prmtDIGP);
         var totalNeto = totalBruto - montoDescuento;
         if (tipoDocCode == '0001' || tipoDocCode == '0003' || tipoDocCode == '0012') { //DPORTA SIN-IMPUESTOS
             var decimalIGV = parseFloat($("#hfIMPUESTO").val()) / 100;
@@ -10722,19 +10723,19 @@ function ActualizaPrecioEstandarDetalle(campo, valor, indice) {
         //if (tipoDocCode == '0001' || tipoDocCode == '0003' || tipoDocCode == '0012') {
         if (tipoDocCode == '0001') { //DPORTA SIN-IMPUESTOS
             detraccion = parseFloat(detallesVenta[indice].DETRACCION) * (totalNeto);
-                /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(2);
+                /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(prmtDIGP);
         } else {
             detraccion = parseFloat(0) * (totalNeto);
-                /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(2);
+                /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(prmtDIGP);
         }
 
         if ($("#cbo_Sucursal :selected").attr("data-exonerado") == "SI") {
             isc = parseFloat(detallesVenta[indice].ISC / 100) * (totalNeto); //Total neto Sin IGV
-                /*05*/ detallesVenta[indice].MONTO_ISC = isc.toFixed(2);
+                /*05*/ detallesVenta[indice].MONTO_ISC = isc.toFixed(prmtDIGP);
 
         } else {
             isc = parseFloat(detallesVenta[indice].ISC / 100) * (totalNeto / (decimalIGV + 1)); //Total neto Sin IGV
-                /*05*/detallesVenta[indice].MONTO_ISC = isc.toFixed(2);
+                /*05*/detallesVenta[indice].MONTO_ISC = isc.toFixed(prmtDIGP);
         }
 
         ListarTablaDetalles(ObtenerTablaDetalles());
@@ -10774,10 +10775,10 @@ function ActualizaPrecioEstandarDetalle(campo, valor, indice) {
 //                    montoDescuento = (totalBruto / (decimalIGV + 1)) * (parseFloat(detallesVenta[indice].DESCUENTO) / 100);
 //                }
 //            }
-//            /*00*/detallesVenta[indice].CANTIDAD = parseFloat(valor).toFixed(2);
-//            /*01*/detallesVenta[indice].TOTAL_BRUTO = totalBruto.toFixed(2);
-//            /*02*/detallesVenta[indice].MONTO_DESCUENTO = montoDescuento.toFixed(2);
-//            /*03*/detallesVenta[indice].TOTAL_NETO = (totalBruto - montoDescuento).toFixed(2);
+//            /*00*/detallesVenta[indice].CANTIDAD = parseFloat(valor).toFixed(prmtDIGP);
+//            /*01*/detallesVenta[indice].TOTAL_BRUTO = totalBruto.toFixed(prmtDIGP);
+//            /*02*/detallesVenta[indice].MONTO_DESCUENTO = montoDescuento.toFixed(prmtDIGP);
+//            /*03*/detallesVenta[indice].TOTAL_NETO = (totalBruto - montoDescuento).toFixed(prmtDIGP);
 //            var totalNeto = totalBruto - montoDescuento;
 //if (tipoDocCode == '0001' || tipoDocCode == '0003' || tipoDocCode == '0012') { //DPORTA SIN-IMPUESTOS
 //    var decimalIGV = parseFloat($("#hfIMPUESTO").val()) / 100;
@@ -10788,19 +10789,19 @@ function ActualizaPrecioEstandarDetalle(campo, valor, indice) {
 //          if (tipoDocCode == '0001' || tipoDocCode == '0003' || tipoDocCode == '0012') {
 //          if (tipoDocCode == '0001') { //DPORTA SIN-IMPUESTOS
 //              detraccion = parseFloat(detallesVenta[indice].DETRACCION) * (totalNeto);
-//                /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(2);
+//                /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(prmtDIGP);
 //          } else {
 //               detraccion = parseFloat(0) * (totalNeto);
-//                /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(2);
+//                /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(prmtDIGP);
 //          }
 
 //            if ($("#cbo_Sucursal :selected").attr("data-exonerado") == "SI") {
 //                isc = parseFloat(detallesVenta[indice].ISC / 100) * (totalNeto); //Total neto Sin IGV
-//                /*05*/ detallesVenta[indice].MONTO_ISC = isc.toFixed(2);
+//                /*05*/ detallesVenta[indice].MONTO_ISC = isc.toFixed(prmtDIGP);
 
 //            } else {
 //                isc = parseFloat(detallesVenta[indice].ISC / 100) * (totalNeto / (decimalIGV + 1)); //Total neto Sin IGV
-//                /*05*/detallesVenta[indice].MONTO_ISC = isc.toFixed(2);
+//                /*05*/detallesVenta[indice].MONTO_ISC = isc.toFixed(prmtDIGP);
 //            }
 
 //            ListarTablaDetalles(ObtenerTablaDetalles()); 
@@ -11240,6 +11241,7 @@ function enviarCorreo() {
 //WHATSAPP
 
 function cargarTelefonos() {
+    REGEX_TELE = "([0-9]*)"
     $.ajax({
         type: 'post',
         url: 'vistas/na/ajax/naminsa.ashx?OPCION=LTELEFONOS',
@@ -11270,6 +11272,26 @@ function cargarTelefonos() {
                         '</div>';
                 }
             },
+            createFilter: function (input) {
+                var match, regex;
+                regex = new RegExp('^' + REGEX_TELE + '$', 'i');
+                match = input.match(regex);
+                if (match) return !this.options.hasOwnProperty(match[0]);
+                // name phone_number
+                regex = new RegExp('^([^<]*)\<' + REGEX_TELE + '\>$', 'i');
+                match = input.match(regex);
+                if (match) return !this.options.hasOwnProperty(match[2]);
+                return false;
+            },
+            create: function (input) {
+                if ((new RegExp('^' + REGEX_TELE + '$', 'i')).test(input)) {
+                    return { telefono: input };
+                }
+                var match = input.match(new RegExp('^([^<]*)\<' + REGEX_TELE + '\>$', 'i'));
+                if (match) { return { telefono: match[2], name: $.trim(match[1]) }; }
+                alert('Invalid number.');
+                return false;
+            }
         });
         $('.selectize-control').css('margin-left', '0px').css('margin-bottom', '15px');
         $('.selectize-dropdown').css('margin-left', '0px');
@@ -11286,19 +11308,16 @@ function cargarTelefonos() {
 function enviarWhatsapp() {
 
     var telefonos = $("#cboClienteWhatsapp").val();
-    var nombres = $("#cboClienteWhatsapp").text();
 
     if (vErrors(['cboClienteWhatsapp'])) {
         $('#btnEnviarWhatsapp').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
         RECIPIENT_PHONE_NUMBER = telefonos.toString();
-        w_NAME = nombres.toString();
         $.ajax({
             type: "post",
             url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=whatsapp" +
                 "&p_CODE=" + $('#txtNumDctoComp').val() +
                 "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
                 "&RECIPIENT_PHONE_NUMBER=" + RECIPIENT_PHONE_NUMBER +
-                "&w_NAME=" + w_NAME +
                 "&MENSAJEWHATSAPP=" + $('#txtContenidoWhatsapp').val(),
             contentType: "application/json;",
             dataType: false,

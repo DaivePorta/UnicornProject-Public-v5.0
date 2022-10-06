@@ -373,7 +373,7 @@ var NOLDOCC = function () {
         }
         ajaxProducto = $.ajax({
             type: "post",
-            url: "vistas/no/ajax/NOMDOCC.ashx?OPCION=LISTAR_PRODUCTOS&CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/na/ajax/NAMINSA.ashx?OPCION=LISTAR_PRODUCTOS&CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: true,
@@ -3865,7 +3865,7 @@ var cargarProductos = function () {
     //Bloquear("input_desc_prod");
     $.ajax({
         type: "post",
-        url: "vistas/no/ajax/nomdocc.ashx?OPCION=LISTAR_PRODUCTOS&CTLG_CODE=" + $('#cbo_Empresa').val(),
+        url: "vistas/na/ajax/naminsa.ashx?OPCION=LISTAR_PRODUCTOS&CTLG_CODE=" + $('#cbo_Empresa').val(),
         datatype: "json",
         async: true
     }).done(function (data) {

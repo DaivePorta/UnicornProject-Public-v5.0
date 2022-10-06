@@ -198,7 +198,7 @@
                                 <tr align="center">
                                     <th></th>
                                     <th>Documento</th>
-                                    <th>Fecha</th>
+                                    <th>Fecha Emisión</th>
                                     <th>Monto S/.</th>
                                     <th>Monto US$.</th>
                                     <th>Deuda S/.</th>

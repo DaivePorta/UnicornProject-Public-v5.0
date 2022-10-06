@@ -47,7 +47,7 @@ Public Class CAMNOCL : Implements IHttpHandler
     Dim caNotaCredito As New Nomade.CA.NotaCredito("Bn")
     Dim ncFactura As New Nomade.NC.NCFactura("Bn")
     Dim gesPro As New Nomade.NM.NMGestionProductos("Bn")
-
+    Dim codigoQR As New Nomade.Impresion.CodigoQR("Bn")
 
     Dim dt As DataTable
     Dim res, cod, msg As String
@@ -247,10 +247,6 @@ Public Class CAMNOCL : Implements IHttpHandler
                 Case "9" 'Registrar nota de credito
                     context.Response.ContentType = "application/json; charset=utf-8"
                     Dim array As Array
-
-
-
-
                     array = caNotaCredito.CrearNotaCreditoMotivo(p_NUM_SEQ_DOC, p_ORIGEN_CODE, p_ORIGEN_TIPO_DOC, p_ORIGEN_IMPORTE, p_DESTINO_CODE,
                                                            p_DESTINO_TIPO_DOC, p_PERS_PIDM, p_CTLG_CODE, p_SCSL_CODE, p_COMPRA_VENTA_IND,
                                                            p_MONTO_TOTAL, p_ESTADO_USO, p_USUA_ID, "A", p_SERIE, p_NUMERO, p_ENTREGA_DESPACHO_ALMACEN, p_APLICA_DOC_REFERENCIA, p_CODIGO_CORRELATIVO,
@@ -260,7 +256,7 @@ Public Class CAMNOCL : Implements IHttpHandler
                         resb.Append("[")
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
-                        resb.Append("""DATOS_QR"" :" & """" & array(1).ToString & """,")
+                        'resb.Append("""DATOS_QR"" :" & """" & array(1).ToString & """,")
                         resb.Append("""SECUENCIA"" :" & """" & array(2).ToString & """")
                         resb.Append("}")
                         resb.Append(",")
@@ -268,6 +264,7 @@ Public Class CAMNOCL : Implements IHttpHandler
                         resb = resb.Replace(",{}", String.Empty)
                         resb.Append("]")
                     End If
+
                     res = resb.ToString()
                 Case "10" 'Registrar detalle nota de credito
                     context.Response.ContentType = "application/text; charset=utf-8"
@@ -397,6 +394,11 @@ Public Class CAMNOCL : Implements IHttpHandler
                     If Not dt Is Nothing Then
                         res = Utilities.DataTableToJSON(dt)
                     End If
+
+                Case "GEN_ASIENTO"
+                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                    res = oCTGeneracionAsientos.GenerarAsientoNotaCreditoCliente(p_CODE, p_USUA_ID)
+
                 Case Else
 
 
@@ -922,8 +924,9 @@ Public Class CAMNOCL : Implements IHttpHandler
         hw.Parse(New StringReader(HTML.ToString))
         document.Close()
 
-        If dtCabecera.Rows(0)("IND_ELECTRONICO") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
-            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(dtCabecera(0)("IMAGEN_QR").ToString)) 'SOLO PARA ´DOCS ELECTRÓNICOS
+        'If dtCabecera.Rows(0)("IND_ELECTRONICO") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
+        If dtCabecera.Rows(0)("IND_ELECTRONICO") = "S" And p_CODE <> "" And p_CODE <> "undefined" Then
+            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(codigoQR.fnGetCodigoQR(p_CODE))) 'SOLO PARA ´DOCS ELECTRÓNICOS
         Else
             imgC(FilePath, imgS, imgI)
         End If
@@ -937,7 +940,8 @@ Public Class CAMNOCL : Implements IHttpHandler
         If base64string = "" Then
             b64 = ""
         Else
-            b64 = base64string.Split(",")(1).Replace(" ", "+") 'Con el split se Toma lo que corresponde al base64 y luego se reemplaza
+            'b64 = base64string.Split(",")(1).Replace(" ", "+") 'Con el split se Toma lo que corresponde al base64 y luego se reemplaza
+            b64 = base64string
         End If
 
         Dim b() As Byte

@@ -1586,12 +1586,17 @@ function GrabarNotaCredito() {
                            $("#cboMotivo").attr('disabled', true);
                            $("#chkAplicar").attr('disabled', true);
                            $("#txtGlosa").attr('disabled', true);
-                           var miCodigoQR = new QRCode("codigoQR");
-                           miCodigoQR.makeCode(datos[0].DATOS_QR);
-                           setTimeout(guardarQR, 0.0000000000000001);
+                           //var miCodigoQR = new QRCode("codigoQR");
+                           //miCodigoQR.makeCode(datos[0].DATOS_QR);
+                           //$('#codigoQR').hide();
+                           ////setTimeout(guardarQR, 0.0000000000000001);
+                           //setTimeout(guardarQR, 500);
                            $("#divTotales").slideDown();
                            $("#btnImprimirDcto").removeAttr("style");
                            //$("#btnEFac").removeClass("hidden");
+
+
+                           GenerarAsiento(datos[0].CODIGO);
                        }
 
                    }
@@ -1610,6 +1615,35 @@ function GrabarNotaCredito() {
         }
     }
 }
+
+
+var GenerarAsiento = function (codNC) { //dporta
+    var data = new FormData();
+    data.append("OPCION", "GEN_ASIENTO");
+    data.append("p_CODE", codNC);
+    data.append("p_USUA_ID", $("#ctl00_txtus").val());
+
+    Bloquear("ventana");
+    $.ajax({
+        type: "POST",
+        url: "vistas/CA/ajax/CAMNOCL.ashx",
+        contentType: false,
+        data: data,
+        processData: false,
+        async: false,
+        success: function (response) {
+            Desbloquear("ventana");
+            $("#hfCodAsiento").val(response);
+            //$("#divGenAsiento").hide();
+
+        },
+        error: function (msg) {
+            Desbloquear("ventana");
+            noexitoCustom("No se pudo generar el asiento.");
+        }
+    });
+    Desbloquear("ventana");
+};
 
 function guardarQR() {
     //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 

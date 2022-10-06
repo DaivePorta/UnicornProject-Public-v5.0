@@ -10,6 +10,8 @@ Public Class CALNOCR : Implements IHttpHandler
 
     Dim OPCION, p_CTLG_CODE, p_SCSL_CODE, p_COMPRA_VENTA_IND As String
     Dim ncNotaCredito As New Nomade.CA.NotaCredito("Bn")
+    Dim codigoQR As New Nomade.Impresion.CodigoQR("Bn")
+
     Dim p_NOCC_CODE, p_NOCC_NUM_SEQ_DOC As String
     Dim p_ENTREGA_DESPACHO_ALMACEN As String
     Dim p_ESTADO, p_DESDE, p_HASTA As String
@@ -188,7 +190,9 @@ Public Class CALNOCR : Implements IHttpHandler
 
             Dim motivoSunat As String = dtCabecera.Rows(0)("MOTIVO_SUNAT") 'Código motivo SUNAT   
             'LA RUTA QUE VA A TENER
-            rutaQr = dtCabecera.Rows(0)("IMAGEN_QR")
+            'rutaQr = dtCabecera.Rows(0)("IMAGEN_QR")
+            rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE)
+
             If dtCabecera.Rows(0)("COMPRA_VENTA") = "V" Then
                 tabla.Append("<table id='tblDctoImprimir1' class='tblDctoImprimir' border='" + border + "' style='width: 100%;margin-bottom:" + marginBottom + "' cellpadding='" + cellpadding + "'  align='center'>")
                 tabla.Append("<tbody>")

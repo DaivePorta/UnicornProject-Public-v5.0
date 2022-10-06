@@ -58,7 +58,7 @@ Public Class NVMDOVS : Implements IHttpHandler
     Dim nvVenta As New Nomade.NV.NVVenta("Bn")
     Dim nmGestionPrecios As New Nomade.NM.NMGestionPrecios("Bn")
     Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
-
+    Dim codigoQR As New Nomade.Impresion.CodigoQR("Bn")
 
     Dim dt As DataTable
 
@@ -259,7 +259,7 @@ Public Class NVMDOVS : Implements IHttpHandler
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
                         resb.Append("""SECUENCIA"" :" & """" & array(1).ToString & """,")
-                        resb.Append("""DATOS_QR"" :" & """" & array(2).ToString & """,")
+                        'resb.Append("""DATOS_QR"" :" & """" & array(2).ToString & """,")
                         resb.Append("""MSGERROR"" :" & """" & msgError & """")
                         resb.Append("}")
                         resb.Append("]")
@@ -510,7 +510,8 @@ Public Class NVMDOVS : Implements IHttpHandler
             pie_pagina = dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString
 
             'LA RUTA QUE VA A TENER
-            rutaQr = dtCabecera(0)("IMAGEN_QR").ToString
+            'rutaQr = dtCabecera(0)("IMAGEN_QR").ToString
+            rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE)
 
             tabla.Append("<table id='tblDctoImprimir' border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'>")
             tabla.Append("<thead>")
@@ -528,7 +529,7 @@ Public Class NVMDOVS : Implements IHttpHandler
             '    End If
             'Else
             '    If Not rutaLogo = "" Then
-            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 80px' src='{0}'></th> </tr>", rutaLogo)
+            tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'><img style='max-height: 95px' src='{0}'></th> </tr>", rutaLogo) 'Cambio de 80 px a 95 px
             '    End If
             'End If
 
@@ -549,28 +550,28 @@ Public Class NVMDOVS : Implements IHttpHandler
             tabla.AppendFormat("<tr><th style='text-align: center' colspan='4'>{0}</th></tr>", dtCabecera.Rows(0)("NUM_DCTO"))
             tabla.Append("</thead>")
 
-            tabla.Append("<tbody>")
+            tabla.Append("<tbody style='table-layout: fixed;overflow-x:auto;'>") 'Se agrego table-layout: fixed para que mantenga la misma distancia independiente del tamaño de la hoja
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
-            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Cliente<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("RAZON_SOCIAL"))
-            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>{0}<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{1}</td></tr>", dtCabecera.Rows(0)("CLIE_DCTO_DESC"), dtCabecera.Rows(0)("CLIE_DCTO_NRO"))
-            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Dirección<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DIRECCION_CLIENTE"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;width: 95px;'><strong>Cliente<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("RAZON_SOCIAL"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;width: 95px;'><strong>{0}<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{1}</td></tr>", dtCabecera.Rows(0)("CLIE_DCTO_DESC"), dtCabecera.Rows(0)("CLIE_DCTO_NRO"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;width: 95px;'><strong>Dirección<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DIRECCION_CLIENTE"))
             'If dtCabecera.Rows(0)("TIPO_DCTO") = "0012" Then
             '    tabla.AppendFormat("<tr><td  style='vertical-align: top;'><strong>Nro Maq<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
             'Else
             '    tabla.AppendFormat("<tr><td  style='vertical-align: top;'><strong>Autorización<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("IMPR_SERIE"))
             'End If
-            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Sucursal<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DESC_SUCURSAL"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;width: 95px;'><strong>Sucursal<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DESC_SUCURSAL"))
             If exoneradaInd = "S" Then
                 tabla.Append("<tr><td></td><td colspan='3'>(Exonerado)</td></tr>")
             End If
-            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Vendedor<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("VENDEDOR_USUA_ID")) 'VENDEDOR
-            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Condición pago<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DESC_MODO_PAGO")) 'Modo de pago
-            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Fecha Emisión<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("EMISION")) 'Feha y Hora
-            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Fecha Venc.<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("VENCIMIENTO")) 'Feha Vencimiento
+            tabla.AppendFormat("<tr><td style='vertical-align: top;width: 95px;'><strong>Vendedor<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("VENDEDOR_USUA_ID")) 'VENDEDOR
+            tabla.AppendFormat("<tr><td style='vertical-align: top;width: 95px;'><strong>Condición pago<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DESC_MODO_PAGO")) 'Modo de pago
+            tabla.AppendFormat("<tr><td style='vertical-align: top;width: 95px;'><strong>Fecha Emisión<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("EMISION")) 'Feha y Hora
+            tabla.AppendFormat("<tr><td style='vertical-align: top;width: 95px;'><strong>Fecha Venc.<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("VENCIMIENTO")) 'Feha Vencimiento
             If dtCabecera.Rows(0)("MOPA") = "0002" Then
-                tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Cuotas<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("CUOTAS")) 'Cuotas
+                tabla.AppendFormat("<tr><td style='vertical-align: top;width: 95px;'><strong>Cuotas<span style='float:right'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("CUOTAS")) 'Cuotas
             End If
-            tabla.AppendFormat("<tr><td style='vertical-align: top;'><strong>Glosa<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("GLOSA")) 'GLOSA
+            tabla.AppendFormat("<tr><td style='vertical-align: top;width: 95px;'><strong>Glosa<span style='float:right;clear:both;'>:</span></strong></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("GLOSA")) 'GLOSA
 
             tabla.Append("</tbody></table>")
 
@@ -691,65 +692,67 @@ Public Class NVMDOVS : Implements IHttpHandler
             End If
 
             tabla.Append("</tbody></table>")
-
             tabla.Append("<table border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'><tbody>")
-            If incIgv = "S" Then
-                tabla.Append("<tr style='border-top: 1px dashed black;'>")
-                tabla.AppendFormat("<td colspan='3'><strong>Total Descuento<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
-                tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("DESCUENTO"))
+            If (dtCabecera.Rows(0)("TIPO_DCTO") <> "0101") Then
+                If incIgv = "S" Then
+                    tabla.Append("<tr style='border-top: 1px dashed black;'>")
+                    tabla.AppendFormat("<td colspan='3'><strong>Total Descuento<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                    tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("DESCUENTO"))
+                    tabla.Append("</tr>")
+
+                    tabla.Append("<tr>")
+                    tabla.AppendFormat("<td colspan='3'><strong>SubTotal<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                    tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("VALOR"))
+                    tabla.Append("</tr>")
+                Else
+                    tabla.Append("<tr style='border-top: 1px dashed black;'>")
+                    tabla.AppendFormat("<td colspan='3'><strong>Total Descuento<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                    tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", Math.Round(totalDsctoSinIgv, 2))
+                    tabla.Append("</tr>")
+                    Dim baseImponible As Decimal = Math.Round(
+                        Decimal.Parse(dtCabecera.Rows(0)("IMPORTE_EXO")) +
+                        Decimal.Parse(dtCabecera.Rows(0)("IMPORTE_INA")) +
+                        Decimal.Parse(dtCabecera.Rows(0)("IMPORTE_GRA")), 2)
+
+                    tabla.Append("<tr>")
+                    tabla.AppendFormat("<td colspan='3'><strong>SubTotal</strong></td>")
+                    tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", baseImponible)
+                    tabla.Append("</tr>")
+
+                End If
+                tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+
+                tabla.Append("<tr>")
+                tabla.AppendFormat("<td colspan='3'><strong>Op. Exonerada<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE_EXO"))
                 tabla.Append("</tr>")
 
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td colspan='3'><strong>SubTotal<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
-                tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("VALOR"))
+                tabla.AppendFormat("<td colspan='3'><strong>Op. Inafecta<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE_INA"))
                 tabla.Append("</tr>")
-            Else
-                tabla.Append("<tr style='border-top: 1px dashed black;'>")
-                tabla.AppendFormat("<td colspan='3'><strong>Total Descuento<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
-                tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", Math.Round(totalDsctoSinIgv, 2))
+
+                'If dtCabecera.Rows(0)("CLIE_DCTO_SUNAT") != "06" and dtCabecera.Rows(0)("CLIE_DCTO_SUNAT") != "6" and True  Then
+                '    'Op Gravada incluye IGV y ocultar IGV en totales de venta 
+                'Else
+                '    'Op Gravada no incluye IGV y mostrar IGV en totales de venta  
+                'End If
+                tabla.Append("<tr>")
+                tabla.AppendFormat("<td colspan='3'><strong>Op. Gravada<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE_GRA"))
                 tabla.Append("</tr>")
-                Dim baseImponible As Decimal = Math.Round(
-                    Decimal.Parse(dtCabecera.Rows(0)("IMPORTE_EXO")) +
-                    Decimal.Parse(dtCabecera.Rows(0)("IMPORTE_INA")) +
-                    Decimal.Parse(dtCabecera.Rows(0)("IMPORTE_GRA")), 2)
 
                 tabla.Append("<tr>")
-                tabla.AppendFormat("<td colspan='3'><strong>SubTotal</strong></td>")
-                tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", baseImponible)
+                tabla.AppendFormat("<td colspan='3'><strong>I.S.C.<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("ISC"))
+                tabla.Append("</tr>")
+
+                tabla.Append("<tr>")
+                tabla.AppendFormat("<td colspan='3'><strong>I.G.V. (18%)<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IGV"))
                 tabla.Append("</tr>")
 
             End If
-            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
-
-            tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3'><strong>Op. Exonerada<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
-            tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE_EXO"))
-            tabla.Append("</tr>")
-
-            tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3'><strong>Op. Inafecta<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
-            tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE_INA"))
-            tabla.Append("</tr>")
-
-            'If dtCabecera.Rows(0)("CLIE_DCTO_SUNAT") != "06" and dtCabecera.Rows(0)("CLIE_DCTO_SUNAT") != "6" and True  Then
-            '    'Op Gravada incluye IGV y ocultar IGV en totales de venta 
-            'Else
-            '    'Op Gravada no incluye IGV y mostrar IGV en totales de venta  
-            'End If
-            tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3'><strong>Op. Gravada<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
-            tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE_GRA"))
-            tabla.Append("</tr>")
-
-            tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3'><strong>I.S.C.<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
-            tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("ISC"))
-            tabla.Append("</tr>")
-
-            tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3'><strong>I.G.V. (18%)<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
-            tabla.AppendFormat("<td colspan='1' style='text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IGV"))
-            tabla.Append("</tr>")
 
             tabla.Append("<tr>")
             tabla.AppendFormat("<td colspan='3'><strong>Importe Total<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
@@ -780,8 +783,10 @@ Public Class NVMDOVS : Implements IHttpHandler
                 tabla.AppendFormat("<td colspan='4'>Son: {0}</td>", importeTexto.Replace(".-", " (" + descMon + ")"))
             End If
             tabla.Append("</tr>")
-            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
 
+            If (dtCabecera.Rows(0)("TIPO_DCTO") <> "0101") Then
+                tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+            End If
 
             If dtCabecera.Rows(0)("DETRACCION_IND") = "S" Then
                 tabla.Append("<tr>")
@@ -819,11 +824,12 @@ Public Class NVMDOVS : Implements IHttpHandler
                 tabla.Append("</tr>")
             End If
 
-            tabla.Append("<tr>")
-            tabla.AppendFormat("<td colspan='3'><strong>Importe Neto a Pagar<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
-            tabla.AppendFormat("<td colspan='1' style='text-align: right;'><strong>{0}</strong></td>", dtCabecera.Rows(0)("IMPORTE"))
-            tabla.Append("</tr>")
-
+            If (dtCabecera.Rows(0)("TIPO_DCTO") <> "0101") Then
+                tabla.Append("<tr>")
+                tabla.AppendFormat("<td colspan='3'><strong>Importe Neto a Pagar<span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
+                tabla.AppendFormat("<td colspan='1' style='text-align: right;'><strong>{0}</strong></td>", dtCabecera.Rows(0)("IMPORTE"))
+                tabla.Append("</tr>")
+            End If
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
             tabla.Append("<tr style='border-top: 1px dashed black;'>")
@@ -836,6 +842,7 @@ Public Class NVMDOVS : Implements IHttpHandler
 
             tabla.Append("</tbody>")
             tabla.Append("</table>")
+
 
             tabla.Append("<table border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'><tbody>")
             tabla.Append("<tbody>")
@@ -1616,8 +1623,9 @@ Public Class NVMDOVS : Implements IHttpHandler
         hw.Parse(New StringReader(HTML.ToString))
         document.Close()
 
-        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
-            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(dtCabecera(0)("IMAGEN_QR").ToString)) 'SOLO PARA ´DOCS ELECTRÓNICOS
+        'If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
+        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And p_CODE <> "" And p_CODE <> "undefined" Then
+            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(codigoQR.fnGetCodigoQR(p_CODE))) 'SOLO PARA ´DOCS ELECTRÓNICOS
         Else
             imgC(FilePath, imgS, imgI)
         End If
@@ -1631,7 +1639,8 @@ Public Class NVMDOVS : Implements IHttpHandler
         If base64string = "" Then
             b64 = ""
         Else
-            b64 = base64string.Split(",")(1).Replace(" ", "+") 'Con el split se Toma lo que corresponde al base64 y luego se reemplaza
+            'b64 = base64string.Split(",")(1).Replace(" ", "+") 'Con el split se Toma lo que corresponde al base64 y luego se reemplaza
+            b64 = base64string
         End If
 
         Dim b() As Byte
@@ -2028,6 +2037,8 @@ Public Class NVMDOVS : Implements IHttpHandler
             tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IGV"))
             tabla.Append("</tr>")
 
+
+
             tabla.Append("<tr>")
             tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Importe Total <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'>{0}</td>", dtCabecera.Rows(0)("VALOR"))
@@ -2085,11 +2096,13 @@ Public Class NVMDOVS : Implements IHttpHandler
                 tabla.Append("</tr>")
             End If
 
+
             tabla.Append("<tr>")
             tabla.AppendFormat("<td colspan='3' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'><strong>Importe Neto a Pagar <span style='float:right;clear:both;'>{0}</span></strong></td>", mon)
             tabla.AppendFormat("<td colspan='1' style='font-size:8pt;font-family:Arial,sans-serif;text-align: right;'>{0}</td>", dtCabecera.Rows(0)("IMPORTE"))
             tabla.Append("<br>")
             tabla.Append("</tr>")
+
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")

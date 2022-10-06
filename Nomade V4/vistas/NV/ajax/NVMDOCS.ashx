@@ -319,7 +319,7 @@ Public Class NVMDOCS : Implements IHttpHandler
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
                         resb.Append("""SECUENCIA"" :" & """" & array(1).ToString & """,")
-                        resb.Append("""DATOS_QR"" :" & """" & array(2).ToString & """,")
+                        'resb.Append("""DATOS_QR"" :" & """" & array(2).ToString & """,")
                         resb.Append("""MSGERROR"" :" & """" & msgError & """")
                         resb.Append("}")
                         resb.Append("]")
@@ -415,19 +415,20 @@ Public Class NVMDOCS : Implements IHttpHandler
                                 resb.Append("[]")
                             End If
 
-                        Case "0009", "0050" 'GUIA SALIDA, REMISION REMITENTE---------------------
+                        Case "0009", "0050" 'REMISION REMITENTE, GUIA SALIDA ---------------------
                             dt = natipomov.lista_dcto_almacen(String.Empty, String.Empty, String.Empty, String.Empty, String.Empty, "S", CTLG_CODE, String.Empty, PIDM, TIPO_DCTO)
 
                             If Not (dt Is Nothing) Then
                                 resb.Append("[")
                                 For Each MiDataRow As DataRow In dt.Rows
-                                    If MiDataRow("COMPLETO") = "COMPLETO" And MiDataRow("ORGN") = "" And MiDataRow("ANULADO_IND") = "VIGENTE" And MiDataRow("TMOV_CODE") = "0001" Then
+                                    If MiDataRow("COMPLETO") = "COMPLETO" And MiDataRow("ORGN") = "" And MiDataRow("ANULADO_IND") = "VIGENTE" And MiDataRow("TMOV_CODE") = "0001" And MiDataRow("DESPACHADO") <> "S" Then
                                         resb.Append("{")
                                         resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
                                         resb.Append("""NRO_DOCUMENTO"" :" & """" & MiDataRow("REQC_NUM_SEQ_DOC").ToString & "-" & MiDataRow("REQC_CODE").ToString & """,")
                                         resb.Append("""NRO"":""" & MiDataRow("REQC_CODE").ToString & """,")
                                         resb.Append("""SERIE"" :" & """" & MiDataRow("REQC_NUM_SEQ_DOC").ToString & """,")
                                         resb.Append("""FECHA"" :" & """" & MiDataRow("FECHA_EMISION").ToString & """,")
+                                        resb.Append("""MONEDA"" :" & """" & MiDataRow("MONE_CODE").ToString & """,")
                                         resb.Append("""CLIENTE"" :" & """" & MiDataRow("RAZON_DEST").ToString & """")
                                         resb.Append("}")
                                         resb.Append(",")
@@ -619,7 +620,7 @@ Public Class NVMDOCS : Implements IHttpHandler
                                     resb.Append("""CONVERT_DETRACCION"":""" & MiDataRow("CONVERT_DETRACCION").ToString & """,")
                                     resb.Append("""CONVERT_ISC"":""" & MiDataRow("CONVERT_ISC").ToString & """,")
                                     resb.Append("""GLOSA"":""" & MiDataRow("GLOSA").ToString & """,")
-                                    resb.Append("""PROD_CODIGO_ALDOCSDNTIGUO"":""" & MiDataRow("PROD_CODIGO_ANTIGUO").ToString & """,")
+                                    resb.Append("""CODIGO_ANTIGUO"":""" & MiDataRow("PROD_CODIGO_ANTIGUO").ToString & """,")
                                     resb.Append("""SERIADO"":""" & MiDataRow("SERIADO_IND").ToString & """,")
                                     resb.Append("""TIPO_PRODUCTO"":""" & MiDataRow("TIPO_PRODUCTO").ToString & """,")
                                     resb.Append("""FECHA_ACTV"":""" & MiDataRow("FECHA_ACTV").ToString & """")
@@ -662,6 +663,14 @@ Public Class NVMDOCS : Implements IHttpHandler
                                     resb.Append("""CECC_CODE"" :" & """" & MiDataRow("CECC_CODE").ToString & """,")
                                     resb.Append("""CECD_CODE"" :" & """" & MiDataRow("CECD_CODE").ToString & """,")
                                     resb.Append("""APLIC_VALORES_IND"" :" & """" & MiDataRow("APLIC_VALORES_IND").ToString & """,")
+
+                                    'AÑADIDO
+                                    resb.Append("""ALMC"":""" & MiDataRow("ALMC").ToString & """,")
+                                    resb.Append("""DESC_ALMC"":""" & MiDataRow("DESC_ALMC").ToString & """,")
+                                    resb.Append("""UNIDAD"":""" & MiDataRow("UNME_BASE").ToString & """,")
+                                    resb.Append("""DESC_UNIDAD"":""" & MiDataRow("DESC_UNME_BASE").ToString & """,")
+                                    resb.Append("""TIPO_PRODUCTO"":""" & MiDataRow("TIPO_PROD").ToString & """,")
+
                                     resb.Append("""DETRACCION"" :" & """" & MiDataRow("DETRACCION").ToString & """")
                                     resb.Append("}")
                                     resb.Append(",")

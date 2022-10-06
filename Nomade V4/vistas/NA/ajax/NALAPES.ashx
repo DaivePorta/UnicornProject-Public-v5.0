@@ -179,8 +179,8 @@ Public Class NALAPES : Implements IHttpHandler
                         array = caTipoMov.COMPLETAR_DCTO_ALMACEN_VALI(ISAC_CODE)
                         If Not (array Is Nothing) Then
                             resb.Append("[{")
-                            resb.Append("""p_RPTA"" :" & """" & array(0).ToString & """,")
-                            resb.Append("""DATOS_QR"" :" & """" & array(1).ToString & """")
+                            resb.Append("""p_RPTA"" :" & """" & array(0).ToString & """")
+                            'resb.Append("""DATOS_QR"" :" & """" & array(1).ToString & """")
                             resb.Append("}]")
                         End If
                         res = resb.ToString()

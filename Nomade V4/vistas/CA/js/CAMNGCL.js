@@ -1432,9 +1432,11 @@ function GrabarNotaCredito() {
                        $("#hfCodigoNotaCredito").val(datos[0].CODIGO);
                        //EL CODIGO GLOBAL OBTIENE EL CODIGO DE LA NOTA DE CREDITO GENERICA
                        //codigodctoglobal = datos[0].CODIGO;
-                       var miCodigoQR = new QRCode("codigoQR");
-                       miCodigoQR.makeCode(datos[0].DATOS_QR);
-                       setTimeout(guardarQR, 0.0000000000000001);
+                       //var miCodigoQR = new QRCode("codigoQR");
+                       //miCodigoQR.makeCode(datos[0].DATOS_QR);
+                       //$('#codigoQR').hide();
+                       ////setTimeout(guardarQR, 0.0000000000000001);
+                       //setTimeout(guardarQR, 500);
                        $("#btnImprimirDcto").removeAttr("style");
                    } else if (datos[0].CODIGO == "LIMITE") {
                        alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> Se ha excedido el límite de documentos autorizados!");

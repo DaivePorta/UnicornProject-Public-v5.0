@@ -193,12 +193,12 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_VUELTO_ALTERNO", p_VUELTO_ALTERNO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CMNT_DCTO", p_CMNT_DCTO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESP", String.Empty, ParameterDirection.Output, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_ANTI_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_ANTI_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
 
             cmd = cn.Ejecuta_parms(cmd)
 
             msg(0) = cmd.Parameters("@p_RESP").Value
-            msg(1) = cmd.Parameters("@p_ANTI_DATOS_QR").Value
+            'msg(1) = cmd.Parameters("@p_ANTI_DATOS_QR").Value
 
             Return msg
 
@@ -282,12 +282,12 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_PCTJ_IGV", p_PCTJ_IGV, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CMNT_DCTO", p_CMNT_DCTO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESP", String.Empty, ParameterDirection.Output, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_ANTI_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_ANTI_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
 
             cmd = cn.Ejecuta_parms(cmd)
 
             msg(0) = cmd.Parameters("@p_RESP").Value
-            msg(1) = cmd.Parameters("@p_ANTI_DATOS_QR").Value
+            'msg(1) = cmd.Parameters("@p_ANTI_DATOS_QR").Value
 
             Return msg
 

@@ -1,21 +1,15 @@
-﻿Imports System.IO
-Imports System.Net
+﻿Imports System.Globalization
+Imports System.IO
 Imports System.Net.Http
-Imports System.Net.Http.Headers
 Imports System.Net.Mail
 Imports System.Text
-Imports System.Text.RegularExpressions
-Imports System.Web
+Imports System.Web.UI
 Imports RestSharp
 
 Public Class NomadeMail
 
     Private cn As Nomade.Connection
-    Dim dt As DataTable
-    Dim multimedia_id As String
-    Dim BUSINESS_ID = "1248778869194005"
-    Dim USER_ACCESS_TOKEN = "EAAL1dM0xmrsBANMLJeAhF0pWitO4y1vtsJRop9q9JQcLY58lzuDegtTcrxliKXCppPg5GQTyiJVmKqOIoZAoPaNipoMuZBjmLFxHNxqkACSWKKP9MV5F9aMrIqOiVXn7OtdUFqUgQfvyZBK7wfkWmOZB4aCkbqj2OLf9SutargZDZD"
-    Dim WABA_ID = "104194112369979"
+    Private Shared ReadOnly httpClient As HttpClient = New HttpClient()
 
     Public Sub New(ByVal str As String)
         cn = New Nomade.Connection(str)
@@ -56,114 +50,152 @@ Public Class NomadeMail
             Throw (ex)
         End Try
     End Sub
+    Public Async Sub enviarWhatsapp(ByVal RECIPIENT_PHONE_NUMBER As String, ByVal CODE As String, ByVal MENSAJEWHATSAPP As String,
+                                      Optional ByVal Archivo As String = Nothing)
 
-    Public Sub enviarMultimedia(ByVal RECIPIENT_PHONE_NUMBER As String, Optional ByVal Archivo As String = Nothing, Optional ByVal CODE As String = Nothing)
+        Dim l_numeros() As String = RECIPIENT_PHONE_NUMBER.Split(",")
+        Dim multimedia_id As String
+
         Try
-            Dim client = New RestClient("https://graph.facebook.com/v13.0/110383545074866/media")
-            client.Timeout = -1
-            Dim request = New RestRequest(Method.POST)
-            request.AddHeader("Authorization", "Bearer EAAL1dM0xmrsBANMLJeAhF0pWitO4y1vtsJRop9q9JQcLY58lzuDegtTcrxliKXCppPg5GQTyiJVmKqOIoZAoPaNipoMuZBjmLFxHNxqkACSWKKP9MV5F9aMrIqOiVXn7OtdUFqUgQfvyZBK7wfkWmOZB4aCkbqj2OLf9SutargZDZD")
-            request.AddParameter("type", "application/pdf")
-            request.AddParameter("messaging_product", "whatsapp")
-            request.AddFile("file", Archivo.Replace("/", "\"), "application/pdf")
-            Dim response As IRestResponse = client.Execute(request)
-            Dim stringResponse As String = response.Content.ToString()
-            Dim sb As New System.Text.StringBuilder(stringResponse.Length) 'StringBuilder hace el proceso 3 veces más rapido que las alternativas
-            For Each ch As Char In stringResponse
-                If Char.IsDigit(ch) Then sb.Append(ch)
-            Next
-            multimedia_id = sb.ToString()
-        Catch ex As Exception
-            Throw (ex)
-        End Try
-    End Sub
-    Public Sub enviarMensaje(ByVal RECIPIENT_PHONE_NUMBER As String, ByVal MENSAJEWHATSAPP As String, ByVal CODE As String, ByVal NAME As String, Optional ByVal Archivo As String = Nothing)
-        Try
-            Dim client = New RestClient("https://graph.facebook.com/v13.0/110383545074866/messages")
-            Dim body As String
-            client.Timeout = -1
-            Dim request = New RestRequest(Method.POST)
-            request.AddHeader("Content-Type", "application/json")
-            request.AddHeader("Authorization", "Bearer " + USER_ACCESS_TOKEN)
-            If MENSAJEWHATSAPP = "" Then
-                body = "{" & vbLf &
-                        "    ""messaging_product"": ""whatsapp""," & vbLf &
-                        "    ""to"": " & """" & RECIPIENT_PHONE_NUMBER & """," & vbLf &
-                        "    ""type"": ""template""," & vbLf &
-                        "    ""template"": {" & vbLf & "        
-                        ""name"": ""ordendeserviciosintextoadicional""," & vbLf &
-                        "        ""language"": {" & vbLf &
-                        "            ""code"": ""Es""" & vbLf &
-                        "        }," & vbLf &
-                        "        ""components"": [" & vbLf &
-                        "            {" & vbLf &
-                        "                ""type"": ""header""," & vbLf &
-                        "                ""parameters"": [" & vbLf &
-                        "                    {" & vbLf &
-                        "                        ""type"": ""document""," & vbLf &
-                        "                        ""document"": {" & vbLf &
-                        "                            ""id"": " & multimedia_id & "," & vbLf &
-                        "                            ""filename"": " & """" & CODE & """" & vbLf &
-                        "                        }" & vbLf &
-                        "                    }" & vbLf &
-                        "                ]" & vbLf &
-                        "            }," & vbLf &
-                        "            {" & vbLf &
-                        "                ""type"": ""body""," & vbLf &
-                        "                ""parameters"": [" & vbLf &
-                        "                    {" & vbLf &
-                        "                        ""type"": ""text""," & vbLf &
-                        "                        ""text"": " & """" & NAME & """" & vbLf &
-                        "                    }" & vbLf & "                ]" & vbLf &
-                        "            }" & vbLf &
-                        "        ]" & vbLf &
-                        "    }" & vbLf &
-                        "}"
-            Else
-                body = "{" & vbLf &
-                        "    ""messaging_product"": ""whatsapp""," & vbLf &
-                        "    ""to"": " & """" & RECIPIENT_PHONE_NUMBER & """," & vbLf &
-                        "    ""type"": ""template""," & vbLf &
-                        "    ""template"": {" & vbLf & "        
-                        ""name"": ""ordendeserviciocontextoadicional""," & vbLf &
-                        "        ""language"": {" & vbLf &
-                        "            ""code"": ""Es""" & vbLf &
-                        "        }," & vbLf &
-                        "        ""components"": [" & vbLf &
-                        "            {" & vbLf &
-                        "                ""type"": ""header""," & vbLf &
-                        "                ""parameters"": [" & vbLf &
-                        "                    {" & vbLf &
-                        "                        ""type"": ""document""," & vbLf &
-                        "                        ""document"": {" & vbLf &
-                        "                            ""id"": " & multimedia_id & "," & vbLf &
-                        "                            ""filename"": " & """" & CODE & """" & vbLf &
-                        "                        }" & vbLf &
-                        "                    }" & vbLf &
-                        "                ]" & vbLf &
-                        "            }," & vbLf &
-                        "            {" & vbLf &
-                        "                ""type"": ""body""," & vbLf &
-                        "                ""parameters"": [" & vbLf &
-                        "                    {" & vbLf &
-                        "                        ""type"": ""text""," & vbLf &
-                        "                        ""text"": " & """" & NAME & """" & vbLf &
-                        "                    }," & vbLf & "                    {" & vbLf &
-                        "                        ""type"": ""text""," & vbLf &
-                        "                        ""text"": " & """" & MENSAJEWHATSAPP & """" & vbLf &
-                        "                    }" & vbLf & "                ]" & vbLf &
-                        "            }" & vbLf &
-                        "        ]" & vbLf &
-                        "    }" & vbLf &
-                        "}"
+
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SP_LISTAR_VARIABLES_WHATSAPP", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", "000001", ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", "A", ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+
+            Dim phone_number_id = dt.Rows(0).Item("Id_Telefono").ToString
+            Dim token = dt.Rows(0).Item("Token").ToString
+            Dim version = dt.Rows(0).Item("Version_Whatsapp").ToString
+
+            'Enviar documento al servidor de Facebook para obtener el ID 
+            If Not (dt Is Nothing) Then
+                Using request_MediaID = New HttpRequestMessage(New HttpMethod("POST"), "https://graph.facebook.com/" + version + "/" + phone_number_id + "/media")
+                    'RESTSHARP -----------------------------------------------------------------------------------------------------------------------------
+                    'Dim client = New RestClient("https://graph.facebook.com/" + version + "/" + phone_number_id + "/media")
+                    'client.Timeout = -1
+                    'Dim request = New RestRequest(Method.POST)
+                    'request.AddHeader("Authorization", "Bearer EAAL1dM0xmrsBANMLJeAhF0pWitO4y1vtsJRop9q9JQcLY58lzuDegtTcrxliKXCppPg5GQTyiJVmKqOIoZAoPaNipoMuZBjmLFxHNxqkACSWKKP9MV5F9aMrIqOiVXn7OtdUFqUgQfvyZBK7wfkWmOZB4aCkbqj2OLf9SutargZDZD")
+                    'request.AddParameter("type", "application/pdf")
+                    'request.AddParameter("messaging_product", "whatsapp")
+                    'request.AddFile("file", Archivo.Replace("/", "\"), "application/pdf")
+                    'Dim response As IRestResponse = client.Execute(request)
+                    'Dim stringResponse As String = response.Content.ToString()
+                    'Dim sb As New System.Text.StringBuilder(stringResponse.Length) 'StringBuilder hace el proceso 3 veces más rapido que las alternativas
+                    'For Each ch As Char In stringResponse
+                    '    If Char.IsDigit(ch) Then sb.Append(ch)
+                    'Next
+                    'multimedia_id = sb.ToString()
+                    '---------------------------------------------------------------------------------------------------------------------------------------
+                    request_MediaID.Headers.Add("Authorization", "Bearer " + token)
+                    Dim multipartContent = New MultipartFormDataContent()
+                    Dim file1 = New ByteArrayContent(File.ReadAllBytes(Archivo.Replace("/", "\")))
+                    file1.Headers.Add("Content-Type", "application/pdf")
+                    multipartContent.Add(file1, "file", CODE)
+                    multipartContent.Add(New StringContent("whatsapp"), "messaging_product")
+                    multipartContent.Add(New StringContent("application/pdf"), "type")
+                    request_MediaID.Content = multipartContent
+                    Dim response = Await httpClient.SendAsync(request_MediaID)
+                    Dim res_string As String = Await response.Content.ReadAsStringAsync()
+                    Dim sb As New StringBuilder(res_string.Length) 'StringBuilder hace el proceso 3 veces más rapido que las alternativas
+                    For Each ch As Char In res_string
+                        If Char.IsDigit(ch) Then sb.Append(ch)
+                    Next
+                    multimedia_id = sb.ToString()
+                End Using
+
+                'Enviar el mensaje a todos los números ingresados
+                For Each element As String In l_numeros
+                    Dim num = "51" + element
+                    Using request_EnviarDocumento = New HttpRequestMessage(New HttpMethod("POST"), "https://graph.facebook.com/" + version + "/" + phone_number_id + "/messages")
+                        'RESTSHARP -----------------------------------------------------------------------------------------------------------------------------
+                        'Dim client = New RestClient("https://graph.facebook.com/" + version + "/" + phone_number_id + "/messages")
+                        'Dim body As String
+                        'client.Timeout = -1
+                        'Dim request = New RestRequest(Method.POST)
+                        'request.AddHeader("Content-Type", "application/json")
+                        'request.AddHeader("Authorization", "Bearer EAAL1dM0xmrsBAJ0VRboYAstRNzin8Lda0arFmtqOjZAdqnsOpnd6HrSNsySfJih4OreBPSBZCvYuSJQCv72YrvoQI2gu4fOrTnZBBgpiMcASHF3OAzktk6RRMKVcOEkbESJ5gFwU2P71v3MF7rNL9BUioyt7Re0Oo9QT5C6Yn0a6Pno81bK9WZCPacSRUVuntFDxuryV9AZDZD")
+                        'Condicional del mensaje
+                        'request.AddParameter("application/json", body, ParameterType.RequestBody)
+                        'Dim response As IRestResponse = client.Execute(request)
+                        '---------------------------------------------------------------------------------------------------------------------------------------
+                        request_EnviarDocumento.Headers.Add("Authorization", "Bearer " + token)
+                        'request.Headers.Add("Content-Type", "application/json")
+                        Dim body As String
+                        If MENSAJEWHATSAPP = "" Then
+                            body = "{" & vbLf &
+                                    "    ""messaging_product"": ""whatsapp""," & vbLf &
+                                    "    ""to"": " & """" & num & """," & vbLf &
+                                    "    ""type"": ""template""," & vbLf &
+                                    "    ""template"": {" & vbLf &
+                                    "        ""name"": ""mensaje_sin_nombre_cliente""," & vbLf &
+                                    "        ""language"": {" & vbLf &
+                                    "            ""code"": ""Es""" & vbLf &
+                                    "        }," & vbLf &
+                                    "        ""components"": [" & vbLf &
+                                    "            {" & vbLf &
+                                    "                ""type"": ""header""," & vbLf &
+                                    "                ""parameters"": [" & vbLf &
+                                    "                    {" & vbLf &
+                                    "                        ""type"": ""document""," & vbLf &
+                                    "                        ""document"": {" & vbLf &
+                                    "                            ""id"": " & multimedia_id & "," & vbLf &
+                                    "                            ""filename"": " & """" & CODE & """" & vbLf &
+                                    "                        }" & vbLf &
+                                    "                    }" & vbLf &
+                                    "                ]" & vbLf &
+                                    "            }" & vbLf &
+                                    "        ]" & vbLf &
+                                    "    }" & vbLf &
+                                    "}"
+                        Else
+                            body = "{" & vbLf &
+                                    "    ""messaging_product"": ""whatsapp""," & vbLf &
+                                    "    ""to"": " & """" & num & """," & vbLf &
+                                    "    ""type"": ""template""," & vbLf &
+                                    "    ""template"": {" & vbLf &
+                                    "        ""name"": ""mensaje_sin_nombre_cliente_y_con_texto_adicional""," & vbLf &
+                                    "        ""language"": {" & vbLf &
+                                    "            ""code"": ""Es""" & vbLf &
+                                    "        }," & vbLf &
+                                    "        ""components"": [" & vbLf &
+                                    "            {" & vbLf &
+                                    "                ""type"": ""header""," & vbLf &
+                                    "                ""parameters"": [" & vbLf &
+                                    "                    {" & vbLf &
+                                    "                        ""type"": ""document""," & vbLf &
+                                    "                        ""document"": {" & vbLf &
+                                    "                            ""id"": " & multimedia_id & "," & vbLf &
+                                    "                            ""filename"": " & """" & CODE & """" & vbLf &
+                                    "                        }" & vbLf &
+                                    "                    }" & vbLf &
+                                    "                ]" & vbLf &
+                                    "            }," & vbLf &
+                                    "            {" & vbLf &
+                                    "                ""type"": ""body""," & vbLf &
+                                    "                ""parameters"": [" & vbLf &
+                                    "                    {" & vbLf &
+                                    "                        ""type"": ""text""," & vbLf &
+                                    "                        ""text"": " & """" & MENSAJEWHATSAPP & """" & vbLf &
+                                    "                    }" & vbLf &
+                                    "                ]" & vbLf &
+                                    "            }" & vbLf &
+                                    "        ]" & vbLf &
+                                    "    }" & vbLf &
+                                    "}"
+                        End If
+                        request_EnviarDocumento.Content = New StringContent(body, Encoding.UTF8, "application/json")
+                        Dim response = Await httpClient.SendAsync(request_EnviarDocumento)
+                        response.EnsureSuccessStatusCode()
+                    End Using
+                Next
             End If
-            request.AddParameter("application/json", body, ParameterType.RequestBody)
-            Dim response As IRestResponse = client.Execute(request)
+
         Catch ex As Exception
             Throw (ex)
         End Try
     End Sub
-
     Public Function ListarCorreos(ByVal p_PIDM As Integer, ByVal p_NUM_SEQ As Integer, ByVal p_ESTADO As String) As DataTable
         Try
             Dim dt As DataTable

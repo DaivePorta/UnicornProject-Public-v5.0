@@ -688,15 +688,15 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_ISAC_CODE", p_ISAC_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_TRANSAC_MYSQL", p_TRANSAC_MYSQL, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RPTA", String.Empty, ParameterDirection.Output, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
             cmd = cn.Ejecuta_parms(cmd)
 
             msg(0) = cmd.Parameters("@p_RPTA").Value
-            msg(1) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
+            'msg(1) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
             'Return "OK"
         Catch ex As Exception
             msg(0) = ex.Message
-            msg(1) = ""
+            'msg(1) = ""
         End Try
         Return msg
     End Function

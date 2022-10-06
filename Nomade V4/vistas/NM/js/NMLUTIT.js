@@ -147,7 +147,7 @@
                     visible: false
                 },
                 {
-                    data: "DOCUMENTO", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); }
+                    data: "DOCUMENTO", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "center"); }
 
                 },
                 {
@@ -461,7 +461,7 @@
             mes = 12;
             ano = ano - 1
         } else {
-            mes = mes - 1;
+            //mes = mes - 1;
         }
 
         if (mes >= 10)
@@ -544,7 +544,7 @@ function cargarParametrosSistema() {
 }
 
 function imprimirListaDctosVenta() { 
-    Bloquear("ventana")
+    //Bloquear("ventana")
     var data = new FormData();
     var CTLG_CODE = $("#cboEmpresa").val();
     var SCSL_CODE = ($("#cboEstablecimiento").val() == "TODOS") ? '' : $("#cboEstablecimiento").val();
@@ -567,7 +567,7 @@ function imprimirListaDctosVenta() {
         processData: false,
         cache: false,
         success: function (datos) {
-            Desbloquear("ventana")
+            //Desbloquear("ventana")
             if (datos != null) {
                 $("#divDctoImprimir").html(datos);
                 $("#divDctoImprimir #tblDocumento").attr("border", "1");
@@ -576,10 +576,13 @@ function imprimirListaDctosVenta() {
                 nomSucursal = $("#cboEstablecimiento :selected").html();
                 nomEmpresa = $("#cboEmpresa :selected").html();
                 imprimirDiv("divDctoImprimir", "UTILIDADES POR ITEM - " + nomSucursal);
+                //setTimeout(function () {
+                //    window.print();
+                //}, 0.0000000000000001);
             }
         },
         error: function (msg) {
-            Desbloquear("ventana")
+            //Desbloquear("ventana")
             alertCustom("No se pudo obtener correctamente los documentos de venta.");
         }
     });

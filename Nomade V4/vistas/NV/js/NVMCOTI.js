@@ -5743,13 +5743,13 @@ function ActualizaPrecioEstandarDetalle(campo, valor, indice) {
         }
 
         if (parseFloat($(campo).val()) < parseFloat(precioMinimo) || $(campo).val().trim() == "") {
-            infoCustom2("El valor ingresado no puede ser menor al precio mínimo: " + parseFloat(precioMinimo).toFixed(2))
-            $(campo).val(parseFloat(precioMinimo).toFixed(2));
+            infoCustom2("El valor ingresado no puede ser menor al precio mínimo: " + parseFloat(precioMinimo).toFixed(prmtDIGP))
+            $(campo).val(parseFloat(precioMinimo).toFixed(prmtDIGP));
             $(campo).focus();
         } else {
 
             //Calcular 01-TOTAL BRUTO, 02-DESCUENTO, 03-TOTAL NETO, 04-DETRACCION,05-ISC
-            var totalBruto = parseFloat(detallesVenta[indice].CANTIDAD) * parseFloat(valor);
+            var totalBruto = parseFloat(detallesVenta[indice].CANTIDAD) * parseFloat(valor).toFixed(prmtDIGP);
             var montoDescuento = 0;
 
             if ($("#cbo_Sucursal :selected").attr("data-exonerado") == "SI") {
@@ -5765,25 +5765,25 @@ function ActualizaPrecioEstandarDetalle(campo, valor, indice) {
                     montoDescuento = (totalBruto / (decimalIGV + 1)) * (parseFloat(detallesVenta[indice].DESCUENTO) / 100);
                 }
             }
-            /*00*/detallesVenta[indice].PRECIO_DETALLE = parseFloat(valor).toFixed(2);
-            /*01*/detallesVenta[indice].TOTAL_BRUTO = totalBruto.toFixed(2);
-            /*02*/detallesVenta[indice].MONTO_DESCUENTO = montoDescuento.toFixed(2);
-            /*03*/detallesVenta[indice].TOTAL_NETO = (totalBruto - montoDescuento).toFixed(2);
+            /*00*/detallesVenta[indice].PRECIO_DETALLE = parseFloat(valor).toFixed(prmtDIGP);
+            /*01*/detallesVenta[indice].TOTAL_BRUTO = totalBruto.toFixed(prmtDIGP);
+            /*02*/detallesVenta[indice].MONTO_DESCUENTO = montoDescuento.toFixed(prmtDIGP);
+            /*03*/detallesVenta[indice].TOTAL_NETO = (totalBruto - montoDescuento).toFixed(prmtDIGP);
             var totalNeto = totalBruto - montoDescuento;
 
             var decimalIGV = parseFloat($("#hfIMPUESTO").val()) / 100;
             var detraccion, isc;
 
             detraccion = parseFloat(detallesVenta[indice].DETRACCION) * (totalNeto);
-            /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(2);
+            /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(prmtDIGP);
 
             if ($("#cbo_Sucursal :selected").attr("data-exonerado") == "SI") {
                 isc = parseFloat(detallesVenta[indice].ISC / 100) * (totalNeto); //Total neto Sin IGV
-                /*05*/ detallesVenta[indice].MONTO_ISC = isc.toFixed(2);
+                /*05*/ detallesVenta[indice].MONTO_ISC = isc.toFixed(prmtDIGP);
 
             } else {
                 isc = parseFloat(detallesVenta[indice].ISC / 100) * (totalNeto / (decimalIGV + 1)); //Total neto Sin IGV
-                /*05*/detallesVenta[indice].MONTO_ISC = isc.toFixed(2);
+                /*05*/detallesVenta[indice].MONTO_ISC = isc.toFixed(prmtDIGP);
             }
 
             ListarTablaDetalles(ObtenerTablaDetalles());

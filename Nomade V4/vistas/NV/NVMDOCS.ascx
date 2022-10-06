@@ -1689,7 +1689,7 @@
     </div>
 </div>
 
-<div id="divBuscarDocOS" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="display: block; width: 90%; left: 5%;" aria-hidden="true">
+<div id="divBuscarDocOS" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="display: block; width: 60%; left: 20%;" aria-hidden="true">
     <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
         <button type="button"  class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
             <i class="icon-remove"></i>
@@ -1702,12 +1702,12 @@
                 <table class="display DTTT_selectable" id="tblDocumentosOS" style="width: 100%;">
                     <thead>
                         <tr>
-                            <th>CODIGO</th>                            
-                            <th>NRO. DOCUMENTO</th>
+                            <%--<th>NRO. ATENCION</th>    --%>                        
+                            <th>NRO. ATENCIÓN</th>
                             <th>CLIENTE</th>
                             <th>MONTO</th>
-                            <th>FECHA EMISIÓN</th>
                             <th>ABOGADO</th>
+                            <th>FECHA EMISIÓN</th>                            
                             <th>PIDM ABOGADO</th>
                         </tr>
                     </thead>

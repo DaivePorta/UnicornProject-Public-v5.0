@@ -1129,12 +1129,12 @@
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_NUM_SEQ_DOC", String.Empty, ParameterDirection.Output, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
 
             cmd = cn.Ejecuta_parms(cmd)
             msg(0) = cmd.Parameters("@p_VTAC_CODE").Value
             msg(1) = cmd.Parameters("@p_VTAC_NUM_SEQ_DOC").Value
-            msg(2) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
+            'msg(2) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
 
             Return msg
 
@@ -1268,12 +1268,12 @@
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_NUM_SEQ_DOC", String.Empty, ParameterDirection.Output, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
 
             cmd = cn.Ejecuta_parms(cmd)
             msg(0) = cmd.Parameters("@p_VTAC_CODE").Value
             msg(1) = cmd.Parameters("@p_VTAC_NUM_SEQ_DOC").Value
-            msg(2) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
+            'msg(2) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
 
             Return msg
 
@@ -1644,13 +1644,13 @@
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_NUM_SEQ_DOC", String.Empty, ParameterDirection.Output, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
 
 
             cmd = cn.Ejecuta_parms(cmd)
             msg(0) = cmd.Parameters("@p_VTAC_CODE").Value
             msg(1) = cmd.Parameters("@p_VTAC_NUM_SEQ_DOC").Value
-            msg(2) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
+            'msg(2) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
 
             Return msg
 
@@ -2380,12 +2380,12 @@
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_NUM_SEQ_DOC", String.Empty, ParameterDirection.Output, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
 
             cmd = cn.Ejecuta_parms(cmd)
             msg(0) = cmd.Parameters("@p_VTAC_CODE").Value
             msg(1) = cmd.Parameters("@p_VTAC_NUM_SEQ_DOC").Value
-            msg(2) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
+            'msg(2) = cmd.Parameters("@p_VTAC_DATOS_QR").Value
 
             Return msg
 

@@ -8145,8 +8145,13 @@ function DeleteBonificacion(item) {
         });
         $('#tabla_det_boni_wrapper :first').remove()
 
-
-    }
+        CalcularDetraccion();
+        CalcularDatosMonetarios();
+        $("#lblImporteCobrar").html($("#txt_monto_total").val());
+        $("#lblImporteTotal").html($("#txt_subtotal").val());//DPORTA
+        $("#txtMonto").val($("#txt_monto_total").val());
+        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+    }    
 }
 
 function DeleteMuestra(item) {
@@ -8191,8 +8196,13 @@ function DeleteMuestra(item) {
         });
         $('#tabla_det_muestra_wrapper :first').remove()
 
-
-    }
+        CalcularDetraccion();
+        CalcularDatosMonetarios();
+        $("#lblImporteCobrar").html($("#txt_monto_total").val());
+        $("#lblImporteTotal").html($("#txt_subtotal").val());//DPORTA
+        $("#txtMonto").val($("#txt_monto_total").val());
+        ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
+    }   
 }
 
 function AplicarImpuestosPorItem() {//DPORTA SIN-IMPUESTOS
@@ -9680,13 +9690,14 @@ function GrabarCompletarDctoVenta() {
                                         if ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) {
                                             $("#txt_comentario").val("Venta de Mercaderia");
                                         }
-                                        let formato = $("#cboSerieDocVenta :selected").attr("data-formato");//DPORTA
-                                        if (formato == 'E') {//DPORTA
-                                            var miCodigoQR = new QRCode("codigoQR");
-                                            miCodigoQR.makeCode(datos[0].DATOS_QR);
-                                            //$('#codigoQR').hide();
-                                            setTimeout(guardarQR, 0.0000000000000001);
-                                        }
+                                        //let formato = $("#cboSerieDocVenta :selected").attr("data-formato");//DPORTA
+                                        //if (formato == 'E') {//DPORTA
+                                        //    var miCodigoQR = new QRCode("codigoQR");
+                                        //    miCodigoQR.makeCode(datos[0].DATOS_QR);
+                                        //    $('#codigoQR').hide();
+                                        //    //setTimeout(guardarQR, 0.0000000000000001);
+                                        //    setTimeout(guardarQR, 500);
+                                        //}
                                         BloquearCampos();
                                         $("#txtEfectivo, #txtEfectivo2, #txtEfectivo3").attr('disabled', true);
                                         //$("#p_DatVuelto").hide();
@@ -11865,14 +11876,14 @@ function ActualizaPrecioEstandarDetalle(campo, valor, indice) {
         }
 
         if (parseFloat($(campo).val()) < parseFloat(precioMinimo) || $(campo).val().trim() == "") {
-            infoCustom2("El valor ingresado no puede ser menor al precio mínimo: " + parseFloat(precioMinimo).toFixed(2))
-            $(campo).val(parseFloat(precioMinimo).toFixed(2));
+            infoCustom2("El valor ingresado no puede ser menor al precio mínimo: " + parseFloat(precioMinimo).toFixed(prmtDIGP))
+            $(campo).val(parseFloat(precioMinimo).toFixed(prmtDIGP));
             $(campo).focus();
         } else {
             //var factor = calcula_factor_conversion(detallesVenta[indice].CODE_UNIDAD_PROD_BASE, detallesVenta[indice].CODE_UNIDAD) // factor conversion unidades
             //Calcular 01-TOTAL BRUTO, 02-DESCUENTO, 03-TOTAL NETO, 04-DETRACCION,05-ISC
             //var totalBruto = (parseFloat(detallesVenta[indice].CANTIDAD) / parseFloat(factor)) * parseFloat(valor);
-            var totalBruto = (parseFloat(detallesVenta[indice].CANTIDAD)) * parseFloat(valor);
+            var totalBruto = (parseFloat(detallesVenta[indice].CANTIDAD)) * parseFloat(valor).toFixed(prmtDIGP);
             var montoDescuento = 0;
 
             if ($("#cbo_Sucursal :selected").attr("data-exonerado") == "SI") {
@@ -11888,10 +11899,10 @@ function ActualizaPrecioEstandarDetalle(campo, valor, indice) {
                     montoDescuento = (totalBruto / (decimalIGV + 1)) * (parseFloat(detallesVenta[indice].DESCUENTO) / 100);
                 }
             }
-            /*00*/detallesVenta[indice].PRECIO_DETALLE = parseFloat(valor).toFixed(2);
-            /*01*/detallesVenta[indice].TOTAL_BRUTO = totalBruto.toFixed(2);
-            /*02*/detallesVenta[indice].MONTO_DESCUENTO = montoDescuento.toFixed(2);
-            /*03*/detallesVenta[indice].TOTAL_NETO = (totalBruto - montoDescuento).toFixed(2);
+            /*00*/detallesVenta[indice].PRECIO_DETALLE = parseFloat(valor).toFixed(prmtDIGP);
+            /*01*/detallesVenta[indice].TOTAL_BRUTO = totalBruto.toFixed(prmtDIGP);
+            /*02*/detallesVenta[indice].MONTO_DESCUENTO = montoDescuento.toFixed(prmtDIGP);
+            /*03*/detallesVenta[indice].TOTAL_NETO = (totalBruto - montoDescuento).toFixed(prmtDIGP);
             var totalNeto = totalBruto - montoDescuento;
             if (tipoDocCode == '0001' || tipoDocCode == '0003' || tipoDocCode == '0012') { //DPORTA SIN-IMPUESTOS
                 var decimalIGV = parseFloat($("#hfIMPUESTO").val()) / 100;
@@ -11902,19 +11913,19 @@ function ActualizaPrecioEstandarDetalle(campo, valor, indice) {
             //if (tipoDocCode == '0001' || tipoDocCode == '0003' || tipoDocCode == '0012') {
             if (tipoDocCode == '0001') { //DPORTA SIN-IMPUESTOS
                 detraccion = parseFloat(detallesVenta[indice].DETRACCION) * (totalNeto);
-            /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(2);
+            /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(prmtDIGP);
             } else {
                 detraccion = parseFloat(0) * (totalNeto);
-            /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(2);
+            /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(prmtDIGP);
             }
 
             if ($("#cbo_Sucursal :selected").attr("data-exonerado") == "SI") {
                 isc = parseFloat(detallesVenta[indice].ISC / 100) * (totalNeto); //Total neto Sin IGV
-                /*05*/ detallesVenta[indice].MONTO_ISC = isc.toFixed(2);
+                /*05*/ detallesVenta[indice].MONTO_ISC = isc.toFixed(prmtDIGP);
 
             } else {
                 isc = parseFloat(detallesVenta[indice].ISC / 100) * (totalNeto / (decimalIGV + 1)); //Total neto Sin IGV
-                /*05*/detallesVenta[indice].MONTO_ISC = isc.toFixed(2);
+                /*05*/detallesVenta[indice].MONTO_ISC = isc.toFixed(prmtDIGP);
             }
 
             ListarTablaDetalles(ObtenerTablaDetalles());
@@ -11959,10 +11970,10 @@ function ActualizaCantidad(campo, valor, indice) {//DPORTA
                         montoDescuento = (totalBruto / (decimalIGV + 1)) * (parseFloat(detallesVenta[indice].DESCUENTO) / 100);
                     }
                 }
-            /*00*/detallesVenta[indice].CANTIDAD = parseFloat(valor).toFixed(2);
-            /*01*/detallesVenta[indice].TOTAL_BRUTO = totalBruto.toFixed(2);
-            /*02*/detallesVenta[indice].MONTO_DESCUENTO = montoDescuento.toFixed(2);
-            /*03*/detallesVenta[indice].TOTAL_NETO = (totalBruto - montoDescuento).toFixed(2);
+            /*00*/detallesVenta[indice].CANTIDAD = parseFloat(valor).toFixed(prmtDIGP);
+            /*01*/detallesVenta[indice].TOTAL_BRUTO = totalBruto.toFixed(prmtDIGP);
+            /*02*/detallesVenta[indice].MONTO_DESCUENTO = montoDescuento.toFixed(prmtDIGP);
+            /*03*/detallesVenta[indice].TOTAL_NETO = (totalBruto - montoDescuento).toFixed(prmtDIGP);
                 var totalNeto = totalBruto - montoDescuento;
                 if (tipoDocCode == '0001' || tipoDocCode == '0003' || tipoDocCode == '0012') { //DPORTA SIN-IMPUESTOS
                     var decimalIGV = parseFloat($("#hfIMPUESTO").val()) / 100;
@@ -11973,19 +11984,19 @@ function ActualizaCantidad(campo, valor, indice) {//DPORTA
                 //if (tipoDocCode == '0001' || tipoDocCode == '0003' || tipoDocCode == '0012') {
                 if (tipoDocCode == '0001') {//DPORTA SIN-IMPUESTOS
                     detraccion = parseFloat(detallesVenta[indice].DETRACCION) * (totalNeto);
-                    /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(2);
+                    /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(prmtDIGP);
                 } else {
                     detraccion = parseFloat(0) * (totalNeto);
-                    /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(2);
+                    /*04*/detallesVenta[indice].MONTO_DETRAC = detraccion.toFixed(prmtDIGP);
                 }
 
                 if ($("#cbo_Sucursal :selected").attr("data-exonerado") == "SI") {
                     isc = parseFloat(detallesVenta[indice].ISC / 100) * (totalNeto); //Total neto Sin IGV
-                /*05*/ detallesVenta[indice].MONTO_ISC = isc.toFixed(2);
+                /*05*/ detallesVenta[indice].MONTO_ISC = isc.toFixed(prmtDIGP);
 
                 } else {
                     isc = parseFloat(detallesVenta[indice].ISC / 100) * (totalNeto / (decimalIGV + 1)); //Total neto Sin IGV
-                /*05*/detallesVenta[indice].MONTO_ISC = isc.toFixed(2);
+                /*05*/detallesVenta[indice].MONTO_ISC = isc.toFixed(prmtDIGP);
                 }
 
                 ListarTablaDetalles(ObtenerTablaDetalles());
@@ -14552,6 +14563,7 @@ function enviarCorreo() {
 
 
 function cargarTelefonos() {
+    REGEX_TELE = "([0-9]*)"
     $.ajax({
         type: 'post',
         url: 'vistas/na/ajax/naminsa.ashx?OPCION=LTELEFONOS',
@@ -14582,6 +14594,26 @@ function cargarTelefonos() {
                         '</div>';
                 }
             },
+            createFilter: function (input) {
+                var match, regex;
+                regex = new RegExp('^' + REGEX_TELE + '$', 'i');
+                match = input.match(regex);
+                if (match) return !this.options.hasOwnProperty(match[0]);
+                // name phone_number
+                regex = new RegExp('^([^<]*)\<' + REGEX_TELE + '\>$', 'i');
+                match = input.match(regex);
+                if (match) return !this.options.hasOwnProperty(match[2]);
+                return false;
+            },
+            create: function (input) {
+                if ((new RegExp('^' + REGEX_TELE + '$', 'i')).test(input)) {
+                    return { telefono: input };
+                }
+                var match = input.match(new RegExp('^([^<]*)\<' + REGEX_TELE + '\>$', 'i'));
+                if (match) { return { telefono: match[2], name: $.trim(match[1]) }; }
+                alert('Invalid number.');
+                return false;
+            }
         });
         $('.selectize-control').css('margin-left', '0px').css('margin-bottom', '15px');
         $('.selectize-dropdown').css('margin-left', '0px');
@@ -14594,22 +14626,20 @@ function cargarTelefonos() {
         }
     });
 }
+
 function enviarWhatsapp() {
 
     var telefonos = $("#cboClienteWhatsapp").val();
-    var nombres = $("#cboClienteWhatsapp").text();
 
     if (vErrors(['cboClienteWhatsapp'])) {
         $('#btnEnviarWhatsapp').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
         RECIPIENT_PHONE_NUMBER = telefonos.toString();
-        w_NAME = nombres.toString();
         $.ajax({
             type: "post",
             url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=whatsapp" +
                 "&p_CODE=" + $('#txtNumDctoComp').val() +
                 "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
                 "&RECIPIENT_PHONE_NUMBER=" + RECIPIENT_PHONE_NUMBER +
-                "&w_NAME=" + w_NAME +
                 "&MENSAJEWHATSAPP=" + $('#txtContenidoWhatsapp').val(),
             contentType: "application/json;",
             dataType: false,

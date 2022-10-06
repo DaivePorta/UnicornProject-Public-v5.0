@@ -628,6 +628,7 @@
 <input id="hfTipoDocSeleccionado" type="hidden" />
 <input id="hfImporteOrigen" type="hidden" />
 <input id="hfCodigoNotaCredito" type="hidden" />
+<input id="hfCodAsiento" type="hidden" />
 <input id="hfSecuenciaNotaCredito" type="hidden" />
 
 <input id="hfCodigoCorrelativo" type="hidden" />

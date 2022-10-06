@@ -1241,7 +1241,7 @@ function pagar() {
                     switch (res) {
 
                         case "NA": // Uno de los documentos no puede ser amortizado por el monto indicado
-                            alertCustom("Uno de los documentos ya ha sido amortizado!");
+                            alertCustom("Documento ya amortizado. Realizar el pago en la pantalla de Pagos Varios!");
                             break;
                         case "NG": // El monto usable de la nota de credito generica es 0
                             alertCustom("La nota de crédito genérica seleccionada no posee monto usable! ");

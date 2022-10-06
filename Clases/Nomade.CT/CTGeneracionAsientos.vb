@@ -348,6 +348,53 @@ Public Class CTGeneracionAsientos
         Return ""
     End Function
 
+    Public Function GenerarAsientoPagoDocCompra(p_CodDocCompra As String) As String
+        Dim oTransaction As New Nomade.DataAccess.Transaccion()
+        Try
+            Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+
+            Dim sCodMovCont As String = ""
+
+            oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+
+            sCodMovCont = oCTMovimientoContable.FnGenerarAsientoPagoDocCompra(p_CodDocCompra, oTransaction)
+
+            oTransaction.fnCommitTransaction()
+
+            Return sCodMovCont
+            'FIN ASIENTO DE PAGO COMPRA
+        Catch ex As Exception
+            If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
+                oTransaction.fnRollBackTransaction()
+            End If
+        End Try
+        Return ""
+    End Function
+
+    Public Function GenerarAsientoNotaCreditoCliente(p_CodNC As String, p_Usuario As String) As String
+        Dim oTransaction As New Nomade.DataAccess.Transaccion()
+        Try
+            Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+
+            Dim sCodMovCont As String = ""
+
+            oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+
+            sCodMovCont = oCTMovimientoContable.GenerarAsientoNotaCreditoCliente(p_CodNC, p_Usuario, oTransaction)
+
+            oTransaction.fnCommitTransaction()
+
+            Return sCodMovCont
+            'FIN ASIENTO DE PAGO COMPRA
+        Catch ex As Exception
+            If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
+                oTransaction.fnRollBackTransaction()
+            End If
+        End Try
+        Return ""
+    End Function
+
+
     Public Shared Function fechaLocal(ByVal fecha As String) As String
 
         If fecha <> String.Empty Then

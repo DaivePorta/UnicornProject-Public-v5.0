@@ -106,6 +106,13 @@ Public Class CPMPGPR : Implements IHttpHandler
 
                     resArray = PagoProveedor.PagarProveedorCaja(detalle, caja, usuario, codigo_apertura, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, tipo_cambio, VALIDAR_IMG, "CAJ", notaCredito, "", "", "", "", "", "", monto_total)
 
+                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                    Dim strCodAsientoPagoDocCompra As String
+                    For Each item As String In detalle.Split("|")
+                        Dim strCodDocCompra As String = item.Split(",")(0)
+                        strCodAsientoPagoDocCompra = oCTGeneracionAsientos.GenerarAsientoPagoDocCompra(strCodDocCompra)
+                    Next
+
                     If RUTA_IMAGEN <> "" And resArray(1) = "TC" And VALIDAR_IMG = "SI" Then
                         RUTA = GrabaImagen(RUTA_IMAGEN, context, resArray(0).ToString + ".jpg")
                     End If
@@ -128,6 +135,13 @@ Public Class CPMPGPR : Implements IHttpHandler
 
 
                     resArray = PagoProveedor.PagarProveedorBanco(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, tipo_cambio, VALIDAR_IMG, adicional, caja, notaCredito)
+
+                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                    Dim strCodAsientoPagoDocCompra As String
+                    For Each item As String In detalle.Split("|")
+                        Dim strCodDocCompra As String = item.Split(",")(0)
+                        strCodAsientoPagoDocCompra = oCTGeneracionAsientos.GenerarAsientoPagoDocCompra(strCodDocCompra)
+                    Next
 
                     If RUTA_IMAGEN <> "" And resArray(1) = "TC" And VALIDAR_IMG = "SI" Then
                         RUTA = GrabaImagen(RUTA_IMAGEN, context, resArray(0).ToString + ".jpg")

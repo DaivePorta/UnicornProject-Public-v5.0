@@ -63,7 +63,7 @@ Public Class NVMANTI : Implements IHttpHandler
     Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
     Dim cCotizacion As New Nomade.NV.NVCotizacion("Bn")
     Dim cAnticipo As New Nomade.NV.NVAnticipo("Bn")
-
+    Dim codigoQR As New Nomade.Impresion.CodigoQR("Bn")
 
     Dim dt As DataTable
 
@@ -448,8 +448,8 @@ Public Class NVMANTI : Implements IHttpHandler
                     If Not (cadena Is Nothing) Then
                         resb.Append("[")
                         resb.Append("{")
-                        resb.Append("""CODIGO"" :" & """" & cadena(0).ToString & """,")
-                        resb.Append("""DATOS_QR"" :" & """" & cadena(1).ToString & """")
+                        resb.Append("""CODIGO"" :" & """" & cadena(0).ToString & """")
+                        'resb.Append("""DATOS_QR"" :" & """" & cadena(1).ToString & """")
                         resb.Append("}")
                         resb.Append("]")
                     End If
@@ -699,7 +699,8 @@ Public Class NVMANTI : Implements IHttpHandler
             'pie_pagina = dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString
 
             'LA RUTA QUE VA A TENER
-            rutaQr = dtCabecera(0)("IMAGEN_QR").ToString
+            'rutaQr = dtCabecera(0)("IMAGEN_QR").ToString
+            rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE)
 
             tabla.Append("<br>")
             tabla.Append("<table id='tblDctoImprimir' border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'>")
@@ -1025,8 +1026,9 @@ Public Class NVMANTI : Implements IHttpHandler
         hw.Parse(New StringReader(HTML.ToString))
         document.Close()
 
-        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
-            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(dtCabecera(0)("IMAGEN_QR").ToString)) 'SOLO PARA ´DOCS ELECTRÓNICOS
+        'If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
+        If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And p_CODE <> "" And p_CODE <> "undefined" Then
+            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(codigoQR.fnGetCodigoQR(p_CODE))) 'SOLO PARA ´DOCS ELECTRÓNICOS
         Else
             imgC(FilePath, imgS, imgI)
         End If
@@ -1040,7 +1042,8 @@ Public Class NVMANTI : Implements IHttpHandler
         If base64string = "" Then
             b64 = ""
         Else
-            b64 = base64string.Split(",")(1).Replace(" ", "+") 'Con el split se Toma lo que corresponde al base64 y luego se reemplaza
+            'b64 = base64string.Split(",")(1).Replace(" ", "+") 'Con el split se Toma lo que corresponde al base64 y luego se reemplaza
+            b64 = base64string
         End If
 
         Dim b() As Byte

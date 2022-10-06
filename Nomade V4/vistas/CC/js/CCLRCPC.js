@@ -103,6 +103,7 @@
                        "sZeroRecords": "No hay datos disponibles en la tabla."
                    }
                })
+               oTableTReg.fnSort([[5, "desc"]]);
                actualizarEstilos();
 
                $('#tblCuentasPorCobrar').DataTable().columns(0).visible(false);

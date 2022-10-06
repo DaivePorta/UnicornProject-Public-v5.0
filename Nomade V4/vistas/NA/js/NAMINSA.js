@@ -1220,6 +1220,8 @@ var NAMINSA = function () {
                     $('#txtSerieDctoRegistro').attr('disabled', true);
                     $('#txtNroDctoRegistro').attr('disabled', true);
                 }
+                $("#divNuestraGuia").attr("style", "display:none");
+                $('#divElec').addClass('hidden');
             } 
 
             $('.div_mas_dctoreg').remove();
@@ -1777,7 +1779,9 @@ var NAMINSA = function () {
                     if ($(this).val() == '0009') {//GUIA DE REMISIÓN
                         $('#txtSerieDctoRegistro').prop('disabled', true);
                         $('#txtNroDctoRegistro').prop('disabled', true);
-                        $('#divElec').removeClass('hidden');
+                        if ($("#cboOperacion").val() == '0001' || $("#cboOperacion").val() == '0011') {
+                            $('#divElec').removeClass('hidden');
+                        }
                     }
                 } else {
                     //console.log($(this).val());
@@ -1832,6 +1836,11 @@ var NAMINSA = function () {
                 $('#txtNroDctoRegistro').val($('#txtNroRegistroInterno').val());
                 $('#txtSerieDctoRegistro').prop('disabled', true);
                 $('#txtNroDctoRegistro').prop('disabled', true);
+                if ($(this).val() == '0009') {
+                    $('#divElec').removeClass('hidden');
+                } else {
+                    $('#divElec').addClass('hidden');
+                }
             }
             $('#chkElectronico').prop('checked', false);
             $('#chkElectronico').parent().removeClass('checked');
@@ -6781,9 +6790,11 @@ var Grabar = function () {
                 if (parseFloat(datosLineaCredito[0].ACTUAL) > 0) {
                     console.log("ok")
                 } else {
-                    a.push("cboOrigen");
+                    /*a.push("cboOrigen");
                     a.push("txtSerieDctoOrigen_0");
-                    a.push("txtNroDctoOrigen_0");
+                    a.push("txtNroDctoOrigen_0");*/
+                    alertCustom("El cliente seleccionado no tiene linea de crédito para realizar esta operación.");
+                    return;
                 }
             }
         }
@@ -7323,12 +7334,14 @@ var CompletarDcto = function () {
 
                                         $('#btnGenerarAsiento').click();
                                     }
-                                    if ($('#chkElectronico').is(':checked')) {
-                                        $("#hfCodigoNaminsa").val(ObtenerQueryString('codigo'));
-                                        var miCodigoQR = new QRCode("codigoQR");
-                                        miCodigoQR.makeCode(datos[0].DATOS_QR);
-                                        setTimeout(guardarQR, 0.0000000000000001);
-                                    }                                    
+                                    //if ($('#chkElectronico').is(':checked')) {
+                                    //    $("#hfCodigoNaminsa").val(ObtenerQueryString('codigo'));
+                                    //    var miCodigoQR = new QRCode("codigoQR");
+                                    //    miCodigoQR.makeCode(datos[0].DATOS_QR);
+                                    //    $('#codigoQR').hide();
+                                    //    //setTimeout(guardarQR, 0.0000000000000001);
+                                    //    setTimeout(guardarQR, 500);
+                                    //}                                    
                                 }
                                 else if (atos[0].p_RPTA.split("-")[0] === "X_SEPAR") {
                                     infoCustom2("El producto " + atos[0].p_RPTA.split("-")[1] + " no cuenta con separados suficientes para despachar.")

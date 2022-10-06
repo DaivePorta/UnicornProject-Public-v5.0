@@ -355,11 +355,11 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESPACHADO_IND", p_DESPACHADO_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_COBRADO_IND", p_COBRADO_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_ERROR_IND", String.Empty, ParameterDirection.Output, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_NCC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_NCC_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
 
             cmd = cn.Ejecuta_parms(cmd)
             msg(0) = cmd.Parameters("@p_NOCC_CODE").Value
-            msg(1) = cmd.Parameters("@p_NCC_DATOS_QR").Value
+            'msg(1) = cmd.Parameters("@p_NCC_DATOS_QR").Value
             msg(2) = cmd.Parameters("@p_NOCC_NUM_SEQ_DOC").Value
             msg(3) = cmd.Parameters("@p_ERROR_IND").Value
 
@@ -729,19 +729,19 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SERIE_NRO", String.Empty, ParameterDirection.Output, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_NCG_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_NCG_DATOS_QR", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESPUESTA", String.Empty, ParameterDirection.Output, 253))
 
             cmd = cn.Ejecuta_parms(cmd)
             msg(0) = cmd.Parameters("@p_CODE").Value
             msg(1) = cmd.Parameters("@p_SERIE_NRO").Value
-            msg(2) = cmd.Parameters("@p_NCG_DATOS_QR").Value
+            'msg(2) = cmd.Parameters("@p_NCG_DATOS_QR").Value
             msg(3) = cmd.Parameters("@p_RESPUESTA").Value
 
         Catch ex As Exception
             msg(0) = ex.Message
             msg(1) = ""
-            msg(2) = ""
+            'msg(2) = ""
             msg(3) = ""
         End Try
 

@@ -614,9 +614,9 @@ var CCMCBCL = function () {
 
         $("#cboMedioPago").select2();
                       
-        $('#slcEstablec').change(function () {
-           // $('#cbo_OrigenPago').change();
-                  });
+        $('#cboClientes').change(function () {
+            llenarTablaDeudas(null);
+        });
 
         cargaMediosDePago();       
     }
@@ -2031,6 +2031,11 @@ function cargatablavacia() {
             },
             {
                 data: "FECHA_EMISION",
+                createdCell: function (td, cellData, rowData, row, col) {
+
+                    $(td).attr('align', 'center')
+
+                },
                 type:"fecha"
               
             },

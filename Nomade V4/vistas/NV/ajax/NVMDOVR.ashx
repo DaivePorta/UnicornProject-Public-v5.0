@@ -300,7 +300,7 @@ Public Class NVMDOVR : Implements IHttpHandler
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
                         resb.Append("""SECUENCIA"" :" & """" & array(1).ToString & """,")
-                        resb.Append("""DATOS_QR"" :" & """" & array(2).ToString & """,")
+                        'resb.Append("""DATOS_QR"" :" & """" & array(2).ToString & """,")
                         resb.Append("""MSGERROR"" :" & """" & msgError & """")
                         resb.Append("}")
                         resb.Append("]")

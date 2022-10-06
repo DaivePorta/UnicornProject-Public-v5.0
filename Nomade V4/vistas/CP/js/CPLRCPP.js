@@ -138,6 +138,7 @@
                        ]
                    }
                })
+               oTableTReg.fnSort([[4, "desc"]]);
                actualizarEstilos();
 
                $('#tblCuentasPorPagar').DataTable().columns(0).visible(false);

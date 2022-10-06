@@ -1590,7 +1590,7 @@
     </div>
 </div>
 
-<div id="divBuscarDoc" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 90%; left: 5%;" aria-hidden="true">
+<div id="divBuscarDoc" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 50%; left: 25%;" aria-hidden="true">
     <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
         <button type="button" class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
             <i class="icon-remove"></i>

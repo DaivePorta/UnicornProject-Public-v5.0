@@ -42,7 +42,7 @@ Public Class NAMINSA : Implements IHttpHandler
     Dim resArray As Array
 
     Dim oTransaction As New Nomade.DataAccess.Transaccion()
-
+    Dim codigoQR As New Nomade.Impresion.CodigoQR("Bn")
 
 
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
@@ -956,8 +956,8 @@ Public Class NAMINSA : Implements IHttpHandler
                         array = caTipoMov.COMPLETAR_DCTO_ALMACEN_VALI(ISAC_CODE)
                         If Not (array Is Nothing) Then
                             resb.Append("[{")
-                            resb.Append("""p_RPTA"" :" & """" & array(0).ToString & """,")
-                            resb.Append("""DATOS_QR"" :" & """" & array(1).ToString & """")
+                            resb.Append("""p_RPTA"" :" & """" & array(0).ToString & """")
+                            'resb.Append("""DATOS_QR"" :" & """" & array(1).ToString & """")
                             resb.Append("}]")
                         End If
                         res = resb.ToString()
@@ -2759,7 +2759,8 @@ Public Class NAMINSA : Implements IHttpHandler
             'pie_pagina = dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString
 
             'LA RUTA QUE VA A TENER
-            rutaQr = dtCabecera(0)("IMAGEN_QR").ToString
+            'rutaQr = dtCabecera(0)("IMAGEN_QR").ToString
+            rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE)
 
             tabla.Append("<table id='tblDctoImprimir' border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'>")
             tabla.Append("<thead>")
