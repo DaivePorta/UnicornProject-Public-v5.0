@@ -417,7 +417,7 @@ var NVLDOCT = function () {
 
                 },
                 {
-                    data: "FOPA_DESC", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); }
+                    data: "FOPA_DESC", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "center"); }
 
                 },
                 {

@@ -2115,7 +2115,7 @@ function cargatablavacia() {
         "scrollCollapse": false,
         "scrollX": true,
         "paginate": false,
-        "order": [[2, 'asc'], [5, 'asc']],
+        "order": [[2, 'desc'], [5, 'desc']],
 
         info: false
         

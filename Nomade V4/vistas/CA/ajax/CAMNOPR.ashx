@@ -29,6 +29,8 @@ Public Class CAMNOPR : Implements IHttpHandler
 
     Dim p_AJUSTE As Decimal
 
+    Dim p_CODE, p_IMGQR As String
+
     Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
     Dim ncProvedor As New Nomade.NC.NCEProveedor("Bn")
     Dim ncCliente As New Nomade.NC.NCECliente("Bn")
@@ -53,6 +55,7 @@ Public Class CAMNOPR : Implements IHttpHandler
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
 
         OPCION = context.Request("OPCION")
+        p_CODE = context.Request("p_CODE")
         CTLG_CODE = context.Request("CTLG_CODE")
         USUA_ID = context.Request("USUA_ID")
         SCSL_CODE = context.Request("SCSL_CODE") 'Codigo establecimiento/sucursal
@@ -319,6 +322,12 @@ Public Class CAMNOPR : Implements IHttpHandler
                                                        If(DEVOLUCION_EFECTIVO = Nothing, "N", DEVOLUCION_EFECTIVO),
                                                        If(DEVOLUCION_DESPACHO = Nothing, "N", DEVOLUCION_DESPACHO),
                                                        If(GENERICA_IND = Nothing, "N", GENERICA_IND))
+
+
+                Case "GEN_ASIENTO"
+                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                    res = oCTGeneracionAsientos.GenerarAsientoNotaCreditoProveedor(p_CODE, USUA_ID)
+
                 Case Else
 
             End Select

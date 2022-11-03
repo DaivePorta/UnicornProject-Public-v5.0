@@ -14,8 +14,8 @@
                 <h4>
                     <i class="icon-reorder"></i>REPORTE DE CUENTAS ATRASADAS POR PAGAR</h4>
                 <div class="actions">
-                    <a class="btn black printlist" style="margin-top: -10px;"><i class="icon-print"></i>&nbsp;Imprimir</a>                
-                    <%--<a href="?f=cplrdat" class="btn red"><i class="icon-list"></i>Listar</a>--%>
+                    <a href="?f=CPLRDAT" class="btn green " style="margin-top: -10px;"><i class="icon-plus"></i>&nbsp;Nuevo</a>
+                    <a class="btn black printlist" style="margin-top: -10px;"><i class="icon-print"></i>&nbsp;Imprimir</a>           
                 </div>
 
             </div>

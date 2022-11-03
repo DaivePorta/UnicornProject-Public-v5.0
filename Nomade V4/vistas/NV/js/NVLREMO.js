@@ -118,8 +118,8 @@ var NVLREMO = function () {
 
         $('#btnBuscar').on('click', function () {
             Bloquear($("#contenedor"), "Generando Reporte Monetario ...")
-            VentasContado($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
             CobroVentasCredito($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
+            VentasContado($("#cboEmpresa").val(), $("#cboEstablecimiento").val());            
             ResumenDetallesMovimientosCaja($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
             PagoGastosPorBanco($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
             VentasArea($("#cboEmpresa").val(), $("#cboEstablecimiento").val());

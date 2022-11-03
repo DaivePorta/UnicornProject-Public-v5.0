@@ -30,513 +30,534 @@
 
             <div class="portlet-body">
 
-                <div class="row-fluid">
-                    <div class="span1">
-                        <div class="control-group">
-                            <label class="control-label" for="cboEmpresa">
-                                Empresa</label>
-                        </div>
-                    </div>
-                    <div class="span4">
-                        <div class="control-group">
-                            <div class="controls">
-                                <select id="cboEmpresa" class="span12 combobox" data-placeholder="Empresa"></select>
-                            </div>
-                        </div>
-                    </div>
+                <!-- TITULO DE LOS TABS-->
+                <ul class="nav nav-tabs">
+                    <li class="active"><a id="tabDatosGenerales" href="#datos_generales" data-toggle="tab"><i class=""></i>Datos Generales</a></li>
+                    <li><a class="advance_form_with_chosen_element" id="tabAsiento" href="#asientos_contables" data-toggle="tab"><i class=""></i>Asiento Contable</a></li>
+                </ul>
 
-                    <div class="span1 offset1">
-                        <div class="control-group">
-                            <label id="lblEstablecimiento" class="control-label" for="cboEstablecimiento">Establecimiento</label>
-                        </div>
-                    </div>
+                <div class="tab-content">
+                    <!-- INICIO DEL TAB GENERALES-->
+                    <div class="tab-pane active" id="datos_generales">
+                        
 
-                    <div class="span4">
-                        <div class="control-group">
-                            <div class="controls">
-                                <select id="cboEstablecimiento" class="span12 combobox" data-placeholder="Establecimiento">
-                                    <option></option>
-                                </select>
+                        <div class="row-fluid">
+                            <div class="span1">
+                                <div class="control-group">
+                                    <label class="control-label" for="cboEmpresa">
+                                        Empresa</label>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span1">
-                        <div class="control-group">
-                            <label id="lblrazsocial" class="control-label" for="txtrazsocial">Cliente</label>
-                        </div>
-                    </div>
-                    <div class="span4">
-                        <div class="control-group">
-                            <div class="controls" id="inputRazsocial">
-                                <input id="txtrazsocial" class="span12" type="text" data-provide="typeahead" placeholder="Cliente" />
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <select id="cboEmpresa" class="span12 combobox" data-placeholder="Empresa"></select>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="span1"></div>
-                    <div class="span1">
-                        <div class="control-group">
-                            <label id="lblSerieNotaCredito" class="control-label" for="cboSerieNC">Serie</label>
-                        </div>
-                    </div>
 
-                    <div class="span1">
-                        <div class="control-group">
-                            <div class="controls">
-                                <select id="cboSerieNC" class="span12 combobox" data-placeholder="Serie">
-                                    <option></option>
-                                </select>    
+                            <div class="span1 offset1">
+                                <div class="control-group">
+                                    <label id="lblEstablecimiento" class="control-label" for="cboEstablecimiento">Establecimiento</label>
+                                </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="span1">
-                        <div class="control-group">
-                            <label id="lblNroNotaCredito" class="control-label" for="txtNroNC">Nro</label>
-                        </div>
-                    </div>
-
-                    <div class="span2">
-                        <div class="control-group">
-                            <div class="controls">
-                                <input id="txtNroNC" onkeypress='return ValidaNumeros(event,this);' maxlength="9" class="span12" type="text" placeholder="Nro" disabled="disabled" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="row-fluid">
-                    <div class="span1">
-                        <div class="control-group">
-                            <label class="control-label" for="txtrazsocial">Documento</label>
-                        </div>
-                    </div>
-                    <div class="span4">
-                        <div class="span5">
-                            <div class="control-group">
-                                <%--                            <label class="control-label span6" for="cboTipoDcto">Tipo Dcto.</label>--%>
-                                <select id="cboTipoDcto" class="span12 combobox" disabled="disabled">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="span2">
-                            <div class="control-group">
-                                <label class="control-label" for="txtNroDcto" style="text-align: right">
-                                    N° Dcto.
-                                </label>
-                            </div>
-                        </div>
-                        <div class="span5">
-                            <div class="control-group">
-                                <div class="controls">
-                                    <input id="txtNroDcto" class="span12" type="text" disabled="disabled" />
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <select id="cboEstablecimiento" class="span12 combobox" data-placeholder="Establecimiento">
+                                            <option></option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <div class="row-fluid">
+                            <div class="span1">
+                                <div class="control-group">
+                                    <label id="lblrazsocial" class="control-label" for="txtrazsocial">Cliente</label>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls" id="inputRazsocial">
+                                        <input id="txtrazsocial" class="span12" type="text" data-provide="typeahead" placeholder="Cliente" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span1"></div>
+                            <div class="span1">
+                                <div class="control-group">
+                                    <label id="lblSerieNotaCredito" class="control-label" for="cboSerieNC">Serie</label>
+                                </div>
+                            </div>
+
+                            <div class="span1">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <select id="cboSerieNC" class="span12 combobox" data-placeholder="Serie">
+                                            <option></option>
+                                        </select>    
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="span1">
+                                <div class="control-group">
+                                    <label id="lblNroNotaCredito" class="control-label" for="txtNroNC">Nro</label>
+                                </div>
+                            </div>
+
+                            <div class="span2">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input id="txtNroNC" onkeypress='return ValidaNumeros(event,this);' maxlength="9" class="span12" type="text" placeholder="Nro" disabled="disabled" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row-fluid">
+                            <div class="span1">
+                                <div class="control-group">
+                                    <label class="control-label" for="txtrazsocial">Documento</label>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="span5">
+                                    <div class="control-group">
+                                        <%--                            <label class="control-label span6" for="cboTipoDcto">Tipo Dcto.</label>--%>
+                                        <select id="cboTipoDcto" class="span12 combobox" disabled="disabled">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="control-group">
+                                        <label class="control-label" for="txtNroDcto" style="text-align: right">
+                                            N° Dcto.
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="span5">
+                                    <div class="control-group">
+                                        <div class="controls">
+                                            <input id="txtNroDcto" class="span12" type="text" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                    
-                    <div class="span1 offset1">
-                        <div class="control-group">
-                            <label id="lblcli" class="control-label" for="txtrazsocial">Dirección</label>
+                            <div class="span1 offset1">
+                                <div class="control-group">
+                                    <label id="lblcli" class="control-label" for="txtrazsocial">Dirección</label>
+                                </div>
+                            </div>
+
+                            <div class="span5">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input id="txtDireccionOrigen" class="span12" type="text" style="text-transform: uppercase" readonly/>
+
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
-                    </div>
 
-                    <div class="span5">
-                        <div class="control-group">
-                            <div class="controls">
-                                <input id="txtDireccionOrigen" class="span12" type="text" style="text-transform: uppercase" readonly/>
 
+
+                        <div class="row-fluid">
+                            <div class="span1">
+                                <div class="control-group">
+                                    <label class="control-label" for="txtFechaEmision">Fecha Emisión N. de Crédito</label>
+                                </div>
+                            </div>
+                            <div class="span2">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtFechaEmision" data-date-format="dd/mm/yyyy" disabled="disabled"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span1 offset3 ">
+                                <div class="control-group">
+                                    <label class="control-label" for="txtFechaTransaccion">Fecha Transacción</label>
+                                </div>
+                            </div>
+                            <div class="span2">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtFechaTransaccion" data-date-format="dd/mm/yyyy" disabled="disabled" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <br />
 
-                </div>
-
-
-
-                <div class="row-fluid">
-                    <div class="span1">
-                        <div class="control-group">
-                            <label class="control-label" for="txtFechaEmision">Fecha Emisión N. de Crédito</label>
-                        </div>
-                    </div>
-                    <div class="span2">
-                        <div class="control-group">
-                            <div class="controls">
-                                <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtFechaEmision" data-date-format="dd/mm/yyyy" disabled="disabled"/>
+                        <div class="row-fluid">
+                            <div class="span1">
+                                <div class="control-group">
+                                    <label class="control-label" for="cboMotivo">Motivo</label>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="span1 offset3 ">
-                        <div class="control-group">
-                            <label class="control-label" for="txtFechaTransaccion">Fecha Transacción</label>
-                        </div>
-                    </div>
-                    <div class="span2">
-                        <div class="control-group">
-                            <div class="controls">
-                                <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtFechaTransaccion" data-date-format="dd/mm/yyyy" disabled="disabled" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <br />
-
-                <div class="row-fluid">
-                    <div class="span1">
-                        <div class="control-group">
-                            <label class="control-label" for="cboMotivo">Motivo</label>
-                        </div>
-                    </div>
                                         
-                    <div class="span4">                                 
-                        <div class="control-group">
-                            <div class="controls">
-                                <select id="cboMotivo" class="span12 combobox"  data-placeholder="Motivo">
-                                    <option></option>
-                                </select>
+                            <div class="span4">                                 
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <select id="cboMotivo" class="span12 combobox"  data-placeholder="Motivo">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>                         
                             </div>
-                        </div>                         
-                    </div>
 
-                    <div class="span1"></div>
+                            <div class="span1"></div>
 
-                    <div class="span2">
-                        <div class="control-group">
-                            <div class="controls">
-                                <input type="checkbox" id="chkAplicar" />
-                                Aplicar a Doc. que Modifica
+                            <div class="span2">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input type="checkbox" id="chkAplicar" />
+                                        Aplicar a Doc. que Modifica
+                                    </div>
+                                </div>
+                            </div> 
+
+                            <div class="span3">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input type="checkbox" id="chkAlmacen" />
+                                        Recibir Productos de Cliente con esta Nota Crédito
+                                    </div>
+                                </div>
+                            </div>   
+                        </div>
+                        <br />
+                        <div class="row-fluid">
+                            <div class="span1">
+                                <div class="control-group">
+                                    <label class="control-label" for="txtGlosa">Glosa</label>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input id="txtGlosa" class="span12" type="text" maxlength="100" placeholder="Descripción detallada del motivo"/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div> 
 
-                    <div class="span3">
-                        <div class="control-group">
-                            <div class="controls">
-                                <input type="checkbox" id="chkAlmacen" />
-                                Recibir Productos de Cliente con esta Nota Crédito
-                            </div>
-                        </div>
-                    </div>   
-                </div>
-                <br />
-                <div class="row-fluid">
-                    <div class="span1">
-                        <div class="control-group">
-                            <label class="control-label" for="txtGlosa">Glosa</label>
-                        </div>
-                    </div>
-                    <div class="span4">
-                        <div class="control-group">
-                            <div class="controls">
-                                <input id="txtGlosa" class="span12" type="text" maxlength="100" placeholder="Descripción detallada del motivo"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        <!-- DOCUMENTO AL QUE MODIFICA -->
+                        <div class="span12" style="margin-left: 0">
+                            <div class="portlet box yellow">
+                                <div class="portlet-title" style="cursor: pointer;">
+                                    <h4><i class="icon-chevron-down"></i>Documento al que Modifica</h4>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="row-fluid">                    
+                                        <div class="span1">
+                                            <div class="control-group">
+                                                <label class="control-label" for="cboTipoDocumento">Tipo Documento</label>
+                                            </div>
+                                        </div>
+                                        <div class="span3">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <select id="cboTipoDocumento" class="span12 combobox" data-placeholder="Tipo de documento">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                <!-- DOCUMENTO AL QUE MODIFICA -->
-                <div class="span12" style="margin-left: 0">
-                    <div class="portlet box yellow">
-                        <div class="portlet-title" style="cursor: pointer;">
-                            <h4><i class="icon-chevron-down"></i>Documento al que Modifica</h4>
-                        </div>
-                        <div class="portlet-body">
-                            <div class="row-fluid">                    
-                                <div class="span1">
-                                    <div class="control-group">
-                                        <label class="control-label" for="cboTipoDocumento">Tipo Documento</label>
-                                    </div>
-                                </div>
-                                <div class="span3">
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <select id="cboTipoDocumento" class="span12 combobox" data-placeholder="Tipo de documento">
-                                            </select>
+                                        <div class="span1">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <button type="button" class="btn blue" id="btnBuscarDocumento"><i class="icon-search" style="line-height: initial"></i></button>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div class="span1">
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <button type="button" class="btn blue" id="btnBuscarDocumento"><i class="icon-search" style="line-height: initial"></i></button>
+                                        <div class="span1 offset1">
+                                            <div class="control-group">
+                                                <label id="Label1" class="control-label" for="txtSerie">
+                                                    Serie</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div class="span1 offset1">
-                                    <div class="control-group">
-                                        <label id="Label1" class="control-label" for="txtSerie">
-                                            Serie</label>
-                                    </div>
-                                </div>
-                                <div class="span1">
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <input id="txtSerie" class="span12" type="text" disabled="disabled" />
+                                        <div class="span1">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <input id="txtSerie" class="span12" type="text" disabled="disabled" />
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="span1">
-                                    <div class="control-group">
-                                        <label id="Label2" class="control-label" for="txtNro">
-                                            Nro.</label>
-                                    </div>
-                                </div>
-                                <div class="span2">
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <input id="txtNro" class="span12" type="text" disabled="disabled" />
+                                        <div class="span1">
+                                            <div class="control-group">
+                                                <label id="Label2" class="control-label" for="txtNro">
+                                                    Nro.</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                        <div class="span2">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <input id="txtNro" class="span12" type="text" disabled="disabled" />
+                                                </div>
+                                            </div>
+                                        </div>
                     
-                            </div>
+                                    </div>
                             
-                            <div class="row-fluid">
+                                    <div class="row-fluid">
                                 
-                                <div class="span1">
-                                    <div class="control-group">
-                                        <label class="control-label" for="txtFechaDocModif">Fecha Emisón Doc.</label>
-                                    </div>
-                                </div>
-                                <div class="span2">
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtFechaDocModif" data-date-format="dd/mm/yyyy" disabled="disabled" />
+                                        <div class="span1">
+                                            <div class="control-group">
+                                                <label class="control-label" for="txtFechaDocModif">Fecha Emisón Doc.</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                        <div class="span2">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtFechaDocModif" data-date-format="dd/mm/yyyy" disabled="disabled" />
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                <div class="span1 offset3">
-                                    <div class="control-group">
-                                        <label class="control-label">Estado Pago:</label>
-                                    </div>
-                                </div>
+                                        <div class="span1 offset3">
+                                            <div class="control-group">
+                                                <label class="control-label">Estado Pago:</label>
+                                            </div>
+                                        </div>
 
-                                <div class="span1">
-                                    <div class="control-group">
-                                        <label style="font-weight:bold"  class ="control-label" id="lblPagoInd">-</label>
-                                    </div>
-                                </div>
+                                        <div class="span1">
+                                            <div class="control-group">
+                                                <label style="font-weight:bold"  class ="control-label" id="lblPagoInd">-</label>
+                                            </div>
+                                        </div>
 
-                                <div class="span1">
-                                    <div class="control-group">
-                                        <label class="control-label">Estado Despacho:</label>
-                                    </div>
-                                </div>
+                                        <div class="span1">
+                                            <div class="control-group">
+                                                <label class="control-label">Estado Despacho:</label>
+                                            </div>
+                                        </div>
 
-                                <div class="span1">
-                                    <div class="control-group">
-                                        <label style="font-weight:bold"  class ="control-label" id="lblDespachadoInd">-</label>
-                                    </div>
-                                </div>
+                                        <div class="span1">
+                                            <div class="control-group">
+                                                <label style="font-weight:bold"  class ="control-label" id="lblDespachadoInd">-</label>
+                                            </div>
+                                        </div>
 
+                                    </div>
+
+                                </div>
                             </div>
-
                         </div>
-                    </div>
-                </div>
 
 
 
-                 <div class="row-fluid" style="margin-bottom: 20px;">
-                   <%-- <div class="span1">
-                        <div class="control-group">
-                            <label class="control-label" for="devolucion">Devolución</label>
-                        </div>
-                    </div>
-                    <div class="span2">
-                        <div class="controls">
-                            <label class="radio">
-                                <div class="radio" id="Div3">
-                                    <span>
-                                        <input type="radio" name="devolucion" value="T" checked="checked" style="opacity: 0;" id="rbTotal" />
-                                    </span>
+                         <div class="row-fluid" style="margin-bottom: 20px;">
+                           <%-- <div class="span1">
+                                <div class="control-group">
+                                    <label class="control-label" for="devolucion">Devolución</label>
                                 </div>
-                                Total
-                            </label>
-                            <label class="radio">
-                                <div class="radio" id="Div4">
-                                    <span>
-                                        <input type="radio" name="devolucion" value="P" style="opacity: 0;" id="rbParcial" />
-                                    </span>
+                            </div>
+                            <div class="span2">
+                                <div class="controls">
+                                    <label class="radio">
+                                        <div class="radio" id="Div3">
+                                            <span>
+                                                <input type="radio" name="devolucion" value="T" checked="checked" style="opacity: 0;" id="rbTotal" />
+                                            </span>
+                                        </div>
+                                        Total
+                                    </label>
+                                    <label class="radio">
+                                        <div class="radio" id="Div4">
+                                            <span>
+                                                <input type="radio" name="devolucion" value="P" style="opacity: 0;" id="rbParcial" />
+                                            </span>
+                                        </div>
+                                        Parcial
+                                    </label>
                                 </div>
-                                Parcial
-                            </label>
-                        </div>
-                    </div>--%>
+                            </div>--%>
 
                     
                      
-                </div>         
+                        </div>         
   
 
-                <div class="row-fluid">
-                    <div class="span10 offset1">
-                        <div class="row-fluid" id="divDctoSeleccionado" style="display: none;">
-                            <h5 style="font-style: italic;">Documento:&nbsp;<span id="lblDctoSeleccionado"></span>
-                                &nbsp;&nbsp;&nbsp;&nbsp;Moneda:<span class="lblMoneda"></span>
-                                &nbsp;&nbsp;&nbsp;&nbsp;Precios Inc. IGV:<span class="lblIncIgv">Para Productos Gravados / No para Establecimiento Exonerado</span>
-                            </h5>
-                        </div>
-
-                        <div class="row-fluid" id="divTblDetallesCompraVenta">
-                            <table id="tblDetallesCompraVenta" class="display DTTT_selectable bordered dataTable no-footer" style='width: 100%;'>
-                                <thead style="color: white; background-color: rgb(75, 135, 184);">
-                                    <tr>
-                                        <th>CÓDIGO<br />
-                                            PRODUCTO</th>
-                                        <th>PRODUCTO</th>
-                                        <th>UNIDAD<br />
-                                            MEDIDA</th>
-                                        <th>CANTIDAD</th>
-                                        <th style="max-width: 60px; width: 90px;">CANTIDAD<br />
-                                            DEVOLUCIÓN</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <br />
-
-                        <div id="divTotales" style="display: none;">
-
-                            <div class="row-fluid">
-                                <!-- TOTALES -->
-                                <div class="span2 offset8">
-                                    <div class="control-group">
-                                        <label id="lblMontogravado" class="control-label lblGravado"  style="font-weight:bold;">-</label>
-                                    </div>
+                        <div class="row-fluid">
+                            <div class="span10 offset1">
+                                <div class="row-fluid" id="divDctoSeleccionado" style="display: none;">
+                                    <h5 style="font-style: italic;">Documento:&nbsp;<span id="lblDctoSeleccionado"></span>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;Moneda:<span class="lblMoneda"></span>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;Precios Inc. IGV:<span class="lblIncIgv">Para Productos Gravados / No para Establecimiento Exonerado</span>
+                                    </h5>
                                 </div>
 
-                                <div class="span2">
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <input id='txtMontoGravado' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
-                                        </div>
-                                    </div>
-                                </div>                                
-                            </div>
-
-                            <div class="row-fluid">
-                                <!-- TOTALES -->
-                                <div class="span2 offset8">
-                                    <div class="control-group">
-                                        <label id="lblMontoInafecta" class="control-label lblInafecta"  style="font-weight:bold;">-</label>
-                                    </div>
+                                <div class="row-fluid" id="divTblDetallesCompraVenta">
+                                    <table id="tblDetallesCompraVenta" class="display DTTT_selectable bordered dataTable no-footer" style='width: 100%;'>
+                                        <thead style="color: white; background-color: rgb(75, 135, 184);">
+                                            <tr>
+                                                <th>CÓDIGO<br />
+                                                    PRODUCTO</th>
+                                                <th>PRODUCTO</th>
+                                                <th>UNIDAD<br />
+                                                    MEDIDA</th>
+                                                <th>CANTIDAD</th>
+                                                <th style="max-width: 60px; width: 90px;">CANTIDAD<br />
+                                                    DEVOLUCIÓN</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
 
-                                <div class="span2">
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <input id='txtMontoInafecta' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
-                                        </div>
-                                    </div>
-                                </div>                                
-                            </div>
+                                <br />
 
-                            <div class="row-fluid">
-                                <!-- TOTALES -->
-                                <div class="span2 offset8">
-                                    <div class="control-group">
-                                        <label id="lblMontoExonerado" class="control-label lblExonerado"  style="font-weight:bold;">-</label>
-                                    </div>
-                                </div>
+                                <div id="divTotales" style="display: none;">
 
-                                <div class="span2">
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <input id='txtMontoExonerado' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
-                                        </div>
-                                    </div>
-                                </div>                                
-                            </div>
-
-
-
-
-
-                            <div class="row-fluid">
-                                <!-- TOTALES -->
-                                <div class="span2 offset8">
-                                    <div class="control-group">
-                                        <label id="lblMontoIgv" class="control-label lblPctjIgv"  style="font-weight:bold;">-</label>
-                                    </div>
-                                </div>
-
-                                <div class="span2">
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <input id='txtMontoIgv' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
-                                        </div>
-                                    </div>
-                                </div>                                
-                            </div>
-
-                            
-                            <div class="row-fluid">
-                                <!-- TOTALES -->                                
-                                <div class="span2 offset8">
-                                    <div class="control-group">
-                                        <label id="lblTotalDevolucion" class="control-label lblMoneda span6" style="font-weight:bold;">-</label>
-                                    </div>
-                                </div>
-
-                                <div class="span2">
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <input id='txtTotalDevolucion' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <input id='txtMontoISC' disabled='disabled' class="span12" style='text-align: right;' type='hidden' onkeypress="return ValidaDecimales(event,this,2)" />
-
-                            <div class="row-fluid">
-                                <div id="divMensajes">
-                                    <!-- MENSAJES -->
-                                    <div class="span8 ">
-                                         <div class="row-fluid">
-                                            <div class="span10 alert alert-info" id="divInfo">
-                                                <%--<p id="lblMsgDeuda">* Documento Referenciado tiene una deuda de: <strong id="lblDeuda">...</strong></p>--%>
-                                                <p id="lblMsgUsable">* La Nota de Crédito<strong class="no">&nbsp;NO</strong>&nbsp;se utilizará en el mismo Documento Referenciado.</p>
-                                                <p id="lblMsgDespacho">* La Nota de Crédito<strong class="si">&nbsp;NO</strong>&nbsp;realizará movimientos de Inventario y Kárdex.</p>
-                                                <%--<p id="lblMsgDevolverDinero">* La Nota de Crédito<strong class="si">&nbsp;NO</strong>&nbsp;devolverá el dinero pagado por Caja: &nbsp;<strong class="caja"></strong></p>--%>
+                                    <div class="row-fluid">
+                                        <!-- TOTALES -->
+                                        <div class="span2 offset8">
+                                            <div class="control-group">
+                                                <label id="lblMontogravado" class="control-label lblGravado"  style="font-weight:bold;">-</label>
                                             </div>
                                         </div>
-                                    </div>   
 
+                                        <div class="span2">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <input id='txtMontoGravado' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
+                                                </div>
+                                            </div>
+                                        </div>                                
+                                    </div>
+
+                                    <div class="row-fluid">
+                                        <!-- TOTALES -->
+                                        <div class="span2 offset8">
+                                            <div class="control-group">
+                                                <label id="lblMontoInafecta" class="control-label lblInafecta"  style="font-weight:bold;">-</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="span2">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <input id='txtMontoInafecta' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
+                                                </div>
+                                            </div>
+                                        </div>                                
+                                    </div>
+
+                                    <div class="row-fluid">
+                                        <!-- TOTALES -->
+                                        <div class="span2 offset8">
+                                            <div class="control-group">
+                                                <label id="lblMontoExonerado" class="control-label lblExonerado"  style="font-weight:bold;">-</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="span2">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <input id='txtMontoExonerado' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
+                                                </div>
+                                            </div>
+                                        </div>                                
+                                    </div>
+
+
+
+
+
+                                    <div class="row-fluid">
+                                        <!-- TOTALES -->
+                                        <div class="span2 offset8">
+                                            <div class="control-group">
+                                                <label id="lblMontoIgv" class="control-label lblPctjIgv"  style="font-weight:bold;">-</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="span2">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <input id='txtMontoIgv' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
+                                                </div>
+                                            </div>
+                                        </div>                                
+                                    </div>
+
+                            
+                                    <div class="row-fluid">
+                                        <!-- TOTALES -->                                
+                                        <div class="span2 offset8">
+                                            <div class="control-group">
+                                                <label id="lblTotalDevolucion" class="control-label lblMoneda span6" style="font-weight:bold;">-</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="span2">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <input id='txtTotalDevolucion' disabled='disabled' class="span12" style='text-align: right;' type='text' onkeypress="return ValidaDecimales(event,this,2)" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <input id='txtMontoISC' disabled='disabled' class="span12" style='text-align: right;' type='hidden' onkeypress="return ValidaDecimales(event,this,2)" />
+
+                                    <div class="row-fluid">
+                                        <div id="divMensajes">
+                                            <!-- MENSAJES -->
+                                            <div class="span8 ">
+                                                 <div class="row-fluid">
+                                                    <div class="span10 alert alert-info" id="divInfo">
+                                                        <%--<p id="lblMsgDeuda">* Documento Referenciado tiene una deuda de: <strong id="lblDeuda">...</strong></p>--%>
+                                                        <p id="lblMsgUsable">* La Nota de Crédito<strong class="no">&nbsp;NO</strong>&nbsp;se utilizará en el mismo Documento Referenciado.</p>
+                                                        <p id="lblMsgDespacho">* La Nota de Crédito<strong class="si">&nbsp;NO</strong>&nbsp;realizará movimientos de Inventario y Kárdex.</p>
+                                                        <%--<p id="lblMsgDevolverDinero">* La Nota de Crédito<strong class="si">&nbsp;NO</strong>&nbsp;devolverá el dinero pagado por Caja: &nbsp;<strong class="caja"></strong></p>--%>
+                                                    </div>
+                                                </div>
+                                            </div>   
+
+                                        </div>
+                                    </div>     
                                 </div>
-                            </div>     
+                            </div>
                         </div>
+
+                        <div class="row-fluid">
+                        </div>
+
+                        <div class="row-fluid">
+                        </div>
+
+                        <div class="form-actions" style="margin-top: 20px;">
+                            <a class="btn hidden black" id="btnEFac" style="display:none;"><i class="icon-file"></i>&nbsp;Fac. Electronica</a>
+                            <a id="grabar" class="btn blue" href="javascript:Crear();"><i class="icon-save"></i>&nbsp;Grabar</a>
+                            <a id="cancelar" class="btn" href="javascript:Cancelar();"><i class="icon-remove"></i>&nbsp;Cancelar</a>
+                            <a id="imprimir" class="btn black" href="javascript:ImprimirDcto();" style="display:none"><i class="icon-print"></i>&nbsp;Imprimir</a>
+                        </div>
+
                     </div>
-                </div>
+                    <!-- FIN DE GENERALES-->
 
-                <div class="row-fluid">
-                </div>
-
-                <div class="row-fluid">
-                </div>
-
-                <div class="form-actions" style="margin-top: 20px;">
-                    <a class="btn hidden black" id="btnEFac" style="display:none;"><i class="icon-file"></i>&nbsp;Fac. Electronica</a>
-                    <a id="grabar" class="btn blue" href="javascript:Crear();"><i class="icon-save"></i>&nbsp;Grabar</a>
-                    <a id="cancelar" class="btn" href="javascript:Cancelar();"><i class="icon-remove"></i>&nbsp;Cancelar</a>
-                    <a id="imprimir" class="btn black" href="javascript:ImprimirDcto();" style="display:none"><i class="icon-print"></i>&nbsp;Imprimir</a>
+                    <!-- INICIO DEL TAB ASIENTOS CONTABLES-->
+                    <div class="tab-pane" id="asientos_contables">                                          
+                        <h1></h1>
+                    </div>
+                    <!-- FIN DE ASIENTOS CONTABLES-->
                 </div>
 
             </div>

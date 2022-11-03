@@ -657,12 +657,16 @@ var CAMNGPR = function () {
                     $("#grabar").attr("href", "?f=CAMNGPR");
                     $("#cancelar").attr("style", "display:none;");
 
+                    fnCargaTablaCuentasC(code);
+
                 },
                 error: function (msg) {
                     Desbloquear("ventana");
                     alertCustom("Registro NO se listo correctamente. Vuelva a intentarlo.");
                 }
             });
+        } else {
+            fnCargaTablaCuentasC();
         }
     }
     //--
@@ -712,6 +716,21 @@ var CAMNGPR = function () {
             }
         }
     };
+
+    var fnCargaTablaCuentasC = function (codDcto) {
+        $("#asientos_contables").load('../../vistas/CT/abstract/LAsientoContable.html', function (html) {
+            $.getScript("../../vistas/CT/abstract/js/LAsientoContable.js")
+                .done(function (script, textStatus) {
+                    vAsientoContable = LAsientoContable;
+                    vAsientoContable.sTipoMov = "0038";
+                    vAsientoContable.sCodDoc = codDcto;
+                    vAsientoContable.objDoc = null;
+                    vAsientoContable.validate = false;
+                    vAsientoContable.nc_generic = true;
+                    vAsientoContable.init(codDcto);
+                });
+        });
+    }
 
     return {
         init: function () {
@@ -1136,6 +1155,9 @@ function GrabarNotaCredito() {
 
                        $("#hfCodigoNotaCredito").val(datos[0].CODIGO);
                        $("#btnImprimirDcto").removeAttr("style");
+
+                       vAsientoContable.sCodDoc = $("#hfCodigoNotaCredito").val();
+                       $('#btnGenerarAsiento').click();
                    } else if (datos[0].CODIGO == "LIMITE") {
                        alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> Se ha excedido el límite de documentos autorizados!");
                    }

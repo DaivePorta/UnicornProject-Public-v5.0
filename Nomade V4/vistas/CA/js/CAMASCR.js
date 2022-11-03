@@ -196,7 +196,7 @@ function datosTabla() {
             periodo = xData.PERIODO;
             pidm = xData.PIDM;
             //datos_fila += fecha + ',' + comprobante + ',' + serie + ',' + numero + ',' + pidm + ',' + persona + ',' + compras_ind + ',' + total + ',' + concepto + ',' + subconcepto + ',' + glosa + ',' + tipo_bien + ',' + periodo;
-            datos_fila += concepto + ',' + comprobante + ',' + serie + ',' + numero + ',' + pidm + ',' + persona + ',' + compras_ind + ',' + total + ',' + concepto + ',' + subconcepto + ',' + glosa + ',' + tipo_bien + ',' + periodo;
+            datos_fila += fecha + ',' + comprobante + ',' + serie + ',' + numero + ',' + pidm + ',' + persona + ',' + compras_ind + ',' + total + ',' + concepto + ',' + subconcepto + ',' + glosa + ',' + tipo_bien + ',' + periodo;
             datos_fila += '|';
 
         });

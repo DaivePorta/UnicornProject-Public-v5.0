@@ -15,8 +15,8 @@
                 <h4>
                     <i class="icon-reorder"></i>REPORTE DE CUENTAS POR PAGAR</h4>
                 <div class="actions">
-                    <a class="btn black printlist" style="margin-top: -10px;"><i class="icon-print"></i>&nbsp;Imprimir</a>
-                   <%-- <a href="?f=cplrcpp" class="btn red"><i class="icon-list"></i>&nbsp;Listar</a>--%>
+                    <a href="?f=CPLRCPP" class="btn green " style="margin-top: -10px;"><i class="icon-plus"></i>&nbsp;Nuevo</a>
+                    <a class="btn black printlist" style="margin-top: -10px;"><i class="icon-print"></i>&nbsp;Imprimir</a>                    
                 </div>
 
             </div>

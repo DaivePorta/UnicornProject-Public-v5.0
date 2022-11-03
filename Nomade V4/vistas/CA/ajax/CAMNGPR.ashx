@@ -220,6 +220,10 @@ Public Class CAMNGPR : Implements IHttpHandler
                 Case "IMPR"
                     context.Response.ContentType = "application/text; charset=utf-8"
                     res = GenerarDctoImprimir(p_CODE, p_CTLG_CODE)
+
+                Case "GEN_ASIENTO"
+                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                    res = oCTGeneracionAsientos.GenerarAsientoNotaCreditoGenericaProveedor(p_CODE, USUA_ID)
                 Case Else
 
             End Select

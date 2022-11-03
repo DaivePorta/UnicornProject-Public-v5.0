@@ -397,7 +397,7 @@ Public Class CAMNOCL : Implements IHttpHandler
 
                 Case "GEN_ASIENTO"
                     Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
-                    res = oCTGeneracionAsientos.GenerarAsientoNotaCreditoCliente(p_CODE, p_USUA_ID)
+                    res = oCTGeneracionAsientos.GenerarAsientoNotaCreditoCliente(p_CODE, USUA_ID)
 
                 Case Else
 

@@ -48,7 +48,7 @@ Public Class CPLRDAT : Implements IHttpHandler
                     res = resb.ToString()
                 Case "1" 'reporte de cuentas por pagar
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = cpCuentaPorPagar.ListarDeudasAtrasadasPorPagar(p_CTLG_CODE, p_SCSL)
+                    dt = cpCuentaPorPagar.ListarDeudasAtrasadasPorPagar(p_CTLG_CODE, p_SCSL, "")
                     res = GenerarTablaDeudasAtrasadas(dt)
 
             End Select

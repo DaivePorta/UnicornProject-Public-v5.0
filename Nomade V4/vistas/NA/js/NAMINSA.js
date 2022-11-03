@@ -6784,19 +6784,20 @@ var Grabar = function () {
 
         //HACER OBLIGATORIO TENER UNA LINEA DE CREDITO PARA PODER REALIZAR SALIDAS POR VENTA NACIONAL
         if ($("#rbSalida").is(':checked') && $("#cboOperacion").val() == "0001") { //0001: VENTA NACIONAL
-
-            CargarDatosLineaCredito($("#hfPIDM").val());
-            if (datosLineaCredito.length > 0) {
-                if (parseFloat(datosLineaCredito[0].ACTUAL) > 0) {
-                    console.log("ok")
-                } else {
-                    /*a.push("cboOrigen");
-                    a.push("txtSerieDctoOrigen_0");
-                    a.push("txtNroDctoOrigen_0");*/
-                    alertCustom("El cliente seleccionado no tiene linea de crédito para realizar esta operación.");
-                    return;
+            if (dcto_origen == "NINGUNO") {//UNICAMENTE PARA SALIDAS QUE NO TIENEN DOCUMENTO DE ORIGEN Y QUE LUEGO SE VAN A PROCESAR EN LA PANTALLA DE VENTA
+                CargarDatosLineaCredito($("#hfPIDM").val());
+                if (datosLineaCredito.length > 0) {
+                    if (parseFloat(datosLineaCredito[0].ACTUAL) > 0) {
+                        console.log("ok")
+                    } else {
+                        /*a.push("cboOrigen");
+                        a.push("txtSerieDctoOrigen_0");
+                        a.push("txtNroDctoOrigen_0");*/
+                        alertCustom("El cliente seleccionado no tiene linea de crédito para realizar esta operación.");
+                        return;
+                    }
                 }
-            }
+            }            
         }
 
         if ($('#hfSIN_DESTINO').val() === 'NO') {

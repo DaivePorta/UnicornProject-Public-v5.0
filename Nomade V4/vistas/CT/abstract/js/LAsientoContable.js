@@ -107,7 +107,7 @@
             var sCodigo = row.CODIGO;
 
             var oMovCuentaDet = fnListaMovContableDet(sCodigo);
-            console.log(oMovCuentaDet);
+            //console.log(oMovCuentaDet);
             var sHtml = "<div class='span12' id='divTblCuentas'>";
             sHtml += "<div class='span12' id='divTblCuentas'>";
             sHtml += "<table id='tblCuentas' class='table table-bordered'>";
@@ -208,35 +208,43 @@
 
     var eventos = function () {
         $('#btnGenerarAsiento').on('click', function () {
-            debugger;
-            LAsientoContable.sCodDoc = $.trim(LAsientoContable.sCodDoc);
-            if (LAsientoContable.sCodDoc === "") {
-                infoCustom("Imposible continuar. ¡El documento no está completado!");
-                return;
-            }
+            if (LAsientoContable.validate) {
+                LAsientoContable.sCodDoc = $.trim(LAsientoContable.sCodDoc);
+                if (LAsientoContable.sCodDoc === "") {
+                    infoCustom("Imposible continuar. ¡El documento no está completado!");
+                    return;
+                }
 
-            if (LAsientoContable.objDoc.length === 0 || LAsientoContable.objDoc === undefined) {
-                infoCustom("No se encontró el Documento: " + LAsientoContable.sCodDoc);
-                return;
-            }
+                if (LAsientoContable.objDoc.length === 0 || LAsientoContable.objDoc === undefined) {
+                    infoCustom("No se encontró el Documento: " + LAsientoContable.sCodDoc);
+                    return;
+                }
 
-            let sAnuladoInd = LAsientoContable.objDoc[0].AnuladoInd;
-            if (sAnuladoInd === "S") {
-                infoCustom("Imposible continuar. ¡El documento está anulado!");
-                return;
-            }
+                let sAnuladoInd = LAsientoContable.objDoc[0].AnuladoInd;
+                if (sAnuladoInd === "S") {
+                    infoCustom("Imposible continuar. ¡El documento está anulado!");
+                    return;
+                }
 
-            let sCompletoInd = LAsientoContable.objDoc[0].CompletoInd;
-            if (sCompletoInd === "N") {
-                infoCustom("Imposible continuar. ¡El documento no está completado!");
-                return;
-            }
+                let sCompletoInd = LAsientoContable.objDoc[0].CompletoInd;
+                if (sCompletoInd === "N") {
+                    infoCustom("Imposible continuar. ¡El documento no está completado!");
+                    return;
+                }
 
-            let sCodMovContab = LAsientoContable.objDoc[0].MOVCONT_CODE;
-            sCodMovContab = (sCodMovContab === null ? "" : sCodMovContab);
-            if (sCodMovContab === "") {
+                let sCodMovContab = LAsientoContable.objDoc[0].MOVCONT_CODE;
+                sCodMovContab = (sCodMovContab === null ? "" : sCodMovContab);
+                if (sCodMovContab === "") {
+                    fnGenerarAsiento(LAsientoContable.sCodDoc);
+                }
+            } else {
+                if (LAsientoContable.sCodDoc === undefined || LAsientoContable.sCodDoc === null || LAsientoContable.sCodDoc === "") {
+                    //infoCustom("No se encontró el Documento: " + LAsientoContable.sCodDoc);
+                    return;
+                }
                 fnGenerarAsiento(LAsientoContable.sCodDoc);
             }
+            
 
         });
 
@@ -262,10 +270,22 @@
                 break; 
             case "0003": /* GASTO*/
                 sUrl = "vistas/CP/ajax/CPMAGAS.ashx";
-                break; 
+                break;
             case "0009": /* ANTICIPO*/
                 sUrl = "vistas/NV/ajax/NVMANTI.ashx";
-                break;   
+                break;
+            case "0013": /* NOTA DE CREDITO CLIENTE*/
+                if (LAsientoContable.nc_generic)
+                    sUrl = "vistas/CA/ajax/CAMNGCL.ashx";
+                else
+                    sUrl = "vistas/CA/ajax/CAMNOCL.ashx";
+                break;
+            case "0038": /* NOTA DE CREDITO PROVEEDOR*/
+                if (LAsientoContable.nc_generic)
+                    sUrl = "vistas/CA/ajax/CAMNGPR.ashx";
+                else
+                    sUrl = "vistas/CA/ajax/CAMNOPR.ashx";
+                break;
         }     
 
         $.ajax({
@@ -402,6 +422,8 @@
         objDoc: "",
         sCodDoc: "",
         sTipoMov: "",
+        validate: true,
+        nc_generic: false,
         limpiar: function () {
             oTableLista.fnClearTable();
             LAsientoContable.objDoc = "";

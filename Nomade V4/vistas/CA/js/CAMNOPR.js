@@ -530,17 +530,15 @@ var CAMNOPR = function () {
 
                     }
 
-                    
-                                        
-                   
-
-                    
+                    fnCargaTablaCuentasC(code);                    
 
                 },
                 error: function (msg) {
                     alert(msg);
                 }
             });
+        } else {
+            fnCargaTablaCuentasC();
         }
     }
 
@@ -660,6 +658,20 @@ var CAMNOPR = function () {
             $("#txtTotalDevolucion").val(nTotal.toFixed(2));
         }
 
+    }
+
+    var fnCargaTablaCuentasC = function (codDcto) {
+        $("#asientos_contables").load('../../vistas/CT/abstract/LAsientoContable.html', function (html) {
+            $.getScript("../../vistas/CT/abstract/js/LAsientoContable.js")
+                .done(function (script, textStatus) {
+                    vAsientoContable = LAsientoContable;
+                    vAsientoContable.sTipoMov = "0038";
+                    vAsientoContable.sCodDoc = codDcto;
+                    vAsientoContable.objDoc = null;
+                    vAsientoContable.validate = false;
+                    vAsientoContable.init(codDcto);
+                });
+        });
     }
 
     return {
@@ -1021,6 +1033,9 @@ function GrabarNotaCredito() {
 
                                 $("#divTotales").slideDown();
                                 $("#btnImprimirDcto").removeAttr("style");
+
+                                vAsientoContable.sCodDoc = $("#hfCodigoNotaCredito").val();
+                                $('#btnGenerarAsiento').click();
                             }
 
                         }
