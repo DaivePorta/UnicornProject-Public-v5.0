@@ -106,6 +106,10 @@
 <script type="text/javascript" src="../../recursos/plugins/selectize/js/standalone/selectize.js"></script>
 <link rel="stylesheet" href="../../recursos/plugins/selectize/css/selectize.css" />
 <link rel="stylesheet" href="../../recursos/plugins/selectize/css/selectize.bootstrap2.css" />
+<div class="row-fluid">
+    <asp:HiddenField ID="CodDoc" runat="server" />
+    <asp:HiddenField ID="Desca" runat="server" />
+</div>
 
 <div class="row-fluid" id="contenedor">
     <div class="span12">
@@ -113,11 +117,13 @@
             <div class="portlet-title">
                 <h4><i class="icon-reorder"></i>DOCUMENTO VENTA RÁPIDA</h4>
                 <div class="actions">
+                    <a class="btn red hidden" id="btnPdfAlt"><i class="icon-book" ></i>&nbsp;Descargar PDF</a>
                     <a class="btn green hidden" id="btnWhatsapp"><i class="icon-phone"></i>&nbsp;Whatsapp</a>
                     <a class="btn purple hidden" id="btnMail"><i class="icon-envelope"></i>&nbsp;Enviar Mail</a>                    
                     <a class="btn black btnImprimir" href="javascript:ImprimirDctoVenta();" style="display: none;"><i class="icon-print"></i>&nbsp;Imprimir</a>
                     <a class="btn green" onclick="javascript:NuevaVenta();"><i class="icon-plus"></i>&nbsp;Nuevo</a>
                     <a class="btn red" href="?f=nvldovr"><i class="icon-list"></i>&nbsp;Listar</a>
+                    <asp:Button class="btn red hidden" ID="btnDescPDF" runat="server" OnClick="btnPdf_Click"/>
                 </div>
                 <div style="clear: both"></div>
             </div>

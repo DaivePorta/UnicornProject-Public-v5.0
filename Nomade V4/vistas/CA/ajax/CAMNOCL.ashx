@@ -57,6 +57,8 @@ Public Class CAMNOCL : Implements IHttpHandler
     'correo
     Dim REMITENTE, DESTINATARIOS, ASUNTO, MENSAJE As String
 
+    'WHATSAPP CLOUD API
+    Dim RECIPIENT_PHONE_NUMBER, MENSAJEWHATSAPP As String
 
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
 
@@ -138,6 +140,10 @@ Public Class CAMNOCL : Implements IHttpHandler
         DESTINATARIOS = context.Request("DESTINATARIOS")
         ASUNTO = context.Request("asunto")
         MENSAJE = context.Request("MENSAJE")
+
+        'WHATSAPP CLOUD API
+        RECIPIENT_PHONE_NUMBER = context.Request("RECIPIENT_PHONE_NUMBER")
+        MENSAJEWHATSAPP = context.Request("MENSAJEWHATSAPP")
 
         Try
 
@@ -369,9 +375,13 @@ Public Class CAMNOCL : Implements IHttpHandler
                     'GenerarPDF(p_NOCC_CODE, p_CTLG_CODE)
                     'End If
                     'Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_NOCC_CODE & ".pdf"
-                    GenerarPDF(p_NOCC_CODE, p_CTLG_CODE)
+                    'GenerarPDF(p_NOCC_CODE, p_CTLG_CODE)
                     'End If
+
                     Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_NOCC_CODE & ".pdf"
+                    If File.Exists(datoAj) = False Then
+                        GenerarPDF(p_NOCC_CODE, p_CTLG_CODE)
+                    End If
 
                     MENSAJE += "<br>"
                     Dim documento As String = ""
@@ -380,6 +390,22 @@ Public Class CAMNOCL : Implements IHttpHandler
 
                     'email.enviar(REMITENTE, REMITENTE, DESTINATARIOS, ASUNTO, MENSAJE)
                     email.enviar(REMITENTE, REMITENTE, DESTINATARIOS, ASUNTO, MENSAJE, datoAj)
+                Case "whatsapp"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    Dim whatsapp As New Nomade.Mail.NomadeMail("Bn")
+                    Dim Plantilla As String = "Nota de Credito"
+
+                    'Dim f_Name As String = w_NAME.Substring(0, w_NAME.IndexOf(" "))
+                    Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_NOCC_CODE & ".pdf"
+
+                    'se asume por defecto que el pdf existe
+
+                    If File.Exists(datoAj) = False Then
+                        GenerarPDF(p_NOCC_CODE, p_CTLG_CODE)
+                    End If
+
+                    whatsapp.enviarWhatsapp(RECIPIENT_PHONE_NUMBER, p_NOCC_CODE, MENSAJEWHATSAPP, Plantilla, datoAj)
+
                 Case "ANULAR" 'ANULAR NOTA DE CREDITO CLIENTE
                     context.Response.ContentType = "application/text; charset=utf-8"
                     res = caNotaCredito.AnularNotaCreditoCliente(p_NOCC_CODE, ANULAC_ID, CMNT_ANULAC,

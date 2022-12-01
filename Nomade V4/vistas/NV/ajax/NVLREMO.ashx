@@ -7,6 +7,7 @@ Imports System.Web
 Imports System.Data
 Imports System.IO
 Imports System.IO.FileStream
+Imports SelectPdf
 
 Public Class NVLREMO : Implements IHttpHandler
     Dim OPCION As String
@@ -28,6 +29,9 @@ Public Class NVLREMO : Implements IHttpHandler
     'correo
     Dim REMITENTE, DESTINATARIOS, ASUNTO, MENSAJE As String
 
+    'WHATSAPP CLOUD API
+    Dim RECIPIENT_PHONE_NUMBER, MENSAJEWHATSAPP As String
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
 
         OPCION = context.Request("OPCION")
@@ -43,6 +47,10 @@ Public Class NVLREMO : Implements IHttpHandler
         DESTINATARIOS = context.Request("DESTINATARIOS")
         ASUNTO = context.Request("asunto")
         MENSAJE = context.Request("MENSAJE")
+
+        'WHATSAPP CLOUD API
+        RECIPIENT_PHONE_NUMBER = context.Request("RECIPIENT_PHONE_NUMBER")
+        MENSAJEWHATSAPP = context.Request("MENSAJEWHATSAPP")
 
         Try
             Select Case OPCION
@@ -120,6 +128,22 @@ Public Class NVLREMO : Implements IHttpHandler
                     MENSAJE += documento
                     'email.enviar(REMITENTE, REMITENTE, DESTINATARIOS, ASUNTO, MENSAJE, datoAj) 'DPORTA PDF
                     email.enviar(REMITENTE, REMITENTE, DESTINATARIOS, ASUNTO, MENSAJE)
+
+                Case "whatsapp"
+                    Dim whatsapp As New Nomade.Mail.NomadeMail("Bn")
+                    Dim Plantilla As String = "Reporte"
+
+                    p_CODE_MOVI = "Reporte_Monetario_"
+                    Dim p_CODE_COMPLETO As String = p_CODE_MOVI & Date.Now().ToString("ddMMyyyy")
+                    'GenerarPDF(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DESDE, p_HASTA) 'DPORTA PDF
+                    Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE_MOVI & Date.Now().ToString("ddMMyyyy") & ".pdf"
+
+                    Dim documento As String = ""
+
+                    documento = GenerarDctoCorreo(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DET_GASTO)
+                    GenerarPDF_Whatsapp(p_CODE_COMPLETO, documento)
+                    whatsapp.enviarWhatsapp(RECIPIENT_PHONE_NUMBER, p_CODE_COMPLETO, MENSAJEWHATSAPP, Plantilla, datoAj)
+
             End Select
             context.Response.Write(res)
         Catch ex As Exception
@@ -2566,6 +2590,41 @@ Public Class NVLREMO : Implements IHttpHandler
         res = resb.ToString()
         Return resb
     End Function
+
+    Public Function GenerarPDF_Whatsapp(ByVal NOMBRE As String, ByVal HTML As String) As String
+        Dim ress As String = ""
+        Dim htmlText As String = ""
+        Dim cNomArch As String = NOMBRE & ".pdf"
+        htmlText = HTML
+        HTMLToPDF_Whatsapp(htmlText, cNomArch)
+        ress = "OK"
+        Return ress
+    End Function
+
+    Sub HTMLToPDF_Whatsapp(ByVal HTML As String, ByVal nombreArchivo As String)
+
+        Dim archivo, res As String
+        res = "Archivos\" + nombreArchivo
+        archivo = HttpContext.Current.Server.MapPath("~") + res
+        If My.Computer.FileSystem.FileExists(archivo) Then
+            My.Computer.FileSystem.DeleteFile(archivo)
+        End If
+
+        Dim converter = New HtmlToPdf()
+        converter.Options.PdfPageSize = PdfPageSize.A4
+        converter.Options.MarginTop = 1.9
+        converter.Options.AutoFitWidth = HtmlToPdfPageFitMode.AutoFit
+        converter.Options.AutoFitHeight = HtmlToPdfPageFitMode.AutoFit
+        converter.Options.MarginTop = 20
+        converter.Options.MarginBottom = 20
+        converter.Options.MarginLeft = 20
+        converter.Options.MarginRight = 20
+
+        Dim doc As SelectPdf.PdfDocument = converter.ConvertHtmlString(HTML)
+
+        doc.Save(archivo)
+        doc.Close()
+    End Sub
 
     ''' <summary>
     ''' Elimina espacion vacios (trim), cambia (") por ('), reemplaza (/) por vacio

@@ -40,6 +40,8 @@ var docu = "";
 var prmtCURS = "";
 var token_migo = '';//dporta
 var desc_producto = '';
+var cta_detraccion = '';
+
 function fillcboUniMedida(codUniMed) {
     $.ajax({
         type: "post",
@@ -1623,6 +1625,11 @@ var NVMDOCV = function () {
             $('#divWhatsapp').modal('show');
         });
 
+        //PDF
+        $('#btnPdfAlt').click(function (e) {
+            DescargarPDFAlt($('#txtNumDctoComp').val());
+        });
+
         $("#btnHabido").on("click", function () {
             if (vErrors(["cboTipoDoc", "txtNroDctoCliente"])) {
                 if ($("#cboTipoDoc").val() == "6") {
@@ -2555,6 +2562,7 @@ var NVMDOCV = function () {
                         $("#hfImprimirPreciosIGV").val(datos[0].IGV_IMPR_IND);
                         $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
                         $(".btnImprimir").show();
+                        $("#btnPdfAlt").removeClass('hidden');
                         $('#btnMail').removeClass('hidden');
                         $('#btnWhatsapp').removeClass('hidden');
 
@@ -8388,7 +8396,7 @@ function ValidaPrecioEstandar(venta, min) {
     }
     $("#txtPrecioUnitario").on("blur", function () {
         if (parseFloat($("#txtPrecioUnitario").val()) < parseFloat(min)) {
-            infoCustom2("El valor ingresado no puede ser menor al precio mínimo: " + parseFloat(min).toFixed(2))
+            infoCustom2("El valor ingresado no puede ser menor al precio mínimo: " + parseFloat(min).toFixed(prmtDIGP))
             $("#txtPrecioUnitario").val(parseFloat(min).toFixed(prmtDIGP));
         }
     });
@@ -9254,6 +9262,7 @@ function GrabarCompletarDctoVenta() {
                                         $(".btnImprimir").show();
                                         $('#btnMail').removeClass('hidden');
                                         $('#btnWhatsapp').removeClass('hidden');
+                                        $("#btnPdfAlt").removeClass('hidden');
                                         //$('#btnEFac').removeClass('hidden');
                                         $("#lblCopia").css("display", "inline-block");
                                         $("#txtNumDctoComp").val(datos[0].CODIGO);
@@ -10046,6 +10055,7 @@ function CompletarDctoVenta() {
                                     $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
                                     $(".btnImprimir").show();
                                     $('#btnMail').removeClass('hidden');
+                                    $("#btnPdfAlt").removeClass('hidden');
                                     $('#btnWhatsapp').removeClass('hidden');
                                     $("#lblCopia").css("display", "inline-block");
                                     $("#txtNumDctoComp").val(datos[0].CODIGO);
@@ -10168,6 +10178,7 @@ function ImprimirDctoVenta() {
         var data = new FormData();
         data.append('p_CODE', $("#txtNumDctoComp").val());
         data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+        data.append('p_CTA_DETRACCION', cta_detraccion.toString())
         data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
         var jqxhr = $.ajax({
             type: "POST",
@@ -10199,6 +10210,7 @@ function ImprimirDctoVenta() {
 
             var data = new FormData();
             data.append('p_CODE', $("#txtNumDctoComp").val());
+            data.append('p_CTA_DETRACCION', cta_detraccion.toString())
             data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
             data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
             var jqxhr = $.ajax({
@@ -10235,6 +10247,75 @@ function ImprimirDctoVenta() {
 
 }
 
+//Descargar dcto alternativo
+var DescargarPDFAlt = function (sCodVenta) {
+    $("#ctl00_cph_ctl00_PCONGEN1_ctl00_CodDoc").val(sCodVenta);
+    let ticket = $("#cboSerieDocVenta :selected").attr("data-ticket");
+    if (ticket == 'SI') {
+        var data = new FormData();
+        data.append("OPCION", "pdfAlternativo");
+        data.append("p_CODE", sCodVenta);
+        data.append("p_CTLG_CODE", $("#cboEmpresa").val());
+        data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+        data.append("p_PLAZO", $("#txt_plazo_pago").val());
+        data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
+
+        $.ajax({
+            type: "POST",
+            url: "vistas/nv/ajax/nvmdocv.ashx",
+            contentType: false,
+            data: data,
+            processData: false,
+            async: false,
+            success: function (data) {
+                if (data == "OK") {
+                    $("[id*=btnDescPDF]").click();
+                } else {
+                    noexito();
+                    return;
+                }
+            },
+            error: function (msg) {
+                noexitoCustom("No se pudo generar el PDF.");
+            }
+        });
+
+    } else {
+        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101') {
+
+            var data = new FormData();
+            data.append("OPCION", "pdfAlternativo");
+            data.append("p_CODE", sCodVenta);
+            data.append("p_CTLG_CODE", $("#cboEmpresa").val());
+            data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+            data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+
+            $.ajax({
+                type: "POST",
+                url: "vistas/nv/ajax/nvmdocv.ashx",
+                contentType: false,
+                data: data,
+                processData: false,
+                async: false,
+                success: function (data) {
+                    if (data == "OK") {
+                        $("[id*=btnPdf_Click]").click();
+                    } else {
+                        noexito();
+                        return;
+                    }
+                },
+                error: function (msg) {
+                    noexitoCustom("No se pudo generar el PDF.");
+                }
+            });
+        } else {
+            crearImpresion($("#txtNumDctoComp").val());
+            //Desbloquear("ventana");
+        }
+    }
+}
+
 //Devuelve vacio si el descuento es 0, sino devuelve su valor con el signo negativo
 function vDesc(valor) {
     if (parseFloat(valor) == 0) {
@@ -10252,6 +10333,7 @@ var cargarCuentaDetraccion = function () {
             function (data) {
                 if (data != null) {
                     $('#txt_cta_detrac').val(data[0].NRO_CUENTA);
+                    cta_detraccion = $('#txt_cta_detrac').val();
                 } else {
                     $('#txt_cta_detrac').val('');
                     // infoCustom2("No se encontró Cuenta de Detracciones para la empresa seleccionada.")
@@ -12030,21 +12112,19 @@ function enviarWhatsapp() {
             url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=whatsapp" +
                 "&p_CODE=" + $('#txtNumDctoComp').val() +
                 "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
+                "&p_PLAZO=" + $("#txt_plazo_pago").val() +
                 "&RECIPIENT_PHONE_NUMBER=" + RECIPIENT_PHONE_NUMBER +
                 "&MENSAJEWHATSAPP=" + $('#txtContenidoWhatsapp').val(),
             contentType: "application/json;",
             dataType: false,
             success: function (datos) {
-                if (datos = "undefined") {
-                    datos = ""
-                }
                 if (datos.indexOf("error") >= 0) {
                     alertCustom("El mensaje no se envio correctamente");
                 } else {
                     exito();
                 }
                 $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
-                setTimeout(function () { $('#divMail').modal('hide'); }, 25);
+                setTimeout(function () { $('#divWhatsapp').modal('hide'); }, 25);
 
             },
             error: function (msg) {

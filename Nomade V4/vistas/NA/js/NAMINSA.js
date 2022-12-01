@@ -1902,6 +1902,14 @@ var NAMINSA = function () {
 
         });
 
+        $('#btnWhatsapp').click(function (e) {
+            $('#txtcontenidoWhatsapp').attr('disabled', false);
+            $('#txtcontenidoWhatsapp').val("");
+            cargarTelefonos();
+            $('#divWhatsapp').modal('show');
+
+        });
+
         //$('#cboAlmacenTransferencia').change(function () {
         //    $('#txtDireccionTransferencia').val($('#cboAlmacenTransferencia :selected').attr('direccion'));
         //});
@@ -3284,6 +3292,71 @@ var NAMINSA = function () {
         }
     };
 
+    function cargarTelefonos() {
+        REGEX_TELE = "([0-9]*)"
+        $.ajax({
+            type: 'post',
+            url: 'vistas/na/ajax/naminsa.ashx?OPCION=LTELEFONOS',
+            async: false
+        }).done(function (data) {
+            data = JSON.parse(data);
+
+            $('#cboClienteWhatsapp').selectize({
+                persist: false,
+                maxItems: null,
+                valueField: 'telefono',
+                labelField: 'name',
+                searchField: ['name', 'telefono'],
+                options: data,
+                render: {
+                    item: function (item, escape) {
+                        return '<div>' +
+                            (item.name ? '<span class="name">' + escape(item.name) + '</span>&nbsp;' : '') +
+                            (item.telefono ? '<span class="telefono">' + escape(item.telefono) + '</span>' : '') +
+                            '</div>';
+                    },
+                    option: function (item, escape) {
+                        var label = item.name || item.telefono;
+                        var caption = item.name ? item.telefono : null;
+                        return '<div style="padding: 2px">' +
+                            '<span class="label" style="display: block; font-size: 14px; background-color: inherit; color: inherit; text-shadow: none">' + escape(label) + '</span>' +
+                            (caption ? '<span class="caption" style="display: block; font-size: 12px; margin: 2px 5px">' + escape(caption) + '</span>' : '') +
+                            '</div>';
+                    }
+                },
+                createFilter: function (input) {
+                    var match, regex;
+                    regex = new RegExp('^' + REGEX_TELE + '$', 'i');
+                    match = input.match(regex);
+                    if (match) return !this.options.hasOwnProperty(match[0]);
+                    // name phone_number
+                    regex = new RegExp('^([^<]*)\<' + REGEX_TELE + '\>$', 'i');
+                    match = input.match(regex);
+                    if (match) return !this.options.hasOwnProperty(match[2]);
+                    return false;
+                },
+                create: function (input) {
+                    if ((new RegExp('^' + REGEX_TELE + '$', 'i')).test(input)) {
+                        return { telefono: input };
+                    }
+                    var match = input.match(new RegExp('^([^<]*)\<' + REGEX_TELE + '\>$', 'i'));
+                    if (match) { return { telefono: match[2], name: $.trim(match[1]) }; }
+                    alert('Invalid number.');
+                    return false;
+                }
+            });
+            $('.selectize-control').css('margin-left', '0px').css('margin-bottom', '15px');
+            $('.selectize-dropdown').css('margin-left', '0px');
+
+            for (var c in data) {
+                if (data[c].codigo === $('#hfPIDM').val()) {
+                    $("#cboClienteWhatsapp")[0].selectize.setValue(data[c].telefono);
+                    break;
+                }
+            }
+        });
+    }
+
     var contieneFormatoEnCorrelativo = function (formato) {
         if (correlativo != null) {
             for (var i = 0; i < correlativo.length; i++) {
@@ -3995,7 +4068,7 @@ var NAMINSA = function () {
                             $('#txtSerieRegistroInterno').val(data[0].REQC_NUM_SEQ_DOC_INTERNO);
                             bloquearElementos();
                             $('#p_info').remove();
-                            $('#btnMail, #btnImprimir').removeClass('hidden');
+                            $('#btnMail, #btnImprimir, #btnWhatsapp').removeClass('hidden');
                             listarDetallesCompletado(); 
                             listarTotales(cod);
                             generarImpresion();
@@ -4958,6 +5031,37 @@ var enviarCorreo = function () {
             error: function (msg) {
                 alertCustom('Ocurrió un error en el servidor al intentar enviar el correo electrónico. Por favor, inténtelo nuevamente.');
                 $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+            }
+        });
+    }
+};
+
+var enviarWhatsapp = function () {
+    var telefonos = $("#cboClienteWhatsapp").val();
+
+    if (vErrors(['cboClienteWhatsapp'])) {
+        $('#btnEnviarWhatsapp').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
+        RECIPIENT_PHONE_NUMBER = telefonos.toString();
+        $.ajax({
+            type: "post",
+            url: "vistas/na/ajax/naminsa.ashx?OPCION=SENDWHATSAPP&RECIPIENT_PHONE_NUMBER=" + RECIPIENT_PHONE_NUMBER +
+                "&MENSAJEWHATSAPP=" + $('#txtContenidoWhatsapp').val() +
+                "&CTLG_CODE=" + $("#slcEmpresa").val() +
+                "&p_CODE=" + $("#txtNumDctoAlmc").val(),
+            contentType: "application/json;",
+            dataType: false,
+            success: function (datos) {
+                if (datos === "OK") {
+                    exito();
+                } else {
+                    alertCustom("El mensaje no se envio correctamente");
+                }
+                $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+                setTimeout(function () { $('#divWhatsapp').modal('hide'); }, 25);
+            },
+            error: function (msg) {
+                alertCustom('Ocurrió un error en el servidor al intentar enviar el mensaje. Por favor, inténtelo nuevamente.');
+                $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
             }
         });
     }
@@ -7316,7 +7420,7 @@ var CompletarDcto = function () {
                                     bloquearElementos();
                                     $("#tabDatosGenerales").click();
                                     generarImpresion();
-                                    $('#btnMail, #btnImprimir').removeClass('hidden');
+                                    $('#btnMail, #btnImprimir, #btnWhatsapp').removeClass('hidden');
                                     if ($("#rbSalida").is(':checked') || ($("#rbEntrada").is(':checked') && $("#cboOperacion").val() == '0002' && $("#txtSerieDctoRegistro").val().substring(0, 2) == 'TE')) {
                                         if ($("#cboRegistro").val() == "0009") {
                                             //json_datos_imp = datos;

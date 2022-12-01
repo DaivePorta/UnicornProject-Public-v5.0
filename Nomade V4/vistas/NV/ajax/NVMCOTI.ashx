@@ -30,6 +30,9 @@ Public Class NVMCOTI : Implements IHttpHandler
     Dim USAR_IGV_IND As String
     'CORREO
     Dim NREMITENTE, DESTINATARIOS, ASUNTO, MENSAJE As String
+
+    'WHATSAPP CLOUD API
+    Dim RECIPIENT_PHONE_NUMBER, MENSAJEWHATSAPP As String
     'PDF 
     Dim imagen As String
 
@@ -74,6 +77,11 @@ Public Class NVMCOTI : Implements IHttpHandler
         NREMITENTE = context.Request("NREMITENTE")
         DESTINATARIOS = context.Request("DESTINATARIOS")
         ASUNTO = context.Request("asunto")
+
+        'WHATSAPP CLOUD API
+        RECIPIENT_PHONE_NUMBER = context.Request("RECIPIENT_PHONE_NUMBER")
+        MENSAJEWHATSAPP = context.Request("MENSAJEWHATSAPP")
+
         'NUEVOS
         USUA_ID = context.Request("USUA_ID")
         PIDM = context.Request("PIDM")
@@ -605,6 +613,22 @@ Public Class NVMCOTI : Implements IHttpHandler
                 '    'Dim rutaArchivo As String = GenerarPDFCorreo()                    
                 '    mail.enviar(remitente, nremitente, destinatarios, asunto, CUERPO)
                 '    res = "OK"
+                Case "whatsapp"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    Dim whatsapp As New Nomade.Mail.NomadeMail("Bn")
+                    Dim Plantilla As String = "Documento Venta"
+
+                    'Dim f_Name As String = w_NAME.Substring(0, w_NAME.IndexOf(" "))
+                    Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf"
+
+                    'se asume por defecto que el pdf existe
+
+                    If File.Exists(datoAj) = False Then
+                        GenerarPDF(p_CODE)
+                        datoAj = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf"
+                    End If
+                    whatsapp.enviarWhatsapp(RECIPIENT_PHONE_NUMBER, p_CODE, MENSAJEWHATSAPP, Plantilla, datoAj)
+
                 Case "IMPR"
                     context.Response.ContentType = "application/text; charset=utf-8"
                     USAR_IGV_IND = context.Request("USAR_IGV_IND") ' Si es nothing se usará el de la tabla

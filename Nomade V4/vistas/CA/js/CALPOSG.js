@@ -320,6 +320,14 @@ var CALPOSG = function () {
             cargarCorreos();
             $('#divMail').modal('show');
         });
+
+        //WHATSAPP
+        $('#btnWhatsapp').click(function (e) {
+            $('#txtcontenidoWhatsapp').attr('disabled', false);
+            $('#txtcontenidoWhatsapp').val("");
+            cargarTelefonos();
+            $('#divWhatsapp').modal('show');
+        });
         
     }
 
@@ -1264,6 +1272,73 @@ function cargarCorreos() {
     });
 };
 
+//WHATSAPP
+
+function cargarTelefonos() {
+    REGEX_TELE = "([0-9]*)"
+    $.ajax({
+        type: 'post',
+        url: 'vistas/na/ajax/naminsa.ashx?OPCION=LTELEFONOS',
+        async: false
+    }).done(function (data) {
+        data = JSON.parse(data);
+
+        $('#cboClienteWhatsapp').selectize({
+            persist: false,
+            maxItems: null,
+            valueField: 'telefono',
+            labelField: 'name',
+            searchField: ['name', 'telefono'],
+            options: data,
+            render: {
+                item: function (item, escape) {
+                    return '<div>' +
+                        (item.name ? '<span class="name">' + escape(item.name) + '</span>&nbsp;' : '') +
+                        (item.telefono ? '<span class="telefono">' + escape(item.telefono) + '</span>' : '') +
+                        '</div>';
+                },
+                option: function (item, escape) {
+                    var label = item.name || item.telefono;
+                    var caption = item.name ? item.telefono : null;
+                    return '<div style="padding: 2px">' +
+                        '<span class="label" style="display: block; font-size: 14px; background-color: inherit; color: inherit; text-shadow: none">' + escape(label) + '</span>' +
+                        (caption ? '<span class="caption" style="display: block; font-size: 12px; margin: 2px 5px">' + escape(caption) + '</span>' : '') +
+                        '</div>';
+                }
+            },
+            createFilter: function (input) {
+                var match, regex;
+                regex = new RegExp('^' + REGEX_TELE + '$', 'i');
+                match = input.match(regex);
+                if (match) return !this.options.hasOwnProperty(match[0]);
+                // name phone_number
+                regex = new RegExp('^([^<]*)\<' + REGEX_TELE + '\>$', 'i');
+                match = input.match(regex);
+                if (match) return !this.options.hasOwnProperty(match[2]);
+                return false;
+            },
+            create: function (input) {
+                if ((new RegExp('^' + REGEX_TELE + '$', 'i')).test(input)) {
+                    return { telefono: input };
+                }
+                var match = input.match(new RegExp('^([^<]*)\<' + REGEX_TELE + '\>$', 'i'));
+                if (match) { return { telefono: match[2], name: $.trim(match[1]) }; }
+                alert('Invalid number.');
+                return false;
+            }
+        });
+        $('.selectize-control').css('margin-left', '0px').css('margin-bottom', '15px');
+        $('.selectize-dropdown').css('margin-left', '0px');
+
+        for (var c in data) {
+            if (data[c].codigo === $('#hfPIDM').val()) {
+                $("#cboClienteWhatsapp")[0].selectize.setValue(data[c].telefono);
+                break;
+            }
+        }
+    });
+}
+
 var ObtenerCorreoUsuario = function () {
     var email = "";
     $.ajax({
@@ -1324,6 +1399,48 @@ var enviarCorreo = function () {
             $('#btnEnviarCorreo').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
         });
 
+    }
+};
+
+function enviarWhatsapp() {
+
+    var contenido = "<div><div style='font-size: 1.8vw;'>POSICION GLOBAL</div><b>EMPRESA: </b><div>&nbsp;&nbsp;" + $("#cboEmpresa").text() + "</div></div>" + "<div><b>MONEDA: </b><div>&nbsp;&nbsp;" + $('#cboMoneda :selected').text() + "</div></div>" + "<div><b>POS GLOBAL: <div>&nbsp;&nbsp;" + $("#lblMontoPosGlobal").text() + "</b></div></div>" +
+        "<div class=&quot;row-fluid&quot;><div class=&quot;span12&quot;>" + $(".divTblCustom").html() + "</div></div>" +
+        "<div class=&quot;row-fluid&quot;><div class=&quot;span12&quot;>" + $("#divGrafico").html() + "</div></div>" +
+        "<div class=&quot;row-fluid&quot;><div class=&quot;span12&quot;>" + $("#divGrafico2").html() + "</div></div>" +
+        "<div class=&quot;row-fluid&quot;><div class=&quot;span12&quot;>" + $("#divGrafico3").html() + "</div></div>";
+
+    var telefonos = $("#cboClienteWhatsapp").val();
+
+    if (vErrors(['cboClienteWhatsapp'])) {
+        $('#btnEnviarWhatsapp').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
+        RECIPIENT_PHONE_NUMBER = telefonos.toString();
+/*        var payload = { "url": payload };*/
+        $.ajax({
+            type: "post",
+            url: "vistas/CA/ajax/CALPOSG.ashx?OPCION=whatsapp" +
+                "&RECIPIENT_PHONE_NUMBER=" + RECIPIENT_PHONE_NUMBER +
+                "&MENSAJEWHATSAPP=" + $('#txtContenidoWhatsapp').val(),
+            contentType: "application/json;",
+            data: JSON.stringify(contenido),
+            contentType: "application/json",
+            success: function (datos) {
+                if (datos === null) {
+                    datos = ""
+                }
+                if (datos.indexOf("error") >= 0) {
+                    alertCustom("El mensaje no se envio correctamente");
+                } else {
+                    exito();
+                }
+                $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+                setTimeout(function () { $('#divWhatsapp').modal('hide'); }, 25);
+            },
+            error: function (msg) {
+                alertCustom('Ocurrió un error en el servidor al intentar enviar el mensaje. Por favor, inténtelo nuevamente.');
+                $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+            }
+        });
     }
 };
 
@@ -1391,9 +1508,9 @@ function ImprimirDcto() { //arreglo de div(s) que iran,titulo(opcional)
     }
       
     $("#divDctoImprimir").html($(".divTblCustom").html());
-        setTimeout(function () {
-            window.print();
-        }, 200)
+    setTimeout(function () {
+        window.print();
+    }, 200)
 
    
 }

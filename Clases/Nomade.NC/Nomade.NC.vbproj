@@ -172,6 +172,7 @@
     <Compile Include="NCVias.vb" />
     <Compile Include="NCVinculosFamiliares.vb" />
     <Compile Include="NCVista.vb" />
+    <Compile Include="NCWhatsapp.vb" />
     <Compile Include="NCZona.vb" />
     <Compile Include="NCZonaHoraria.vb" />
     <Compile Include="Settings.vb" />

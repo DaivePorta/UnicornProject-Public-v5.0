@@ -51,7 +51,34 @@
     });
 }
 
+function descargarPDF(codigo, p_ctlg) {
+    $("#ctl00_cph_ctl00_PCONGEN1_ctl00_CodDoc").val(codigo);
+    $.ajax({
+        type: "post",
+        url: "vistas/na/ajax/naminsa.ashx?OPCION=DescargarPDF&p_CODE=" + codigo +
+        "&CTLG_CODE=" + p_ctlg,
+        contentType: "application/json;",
+        dataType: false,
+        success: function (datos) {
+            if (datos == "OK") {
+                $("[id*=btnDescPDF]").click();
+            } else {
+                noexito();
+                return;
+            }
+        },
+        error: function (msg) {
+            noexitoCustom("No se pudo generar el PDF.");
+        }
+    });
+}
 
+function descargarXML(ruc, serie, correlativo) {
+    $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddRuc").val(ruc);
+    $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddSerie").val(serie);
+    $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddNumDoc").val(correlativo);
+    $("[id*=btnDescXML]").click();
+}
 
 var NALGR = function () {
 
@@ -72,6 +99,13 @@ var NALGR = function () {
                 { data: "OPERACION" },
                 { data: "ALMACEN" },
                 { data: "CHOFER" },
+
+                {
+                    data: "DESPACHA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center')
+                    }
+                },
 
                 {
                     data: "DESPACHA",

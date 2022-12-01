@@ -387,15 +387,18 @@ var CAMANCL = function () {
 var json = null;
 var ini = true;
 var CALNCCL = function () {
-
     function ListarNotasCredito() {
         oTable.fnClearTable();
+        var cboEstablecimiento = $("#cboEstablecimiento").val()
+        if (cboEstablecimiento == "TODOS") {
+            cboEstablecimiento = "";
+        }
         Bloquear("ventana")
         $.ajax({
             type: "post",
             url: "vistas/ca/ajax/camngcl.ashx?OPCION=4" +
                 "&p_CTLG_CODE=" + $("#cboEmpresa").val() +
-                "&p_SCSL_CODE=" + $("#cboEstablecimiento").val() +
+                "&p_SCSL_CODE=" + cboEstablecimiento +
                 "&p_TIPO_IND=C" +
                 "&p_DESDE=" + p_DESDE +
                 "&p_HASTA=" + p_HASTA,
@@ -420,12 +423,16 @@ var CALNCCL = function () {
     }
 
     function ListarNotasCredito2() {
+        var cboEstablecimiento = $("#cboEstablecimiento").val()
+        if (cboEstablecimiento == "TODOS") {
+            cboEstablecimiento = "";
+        }
         Bloquear("ventana")
         $.ajax({
             type: "post",
             url: "vistas/ca/ajax/calnocr.ashx?OPCION=2.5" +
                 "&p_CTLG_CODE=" + $("#cboEmpresa").val() +
-                "&p_SCSL_CODE=" + $("#cboEstablecimiento").val() +
+                "&p_SCSL_CODE=" + cboEstablecimiento +
                 "&p_COMPRA_VENTA_IND=T" +
                 "&p_DESDE=" + p_DESDE +
                 "&p_HASTA=" + p_HASTA,
@@ -506,6 +513,7 @@ var CALNCCL = function () {
     }
 
     function fillCboEstablecimiento() {
+        var selectEst = $('#cboEstablecimiento');
         Bloquear("divCboEstablecimiento");
         $('#divCboEstablecimiento').select2("val", "");
         $.ajax({
@@ -516,14 +524,22 @@ var CALNCCL = function () {
             async: true,
             success: function (datos) {
                 Desbloquear("divCboEstablecimiento");
-                $('#cboEstablecimiento').empty();
-                $('#cboEstablecimiento').append('<option value=""></option>');
+                selectEst.empty();
+                selectEst.append('<option></option>');
                 if (datos != null) {
+                    $('#cboEstablecimiento').append('<option Value="TODOS">TODOS</option>');
                     for (var i = 0; i < datos.length; i++) {
-                        $('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '" data-exonerado="' + datos[i].EXONERADO + '" data-almc="' + datos[i].ALMC_CODE + '" >' + datos[i].DESCRIPCION + '</option>');
+                        selectEst.append('<option value="' + datos[i].CODIGO + '" data-exonerado="' + datos[i].EXONERADO + '" data-almc="' + datos[i].ALMC_CODE + '" >' + datos[i].DESCRIPCION + '</option>');
                     }
+                    $('#cboEstablecimiento').select2('val', 'TODOS');
+                    selectEst.val();
+                } else {
+                    selectEst.empty();
+                    selectEst.append('<option></option>');
+                    $('#cboEstablecimiento').select2('val', '');
                 }
-                Fin2_CargaEstablecimiento();
+                //Fin2_CargaEstablecimiento();
+                //Hace que se seleccione el establecimiento por defecto, si se ignora TODOS se vuelve la opcion por defecto
             },
             error: function (msg) {
                 Desbloquear("divCboEstablecimiento");

@@ -1,5 +1,13 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NALGREM.ascx.vb" Inherits="vistas_NA_NALGREM" %>
 <div class="row-fluid">
+    <asp:HiddenField ID="CodDoc" runat="server" />
+    <asp:HiddenField ID="Desca" runat="server" />
+    <asp:HiddenField ID="hddRuc" runat="server" />
+    <asp:HiddenField ID="hddCodDoc" value="09" runat="server" />
+    <asp:HiddenField ID="hddSerie" runat="server" />
+    <asp:HiddenField ID="hddNumDoc" runat="server" />
+</div>
+<div class="row-fluid">
     <div class="span12 ">
         <!-- INICIA CUADRO PARA LA FORMA -->
         <div class="portlet box blue" id="ventana">
@@ -107,6 +115,8 @@
 
 
                 <asp:HiddenField ID="hfObjGR" runat="server" />
+                <asp:Button class='btn red hidden' ID='btnDescPDF' runat='server' OnClick='btnPdf_Click'/>
+                <asp:Button class='btn green hidden' ID='btnDescXML' runat='server' OnClick='btnXML_Click'/>
             </div>
         </div>
     </div>

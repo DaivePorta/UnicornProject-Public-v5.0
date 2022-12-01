@@ -813,6 +813,14 @@ var NVMCOTI = function () {
             $('#divMail').modal('show');
         });
 
+        //WHATSAPP
+        $('#btnWhatsapp').click(function (e) {
+            $('#txtcontenidoWhatsapp').attr('disabled', false);
+            $('#txtcontenidoWhatsapp').val("");
+            cargarTelefonos();
+            $('#divWhatsapp').modal('show');
+        });
+
         //$('#btnMail').click(function (e) {
         //    if ($("#txtNumDctoComp").val().trim() != "") {
 
@@ -996,6 +1004,7 @@ var NVMCOTI = function () {
                     if ($("#hfCompletoInd").val() == "S") {
 
                         $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
+                        $('#btnWhatsapp').removeClass('hidden');
                         $("#divBtnsMantenimiento,#btnBuscadocs").attr("style", "display:none");
                         $("#hfImprimirPreciosIGV").val(datos[0].IGV_IMPR_IND);
 
@@ -3800,7 +3809,7 @@ function ValidaPrecioEstandar(venta, min) {
     $("#txtPrecioUnitario").on("blur", function () {
         if (parseFloat($("#txtPrecioUnitario").val()) < parseFloat(min)) {
             infoCustom2("El valor ingresado no puede ser menor al precio mínimo: " + parseFloat(min).toFixed(prmtDIGP))
-            $("#txtPrecioUnitario").val(parseFloat(min).toFixed(2));
+            $("#txtPrecioUnitario").val(parseFloat(min).toFixed(prmtDIGP));
         }
     });
     $('#txt_cantidad').keyup();
@@ -4548,6 +4557,7 @@ function GrabarCompletarDctoVenta() {
                                $("#divBtnsMantenimiento").attr("style", "display:none");
                                $("#div_btn_completar").attr("style", "display:inline");
                                $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
+                               $('#btnWhatsapp').removeClass('hidden');
                                $("#txtNumDctoComp").val(datos[0].CODIGO);
                                BloquearCampos();
                            }
@@ -5232,6 +5242,7 @@ function CompletarDctoVenta() {
                            $("#divBtnsMantenimiento").attr("style", "display:none");
 
                            $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
+                           $('#btnWhatsapp').removeClass('hidden');
                            $("#txtNumDctoComp").val(datos[0].CODIGO);
                            BloquearCampos();
 
@@ -5609,6 +5620,110 @@ function enviarCorreo() {
             }
         });
 
+    }
+};
+
+//WHATSAPP
+
+function cargarTelefonos() {
+    REGEX_TELE = "([0-9]*)"
+    $.ajax({
+        type: 'post',
+        url: 'vistas/na/ajax/naminsa.ashx?OPCION=LTELEFONOS',
+        async: false
+    }).done(function (data) {
+        data = JSON.parse(data);
+
+        $('#cboClienteWhatsapp').selectize({
+            persist: false,
+            maxItems: null,
+            valueField: 'telefono',
+            labelField: 'name',
+            searchField: ['name', 'telefono'],
+            options: data,
+            render: {
+                item: function (item, escape) {
+                    return '<div>' +
+                        (item.name ? '<span class="name">' + escape(item.name) + '</span>&nbsp;' : '') +
+                        (item.telefono ? '<span class="telefono">' + escape(item.telefono) + '</span>' : '') +
+                        '</div>';
+                },
+                option: function (item, escape) {
+                    var label = item.name || item.telefono;
+                    var caption = item.name ? item.telefono : null;
+                    return '<div style="padding: 2px">' +
+                        '<span class="label" style="display: block; font-size: 14px; background-color: inherit; color: inherit; text-shadow: none">' + escape(label) + '</span>' +
+                        (caption ? '<span class="caption" style="display: block; font-size: 12px; margin: 2px 5px">' + escape(caption) + '</span>' : '') +
+                        '</div>';
+                }
+            },
+            createFilter: function (input) {
+                var match, regex;
+                regex = new RegExp('^' + REGEX_TELE + '$', 'i');
+                match = input.match(regex);
+                if (match) return !this.options.hasOwnProperty(match[0]);
+                // name phone_number
+                regex = new RegExp('^([^<]*)\<' + REGEX_TELE + '\>$', 'i');
+                match = input.match(regex);
+                if (match) return !this.options.hasOwnProperty(match[2]);
+                return false;
+            },
+            create: function (input) {
+                if ((new RegExp('^' + REGEX_TELE + '$', 'i')).test(input)) {
+                    return { telefono: input };
+                }
+                var match = input.match(new RegExp('^([^<]*)\<' + REGEX_TELE + '\>$', 'i'));
+                if (match) { return { telefono: match[2], name: $.trim(match[1]) }; }
+                alert('Invalid number.');
+                return false;
+            }
+        });
+        $('.selectize-control').css('margin-left', '0px').css('margin-bottom', '15px');
+        $('.selectize-dropdown').css('margin-left', '0px');
+
+        for (var c in data) {
+            if (data[c].codigo === $('#hfPIDM').val()) {
+                $("#cboClienteWhatsapp")[0].selectize.setValue(data[c].telefono);
+                break;
+            }
+        }
+    });
+}
+
+function enviarWhatsapp() {
+
+    var telefonos = $("#cboClienteWhatsapp").val();
+
+    if (vErrors(['cboClienteWhatsapp'])) {
+        $('#btnEnviarWhatsapp').prop('disabled', true).html('<img src="./recursos/img/loading.gif" align="absmiddle">&nbsp;Enviando');
+        RECIPIENT_PHONE_NUMBER = telefonos.toString();
+        $.ajax({
+            type: "post",
+            url: "vistas/nv/ajax/nvmcoti.ashx?OPCION=whatsapp" +
+                "&p_CODE=" + $('#txtNumDctoComp').val() +
+                "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
+                "&RECIPIENT_PHONE_NUMBER=" + RECIPIENT_PHONE_NUMBER +
+                "&MENSAJEWHATSAPP=" + $('#txtContenidoWhatsapp').val(),
+            contentType: "application/json;",
+            dataType: false,
+            success: function (datos) {
+                if (datos === null) {
+                    datos = ""
+                }
+                if (datos.indexOf("error") >= 0) {
+                    alertCustom("El mensaje no se envio correctamente");
+                } else {
+                    exito();
+                }
+                $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+                setTimeout(function () { $('#divWhatsapp').modal('hide'); }, 25);
+
+            },
+            error: function (msg) {
+                alertCustom('Ocurrió un error en el servidor al intentar enviar el mensaje. Por favor, inténtelo nuevamente.');
+                $('#btnEnviarWhatsapp').prop('disabled', false).html('<i class="icon-plane"></i>&nbsp;Enviar');
+            }
+        });
     }
 };
 

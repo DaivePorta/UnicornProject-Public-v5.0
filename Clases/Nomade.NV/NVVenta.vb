@@ -2444,6 +2444,25 @@
             Throw (ex)
         End Try
     End Function
+    Public Function ListarFecha_MedioPago(ByVal p_DCTO_CODE As String, ByVal p_CTLG As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_LISTAR_FECHA_Y_MEDIO_PAGO", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DCTO_CODE", p_DCTO_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG", p_CTLG, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 
     'DPORTA 15/05/2022
     Public Function ListarDetDctoVentaImpresion(ByVal p_VTAC_CODE As String) As DataTable

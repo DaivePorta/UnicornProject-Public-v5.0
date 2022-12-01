@@ -43,6 +43,9 @@ Public Class NVMANTI : Implements IHttpHandler
     'CORREO
     Dim NREMITENTE, DESTINATARIOS, ASUNTO, MENSAJE As String
 
+    'WHATSAPP CLOUD API
+    Dim RECIPIENT_PHONE_NUMBER, MENSAJEWHATSAPP As String
+
     Dim ncSucursal As New Nomade.NC.NCSucursal("Bn")
     Dim g As New Nomade.NC.NCGrupos("Bn")
     Dim e As New Nomade.NM.NMTipodeExistencia("Bn")
@@ -201,6 +204,10 @@ Public Class NVMANTI : Implements IHttpHandler
         DESTINATARIOS = context.Request("DESTINATARIOS")
         ASUNTO = context.Request("asunto")
         MENSAJE = context.Request("MENSAJE")
+
+        'WHATSAPP CLOUD API
+        RECIPIENT_PHONE_NUMBER = context.Request("RECIPIENT_PHONE_NUMBER")
+        MENSAJEWHATSAPP = context.Request("MENSAJEWHATSAPP")
 
         p_POR_PAGAR = context.Request("p_POR_PAGAR")
 
@@ -607,6 +614,21 @@ Public Class NVMANTI : Implements IHttpHandler
                     'MENSAJE += piePagina
 
                     email.enviar(NREMITENTE, NREMITENTE, DESTINATARIOS, ASUNTO, MENSAJE, datoAj)
+                Case "whatsapp"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    Dim whatsapp As New Nomade.Mail.NomadeMail("Bn")
+                    Dim Plantilla As String = "Documento Venta"
+                    USAR_IGV_IND = context.Request("USAR_IGV_IND")
+
+                    'Dim f_Name As String = w_NAME.Substring(0, w_NAME.IndexOf(" "))
+                    Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf"
+
+                    'se asume por defecto que el pdf existe
+
+                    If File.Exists(datoAj) = False Then
+                        GenerarPDF(p_CODE)
+                    End If
+                    whatsapp.enviarWhatsapp(RECIPIENT_PHONE_NUMBER, p_CODE, MENSAJEWHATSAPP, Plantilla, datoAj)
                 Case "IMPR"
                     context.Response.ContentType = "application/text; charset=utf-8"
                     USAR_IGV_IND = context.Request("USAR_IGV_IND") ' Si es nothing se usará el de la tabla

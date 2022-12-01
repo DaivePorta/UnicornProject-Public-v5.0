@@ -20,6 +20,10 @@ Public Class CALREPO : Implements IHttpHandler
     Dim resb As New StringBuilder
     Dim resArray As Array
 
+    'WHATSAPP CLOUD API
+    Dim RECIPIENT_PHONE_NUMBER, MENSAJEWHATSAPP As String
+
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
 
         OPCION = context.Request("OPCION")
@@ -28,6 +32,10 @@ Public Class CALREPO : Implements IHttpHandler
         COD_CAJA = context.Request("COD_CAJA")
         USUA_ID = context.Request("USUA_ID")
         COD_MOV = context.Request("COD_MOV")
+
+        'WHATSAPP CLOUD API
+        RECIPIENT_PHONE_NUMBER = context.Request("RECIPIENT_PHONE_NUMBER")
+        MENSAJEWHATSAPP = context.Request("MENSAJEWHATSAPP")
 
         Try
             Select Case OPCION
@@ -46,6 +54,23 @@ Public Class CALREPO : Implements IHttpHandler
                     dt = caja.ListarDetalleMovimientosCaja(COD_MOV, "", "", "T")
                     dt2 = caja.ListarMovimientosCaja(COD_MOV, COD_CTLG, COD_ESTABLE, COD_CAJA, "", "")
                     res = GenerarPDF_resumencaj(dt, dt2, USUA_ID)
+                Case "whatsapp"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    Dim whatsapp As New Nomade.Mail.NomadeMail("Bn")
+                    Dim Plantilla As String = "Reporte"
+                    Dim datoAj As String
+                    Dim nombreArchivo = "Reporte_Detallado_Caja_" + Date.Now().ToString("ddMMyyyy") + ".pdf"
+
+                    dt = caja.ListarDetalleMovimientosCaja(COD_MOV, "", "", "T")
+                    dt2 = caja.ListarMovimientosCaja(COD_MOV, COD_CTLG, COD_ESTABLE, COD_CAJA, "", "")
+                    dt3 = caja.ListarDetalleMovimientosCaja(COD_MOV, "", "", "P")
+
+                    GenerarPDF(dt, dt2, dt3, USUA_ID)
+                    datoAj = HttpContext.Current.Server.MapPath("~") & "Archivos\" & "Reporte_Detallado_Caja_" + Date.Now().ToString("ddMMyyyy") + ".pdf"
+                    Dim rep = System.IO.Path.GetFileName(datoAj)
+
+                    whatsapp.enviarWhatsapp(RECIPIENT_PHONE_NUMBER, nombreArchivo, MENSAJEWHATSAPP, Plantilla, datoAj)
+                    res = ""
             End Select
 
             context.Response.Write(res)

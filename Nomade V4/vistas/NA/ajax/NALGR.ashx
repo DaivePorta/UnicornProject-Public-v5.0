@@ -53,6 +53,7 @@ Public Class NALGR : Implements IHttpHandler
             res += "<th>TRANSPORTISTA</th>"
             res += "<th>DESPACHO</th>"
             res += "<th>GLOSA</th>"
+            res += "<th>#</th>"
             res += "</tr>"
             res += "</thead>"
             res += "<tbody>"
@@ -67,6 +68,11 @@ Public Class NALGR : Implements IHttpHandler
                 res += "<td align='center'>" & dt.Rows(i)("TRANSPORTISTA").ToString() & "</td>"
                 res += "<td align='center'>" & dt.Rows(i)("DESPACHA").ToString() & "</td>"
                 res += "<td align='center'>" & dt.Rows(i)("GLOSA").ToString() & "</td>"
+                res += "<td align='center'><a class='btn red' style='margin-bottom:2px' id='btnPdf' onclick='descargarPDF(""" &
+                        dt.Rows(i)("CODIGO").ToString() & """,""" & dt.Rows(i)("COD_EMPRESA").ToString() & """)'>PDF</a>" &
+                        "<a class='btn green' style='margin-bottom:2px' id='btnXML' onclick='descargarXML(""" &
+                        dt.Rows(i)("RUC").ToString() & """,""" & dt.Rows(i)("SERIE").ToString() & """,""" &
+                        dt.Rows(i)("CORRELATIVO").ToString() & """)'>XML</a></td>"
                 res += "</tr>"
             Next
             res += "</tbody>"
@@ -78,7 +84,7 @@ Public Class NALGR : Implements IHttpHandler
     End Function
     Public Function GenerarTablaProSinDatos() As String
 
-        res = "<table id=""tblbmodal"" class=""display DTTT_selectable"" border=""0"">"
+        res = "<table id=""tblbmodal"" Class=""display DTTT_selectable"" border=""0"">"
         res += "<thead>"
         res += "<tr align=""center"">"
         res += "<th>NRO DOC</th>"

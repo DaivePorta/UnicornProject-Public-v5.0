@@ -1146,19 +1146,108 @@ namespace Nomade.Efact.LogNegocio
                 // Fin - Datos del documento de Tributos Generales (TRI)
 
                 // Inicio - Datos del documento de Leyendas (ley)
-                string l1 = "1000";
-                string l2 = enletras(oDR_DatosDoc["CAB16"].ToString()); // IGV
-                if (c9 == "PEN")
+                string sDatosLeyenda = "";
+
+                if (oDR_DatosDoc["DETRACCION_IND"].ToString() == "SI" && oDR_DatosDoc["AUTODETRACCION"].ToString() == "NO")
                 {
-                    l2 += " SOLES";
+                    string l1 = "2006";
+                    string l2 = "OPERACIÓN SUJETA A DETRACCIÓN"; // IGV
+
+                    sDatosLeyenda = l1 + "|" + l2 + "|";
                 }
                 else
                 {
-                    l2 += " DOLARES AMERICANOS";
+                    string l1 = "1000";
+                    string l2 = enletras(oDR_DatosDoc["CAB16"].ToString()); // IGV
+                    if (c9 == "PEN")
+                    {
+                        l2 += " SOLES";
+                    }
+                    else
+                    {
+                        l2 += " DOLARES AMERICANOS";
+                    }
+                    sDatosLeyenda = l1 + "|" + l2 + "|";
                 }
-                string sDatosLeyenda = l1 + "|" + l2 + "|";
                 string sNombreArchivoLeyenda = sPath_Orbitum + @"DATA\" + ruc + "-03-" + seriecorrelativo + ".ley";
                 // Fin - Datos del documeento de Leyendas (ley)
+
+                // Inicio - Datos del modo pago (pag) DPORTA 29/11/2021
+                string mp1 = oDR_DatosDoc["MODO_PAGO"].ToString(); // modo de pago
+                string mp2 = oDR_DatosDoc["MONTO_NETO_PENDIENTE"].ToString(); // monto pendiente, por defecto es -        
+                string mp3 = oDR_DatosDoc["CAB9"].ToString(); // moneda, por defecto es -
+
+                string sDatosModoPago = mp1 + "|" + mp2 + "|" + mp3 + "|";
+                string sNombreArchivoModoPago = sPath_Orbitum + @"DATA\" + ruc + "-01-" + seriecorrelativo + ".pag";
+                // Fin - Datos del modo pago (pag)
+
+                // Inicio - Datos del modo pago detalle (dpa) DPORTA 29/11/2021
+                string sModoPagoDet = "";
+                if (oDR_DatosDoc["MODO_PAGO"].ToString() == "Credito")
+                {
+                    DataTable oDT_DatosModoPagoDet = ocEFFactura.fnListarDatosModoPagoOrbitum(p_CTLG_CODE, p_VTAC_CODE);
+
+                    if (oDT_DatosModoPagoDet == null)
+                    {
+                        throw new ArgumentException("[Advertencia]: No se encontró datos del modo de pago");
+                    }
+
+                    bool bIndicadorDet = false;
+
+                    foreach (DataRow oDR in oDT_DatosModoPagoDet.Rows)
+                    {
+                        if (bIndicadorDet) sModoPagoDet += ((char)10);
+
+                        string mpd1 = oDR["MONTO"].ToString();
+                        string mpd2 = oDR["FECHA"].ToString();
+                        string mpd3 = oDR["MONEDA"].ToString();
+
+                        sModoPagoDet += mpd1 + "|" + mpd2 + "|" + mpd3 + "|";
+
+                        bIndicadorDet = true;
+                    }
+                }
+
+                string sNombreArchivoModoPagoDet = sPath_Orbitum + @"DATA\" + ruc + "-01-" + seriecorrelativo + ".dpa";
+                // Fin - Datos del modo pago Detalle (dpa)
+
+                // Inicio - Datos adicionales a la cabecera (aca) DPORTA 30/11/2021
+                string sAdicionalCab = "";
+                if (oDR_DatosDoc["DETRACCION_IND"].ToString() == "SI" && oDR_DatosDoc["AUTODETRACCION"].ToString() == "NO")
+                {
+                    DataTable oDT_DatosAdicionalCab = ocEFFactura.fnListarDatosAdicionalCabOrbitum(p_CTLG_CODE, p_VTAC_CODE);
+
+                    if (oDT_DatosAdicionalCab == null)
+                    {
+                        throw new ArgumentException("[Advertencia]: No existe cuenta de detracción registrada");
+                    }
+
+                    bool bIndicadorAdCab = false;
+
+                    foreach (DataRow oDR in oDT_DatosAdicionalCab.Rows)
+                    {
+                        if (bIndicadorAdCab) sAdicionalCab += ((char)10);
+
+                        string mac1 = oDR["NRO_CUENTA_DETRA"].ToString(); // Cuenta del banco de la nacion (detraccion)
+                        string mac2 = oDR["CODIGO_BIEN"].ToString(); // Codigo del bien o producto sujeto a detracción 
+                        string mac3 = oDR["PORCENTAJE_DETRA"].ToString(); // Porcentaje de la detracción
+                        string mac4 = oDR["MONTO_DETRACCION"].ToString(); // Monto de la detracción
+                        string mac5 = oDR["MEDIO_PAGO"].ToString(); // Medio de pago
+                        string mac6 = oDR["DIRECCION_CLIENTE"].ToString(); // Dirección del cliente (Código de país)
+                        string mac7 = oDR["UBIGEO"].ToString(); // Dirección del cliente (Código de ubigeo)
+                        string mac8 = oDR["DIRECCION"].ToString(); //Dirección del cliente(Dirección completa y detallada)
+                        string mac9 = oDR["CODIGO_PAIS_ENTREGA_BIEN"].ToString(); //Código de país en el que se entrega el bien o se presta el servicio
+                        string mac10 = oDR["UBIGEO_PAIS_ENTREGA_BIEN"].ToString(); //Código de ubigeo en el que se entrega el bien o se presta el servicio
+                        string mac11 = oDR["DIRECCION_ENTREGA_BIEN"].ToString(); //Dirección completa y detallada en el que se entrega el bien o se presta el servicio
+
+                        sAdicionalCab += mac1 + "|" + mac2 + "|" + mac3 + "|" + mac4 + "|" + mac5 + "|" + mac6 + "|" + mac7 + "|" + mac8 + "|" + mac9 + "|" + mac10 + "|" + mac11 + "|";
+
+                        bIndicadorAdCab = true;
+                    }
+                }
+
+                string sNombreArchivoAdicionalCab = sPath_Orbitum + @"DATA\" + ruc + "-01-" + seriecorrelativo + ".aca";
+                // Fin - Datos Adicional Cab (aca)
 
                 // verificar si existe archivo
                 if (File.Exists(sNombreArchivo))
@@ -1169,20 +1258,24 @@ namespace Nomade.Efact.LogNegocio
                 {
                     File.Delete(sNombreArchivoDet);
                 }
-                if (File.Exists(sNombreArchivoLeyenda))
-                {
-                    File.Delete(sNombreArchivoLeyenda);
-                }
+                //if (File.Exists(sNombreArchivoLeyenda))
+                //{
+                //    File.Delete(sNombreArchivoLeyenda);
+                //}
                 if (File.Exists(sNombreArchivoTri))
                 {
                     File.Delete(sNombreArchivoTri);
                 }
+                if (File.Exists(sNombreArchivoModoPago)) // pag
+                {
+                    File.Delete(sNombreArchivoModoPago);
+                }
 
                 string sInfoDoc = sDatosCabecera;
                 string sInfoDocDet = sProductoDet;
-                string sInfoDocLeyenda = sDatosLeyenda;
+                //string sInfoDocLeyenda = sDatosLeyenda;
                 string sInfoDocTributos = sDatosTributos;
-
+                string sInfoDocModoPago = sDatosModoPago; // pag
 
                 // Crear el archivo
                 using (FileStream oFileStream = File.Create(sNombreArchivo))
@@ -1198,19 +1291,68 @@ namespace Nomade.Efact.LogNegocio
                     Byte[] abDatosDocDet = new UTF8Encoding(true).GetBytes(sInfoDocDet);
                     oFileStream.Write(abDatosDocDet, 0, abDatosDocDet.Length);
                 }
-                using (FileStream oFileStream = File.Create(sNombreArchivoLeyenda))
-                {
-                    // Add some text to file
-                    Byte[] abDatosDocLeyenda = new UTF8Encoding(true).GetBytes(sInfoDocLeyenda);
-                    oFileStream.Write(abDatosDocLeyenda, 0, abDatosDocLeyenda.Length);
-                }
+                //using (FileStream oFileStream = File.Create(sNombreArchivoLeyenda))
+                //{
+                //    // Add some text to file
+                //    Byte[] abDatosDocLeyenda = new UTF8Encoding(true).GetBytes(sInfoDocLeyenda);
+                //    oFileStream.Write(abDatosDocLeyenda, 0, abDatosDocLeyenda.Length);
+                //}
                 using (FileStream oFileStream = File.Create(sNombreArchivoTri))
                 {
                     // Add some text to file
                     Byte[] abDatosDocTributos = new UTF8Encoding(true).GetBytes(sInfoDocTributos);
                     oFileStream.Write(abDatosDocTributos, 0, abDatosDocTributos.Length);
                 }
+                using (FileStream oFileStream = File.Create(sNombreArchivoModoPago)) // pag
+                {
+                    // Add some text to file
+                    Byte[] abDatosDocModoPago = new UTF8Encoding(true).GetBytes(sInfoDocModoPago);
+                    oFileStream.Write(abDatosDocModoPago, 0, abDatosDocModoPago.Length);
+                }
+                if (sDatosLeyenda.Length > 0 && sNombreArchivoLeyenda.Length > 0) // ley
+                {
+                    if (File.Exists(sNombreArchivoLeyenda))
+                    {
+                        File.Delete(sNombreArchivoLeyenda);
+                    }
+                    string sInfoLeyenda = sDatosLeyenda;
+                    using (FileStream oFileStream = File.Create(sNombreArchivoLeyenda))
+                    {
+                        // Add some text to file
+                        Byte[] abDatosLeyenda = new UTF8Encoding(true).GetBytes(sInfoLeyenda);
+                        oFileStream.Write(abDatosLeyenda, 0, abDatosLeyenda.Length);
+                    }
+                }
 
+                if (sModoPagoDet.Length > 0 && sNombreArchivoModoPagoDet.Length > 0) // dpa
+                {
+                    if (File.Exists(sNombreArchivoModoPagoDet))
+                    {
+                        File.Delete(sNombreArchivoModoPagoDet);
+                    }
+                    string sInfoModoPagoDet = sModoPagoDet;
+                    using (FileStream oFileStream = File.Create(sNombreArchivoModoPagoDet))
+                    {
+                        // Add some text to file
+                        Byte[] abDatosModoPagoDet = new UTF8Encoding(true).GetBytes(sInfoModoPagoDet);
+                        oFileStream.Write(abDatosModoPagoDet, 0, abDatosModoPagoDet.Length);
+                    }
+                }
+                //para las detracciones (ADICIONALES A CABECERA)
+                if (sAdicionalCab.Length > 0 && sNombreArchivoAdicionalCab.Length > 0) // aca
+                {
+                    if (File.Exists(sNombreArchivoAdicionalCab))
+                    {
+                        File.Delete(sNombreArchivoAdicionalCab);
+                    }
+                    string sInfoModoAdicionalCab = sAdicionalCab;
+                    using (FileStream oFileStream = File.Create(sNombreArchivoAdicionalCab))
+                    {
+                        // Add some text to file
+                        Byte[] abDatosAdicionalCab = new UTF8Encoding(true).GetBytes(sInfoModoAdicionalCab);
+                        oFileStream.Write(abDatosAdicionalCab, 0, abDatosAdicionalCab.Length);
+                    }
+                }
                 // Crear archivo anticipo
                 if (sDatosAnticipo.Length > 0 && sNombreArchivoAnticipo.Length > 0)
                 {

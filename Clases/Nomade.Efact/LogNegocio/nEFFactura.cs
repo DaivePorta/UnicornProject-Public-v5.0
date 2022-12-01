@@ -1352,8 +1352,8 @@ namespace Nomade.Efact.LogNegocio
                     {
                         if (bIndicadorDet) sModoPagoDet += ((char)10);
 
-                        string mpd1 = oDR["MONTO"].ToString(); // CODIGO DE UNIDAD DE MEDIDA POR ITEM
-                        string mpd2 = oDR["FECHA"].ToString(); // CANTIDAD POR ITEM
+                        string mpd1 = oDR["MONTO"].ToString();
+                        string mpd2 = oDR["FECHA"].ToString();
                         string mpd3 = oDR["MONEDA"].ToString();
 
                         sModoPagoDet += mpd1 + "|" + mpd2 + "|" + mpd3 + "|";

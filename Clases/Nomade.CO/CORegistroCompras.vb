@@ -1376,6 +1376,30 @@
         End Try
     End Function
 
+    Public Function ListarComprobantes_Masivo(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_PIDM As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_LISTA_COMPROBANTES_ELECT_MASIVO", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
     Public Function Listar_Req_Usua_Detalle(ByVal p_CODE_REQ As String, ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_FECHA As String, ByVal p_ESTADO_IND As String, ByVal p_ESTADO_APRO As String, ByVal p_CODE_PROD As String, ByVal p_TIPO As String) As DataTable
         Try
             Dim dt As DataTable

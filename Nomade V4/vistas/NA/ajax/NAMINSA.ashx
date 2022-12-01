@@ -2,6 +2,7 @@
 Imports System
 Imports System.Web
 Imports System.Data
+Imports SelectPdf
 
 Public Class NAMINSA : Implements IHttpHandler
 
@@ -34,6 +35,9 @@ Public Class NAMINSA : Implements IHttpHandler
 
     'QR
     Dim p_IMGQR As String
+
+    'WHATSAPP CLOUD API
+    Dim RECIPIENT_PHONE_NUMBER, MENSAJEWHATSAPP As String
 
     Dim dt As DataTable
 
@@ -89,6 +93,10 @@ Public Class NAMINSA : Implements IHttpHandler
         p_NCMOCONT_CODIGO = context.Request("p_NCMOCONT_CODIGO")
         p_CODE = context.Request("p_CODE")
         p_CODIGO_NAM = context.Request("p_CODIGO_NAM")
+
+        'WHATSAPP CLOUD API
+        RECIPIENT_PHONE_NUMBER = context.Request("RECIPIENT_PHONE_NUMBER")
+        MENSAJEWHATSAPP = context.Request("MENSAJEWHATSAPP")
 
         doc_origen = context.Request("doc_origen") 'PARA ELIMINAR UNA FILA DEL DETALLE INDICANDO EL DOC ORIGEN SI ES SALIDA O ENTRADA DE DOCS. MULTIPLES
 
@@ -2129,6 +2137,18 @@ Public Class NAMINSA : Implements IHttpHandler
                     mail.enviar(remitente, nremitente, destinatarios, asunto, CUERPO)
                     res = "OK"
 
+                Case "SENDWHATSAPP"
+                    context.Request.ContentType = "text/plain"
+                    Dim whatsapp As New Nomade.Mail.NomadeMail("Bn")
+                    Dim plantilla = "Documento Venta"
+                    Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & p_CODE & ".pdf"
+
+                    res = GenerarPDF(p_CODE)
+                    whatsapp.enviarWhatsapp(RECIPIENT_PHONE_NUMBER, p_CODE, MENSAJEWHATSAPP, plantilla, datoAj)
+
+                Case "DescargarPDF"
+                    res = GenerarPDF(p_CODE)
+
                 Case "VL_SERIE_DOC"
                     context.Request.ContentType = "text/plain"
                     RAZON_DEST = context.Request("RAZON_DEST")
@@ -2913,6 +2933,41 @@ Public Class NAMINSA : Implements IHttpHandler
         'End If
         Return tabla.ToString()
     End Function
+
+    Public Function GenerarPDF(ByVal NOMBRE As String) As String
+        Dim ress As String = ""
+        Dim htmlText As String = ""
+        Dim cNomArch As String = NOMBRE & ".pdf"
+        htmlText = GenerarDctoImprimir(CTLG_CODE, p_CODE)
+        HTMLToPDF(htmlText, cNomArch)
+        ress = "OK"
+        Return ress
+    End Function
+
+    Sub HTMLToPDF(ByVal HTML As String, ByVal nombreArchivo As String)
+
+        Dim archivo, res As String
+        res = "Archivos\" + nombreArchivo
+        archivo = HttpContext.Current.Server.MapPath("~") + res
+        If My.Computer.FileSystem.FileExists(archivo) Then
+            My.Computer.FileSystem.DeleteFile(archivo)
+        End If
+
+        Dim converter = New HtmlToPdf()
+        converter.Options.PdfPageSize = PdfPageSize.A4
+        converter.Options.MarginTop = 1.9
+        converter.Options.AutoFitWidth = HtmlToPdfPageFitMode.AutoFit
+        converter.Options.AutoFitHeight = HtmlToPdfPageFitMode.AutoFit
+        converter.Options.MarginTop = 20
+        converter.Options.MarginBottom = 20
+        converter.Options.MarginLeft = 20
+        converter.Options.MarginRight = 20
+
+        Dim doc As SelectPdf.PdfDocument = converter.ConvertHtmlString(HTML)
+
+        doc.Save(archivo)
+        doc.Close()
+    End Sub
 
     Public Function vDesc(ByVal valor As String) As String
         Dim res As String

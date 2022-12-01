@@ -70,6 +70,7 @@
             success: function (datos) {
                 selectEst.empty();
                 if (datos != null) {
+                    $('#cboEstablecimiento').append('<option Value="TODOS">TODOS</option>');//se comenta esta línea y se oculta la opción de todos
                     for (var i = 0; i < datos.length; i++) {
                         selectEst.append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
                     }
@@ -1512,7 +1513,7 @@
         $('#btnFiltrarFactElec').on('click', function () {
             lstSeleccionados = [];
             var emp = $('#cboEmpresa').val();
-            var suc = $('#cboEstablecimiento').val();
+            var suc = $("#cboEstablecimiento").val() == 'TODOS' ? '' : $('#cboEstablecimiento').val();
             var doc = $('#cboDocumento').val();
             var des = $('#txtDesde').val();
             var has = $('#txtHasta').val();
@@ -1669,7 +1670,7 @@
 
     var fillCboTipoDocumento = function () {
         var emp = $('#cboEmpresa').val();
-        var sucu = $('#cboEstablecimiento').val();
+        var sucu = $("#cboEstablecimiento").val() == 'TODOS' ? '' : $('#cboEstablecimiento').val();
         $('#cboDocumento').html("<option value=''></option>");
         $('#cboDocumento').select2('val', '');
         $.ajax({

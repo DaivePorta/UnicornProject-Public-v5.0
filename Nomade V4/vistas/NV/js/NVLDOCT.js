@@ -1,6 +1,7 @@
 ﻿var prmtODET = "";
 var codigoParaPDF = "";//DPORTA
 var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
+var prmtDIGP = 0;
 var NVLDOCT = function () {
     var codigoVenta = '';
     let sCodMovContSelec = "";
@@ -1395,6 +1396,24 @@ function cargarParametrosSistema() {
             alertCustom("No se recuperó correctamente el parámetro ACON!");
         }
     });
+
+    //OBTENER CANTIDAD DIGITOS EN LA PARTE DECIMAL (PRECIO)
+    $.ajax({
+        type: "post",
+        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=DIGP",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: true,
+        success: function (datos) {
+            if (datos != null) {
+                prmtDIGP = datos[0].VALOR;
+            }
+            else { alertCustom("No se recuperó correctamente el parámetro DIGP!"); }
+        },
+        error: function (msg) {
+            alertCustom("No se recuperó correctamente el parámetro DIGP!");
+        }
+    });
 }
 
 function solonumbef(string) {
@@ -1670,12 +1689,12 @@ function obtenerDetalleVenta(codigo) {
                         '<td >' + datos2[i].DESC_ALMC + '</td>' +
                         '<td style="text-align:center">' + parseFloat(datos2[i].CANTIDAD).toFixed(2) + '</td>' +
                         '<td>' + datos2[i].DESC_UNIDAD + '</td>' +
-                        '<td style="text-align:center">' + (moneda == 'USD' ? datos2[i].CONVERT_PU : datos2[i].PU) + '</td>' +
-                        '<td style="text-align:center">' + (parseFloat(datos2[i].CANTIDAD) * (moneda == 'USD' ? datos2[i].CONVERT_PU : datos2[i].PU)).toFixed(2) + '</td>' +
-                        '<td style="text-align:center">' + (moneda == 'USD' ? datos2[i].CONVERT_DESCUENTO : datos2[i].DESCUENTO) + '</td>' +
-                        '<td style="text-align:center">' + (moneda == 'USD' ? datos2[i].CONVERT_TOTAL : datos2[i].TOTAL) + '</td>' +
-                        '<td style="text-align:center">' + (moneda == 'USD' ? datos2[i].CONVERT_ISC : datos2[i].ISC) + '</td>' +
-                        '<td style="text-align:center">' + (moneda == 'USD' ? datos2[i].CONVERT_DETRACCION : datos2[i].DETRACCION) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(moneda == 'USD' ? datos2[i].CONVERT_PU : datos2[i].PU).toFixed(prmtDIGP) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(parseFloat(datos2[i].CANTIDAD) * (moneda == 'USD' ? datos2[i].CONVERT_PU : datos2[i].PU)).toFixed(prmtDIGP) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(moneda == 'USD' ? datos2[i].CONVERT_DESCUENTO : datos2[i].DESCUENTO).toFixed(prmtDIGP) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(moneda == 'USD' ? datos2[i].CONVERT_TOTAL : datos2[i].TOTAL).toFixed(prmtDIGP) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(moneda == 'USD' ? datos2[i].CONVERT_ISC : datos2[i].ISC).toFixed(prmtDIGP) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(moneda == 'USD' ? datos2[i].CONVERT_DETRACCION : datos2[i].DETRACCION).toFixed(prmtDIGP) + '</td>' +
                         '<td>' + datos2[i].ESTADO_DESP + '</td>');
                 }
             }
@@ -1717,12 +1736,12 @@ function obtenerDetalleVenta2(codigo) {
                         //'<td >' + datos2[i].DESC_ALMC + '</td>' +
                         '<td style="text-align:center">' + parseFloat(datos2[i].CANTIDAD).toFixed(2) + '</td>' +
                         '<td>' + datos2[i].DESC_UNIDAD + '</td>' +
-                        '<td style="text-align:center">' + (moneda == 'USD' ? datos2[i].CONVERT_PU : datos2[i].PU) + '</td>' +
-                        '<td style="text-align:center">' + (parseFloat(datos2[i].CANTIDAD) * (moneda == 'USD' ? datos2[i].CONVERT_PU : datos2[i].PU)).toFixed(2) + '</td>' +
-                        '<td style="text-align:center">' + (moneda == 'USD' ? datos2[i].CONVERT_DESCUENTO : datos2[i].DESCUENTO) + '</td>' +
-                        '<td style="text-align:center">' + (moneda == 'USD' ? datos2[i].CONVERT_TOTAL : datos2[i].TOTAL) + '</td>' +
-                        '<td style="text-align:center">' + (moneda == 'USD' ? datos2[i].CONVERT_ISC : datos2[i].ISC) + '</td>' +
-                        '<td style="text-align:center">' + (moneda == 'USD' ? datos2[i].CONVERT_DETRACCION : datos2[i].DETRACCION) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(moneda == 'USD' ? datos2[i].CONVERT_PU : datos2[i].PU).toFixed(prmtDIGP) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(parseFloat(datos2[i].CANTIDAD) * (moneda == 'USD' ? datos2[i].CONVERT_PU : datos2[i].PU)).toFixed(prmtDIGP) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(moneda == 'USD' ? datos2[i].CONVERT_DESCUENTO : datos2[i].DESCUENTO).toFixed(prmtDIGP) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(moneda == 'USD' ? datos2[i].CONVERT_TOTAL : datos2[i].TOTAL).toFixed(prmtDIGP) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(moneda == 'USD' ? datos2[i].CONVERT_ISC : datos2[i].ISC).toFixed(prmtDIGP) + '</td>' +
+                        '<td style="text-align:center">' + parseFloat(moneda == 'USD' ? datos2[i].CONVERT_DETRACCION : datos2[i].DETRACCION).toFixed(prmtDIGP) + '</td>' +
                         '<td>' + datos2[i].ESTADO_DESP + '</td>');
                 }
             }

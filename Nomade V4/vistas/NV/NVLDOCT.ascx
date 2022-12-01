@@ -832,7 +832,7 @@
                 <a id="btnImprimirDetalle" class="btn black"><i class="icon-print"></i>&nbsp; Imprimir</a>
                 <a class="btn blue" id="btnVerAsiento"><i class="icon-book"></i>&nbsp; Ver Asiento</a>
                 <a class="btn blue" id="btnVerDetVenta" style="display:none"><i class="icon-book"></i>&nbsp; Ver Detalle Venta</a>
-                <a class="btn red" id="btnGenerarPDF"><i class="icon-book"></i>&nbsp; Descargar PDF</a>
+                <a class="btn red" id="btnGenerarPDF"><i class="icon-download"></i>&nbsp; Descargar PDF</a>
             </div>
             <div class="span7" id="divBotones2" style="display: none;">
                 <%--<a class="btn purple" id="btnMail"><i class="icon-envelope"></i>&nbsp;Enviar Mail</a>

@@ -773,7 +773,7 @@ namespace Nomade.Efact.LogNegocio
                 string sNombreArchivoLeyenda = sPath_Orbitum + @"DATA\" + ruc + "-07-" + seriecorrelativo + ".ley";
                 // Fin - Datos del documeento de Leyendas (ley)
                 string sDatosModoPago = "";
-                if (sSerieNro.Substring(0, 1).Equals("F") && oDR_Doc["MODO_PAGO"].ToString() == "Credito") //dporta 28/12/2021 Solo para facturas se agrega el archivo .pag
+                if (oDR_Doc["MODO_PAGO"].ToString() == "Credito") //dporta 28/12/2021 Solo para facturas se agrega el archivo .pag
                 {
                     // Inicio - Datos del modo pago (pag) DPORTA 29/11/2021
                     string mp1 = oDR_Doc["MODO_PAGO"].ToString(); // modo de pago
@@ -803,8 +803,8 @@ namespace Nomade.Efact.LogNegocio
                     {
                         if (bIndicadorDet) sModoPagoDet += ((char)10);
 
-                        string mpd1 = oDR["MONTO"].ToString(); // CODIGO DE UNIDAD DE MEDIDA POR ITEM
-                        string mpd2 = oDR["FECHA"].ToString(); // CANTIDAD POR ITEM
+                        string mpd1 = oDR["MONTO"].ToString();
+                        string mpd2 = oDR["FECHA"].ToString(); 
                         string mpd3 = oDR["MONEDA"].ToString();
 
                         sModoPagoDet += mpd1 + "|" + mpd2 + "|" + mpd3 + "|";
