@@ -421,17 +421,17 @@ var NVLDOCT = function () {
                     data: "FOPA_DESC", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "center"); }
 
                 },
+                //{
+                //    data: "NOMBRE_VENDEDOR", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); },
+                //    visible: false
+
+                //},
                 {
-                    data: "NOMBRE_VENDEDOR", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); },
-                    visible: false
+                    data: "VENDEDOR_USUA_ID", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "center"); }
 
                 },
                 {
-                    data: "VENDEDOR_USUA_ID", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); }
-
-                },
-                {
-                    data: "USUA_ID_REG", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); }
+                    data: "USUA_ID_REG", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "center"); }
 
                 },
                 {
@@ -455,7 +455,7 @@ var NVLDOCT = function () {
                     data: null, createdCell: function (td, cellData, rowData, row, col) {
 
                         $(td)
-                            .html("<a class='btn blue' onclick=\"imprimirDetalle('" + rowData.CODE + "','" + rowData.TIPO_MODULO + "','" + rowData.TIPO_DCTO + "','" + rowData.ELECTRONICO_IND + "')\"><i class='icon-print'></i></a><a class='btn red' onclick=\"tracking('" + rowData.CODE + "','" + rowData.NUM_DCTO + "','" + rowData.TIPO_DCTO + "')\"><i class='icon-search'></i></a>")
+                            .html("<a class='btn blue' onclick=\"imprimirDetalle('" + rowData.CODE + "','" + rowData.TIPO_MODULO + "','" + rowData.TIPO_DCTO + "','" + rowData.ELECTRONICO_IND + "','" + rowData.CTLG_CODE + "')\"><i class='icon-print'></i></a><a class='btn red' onclick=\"tracking('" + rowData.CODE + "','" + rowData.NUM_DCTO + "','" + rowData.TIPO_DCTO + "')\"><i class='icon-search'></i></a>")
 
                             .attr("align", "center");
                     }
@@ -590,7 +590,7 @@ var NVLDOCT = function () {
                 if (sPrefDoc === 'AP') {
                     obtenerCabeceraAnticipo(sCodDoc);
                 } else {
-                    obtenerCabeceraVenta(sCodDoc);
+                    obtenerCabeceraVenta(sCodDoc, row.ATENDIDO);
                 }
 
                 sCodMovContSelec = row.COD_MOV_CONT;
@@ -1203,7 +1203,7 @@ var NVLDOCT = function () {
         data.append("p_CODE", sCodVenta);
         data.append("p_CTLG_CODE", $("#cboEmpresa").val());
 
-        if (sCodVenta.substring(0, 2) == "AP") {
+        if (sCodVenta.substring(0, 2) == "AP") { // ANTICIPOS
             $.ajax({
                 type: "POST",
                 url: "vistas/nv/ajax/nvmanti.ashx",
@@ -1228,59 +1228,82 @@ var NVLDOCT = function () {
                     noexitoCustom("No se pudo generar el PDF.");
                 }
             });
-        } else {
-            if ($("#hfTipoModulo").val() == "X") {// SOLO PARA LAS VENTAS QUE TIENEN ORDENES DE SERVICIO O SON REALIZADAS EN ESAS PANTALLAS
-                $.ajax({
-                    type: "POST",
-                    url: "vistas/nv/ajax/nvmdovs.ashx",
-                    contentType: false,
-                    data: data,
-                    processData: false,
-                    async: false,
-                    success: function (data) {
-                        //Desbloquear("ventana");
-                        if (data == "OK") {
-                            //exito();
-                            //$("#divBotones1").hide();
-                            //$("#divBotones2").show();
-                            $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
-                        } else {
-                            noexito();
-                            return;
-                        }
-                    },
-                    error: function (msg) {
-                        //Desbloquear("ventana");
-                        noexitoCustom("No se pudo generar el PDF.");
+        } else { // VENTAS
+            //if ($("#hfTipoModulo").val() == "X") {// SOLO PARA LAS VENTAS QUE TIENEN ORDENES DE SERVICIO O SON REALIZADAS EN ESAS PANTALLAS
+            //    $.ajax({
+            //        type: "POST",
+            //        url: "vistas/nv/ajax/nvmdovs.ashx",
+            //        contentType: false,
+            //        data: data,
+            //        processData: false,
+            //        async: false,
+            //        success: function (data) {
+            //            //Desbloquear("ventana");
+            //            if (data == "OK") {
+            //                //exito();
+            //                //$("#divBotones1").hide();
+            //                //$("#divBotones2").show();
+            //                $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+            //            } else {
+            //                noexito();
+            //                return;
+            //            }
+            //        },
+            //        error: function (msg) {
+            //            //Desbloquear("ventana");
+            //            noexitoCustom("No se pudo generar el PDF.");
+            //        }
+            //    });
+            //} else {
+            //    $.ajax({
+            //        type: "POST",
+            //        url: "vistas/nv/ajax/nvmdocv.ashx",
+            //        contentType: false,
+            //        data: data,
+            //        processData: false,
+            //        async: false,
+            //        success: function (data) {
+            //            //Desbloquear("ventana");
+            //            if (data == "OK") {
+            //                //exito();
+            //                //$("#divBotones1").hide();
+            //                //$("#divBotones2").show();
+            //                $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+            //            } else {
+            //                noexito();
+            //                return;
+            //            }
+            //        },
+            //        error: function (msg) {
+            //            //Desbloquear("ventana");
+            //            noexitoCustom("No se pudo generar el PDF.");
+            //        }
+            //    });
+            //}
+            $.ajax({
+                type: "POST",
+                url: "vistas/nv/ajax/nvmdocv.ashx",
+                contentType: false,
+                data: data,
+                processData: false,
+                async: false,
+                success: function (data) {
+                    //Desbloquear("ventana");
+                    if (data == "OK") {
+                        //exito();
+                        //$("#divBotones1").hide();
+                        //$("#divBotones2").show();
+                        $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+                    } else {
+                        noexito();
+                        return;
                     }
-                });
-            } else {
-                $.ajax({
-                    type: "POST",
-                    url: "vistas/nv/ajax/nvmdocv.ashx",
-                    contentType: false,
-                    data: data,
-                    processData: false,
-                    async: false,
-                    success: function (data) {
-                        //Desbloquear("ventana");
-                        if (data == "OK") {
-                            //exito();
-                            //$("#divBotones1").hide();
-                            //$("#divBotones2").show();
-                            $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
-                        } else {
-                            noexito();
-                            return;
-                        }
-                    },
-                    error: function (msg) {
-                        //Desbloquear("ventana");
-                        noexitoCustom("No se pudo generar el PDF.");
-                    }
-                });
-            }
-            
+                },
+                error: function (msg) {
+                    //Desbloquear("ventana");
+                    noexitoCustom("No se pudo generar el PDF.");
+                }
+            });
         }
         
         //Desbloquear("ventana");
@@ -1464,7 +1487,7 @@ function verificarFormatoTicket(tipoDoc) {
 
 }
 
-function imprimirDetalle(codigo, tipoModulo, tipoDoc, electronicoInd) {
+function imprimirDetalle(codigo, tipoModulo, tipoDoc, electronicoInd, ctlg_code) {
     //Bloquear("ventana");
     //Añadido para que tmb se puedan imprimir los anticipos
     var anticipo = 'AP';
@@ -1473,6 +1496,7 @@ function imprimirDetalle(codigo, tipoModulo, tipoDoc, electronicoInd) {
     if (index >= 0) {
         var data = new FormData();
         data.append('p_CODE', codigo);
+        data.append('p_CTLG_CODE', ctlg_code);
         var jqxhr = $.ajax({
             type: "POST",
             url: "vistas/nv/ajax/NVMANTI.ashx?OPCION=IMPR",
@@ -1504,6 +1528,7 @@ function imprimirDetalle(codigo, tipoModulo, tipoDoc, electronicoInd) {
             if (tipoModulo == 'X') { // SOLO PARA LAS VENTAS QUE TIENEN ORDENES DE SERVICIO O SON REALIZADAS EN ESAS PANTALLAS
                 var data = new FormData();
                 data.append('p_CODE', codigo);
+                data.append('p_CTLG_CODE', ctlg_code);
                 var jqxhr = $.ajax({
                     type: "POST",
                     url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
@@ -1533,6 +1558,7 @@ function imprimirDetalle(codigo, tipoModulo, tipoDoc, electronicoInd) {
             } else {
                 var data = new FormData();
                 data.append('p_CODE', codigo);
+                data.append('p_CTLG_CODE', ctlg_code);
                 var jqxhr = $.ajax({
                     type: "POST",
                     url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
@@ -1565,6 +1591,7 @@ function imprimirDetalle(codigo, tipoModulo, tipoDoc, electronicoInd) {
             if (tipoDoc == '0012' || tipoDoc == '0101') { //0012 ticket - 0101 es para los tickets o notas de venta o lo que sea que tenga ese código
                 var data = new FormData();
                 data.append('p_CODE', codigo);
+                data.append('p_CTLG_CODE', ctlg_code);
                 var jqxhr = $.ajax({
                     type: "POST",
                     url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
@@ -1874,7 +1901,7 @@ $(".close_mail").on("click", function () {
 });
 
 
-function obtenerCabeceraVenta(codigo) {
+function obtenerCabeceraVenta(codigo, atendido) {
     //codigoVenta = codigo;
     codigoParaPDF = codigo; //DPORTA
     $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddCodDoc").val(codigoParaPDF);
@@ -1918,13 +1945,15 @@ function obtenerCabeceraVenta(codigo) {
                             $("#tblMontos").css('background-color', '#CEF7DE');
                         }
                     }
+                    /*if (datos[i].DOCUMENTO )*/
                     $("#tblDoc").text(datos[i].DOCUMENTO);
                     $("#tblFecha").html(datos[i].FECHA);
                     $("#tblMoneda").text(datos[i].MONE_DESC)
                     $("#tblCliente").html(datos[i].CLIENTE);
+                    $("#tblClie_doid").html(datos[i].NRO_ID_CLIENTE);
                     $("#tblMopa").text(datos[i].MOPA_DESC + ' ' + datos[i].CONTRAENTREGA_IND);
                     $("#tblFopa").text(datos[i].FOPA_DESC);
-                    $("#tblEstado").html(datos[i].ESTADO);
+                    $("#tblEstado").html(atendido == undefined ? datos[i].ESTADO : atendido);
                     $("#tblVendedor").text(datos[i].VENDEDOR);
                     let cajaDesc = datos[i].CAJA_DESC;
 
@@ -2050,7 +2079,7 @@ function obtenerCabeceraVenta(codigo) {
                     }
                     $("#hfPrimero").val(dPrimero);
                     $("#hfTipoModulo").val(datos[i].TIPO_MODULO);
-                    $("#btnImprimirDetalle").attr('onclick', "imprimirDetalle('" + datos[i].CODE + "','" + datos[i].TIPO_MODULO + "','" + datos[i].DCTO_CODE + "','" + datos[i].ELECTRONICO_IND +"')");
+                    $("#btnImprimirDetalle").attr('onclick', "imprimirDetalle('" + datos[i].CODE + "','" + datos[i].TIPO_MODULO + "','" + datos[i].DCTO_CODE + "','" + datos[i].ELECTRONICO_IND + "','" + datos[i].CTLG_CODE +"')");
                 }
                 if (prmtODET == "NO") {
                     obtenerDetalleVenta(cod);
@@ -2102,6 +2131,7 @@ function obtenerCabeceraAnticipo(codigo) {
                     $("#tblFecha").html(datos[0].FECHA_EMI);
                     $("#tblMoneda").text(datos[0].MONE_DESC)
                     $("#tblCliente").html(datos[0].CLIENTE);
+                    $("#tblClie_doid").html(datos[0].NRO_ID_CLIENTE);
                     $("#tblMopa").text(datos[0].MOPA_DESC);
                     $("#tblFopa").text(datos[0].FOPA_DESC);
 
@@ -2166,7 +2196,7 @@ function obtenerCabeceraAnticipo(codigo) {
                     let sGlosa = datos[0].GLOSA;
                     $("#tblGlosaAnticipo tbody").html(`<tr><td>${sGlosa}</td></tr>`);
                     //Agregado para que pueda imprimir desde el modal 
-                    $("#btnImprimirDetalle").attr('onclick', "imprimirDetalle('" + datos[i].CODIGO + "','" + datos[i].TIPO_MODULO + "','" + datos[i].DCTO_CODE + "','" + datos[i].ELECTRONICO_IND + "')");
+                    $("#btnImprimirDetalle").attr('onclick', "imprimirDetalle('" + datos[i].CODIGO + "','" + datos[i].TIPO_MODULO + "','" + datos[i].DCTO_CODE + "','" + datos[i].ELECTRONICO_IND + "','" + datos[i].CTLG_CODE + "')");
 
                 }
 

@@ -3212,7 +3212,7 @@ var calcularDetraccionOrigen = function () {
     if ($('#cbo_doc_origen').val() !== '') {
         totales.each(function () {
             if (!isNaN(parseFloat($(this).val()))) {
-                detraccion_origen += parseFloat($(this).val());
+                detraccion_origen += Math.round(($(this).val()));
             } else {
                 detraccion_origen += 0;
             }

@@ -3,10 +3,10 @@
 Imports System
 Imports System.Web
 Imports System.Data
+Imports System.IO
+Imports QRCoder
 
 Public Class CALNOCR : Implements IHttpHandler
-
-
 
     Dim OPCION, p_CTLG_CODE, p_SCSL_CODE, p_COMPRA_VENTA_IND As String
     Dim ncNotaCredito As New Nomade.CA.NotaCredito("Bn")
@@ -162,6 +162,8 @@ Public Class CALNOCR : Implements IHttpHandler
             Dim mon As String = dtCabecera.Rows(0)("MONEDA_SIMBOLO")
             'VARIABLE PARA COLOCAR EL QR EN EL PDF
             Dim rutaQr As String = ""
+            'VARIABLE PARA COLOCAR LA INFORMACIÓN DEL QR
+            Dim cadenaQR As String = ""
             If dtCabecera.Rows(0)("COMPRA_VENTA") = "V" Then
                 'dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA_CODE"), "A", "")
                 rutaLogo = dtCabecera.Rows(0)("RUTA_IMAGEN")
@@ -188,10 +190,12 @@ Public Class CALNOCR : Implements IHttpHandler
             Dim codeMoneda As String = dtCabecera.Rows(0)("MONE_CODE") 'Código de Moneda
             Dim descMon As String = dtCabecera.Rows(0)("MONEDA") 'Descripcion de moneda   
 
-            Dim motivoSunat As String = dtCabecera.Rows(0)("MOTIVO_SUNAT") 'Código motivo SUNAT   
+            Dim motivoSunat As String = dtCabecera.Rows(0)("MOTIVO_SUNAT") 'Código motivo SUNAT
+            'Cadena con la información del QR
+            cadenaQR = "6" + "|" + dtCabecera(0)("RUC").ToString + "|" + dtCabecera(0)("CLIE_DOID").ToString + "|" + dtCabecera(0)("CLIE_DCTO_NRO").ToString + "|" + "07" + "|" + dtCabecera(0)("DOCUMENTO").ToString + "|" + dtCabecera(0)("FECHA_SUNAT").ToString + "|" + dtCabecera(0)("MONTO_IGV").ToString + "|" + dtCabecera(0)("IMPORTE_TOTAL").ToString
             'LA RUTA QUE VA A TENER
-            'rutaQr = dtCabecera.Rows(0)("IMAGEN_QR")
-            rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE)
+            'rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE, p_CTLG_CODE)
+            rutaQr = "data:image/png;base64," + fnGetCodigoQR_fast(cadenaQR)
 
             If dtCabecera.Rows(0)("COMPRA_VENTA") = "V" Then
                 tabla.Append("<table id='tblDctoImprimir1' class='tblDctoImprimir' border='" + border + "' style='width: 100%;margin-bottom:" + marginBottom + "' cellpadding='" + cellpadding + "'  align='center'>")
@@ -589,5 +593,15 @@ Public Class CALNOCR : Implements IHttpHandler
         End Get
     End Property
 
-
+    Private Function fnGetCodigoQR_fast(ByVal informacionQR As String) As String 'DPORTA 07/12/2022
+        Dim qrGenerator = New QRCodeGenerator()
+        Dim qrCodeData = qrGenerator.CreateQrCode(informacionQR, QRCodeGenerator.ECCLevel.Q)
+        Dim bitMapByteCode As BitmapByteQRCode = New BitmapByteQRCode(qrCodeData)
+        Dim bitMap = bitMapByteCode.GetGraphic(20)
+        Dim byteImage As Byte()
+        Dim MS As MemoryStream = New MemoryStream()
+        MS.Write(bitMap, 0, bitMap.Length)
+        byteImage = MS.ToArray()
+        Return Convert.ToBase64String(byteImage)
+    End Function
 End Class

@@ -334,7 +334,7 @@
                             </div>
                         </div>
                         <div class="row-fluid">
-                        <div class="span2">
+                            <div class="span2">
                                 <div class="control-group">
                                     <label class="control-label" for="txtFechaVencimientoG">Fecha Vencimiento</label>
                                 </div>
@@ -389,15 +389,34 @@
                                         Periodo Tributario</label>
                                 </div>
                             </div>
-                            <div class="span2 slt_periodo">
+                            <div class="span3 slt_periodo">
                                 <div class="control-group">
                                     <div class="controls ">
-                                        <select id="cboPeriodoG" class="b limpiar span12 m-wrap" data-placeholder="Selecciona Periodo">
+                                        <select id="cboPeriodoG" class="b limpiar span6 m-wrap" data-placeholder="Selecciona Periodo">
                                         </select>
                                     </div>
                                 </div>
                             </div> 
-                            <div class="span2 cbo_periodo"></div>
+                            <%--<div class="span1"></div>--%>
+                            <div class="span1">
+                                <div class="control-group">
+                                    <label class="control-label" for="txtEstado">Estado: </label>
+                                </div>
+                            </div>
+                            <div class="span5">
+                                <div class="span3">
+                                    <div class="control-group">
+                                        <label id="lbl_EstadoGasto" class="control-label" for="txt_glosa" style="color: blue;">
+                                            <strong><span class="simboloMoneda"></span>&nbsp;<span id="lblEstadoGasto">-</span></strong>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                    <div class="controls ">
+                                        <button type="button" id="btnAnularGasto" class="btn red" style="display: none;">Anular</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -527,6 +546,36 @@
         <h5 class="text-right">Clic en un documento para seleccionarlo</h5>
     </div>
 </div>
+
+<!-- VENTANAS MODALES-->
+<div id="modal-confirmar" class="modal hide">
+    <div class="modal-header">
+        <button data-dismiss="modal" class="close" type="button"></button>
+        <h3>Anular Documento de Gasto</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <p><span id="msgDespacho"></span></p>
+                <p>
+                    Se anulará el documento de gasto &nbsp;¿Desea continuar la operación?
+                </p>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <div class="span4 offset2">
+                    <a id="btnAceptar" class="btn blue"><i class="icon-check"></i>&nbsp;Aceptar</a>
+                </div>
+                <div class="span4">
+                    <a id="btnCancelar" class="btn"><i class="icon-remove"></i>&nbsp;Cancelar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input id="hfcod_gasto" type="hidden" />
 
 <!-- IMPORTAMOS LOS PLUGINS QUE SE USARAN-->
 <script runat="server">

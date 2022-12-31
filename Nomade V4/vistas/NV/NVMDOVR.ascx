@@ -123,7 +123,7 @@
                     <a class="btn black btnImprimir" href="javascript:ImprimirDctoVenta();" style="display: none;"><i class="icon-print"></i>&nbsp;Imprimir</a>
                     <a class="btn green" onclick="javascript:NuevaVenta();"><i class="icon-plus"></i>&nbsp;Nuevo</a>
                     <a class="btn red" href="?f=nvldovr"><i class="icon-list"></i>&nbsp;Listar</a>
-                    <asp:Button class="btn red hidden" ID="btnDescPDF" runat="server" OnClick="btnPdf_Click"/>
+                    <asp:Button class="btn red hidden" ID="btnDescPDF" runat="server" OnClick="btnPdf_Click" UseSubmitBehavior="False"/>
                 </div>
                 <div style="clear: both"></div>
             </div>
@@ -2275,7 +2275,7 @@
 
 <!-- IMPORTAMOS LOS PLUGINS QUE SE USARAN-->
 <script type="text/javascript" src="../vistas/NV/js/NVMDOVR.js"></script>
-<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>
+<%--<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>--%>
 
 <script>
     jQuery(document).ready(function () {

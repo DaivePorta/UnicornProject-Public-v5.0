@@ -330,7 +330,7 @@
 <input id="hfPESO_TOTAL" type="hidden" value="0.00" />
 <input id="hfCodigoNaminsa" type="hidden" />
 <script type="text/javascript" src="../vistas/NA/js/NALAPES.js"></script>
-<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>
+<%--<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>--%>
 <script>
     jQuery(document).ready(function () {
         NALAPES.init();

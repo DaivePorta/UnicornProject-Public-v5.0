@@ -25,26 +25,26 @@
            
                 var parms = {
                     data: datos,
-                    "iDisplayLength": -1,
+                    /*"iDisplayLength": -1,*/
                     columns: [
                 
                         {
                             data: "CODIGO",
                             createdCell: function (td, cellData, rowData, row, col) {
                                 $(td).attr('align', 'center')
-                                $(td).css('display', 'none')
+                                /*$(td).css('display', 'none')*/
                             }
                         },
-                        {
-                            data: "COLUMNA",
+                        //{
+                        //    data: "COLUMNA",
                         
-                            createdCell: function (td, cellData, rowData, row, col) {
+                        //    createdCell: function (td, cellData, rowData, row, col) {
                            
-                                $(td).attr('align', 'center')
-                                $(td).css('display', 'none')
+                        //        $(td).attr('align', 'center')
+                        //       /* $(td).css('display', 'none')*/
                            
-                            }
-                        },
+                        //    }
+                        //},
                         {
                             data: "DESCRIPCION",
                             createdCell: function (td, cellData, rowData, row, col) {
@@ -79,7 +79,7 @@
                             createdCell: function (td, cellData, rowData, row, col) {
                           
                                 $(td).attr('align', 'center')
-                                $(td).css('display', 'none')
+                                /*$(td).css('display', 'none')*/
                             }
                         },
                          {
@@ -236,7 +236,7 @@ var BBMCONF = function () {
             success: function (datos) {
                 $('#cboParemetro').html("");
                 $('#cboParemetro').append(datos);
-                $('#cboParemetro').select2();
+                $('#cboParemetro,#cboTipo').select2();
             },
             error: function (msg) {
                 alert(msg.d);
@@ -266,16 +266,14 @@ var BBMCONF = function () {
                     $("#cboParemetro").select2("val", datos[0].PADRE).change();
                     Listar_Concepto_Codigo(datos[0].CODIGO)
 
-
-
                     $("#cboConcepto").val(datos[0].DESCRIPCION);
                     $('#cboConcepto').change();
                     $("#hfEstado").val(datos[0].ESTADO);
                  
                     $("#hfPeriodo").val(datos[0].PERIODO);
                     $("#hfEmpresa").val(emp);
-                    $("#cboTipo").val(datos[0].TIPO);
-
+                    //$("#cboTipo").val(datos[0].TIPO);
+                    $("#cboTipo").select2("val", datos[0].TIPO).change();
 
 
                     if (datos[0].AFP == "1") {

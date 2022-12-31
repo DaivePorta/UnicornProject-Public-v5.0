@@ -7,6 +7,7 @@ Imports System.Web
 Imports System.Data
 Imports System.IO
 Imports System.IO.FileStream
+Imports QRCoder
 
 Public Class CAMNOCL : Implements IHttpHandler
 
@@ -897,7 +898,7 @@ Public Class CAMNOCL : Implements IHttpHandler
         Dim htmlText As String = ""
         Dim cNomArch As String = CODIGO & ".pdf"
         htmlText = getHtmlTextPDF(CODIGO, EMPRESA)
-        HTMLToPDF(htmlText, cNomArch, CODIGO)
+        HTMLToPDF(htmlText, cNomArch, CODIGO, EMPRESA)
         Return ress
     End Function
 
@@ -910,13 +911,16 @@ Public Class CAMNOCL : Implements IHttpHandler
         Return htmlText.ToString
     End Function
 
-    Sub HTMLToPDF(ByVal HTML As String, ByVal FilePath As String, ByVal p_CODE As String)
+    Sub HTMLToPDF(ByVal HTML As String, ByVal FilePath As String, ByVal p_CODE As String, ByVal p_CTLG_CODE As String)
 
         Dim nc As New Nomade.NC.NCEmpresa("Bn")
         Dim dtCabecera As DataTable
         dtCabecera = caNotaCredito.ListarCabNotaCreditoImpresion(p_CODE)
 
         Dim imgS, imgI As String
+        Dim cadenaQR As String = ""
+        'Cadena con la información del QR
+        cadenaQR = "6" + "|" + dtCabecera(0)("RUC").ToString + "|" + dtCabecera(0)("CLIE_DOID").ToString + "|" + dtCabecera(0)("CLIE_DCTO_NRO").ToString + "|" + "07" + "|" + dtCabecera(0)("DOCUMENTO").ToString + "|" + dtCabecera(0)("FECHA_SUNAT").ToString + "|" + dtCabecera(0)("MONTO_IGV").ToString + "|" + dtCabecera(0)("IMPORTE_TOTAL").ToString
 
         Dim imgSuperior As String = dtCabecera(0)("IMG_SUPERIOR").ToString
         imgS = imgSuperior.Replace("../../../", String.Empty)
@@ -952,7 +956,8 @@ Public Class CAMNOCL : Implements IHttpHandler
 
         'If dtCabecera.Rows(0)("IND_ELECTRONICO") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
         If dtCabecera.Rows(0)("IND_ELECTRONICO") = "S" And p_CODE <> "" And p_CODE <> "undefined" Then
-            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(codigoQR.fnGetCodigoQR(p_CODE))) 'SOLO PARA ´DOCS ELECTRÓNICOS
+            'imgCabConQR(FilePath, imgS, imgI, Base64ToImage(codigoQR.fnGetCodigoQR(p_CODE, p_CTLG_CODE))) 'SOLO PARA ´DOCS ELECTRÓNICOS
+            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(fnGetCodigoQR_fast(cadenaQR))) 'SOLO PARA ´DOCS ELECTRÓNICOS
         Else
             imgC(FilePath, imgS, imgI)
         End If
@@ -1390,7 +1395,6 @@ Public Class CAMNOCL : Implements IHttpHandler
             Return False
         End Get
     End Property
-
     ''' <summary>
     ''' Elimina espacion vacios (trim), cambia (") por ('), reemplaza (/) por vacio
     ''' </summary>
@@ -1406,6 +1410,18 @@ Public Class CAMNOCL : Implements IHttpHandler
             res = campo
         End If
         Return res
+    End Function
+
+    Private Function fnGetCodigoQR_fast(ByVal informacionQR As String) As String 'DPORTA 07/12/2022
+        Dim qrGenerator = New QRCodeGenerator()
+        Dim qrCodeData = qrGenerator.CreateQrCode(informacionQR, QRCodeGenerator.ECCLevel.Q)
+        Dim bitMapByteCode As BitmapByteQRCode = New BitmapByteQRCode(qrCodeData)
+        Dim bitMap = bitMapByteCode.GetGraphic(20)
+        Dim byteImage As Byte()
+        Dim MS As MemoryStream = New MemoryStream()
+        MS.Write(bitMap, 0, bitMap.Length)
+        byteImage = MS.ToArray()
+        Return Convert.ToBase64String(byteImage)
     End Function
 
 End Class

@@ -227,6 +227,7 @@ Public Class NVLDOCT : Implements IHttpHandler
                             resb.Append("""DOCUMENTO"" :" & """" & MiDataRow("DOCUMENTO").ToString & """,")
                             resb.Append("""FECHA"" :" & """" & MiDataRow("EMISION").ToString & """,")
                             resb.Append("""VIGENCIA"" :" & """" & MiDataRow("ANULADO").ToString & """,")
+                            resb.Append("""NRO_ID_CLIENTE"" : " & """" & MiDataRow("CLIE_DOID_NRO").ToString & """,")
                             resb.Append("""CLIENTE"" :" & """" & MiDataRow("RAZON_SOCIAL").ToString & """,")
                             resb.Append("""MOPA_DESC"" :" & """" & MiDataRow("MOPA_DESC").ToString & """,")
                             resb.Append("""FOPA_DESC"" :" & """" & MiDataRow("FOPA_DESC").ToString & """,")
@@ -253,6 +254,7 @@ Public Class NVLDOCT : Implements IHttpHandler
                             resb.Append("""PIDM_CLIENTE"" :" & """" & MiDataRow("PIDM_CLIENTE").ToString & """,")
                             resb.Append("""ELECTRONICO_IND"" :" & """" & MiDataRow("ELECTRONICO_IND").ToString & """,")
                             resb.Append("""TIPO_MODULO"" :" & """" & MiDataRow("TIPO_MODULO").ToString & """,")
+                            resb.Append("""CTLG_CODE"" :" & """" & MiDataRow("CTLG_CODE").ToString & """,")
                             resb.Append("""DESCUENTO"" :" & """" & MiDataRow("DESCUENTO").ToString & """")
                             resb.Append("}")
                             resb.Append(",")
@@ -289,7 +291,6 @@ Public Class NVLDOCT : Implements IHttpHandler
                     dt = nvVenta.ListarDocVenta_Busq("", CLIENTE, NUM_DCTO, DCTO_CODE, VENDEDOR, ESTADO, PRODUCTO, SERIE_DCTO, Utilities.fechaLocal(DESDE),
                                                  Utilities.fechaLocal(HASTA), CTLG_CODE, SCSL_CODE, "", GRUPO_PROD, , p_TIPO_VTA)
                     If Not dt Is Nothing Then
-
                         res = Utilities.Datatable2Json(dt) 'GenerarTablaDocumento(dt)
                     Else
                         res = "[]"

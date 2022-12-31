@@ -956,7 +956,7 @@
 <input type="hidden" id="hfmonto" />
 
 <input type="hidden" id="hf_permiso" />
-<input type="hidden" id="hf_existe" />
+<%--<input type="hidden" id="hf_existe" />--%>
 
 <script type="text/javascript" src="../../recursos/plugins/bootstrap-treeview/bootstrap-treeview.js"></script>
 <script type="text/javascript" src="recursos/plugins/bootstrap-toggle-buttons/static/js/jquery.toggle.buttons.js"></script>

@@ -107,12 +107,17 @@ Public Class COLRECO : Implements IHttpHandler
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = coRegistroCompras.ListarRegistroCompras_Libro8(p_ANIO, p_MES, p_CTLG_CODE, "")
                     res = GenerarTablaRegistroCompras(dt).ToString()
+                    GenerarTXT(dt) 'Genera el .txt 
 
                 Case "5"
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = coRegistroCompras.ListarRegistroCompras_Libro8(p_ANIO, p_MES, p_CTLG_CODE, "")
-                    res = GenerarPDF(dt) 'Tambien genera el .txt            
+                    res = GenerarPDF(dt)
 
+                Case "6"
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    dt = coRegistroCompras.ListarRegistroCompras_Libro8(p_ANIO, p_MES, p_CTLG_CODE, "")
+                    res = GenerarTXT(dt) 'Genera el .txt   
 
             End Select
 
@@ -124,7 +129,7 @@ Public Class COLRECO : Implements IHttpHandler
     End Sub
 
     Public Function GenerarPDF(ByVal dt As System.Data.DataTable) As String
-        Dim ress As String
+        Dim ress As String = ""
         Dim cNomArch As String = ""
         Dim htmlText As New StringBuilder
         If Not dt Is Nothing Then
@@ -136,7 +141,10 @@ Public Class COLRECO : Implements IHttpHandler
         'dt=
         htmlText = GenerarTablaRegistroCompras(dt)
         HTMLToPDF(htmlText, cNomArch)
-        ress = GenerarTXT(dt)
+        'ress = GenerarTXT(dt)
+        If dt.Rows.Count <> 0 Then
+            ress = "ok"
+        End If
         Return ress
     End Function
 
@@ -234,39 +242,114 @@ Public Class COLRECO : Implements IHttpHandler
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_DSTMIX").ToString())) + "|" + String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV_DSTMIX").ToString())) + "|"
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_DSTNGR").ToString())) + "|" + String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV_DSTNGR").ToString())) + "|"
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_DSTMIX").ToString())) + "|"
+
+                        'ISC               
+                        If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                            cadena += " |"
+                        Else
+                            cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())) + "|"
+                        End If
+
+                        'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                        cadena += String.Format("{0:##0.00}", Decimal.Parse("0.00")) + "|"
+
+                        'OTROS TRIBUTOS
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_OTRTRI").ToString())) + "|"
 
                     ElseIf (dt.Rows(i)("OPERACION").ToString() = "DSTGRA") Then
                         ' ADQUISICIONES GRAVADAS DESTINADAS A OPERACIONES GRAVADAS Y/O DE EXPORTACIÓN   
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString())) + "|" + String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV").ToString())) + "|"
-                        cadena += " | | | | | |"
+                        'cadena += " | | | | | |"
+                        cadena += " | | | | |" 'ENTRE EL SEPTIMO Y OCTAVO ESPACIO SE AGREGA ISC Y IMPUESTO A LAS BOLSAS DE PLASTICO
+
+                        'ISC               
+                        If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                            cadena += " |"
+                        Else
+                            cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())) + "|"
+                        End If
+
+                        'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                        cadena += String.Format("{0:##0.00}", Decimal.Parse("0.00")) + "|"
+
+                        'OTROS TRIBUTOS
+                        cadena += " |"
+
                     ElseIf (dt.Rows(i)("OPERACION").ToString() = "DSTMIX") Then
                         ' ADQUISICIONES GRAVADAS DESTINADAS A OPERACIONES GRAVADAS Y/O DE EXPORTACIÓN Y A OPERACIONES NO GRAVADAS
                         cadena += " | |"
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString())) + "|" + String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV").ToString())) + "|"
-                        cadena += " | | | |"
+                        'cadena += " | | | |"
+                        cadena += " | | |"
+
+                        'ISC               
+                        If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                            cadena += " |"
+                        Else
+                            cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())) + "|"
+                        End If
+
+                        'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                        cadena += String.Format("{0:##0.00}", Decimal.Parse("0.00")) + "|"
+
+                        'OTROS TRIBUTOS
+                        cadena += " |"
+
                     ElseIf (dt.Rows(i)("OPERACION").ToString() = "DSTNGR") Then
                         ' ADQUISICIONES GRAVADAS DESTINADAS A OPERACIONES NO GRAVADAS
                         cadena += " | | | |"
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString())) + "|" + String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV").ToString())) + "|"
-                        cadena += " | |"
+                        'cadena += " | |"
+
+                        cadena += " |"
+
+                        'ISC               
+                        If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                            cadena += " |"
+                        Else
+                            cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())) + "|"
+                        End If
+
+                        'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                        cadena += String.Format("{0:##0.00}", Decimal.Parse("0.00")) + "|"
+
+                        'OTROS TRIBUTOS
+                        cadena += " |"
 
                     ElseIf (dt.Rows(i)("OPERACION").ToString() = "ORGNGR") Then
                         cadena += " | | | | | |"
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString())) + "|"
+
+                        'ISC               
+                        If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                            cadena += " |"
+                        Else
+                            cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())) + "|"
+                        End If
+
+                        'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                        cadena += String.Format("{0:##0.00}", Decimal.Parse("0.00")) + "|"
+
+                        'OTROS TRIBUTOS
                         cadena += " |"
+
                     Else
                         cadena += " | | | | | | |"
+
+                        'ISC               
+                        If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                            cadena += " |"
+                        Else
+                            cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())) + "|"
+                        End If
+
+                        'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                        cadena += String.Format("{0:##0.00}", Decimal.Parse("0.00")) + "|"
+
+                        'OTROS TRIBUTOS
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString())) + "|"
                     End If
 
-
-                    ''ISC,OTROS TRIBUTOS Y CARGOS, IMPORTE TOTAL, nro comprobante emitido                
-                    If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
-                        cadena += " |"
-                    Else
-                        cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())) + "|"
-                    End If
                     'cadena += " |" 'OTROS TRIBUTOS Y CARGOS
                     cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IMPORTE").ToString())) + "|"
 
@@ -300,18 +383,21 @@ Public Class COLRECO : Implements IHttpHandler
                     cadena += dt.Rows(i)("INC_PROV_RENUNCIANTE").ToString() + "|"
                     cadena += dt.Rows(i)("INC_DNI").ToString() + "|"
                     cadena += dt.Rows(i)("INDICADOR_COMPROBANTE").ToString() + "|"
+                    If dt.Rows(i)("IGV_DSTGRA").ToString() = "0.00" And dt.Rows(i)("IGV_DSTMIX").ToString() = "0.00" And dt.Rows(i)("IGV_DSTNGR").ToString() = "0.00" Then
+                        dt.Rows(i)("ESTADO_AJUSTE") = 0
+                    End If
                     cadena += dt.Rows(i)("ESTADO_AJUSTE").ToString() + "|"
-                    If cantidad_datos = nroCorrelativo Then
-                    Else
+
+                    If cantidad_datos <> nroCorrelativo Then
                         cadena += vbCrLf
                     End If
                 Next
-                fd.WriteLine(cadena)
+                fd.Write(cadena)
                 fd.Close()
                 res = "ok"
             Else
                 Dim fd As New StreamWriter(archivo, True)
-                fd.WriteLine(cadena)
+                fd.Write(cadena)
                 fd.Close()
                 res = "vacio"
             End If
@@ -362,8 +448,9 @@ Public Class COLRECO : Implements IHttpHandler
         resb.AppendFormat("<th colspan='2' rowspan='2' style='width:85px;'>ADQUISICIONES GRAVADAS DESTINADAS A OPERACIONES GRAVADAS Y/O DE EXPORTACIÓN Y A OPERACIONES NO GRAVADAS</th>")
         resb.AppendFormat("<th colspan='2' rowspan='2' style='width:85px;'>ADQUISICIONES GRAVADAS DESTINADAS A OPERACIONES NO GRAVADAS</th>")
         resb.AppendFormat("<th rowspan='3' style='width:85px;'>VALOR DE LAS ADQUISICIONES NO GRAVADAS</th>")
-        resb.AppendFormat("<th rowspan='3' style='width:60px;'>OTROS TRIBUTOS Y CARGOS</th>")
         resb.AppendFormat("<th rowspan='3' style='width:85px;'>ISC</th>")
+        resb.AppendFormat("<th rowspan='3' style='width:60px;'>IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO</th>")
+        resb.AppendFormat("<th rowspan='3' style='width:60px;'>OTROS TRIBUTOS Y CARGOS</th>")
         'resb.AppendFormat("<th rowspan='3' style='width:60px;'>OTROS TRIBUTOS Y CARGOS</th>")
         resb.AppendFormat("<th rowspan='3' style='width:85px;'>IMPORTE TOTAL</th>")
         resb.AppendFormat("<th rowspan='3' style='width:60px;'>MONEDA</th>") '**        
@@ -482,7 +569,19 @@ Public Class COLRECO : Implements IHttpHandler
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_DSTNGR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_DSTNGR").ToString()))))
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("IGV_DSTNGR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV_DSTNGR").ToString()))))
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_ORGNGR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_ORGNGR").ToString()))))
+
+                    'ISC               
+                    If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                        resb.AppendFormat("<td align='center' >{0}</td>", "")
+                    Else
+                        resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())))
+                    End If
+
+                    'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                    resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
+
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_OTRTRI").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_OTRTRI").ToString()))))
+
                     totalBaseImponible1 += Decimal.Parse(dt.Rows(i)("MONTO_DSTGRA").ToString())
                     totalIGV1 += Decimal.Parse(dt.Rows(i)("IGV_DSTGRA").ToString())
                     totalBaseImponible2 += Decimal.Parse(dt.Rows(i)("MONTO_DSTMIX").ToString())
@@ -500,6 +599,17 @@ Public Class COLRECO : Implements IHttpHandler
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
+
+                    'ISC              
+                    If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                        resb.AppendFormat("<td align='center' >{0}</td>", "")
+                    Else
+                        resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())))
+                    End If
+
+                    'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                    resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
+
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     'Suma para el total
                     totalBaseImponible1 += Decimal.Parse(dt.Rows(i)("VALOR").ToString())
@@ -513,6 +623,17 @@ Public Class COLRECO : Implements IHttpHandler
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
+
+                    'ISC              
+                    If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                        resb.AppendFormat("<td align='center' >{0}</td>", "")
+                    Else
+                        resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())))
+                    End If
+
+                    'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                    resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
+
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     '--Suma para el total
                     totalBaseImponible2 += Decimal.Parse(dt.Rows(i)("VALOR").ToString())
@@ -526,6 +647,17 @@ Public Class COLRECO : Implements IHttpHandler
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("VALOR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString()))))
                     resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV").ToString())))
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
+
+                    'ISC              
+                    If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                        resb.AppendFormat("<td align='center' >{0}</td>", "")
+                    Else
+                        resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())))
+                    End If
+
+                    'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                    resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
+
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     '--Suma para el total
                     totalBaseImponible3 += Decimal.Parse(dt.Rows(i)("VALOR").ToString())
@@ -538,7 +670,19 @@ Public Class COLRECO : Implements IHttpHandler
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("VALOR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString()))))
+
+                    'ISC              
+                    If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                        resb.AppendFormat("<td align='center' >{0}</td>", "")
+                    Else
+                        resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())))
+                    End If
+
+                    'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                    resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
+
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
+
                     '--Suma para el total
                     totalValorNoGravadas += Decimal.Parse(dt.Rows(i)("VALOR").ToString())
                 Else
@@ -549,18 +693,25 @@ Public Class COLRECO : Implements IHttpHandler
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
+
+                    'ISC              
+                    If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
+                        resb.AppendFormat("<td align='center' >{0}</td>", "")
+                    Else
+                        resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())))
+                    End If
+
+                    'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                    resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
+
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("VALOR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString()))))
                     '--Suma para el total
                     totalValorOtrosTributos += Decimal.Parse(dt.Rows(i)("VALOR").ToString())
                 End If
-                'ISC,OTROS TRIBUTOS Y CARGOS, IMPORTE TOTAL, nro comprobante emitido                
-                If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
-                    resb.AppendFormat("<td align='center' >{0}</td>", "")
-                Else
-                    resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())))
-                End If
+
                 'resb.AppendFormat("<td align='center' >{0}</td>", "") 'OTROS TRIBUTOS Y CARGOS
                 resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IMPORTE").ToString())))
+
                 'CODIGO MONEDA
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("MONEDA").ToString()) '**                
                 'TIPO DE CAMBIO
@@ -590,8 +741,12 @@ Public Class COLRECO : Implements IHttpHandler
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("INC_PROV_NOHABIDO").ToString()) '**                
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("INC_PROV_RENUNCIANTE").ToString()) '**                
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("INC_DNI").ToString()) '**                
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("INDICADOR_COMPROBANTE").ToString()) '**                
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("ESTADO_AJUSTE").ToString()) '**                
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("INDICADOR_COMPROBANTE").ToString()) '**
+                If dt.Rows(i)("IGV_DSTGRA").ToString() = "0.00" AndAlso dt.Rows(i)("IGV_DSTMIX").ToString() = "0.00" AndAlso dt.Rows(i)("IGV_DSTNGR").ToString() = "0.00" Then
+                    dt.Rows(i)("ESTADO_AJUSTE") = 0
+                End If
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("ESTADO_AJUSTE").ToString())
+
 
                 resb.AppendFormat("</tr>")
                 '---Suma de totales
@@ -612,8 +767,9 @@ Public Class COLRECO : Implements IHttpHandler
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalBaseImponible3)) 'Total BASE IMPONIBLE 3
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalIGV3)) 'Total IGV 3
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalValorNoGravadas)) 'Total Valor Ad. No Gravadas
-            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalValorOtrosTributos)) 'Total Otros Tributos y Cargos
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalISC)) 'Total ISC
+            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", "0.00")) 'Impuesto al consumo de bolsas de plastico
+            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalValorOtrosTributos)) 'Total Otros Tributos y Cargos
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalImporte)) 'Total Importes Total
             resb.AppendFormat("<td colspan='1' align='center' ></td>")
             resb.AppendFormat("<td colspan='1' align='center' ></td>")

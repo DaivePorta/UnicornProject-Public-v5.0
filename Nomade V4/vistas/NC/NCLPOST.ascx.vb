@@ -29,8 +29,9 @@ Partial Class vistas_NC_NCLPOST
                     sb.Append("""ESTADO"":""" & row("ESTADO").ToString & """")
                     sb.Append("},")
                 Next
-                sb.Append("-")
-                sb.Replace("},-", "}")
+                sb.Append("+")
+                sb.Replace(",+", "")
+
                 sb.Append("]")
             End If
             hfLISTA.Value = sb.ToString()

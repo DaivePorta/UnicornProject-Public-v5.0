@@ -106,12 +106,19 @@
     
     
     function listarRegistroCompras() {
+        var mes = $('#cboMes').val();
+
+        if (mes.length == 1) {
+            mes = ("0" + mes).slice(-2);
+        } else {
+            mes;
+        }
 
         var data = new FormData();
         data.append('OPCION', "4");
         data.append('p_CTLG_CODE', $("#cboEmpresa").val());
         data.append('p_ANIO', $('#txtanio').val());
-        data.append('p_MES', $('#cboMes').val());
+        data.append('p_MES', mes);
         data.append('p_MES_DES', $('#cboMes option:selected').html());
 
         Bloquear("ventana");
@@ -170,9 +177,9 @@
 
         $('#btnGenerarLibro').on('click', function () {
             if (vErrors([ "cboEmpresa", "txtanio", "cboMes"])) {
-                $('.btnLibroPDF').attr('disabled', false);
-                $('.btnLibroTXT').attr('disabled', false);
-                $('.btnLibroXls').attr('disabled', false);
+                //$('.btnLibroPDF').attr('disabled', false);
+                //$('.btnLibroTXT').attr('disabled', false);
+                //$('.btnLibroXls').attr('disabled', false);
                 Exportar();
             }
         });   
@@ -185,10 +192,18 @@
 
     }
 
-   function Exportar() {
+    function Exportar() {
+        var mes = $('#cboMes').val();
+
+        if (mes.length == 1) {
+            mes = ("0" + mes).slice(-2);
+        } else {
+            mes;
+        }
+
         var data = new FormData;
         data.append('p_ANIO', $('#txtanio').val());
-        data.append('p_MES', $('#cboMes').val());
+        data.append('p_MES', mes);
         data.append('p_MES_DES', $('#cboMes option:selected').html());
         data.append('p_RUC', $('#ruc').html());
         data.append('p_CTLG_CODE', $('#cboEmpresa').val());
@@ -204,11 +219,17 @@
                 if (datos == 'ok') {
                     exito();
                     $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hfind_vacio").val("N");
+                    $('.btnLibroPDF').attr('disabled', false);
+                    $('.btnLibroTXT').attr('disabled', false);
+                    $('.btnLibroXls').attr('disabled', false);
                 }
                 else {
                     if (datos == 'vacio') {
                         exito();
                         $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hfind_vacio").val("S");
+                        $('.btnLibroPDF').attr('disabled', false);
+                        $('.btnLibroTXT').attr('disabled', false);
+                        $('.btnLibroXls').attr('disabled', false);
 
                     } else { noexito(); }
                 }

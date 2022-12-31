@@ -1694,7 +1694,7 @@
 <input id="hfCodigoNaminsa" type="hidden" />
 <script type="text/javascript" src="../../recursos/plugins/bootstrap-treeview/bootstrap-treeview.js"></script>
 <script type="text/javascript" src="../vistas/NA/js/NAMINSA.js"></script>
-<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>
+<%--<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>--%>
 <script>
     jQuery(document).ready(function () {
         // Se Inicializa el modulo de javascript para esta forma.

@@ -54,11 +54,17 @@ Public Class COLREVE : Implements IHttpHandler
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = coRegistroVentas.ListarRegistroVentas_sunat(p_ANIO, p_MES, p_CTLG_CODE, "")
                     res = GenerarTablaRegistroVentas(dt).ToString()
+                    GenerarTXT(dt) 'Genera el .txt 
 
                 Case "5"
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = coRegistroVentas.ListarRegistroVentas_sunat(p_ANIO, p_MES, p_CTLG_CODE, "")
-                    res = GenerarPDF(dt) 'Tambien genera el .txt            
+                    res = GenerarPDF(dt)
+
+                Case "6"
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    dt = coRegistroVentas.ListarRegistroVentas_sunat(p_ANIO, p_MES, p_CTLG_CODE, "")
+                    res = GenerarTXT(dt) 'Genera el .txt     
             End Select
 
             context.Response.Write(res)
@@ -69,7 +75,7 @@ Public Class COLREVE : Implements IHttpHandler
     End Sub
 
     Public Function GenerarPDF(ByVal dt As DataTable) As String
-        Dim ress As String
+        Dim ress As String = ""
         Dim cNomArch As String
         Dim htmlText As New StringBuilder
         If Not dt Is Nothing Then
@@ -81,8 +87,10 @@ Public Class COLREVE : Implements IHttpHandler
         'dt=
         htmlText = GenerarTablaRegistroVentas(dt)
         HTMLToPDF(htmlText, cNomArch)
-        ress = GenerarTXT(dt)
-
+        'ress = GenerarTXT(dt)
+        If dt.Rows.Count <> 0 Then
+            ress = "ok"
+        End If
         Return ress
     End Function
 
@@ -234,6 +242,11 @@ Public Class COLREVE : Implements IHttpHandler
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IMPUESTO_ARROZ").ToString())) + "|"
                     End If
+
+                    'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                    cadena += String.Format("{0:##0.00}", Decimal.Parse("0.00")) + "|"
+
+
                     'OTROS TRIBUTOS
                     If Decimal.Parse(dt.Rows(i)("OTROS_TRIBUTOS").ToString()) = 0 Then
                         cadena += " |"
@@ -266,17 +279,16 @@ Public Class COLREVE : Implements IHttpHandler
                     cadena += dt.Rows(i)("INC_TIPO_CAMBIO").ToString() + "|"
                     cadena += dt.Rows(i)("INDICADOR_COMPROBANTE").ToString() + "|"
                     cadena += dt.Rows(i)("ESTADO_AJUSTE").ToString() + "|"
-                    If cantidad_datos = nroCorrelativo Then
-                    Else
+                    If cantidad_datos <> nroCorrelativo Then
                         cadena += vbCrLf
                     End If
                 Next
-                fd.WriteLine(cadena)
+                fd.Write(cadena)
                 fd.Close()
                 res = "ok"
             Else
                 Dim fd As New StreamWriter(archivo, True)
-                fd.WriteLine(cadena)
+                fd.Write(cadena)
                 fd.Close()
                 res = "vacio"
             End If
@@ -329,6 +341,7 @@ Public Class COLREVE : Implements IHttpHandler
         resb.AppendFormat("<th colspan='2' rowspan='2' style='width:85px;'> IMPORTE TOTAL DE LA OPERACIÓN EXONERADA O INAFECTA</th>")
         resb.AppendFormat("<th rowspan='3' style='width:75px;'>ISC</th>")
         resb.AppendFormat("<th rowspan='2' colspan='2' style='width:75px;'>VENTAS DEL ARROZ PILADO</th>") '**
+        resb.AppendFormat("<th rowspan='3' style='width:75px;'>IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO</th>") '**
         resb.AppendFormat("<th rowspan='3' style='width:75px;'>OTROS TRIBUTOS Y CARGOS QUE NO FORMAN PARTE DE LA BASE IMPONIBLE</th>")
         resb.AppendFormat("<th rowspan='3' style='width:75px;'>IMPORTE TOTAL DEL COMPROBANTE DE PAGO</th>")
         resb.AppendFormat("<th rowspan='3' style='width:60px;'>MONEDA</th>") '**                
@@ -465,6 +478,9 @@ Public Class COLREVE : Implements IHttpHandler
                 resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("IMPUESTO_ARROZ").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IMPUESTO_ARROZ").ToString()))))
                 totalImpuestoArroz += Decimal.Parse(dt.Rows(i)("IMPUESTO_ARROZ").ToString())
 
+                'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
+                resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
+
                 'OTROS TRIBUTOS
                 resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("OTROS_TRIBUTOS").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("OTROS_TRIBUTOS").ToString()))))
                 totalTributos += Decimal.Parse(dt.Rows(i)("OTROS_TRIBUTOS").ToString())
@@ -508,6 +524,7 @@ Public Class COLREVE : Implements IHttpHandler
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalISC)) 'Total BASE IMPONIBLE 3            
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalBaseImpArroz))
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalImpuestoArroz))
+            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", Decimal.Parse("0.00")))
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalTributos)) 'Total BASE_IMPONIBLE Ad. No Gravadas
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalImporte)) 'Total ISC
             resb.AppendFormat("<td colspan='1' align='center' ></td>")

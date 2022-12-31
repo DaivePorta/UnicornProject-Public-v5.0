@@ -788,7 +788,7 @@
 </div>
 
 <input type="hidden" id="hf_permiso"/>
-<input type="hidden" id="hf_existe" />
+<%--<input type="hidden" id="hf_existe" />--%>
 <input id="hfParamDetraccion" type="hidden" value="0" />
 <input id="hfMontoDetraccion" type="hidden" value="0" />
 <input type="hidden" id="hfcodgasto" />

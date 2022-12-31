@@ -397,7 +397,8 @@ var NVLDOCS = function () {
             mes = 12;
             ano = ano - 1
         } else {
-            mes = mes - 1;
+            //mes = mes - 1;
+            mes = mes;
         }
 
         if (mes >= 10)

@@ -362,6 +362,13 @@ var NCMCOAC = function () {
 
                         $("#modalDocumentoCompra").modal("show");
 
+                        if ($("#modalDocumentoCompra").hasClass('in') == true) {
+                            $('#tblDocumentosCompra_filter.dataTables_filter input[type=search]').focus();
+                        }
+                        $('#modalDocumentoCompra').on('shown.bs.modal', function () {
+                            $('#tblDocumentosCompra_filter.dataTables_filter input[type=search]').focus();
+                        });
+
                     } else {
                         control_modificar = false;
                         $('#tblDocumentosCompra').DataTable({
@@ -482,7 +489,13 @@ var NCMCOAC = function () {
                         });
 
                         $("#modalDocumentoVenta").modal("show");
-                
+
+                        if ($("#modalDocumentoVenta").hasClass('in') == true) {
+                            $('#tblDocumentosVenta_filter.dataTables_filter input[type=search]').focus();
+                        }
+                        $('#modalDocumentoVenta').on('shown.bs.modal', function () {
+                            $('#tblDocumentosVenta_filter.dataTables_filter input[type=search]').focus();
+                        });
                         
                     } else {
                         control_modificar = false;
@@ -619,6 +632,14 @@ var NCMCOAC = function () {
                                 $("#txtBeneficiarioG").val(beneficiario);
                                 $("#txtFechaDetraG").val(fecha_detraccion);
                                 $("#txtNumeroDetraG").val(numero_detraccion);
+                                $("#lblEstadoGasto").html(estado_descripcion);
+                                $("#hfcod_gasto").val(cod_doc);
+
+                                if (estado_code == '2') {
+                                    $("#btnAnularGasto").show();
+                                } else {
+                                    $("#btnAnularGasto").hide();
+                                }
 
                                 if (ind_compra == "S") {
                                     $("#chkComprasG").removeAttr("disabled");
@@ -726,6 +747,13 @@ var NCMCOAC = function () {
                         });
 
                         $("#modalDocumentoGasto").modal("show");
+
+                        if ($("#modalDocumentoGasto").hasClass('in') == true) {
+                            $('#tblDocumentosGasto_filter.dataTables_filter input[type=search]').focus();
+                        }
+                        $('#modalDocumentoGasto').on('shown.bs.modal', function () {
+                            $('#tblDocumentosGasto_filter.dataTables_filter input[type=search]').focus();
+                        });
 
                     } else {
                         control_modificar = false;
@@ -1023,6 +1051,38 @@ var NCMCOAC = function () {
         
     }
 
+    var AnularDctoGasto = function () {
+
+        let data = new FormData();
+        data.append('OPCION', "ANULAR_GASTO");
+        data.append('p_GASTO_CODE', $("#hfcod_gasto").val());
+
+        $.ajax({
+            type: "POST",
+            url: "vistas/cp/ajax/CPMPGAS.ASHX",
+            contentType: false,
+            data: data,
+            processData: false,
+            async: false,
+            success: function (res) {
+                Desbloquear("ventana");
+                if (res == "OK") {
+                    exito();
+                    $("#btnAnularGasto").attr("style", "display:none;");
+                    $("#lblEstadoGasto").html("ANULADO");                    
+                }
+                else {
+                    alertCustom("ERROR: " + " No se anuló correctamente.");
+                }
+            },
+            error: function (msg) {
+                Desbloquear("ventana");
+                noexitoCustom("No se anuló correctamente.");
+            }
+        });
+
+    };
+
     function EventoControles() {
 
         $("#cboActividad").on('change', function () {
@@ -1086,6 +1146,22 @@ var NCMCOAC = function () {
             }
         });
 
+        $("#btnAnularGasto").on("click", function () {
+            $("#modal-confirmar").modal("show");
+        });
+
+        $("#btnAceptar").on("click", function () {
+            Bloquear("ventana");
+            AnularDctoGasto();
+            $("#modal-confirmar").modal("hide");
+            $("#msgDespacho").html("");
+            Desbloquear("ventana");
+        });
+
+        $("#btnCancelar").on("click", function () {
+            $("#modal-confirmar").modal("hide");
+            $("#msgDespacho").html("");
+        });
     }
 
     return {
@@ -1128,7 +1204,7 @@ function loadSection(option)
 
     $("#btnActualizarDocCompras").hide();
     $("#btnActualizarDocVentas").hide();
-    $("#btnActualizarDocGastos").hide();
+    $("#btnActualizarDocGastos, #btnAnularGasto").hide();
 
     switch (option) {
         case '1': 

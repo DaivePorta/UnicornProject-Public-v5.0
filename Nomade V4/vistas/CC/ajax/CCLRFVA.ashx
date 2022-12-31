@@ -60,6 +60,7 @@ Public Class CCLRFVA : Implements IHttpHandler
                             resb.Append("{")
                             resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
                             resb.Append("""CORTO"" :" & """" & MiDataRow("CORTO").ToString & """,")
+                            resb.Append("""RUC"" :" & """" & MiDataRow("RUC").ToString & """,")
                             resb.Append("""DESCRIPCION"" :" & """" & MiDataRow("DESCRIPCION").ToString & """")
                             resb.Append("}")
                             resb.Append(",")

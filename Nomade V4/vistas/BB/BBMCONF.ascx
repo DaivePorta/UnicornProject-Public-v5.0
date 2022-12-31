@@ -31,7 +31,7 @@
                         </div>
                     </div>
 
-                    <div class="span1">
+                    <div class="span2">
                     </div>
 
                     <div class="span1">
@@ -40,20 +40,16 @@
                         </div>
                     </div>
 
-                    <div class="span1">
+                    <div class="span2">
                         <div class="control-group">
                             <div class="controls">
-                                <select id="cboTipo">
+                                <select id="cboTipo" style="width: 75%;">
                                     <option value="0">PORCENTAJE</option>
                                     <option value="1">MONETARIO</option>
                                 </select>
                             </div>
                         </div>
                     </div>
-
-
-
-
 
                     <div class="span1">
                     </div>

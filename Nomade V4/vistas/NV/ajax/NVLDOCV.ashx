@@ -156,7 +156,7 @@ Public Class NVLDOCV : Implements IHttpHandler
                 resb.AppendFormat("<td align='left' >{0}<br/><small style='color:#6C7686;'>{1}</small></td>", dt.Rows(i)("MOPA_DESC").ToString(), If(dt.Rows(i)("CONTRAENTREGA_IND") = "S", "*Contraentrega", ""))
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("FOPA_DESC").ToString())
                 'resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("NOMBRE_VENDEDOR").ToString())
-                resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("VENDEDOR_USUA_ID").ToString())
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("VENDEDOR_USUA_ID").ToString())
                 resb.AppendFormat("<td align='left' style='font-size:11.5px;'>{0}</td>", dt.Rows(i)("ATENDIDO").ToString())
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("ANULADO").ToString())
                 resb.AppendFormat("<td style='text-align:center;'>")

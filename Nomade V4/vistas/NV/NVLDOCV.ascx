@@ -197,37 +197,29 @@
                 </div>
 
                 <div class="row-fluid">
-                  
-                    <%--<div class="span4">
-                        <div class="control-group">
-                            <div class="controls" id="inputRazsocial">
-                                <input id="txtRuc" class="span3" type="text" disabled="disabled" />
-                                <input id="txtrazsocial" class="span9" type="text" data-provide="typeahead" />
-                            </div>
-                        </div>
-                    </div> --%>
-                    <div class="span4">
-                        <div class="control-group span3">
+                  <div class="span1">
+                        <div class="control-group ">
                             <label id="Label1" class="control-label" for="txtDesde">
                                 Desde</label>
                         </div>
-                        <div class="control-group span3">
+                    </div>
+                    <div class="span4">
+                        
+                        <div class="control-group span4">
                             <div class="controls">
-                                <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtDesde" data-date-format="dd/mm/yyyy" maxlength="10" />
+                                <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtDesde" data-date-format="dd/mm/yyyy"  maxlength="10"/>
                             </div>
                         </div>
-                        <div class="control-group span3">
-                            <label id="Label3" class="control-label" for="txtHasta" style="text-align: center;">
+                        <div class="control-group span4">
+                            <label id="Label3" class="control-label" for="txtHasta" style="text-align:center;">
                                 Hasta</label>
                         </div>
 
-                        <div class="control-group span3">
+                        <div class="control-group span4">
                             <div class="controls">
                                 <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtHasta" data-date-format="dd/mm/yyyy" maxlength="10" />
                             </div>
                         </div>
-                    </div>
-                    <div class="span2">
                     </div>
                     <div class="span1">
                         <div class="control-group span2">
@@ -239,7 +231,7 @@
                     <div class="span2">
                         <div class="control-group">
                             <div class="controls">
-                                <button type="button" id="btnBusquedaAvanz" class="btn btn-link" data-ver="false"><i id="iconAvanz" class="icon-chevron-down"></i>  Busqueda Avanzada....</button>
+                                <button type="button" id="btnBusquedaAvanz" class="btn btn-link" data-ver="false"><i id="iconAvanz" class="icon-chevron-down"></i>  Busqueda Avanzada...</button>
                             </div>
                         </div>
                     </div>

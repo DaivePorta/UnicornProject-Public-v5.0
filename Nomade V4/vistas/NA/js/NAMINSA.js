@@ -932,13 +932,23 @@ var NAMINSA = function () {
             //cargarProductos();        
 
             if ($('#rbTEntrada').is(':checked')) {                
-                $('#rbTEntrada').click();
-                
+                $('#rbTEntrada').click();                
             }
 
             if ($('#rbTSalida').is(':checked')) {
                 $('#rbTSalida').click();
+            }
 
+            if ($('#rbSalida').is(':checked')) { // DPORTA 28/12/2022
+                $('#cboTipoDcto').select2('val', '').change();
+                $('#txtNroDcto, #txtDireccionOrigen').val('');
+
+                $('#txtDireccionOrigen').parent().html('<select id="txtDireccionOrigen" class="span12" disabled="disabled"></select>');
+                $('#txtDireccionOrigen').select2();
+                $('#txtDireccionOrigen').parent().append('<input type="text" class="span12" id="txtDireccionOrigen2"  style="display:none;text-transform:uppercase" />');
+
+                $('#txtRazonSocial').parent().html('<input id="txtRazonSocial" class="span12" type="text" style="text-transform: uppercase"/>');
+                autocompletarClientes('#txtRazonSocial', '');
             }
 
             $("#cboAlmacen").attr("disabled", false);

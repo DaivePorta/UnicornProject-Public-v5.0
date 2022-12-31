@@ -83,7 +83,7 @@
                         </div>
                     </div> 
 
-                    <div class="span1">
+                    <%--<div class="span1">
                         <div class="control-group">
                             <label id="lblEstado" class="control-label" for="cboEstado">Estado:</label>
                         </div>
@@ -95,7 +95,7 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </div>--%>
                     
                       
 

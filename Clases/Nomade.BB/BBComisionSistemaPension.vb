@@ -242,11 +242,10 @@ Public Class BBComisionSistemaPension
 
             cmd = cn.GetNewCommand("PFC_ACTUALIZAR_CONFIGURACION_SISTEMA_PENSIONARIO", CommandType.StoredProcedure)
 
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FTCONFI_CODE", p_FTCONFI_CODE, ParameterDirection.Output, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FTCONFI_CODE", p_FTCONFI_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@FTCONFI_COLUMNA", FTCONFI_COLUMNA, ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_FTCONFI_RHCNPL_CODE", p_FTCONFI_RHCNPL_CODE, ParameterDirection.Input, 253))
-
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_FTCONFI_ESTADO_IND", p_FTCONFI_ESTADO_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_FTCONFI_USUA_ID", p_FTCONFI_USUA_ID, ParameterDirection.Input, 253))

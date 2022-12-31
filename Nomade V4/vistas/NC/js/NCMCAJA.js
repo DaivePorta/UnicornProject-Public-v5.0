@@ -1,5 +1,5 @@
 ﻿var NCLCAJA = function () {
-    var plugins = function () {        
+    var plugins = function () {
         $('#cboEmpresas, #cboEstablecimiento').select2();
     };
 
@@ -248,7 +248,7 @@ var NCMCAJA = function () {
                         selectEst.append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
                     }
                 }
-                selectEst.select2('val', $('#ctl00_hddestablecimiento').val()).change();
+                selectEst.select2('val', $('#ctl00_hddestablecimiento').val());
             },
             error: function (msg) {
                 alertCustom('Error al listar Establecimientos.');
@@ -306,12 +306,13 @@ var NCMCAJA = function () {
     var cargaInicial = function () {
         var codigo = ObtenerQueryString("codigo");
         if (codigo !== undefined) {
+            cargarCaja();
             cargarCajeros($('#hfCOD_RESP').val());
             cargarImpresoras();
             cargarPOS();
             cargarNuevosCajeros('#txtNuevoCajero', '');
             cargarNuevasImp('#txtNuevasImp', '');
-            cargarNuevosPOS('#txtPOS', '');
+            //cargarNuevosPOS('#txtPOS', '');
             $('#adicionales').slideDown(500);
         }
     };
@@ -319,12 +320,12 @@ var NCMCAJA = function () {
     return {
         init: function () {
             plugins();
-            eventos();      
+            eventos();
             fillCboEmpresa();
-            fillCboEstablecimiento();
+            //fillCboEstablecimiento();
             cargarCuentasContables();
             creaTablaVacia();
-            cargarCaja();
+            //cargarCaja();
             autocompletarResponsables('#txtResp', $('#hfRESP').val());
             cargaInicial();
         }
@@ -427,25 +428,25 @@ var autocompletarResponsables = function (v_ID, v_value) {
 
 var resp = '';
 var cargarCajeros = function (responsable) {
-    
+
     var codigo = ObtenerQueryString("codigo");
     $.ajax({
         type: "post",
-        url: "vistas/NC/ajax/NCMCAJA.ashx?OPCION=1&CODIGO=" + codigo,      
+        url: "vistas/NC/ajax/NCMCAJA.ashx?OPCION=1&CODIGO=" + codigo,
         datatype: "json",
         async: false,
         dataSrc: '',
         success: function (datos) {
             oTable.fnClearTable();
             if (!isEmpty(datos)) {
-                oTable.fnAddData(datos);       
+                oTable.fnAddData(datos);
             } else {
                 infoCustom("No se encontraron registros.");
             }
             setTimeout(function () {
                 oTable.fnAdjustColumnSizing();
             }, 200);
-                
+
         },
         complete: function () {
 
@@ -721,6 +722,7 @@ var fillCboEmpresa = function () {
                 }
             }
             selectEmpresa.select2('val', $('#ctl00_hddctlg').val()).change();
+            //$(selectEmpresa).val($('#ctl00_hddctlg').val());
         },
         error: function (msg) {
             alertCustom('Error al listar empresas.');
@@ -813,7 +815,7 @@ var Grabar = function () {
 };
 
 var Actualizar = function () {
-    if (vErrorsNotMessage(['txtdesc1', 'txtTelefono'])) {        
+    if (vErrorsNotMessage(['txtdesc1', 'txtTelefono'])) {
         if ($('#hfCOD_NRESP').val() == '') {
             $('#txtResp').val("");
         }

@@ -2,7 +2,9 @@
 Imports System
 Imports System.Web
 Imports System.Data
+Imports System.IO
 Imports SelectPdf
+Imports QRCoder
 
 Public Class NAMINSA : Implements IHttpHandler
 
@@ -2760,7 +2762,8 @@ Public Class NAMINSA : Implements IHttpHandler
 
             'VARIABLE PARA COLOCAR EL QR EN EL PDF
             Dim rutaQr As String = ""
-
+            'VARIABLE PARA COLOCAR LA INFORMACIÓN DEL QR
+            Dim cadenaQR As String = ""
             'PIE DE PAGINA EDITABLE
             Dim pie_pagina As String = ""
 
@@ -2778,9 +2781,12 @@ Public Class NAMINSA : Implements IHttpHandler
             'OBTENER EL TEXTO QUE VA A IR EN LA IMPRESION COMO PIE DE PAGINA
             'pie_pagina = dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString
 
+            'Cadena con la información del QR
+            cadenaQR = "6" + "|" + dtCabecera(0)("RUC_EMPRESA").ToString + "|" + dtCabecera(0)("tipDocDestinatario").ToString + "|" + dtCabecera(0)("numDocDestinatario").ToString + "|" + "09" + "|" + dtCabecera(0)("serNumDocGuia").ToString + "|" + dtCabecera(0)("FECHA_SUNAT").ToString + "|" + dtCabecera(0)("psoBrutoTotalBienesDatosEnvio").ToString '+ "|" + dtCabecera(0)("IMPORTE_TOTAL").ToString
+
             'LA RUTA QUE VA A TENER
-            'rutaQr = dtCabecera(0)("IMAGEN_QR").ToString
-            rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE)
+            'rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE, CTLG_CODE)
+            rutaQr = "data:image/png;base64," + fnGetCodigoQR_fast(cadenaQR)
 
             tabla.Append("<table id='tblDctoImprimir' border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'>")
             tabla.Append("<thead>")
@@ -2983,4 +2989,15 @@ Public Class NAMINSA : Implements IHttpHandler
         Return res
     End Function
 
+    Private Function fnGetCodigoQR_fast(ByVal informacionQR As String) As String 'DPORTA 07/12/2022
+        Dim qrGenerator = New QRCodeGenerator()
+        Dim qrCodeData = qrGenerator.CreateQrCode(informacionQR, QRCodeGenerator.ECCLevel.Q)
+        Dim bitMapByteCode As BitmapByteQRCode = New BitmapByteQRCode(qrCodeData)
+        Dim bitMap = bitMapByteCode.GetGraphic(20)
+        Dim byteImage As Byte()
+        Dim MS As MemoryStream = New MemoryStream()
+        MS.Write(bitMap, 0, bitMap.Length)
+        byteImage = MS.ToArray()
+        Return Convert.ToBase64String(byteImage)
+    End Function
 End Class

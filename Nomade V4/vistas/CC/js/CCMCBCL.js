@@ -2989,10 +2989,10 @@ function pagar() {
                     let continuar = true;
                 } else {
                     if (verificaNroOpera.substring(0, 1) == 'B') { //BANCO
-                        infoCustom2("El Nro. de Op. " + verificaNroOpera.substring(3) + " ya se encuentra registrado en el sistema");
+                        infoCustom2("El Nro. de Op. " + verificaNroOpera.substring(2) + " ya se encuentra registrado en el sistema");
                         return;
                     } else { //CAJA
-                        infoCustom2("El Cod. de Aut. " + verificaNroOpera.substring(3) + " ya se encuentra registrado en el sistema");
+                        infoCustom2("El Cod. de Aut. " + verificaNroOpera.substring(2) + " ya se encuentra registrado en el sistema");
                         return;
                     }
                 }

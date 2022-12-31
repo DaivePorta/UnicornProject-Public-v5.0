@@ -40,8 +40,6 @@ Public Class NNLPLAN : Implements IHttpHandler
 
             Select Case OPCION
 
-
-
                 Case "1" 'Generar Planilla quincenal
                     Dim dtAdicional_NA As New DataTable
                     Dim dtAdicional_AF As New DataTable
@@ -62,14 +60,14 @@ Public Class NNLPLAN : Implements IHttpHandler
                     Dim dtDescuentos As New DataTable
                     Dim dtMontoConcpAdicionales As New DataTable
 
-                    Dim NNPlanilla As New Nomade.NN.NNPlanilla("Bn")
+                    Dim NNPlanilla As New NOMADE.NN.NNPlanilla("Bn")
 
-                    dtAdicional_AF = NNPlanilla.Listar_ConceptoxTipoPlanilla("S", "0001", "AF")
-                    dtAdicional_NA = NNPlanilla.Listar_ConceptoxTipoPlanilla("S", "0001", "NA")
+                    dtAdicional_AF = NNPlanilla.Listar_ConceptoxTipoPlanilla("S", TIPO_PLANILLA, "AF")
+                    dtAdicional_NA = NNPlanilla.Listar_ConceptoxTipoPlanilla("S", TIPO_PLANILLA, "NA")
 
 
-                    dtNoAdicional_AF = NNPlanilla.Listar_ConceptoxTipoPlanilla("N", "0001", "AF", "NO")
-                    dtNoAdicional_NA = NNPlanilla.Listar_ConceptoxTipoPlanilla("N", "0001", "NA", "NO")
+                    dtNoAdicional_AF = NNPlanilla.Listar_ConceptoxTipoPlanilla("N", TIPO_PLANILLA, "AF", "NO")
+                    dtNoAdicional_NA = NNPlanilla.Listar_ConceptoxTipoPlanilla("N", TIPO_PLANILLA, "NA", "NO")
 
                     dtDatosBasicos = NNPlanilla.Listar_Datos_Basicos_Planilla(p_CTLG_CODE, "", p_MES, p_ANIO)
 
@@ -85,11 +83,11 @@ Public Class NNLPLAN : Implements IHttpHandler
 
                     dtAfps = NNPlanilla.Carga_Datos_Para_Planilla(p_CTLG_CODE, Nothing, Nothing, Nothing, "6")
 
-                    dtConcep_Descuentos = NNPlanilla.Listar_ConceptoxTipoPlanilla("S", "0001", "DE", "")
+                    dtConcep_Descuentos = NNPlanilla.Listar_ConceptoxTipoPlanilla("S", TIPO_PLANILLA, "DE", "")
 
                     dtDescuentos = NNPlanilla.Carga_Datos_Para_Planilla(p_CTLG_CODE, "", p_MES, p_ANIO, "7")
 
-                    dtMontoConcpAdicionales = NNPlanilla.Listar_Monto_Conceptos_Adicionales_planilla(p_ANIO, p_MES, p_CTLG_CODE, "0001")
+                    dtMontoConcpAdicionales = NNPlanilla.Listar_Monto_Conceptos_Adicionales_planilla(p_ANIO, p_MES, p_CTLG_CODE, TIPO_PLANILLA)
 
 
                     res = GenerarTablaPlanillaQuincenal(dt, dtAdicional_NA, dtAdicional_AF, dtDatosBasicos, dtDatosFATAR, dtNoAdicional_AF, dtNoAdicional_NA, dtVacaciones, dtValoresPlanilla,
@@ -106,7 +104,7 @@ Public Class NNLPLAN : Implements IHttpHandler
 
                 Case "2"
 
-                    Dim NNPlanilla As New Nomade.NN.NNPlanilla("Bn")
+                    Dim NNPlanilla As New NOMADE.NN.NNPlanilla("Bn")
                     res = NNPlanilla.Crea_cabecera_detalle_planilla(p_DETALLE, p_CABECERA, p_ANIO, p_MES, p_CTLG_CODE, p_USUA_ID)
                 Case "3"
 
@@ -114,7 +112,7 @@ Public Class NNLPLAN : Implements IHttpHandler
                     res = ArmaPlanilla_desde_BD(p_MES, p_ANIO, p_CTLG_CODE)
 
                 Case 4
-                    Dim NNPlanilla As New Nomade.NN.NNPlanilla("Bn")
+                    Dim NNPlanilla As New NOMADE.NN.NNPlanilla("Bn")
                     Dim dt_resp As New DataTable
                     dt_resp = NNPlanilla.Verifica_Generacion_Planilla(p_CTLG_CODE, p_MES, p_ANIO)
                     res = dt_resp(0)("RESPUESTA").ToString()
@@ -197,7 +195,7 @@ Public Class NNLPLAN : Implements IHttpHandler
         resb.AppendFormat("</tr>")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "PLANILLA:")
-        resb.AppendFormat("<td width='75%'>PLANILLA {0}{1}{2}{3}</td>", IIf(TIPO_PLANILLA = "1", "QUINCENAL ", "MENSUAL "), dtEmpresa.Rows(0)("CORTO").ToString(), " " & p_MES.ToUpper(), " " & p_ANIO.ToUpper())
+        resb.AppendFormat("<td width='75%'>PLANILLA {0}{1}{2}{3}</td>", IIf(TIPO_PLANILLA = "0001", "MENSUAL ", "QUINCENAL "), dtEmpresa.Rows(0)("CORTO").ToString(), " " & p_MES.ToUpper(), " " & p_ANIO.ToUpper())
         resb.AppendFormat("</tr>")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "RUC:")

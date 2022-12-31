@@ -31,41 +31,64 @@
         });
     }
 
-    var fillCboEstablecimiento = function (ctlg) {
+    //var fillCboEstablecimiento = function (ctlg) {
+    //    $.ajax({
+    //        type: "post",
+    //        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=1&p_CTLG_CODE=" + ctlg,
+    //        contenttype: "application/json;",
+    //        datatype: "json",
+    //        async: false,
+    //        success: function (datos) {
+    //            $('#cboEstablecimiento').empty();
+    //            $('#cboEstablecimiento').append('<option></option>');
+    //            if (datos != null) {
+    //                for (var i = 0; i < datos.length; i++) {
+    //                    $('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+    //                }
+    //                $('#cboEstablecimiento').select2('val', $('#ctl00_hddestablecimiento').val());
+    //            } else {
+    //                $('#cboEstablecimiento').select2('val', '');
+
+    //            }
+    //        },
+    //        error: function (msg) {
+    //            alert(msg);
+    //        }
+    //    });
+
+    //}
+
+    var fillCboTipoPlanilla = function () {
         $.ajax({
             type: "post",
-            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=1&p_CTLG_CODE=" + ctlg,
+            url: "vistas/nn/ajax/nnmcnep.ashx?OPCION=3",
             contenttype: "application/json;",
             datatype: "json",
             async: false,
             success: function (datos) {
-                $('#cboEstablecimiento').empty();
-                $('#cboEstablecimiento').append('<option></option>');
+                $('#cbo_tipo_planilla').empty();
+                $('#cbo_tipo_planilla').append('<option></option>');
                 if (datos != null) {
-                    for (var i = 0; i < datos.length; i++) {
-                        $('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
-                    }
-                    $('#cboEstablecimiento').select2('val', $('#ctl00_hddestablecimiento').val());
-                } else {
-                    $('#cboEstablecimiento').select2('val', '');
 
+                    for (var i = 0; i < datos.length; i++) {
+
+                        $('#cbo_tipo_planilla').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+                    }
                 }
+                $("#cbo_tipo_planilla").select2("val", "0002").change();
             },
             error: function (msg) {
-                alert(msg);
+                alertCustom("Error Listado Tipo Planilla")
             }
         });
-
     }
-
-
 
 
     function FitraPlanilla() {
 
         var data = new FormData();
         data.append('OPCION', "1");
-        //data.append('TIPO_PLANILLA', tipo_planilla);
+        data.append('TIPO_PLANILLA', $("#cbo_tipo_planilla").val());
         data.append('p_CTLG_CODE', $("#cboEmpresa").val());
         data.append('p_ANIO', $("#optanho").val());
         data.append('p_MES', $("#optmes").datepicker("getDate").getMonth() + 1);
@@ -131,7 +154,7 @@
 
         var data = new FormData();
         data.append('OPCION', "1");
-        //data.append('TIPO_PLANILLA', tipo_planilla);
+        data.append('TIPO_PLANILLA', $("#cbo_tipo_planilla").val());
         data.append('p_CTLG_CODE', $("#cboEmpresa").val());
         data.append('p_ANIO', $("#optanho").val());
         data.append('p_MES', $("#optmes").datepicker("getDate").getMonth() + 1);
@@ -411,6 +434,7 @@
     return {
         init: function () {
             plugins();
+            fillCboTipoPlanilla();
             fillCboEmpresa();
             eventoComtroles();
             cargaInicial();

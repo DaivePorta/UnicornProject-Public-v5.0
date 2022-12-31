@@ -66,9 +66,9 @@
                         <div class="control-group">
                             <div class="controls">
                                 <select id="cbo_tipo_planilla" class="span12" data-placeholder="Tipo Planilla">
-                                  <option></option>
+                                  <%--<option></option>
                                   <option value="1">QUINCENAL</option>
-                                  <option value="2">MENSUAL</option>
+                                  <option value="2">MENSUAL</option>--%>
                                 </select>
                             </div>
                         </div>

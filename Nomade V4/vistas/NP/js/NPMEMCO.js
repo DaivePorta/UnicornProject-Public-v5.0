@@ -4,7 +4,7 @@
         $('#cboSucursal').select2();
         $('#cboEmpresa').select2();
         $('#cboEstablecimiento').select2();
-        $('#cboEstado').select2();
+        //$('#cboEstado').select2();
     }
 
 
@@ -22,7 +22,7 @@
                         $('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
                     }
                     $("#cboEmpresa").select2('val', $('#ctl00_hddctlg').val()).change();
-                    fillCboEstablecimiento();
+                    //fillCboEstablecimiento();
 
                 } else {
                     $('#cboEmpresa').select2('val', '');
@@ -60,8 +60,6 @@
         });
     };
 
-
-
     var fillCboEmpleado = function () {
         $.ajax({
             type: "post",
@@ -87,32 +85,30 @@
         });
     };
 
-
-
-    var fillCboEstado = function () {
-        $.ajax({
-            type: "post",
-            url: "vistas/np/ajax/npmemco.ashx?OPCION=LECO&ESTADO_IND=A",
-            contenttype: "application/json;",
-            datatype: "json",
-            async: false,
-            success: function (datos) {
-                $('#cboEstado').empty();
-                if (!isEmpty(datos)) {
-                    $('#cboEstado').append('<option value="">TODOS</option>');
-                    for (var i = 0; i < datos.length; i++) {
-                        $('#cboEstado').append('<option value="' + datos[i].CODIGO + '" >' + datos[i].DESCRIPCION + '</option>');
-                    }
-                    $('#cboEstado').select2('val', '').change();
-                } else {
-                    $('#cboEstado').select2('val', '');
-                }
-            },
-            error: function (msg) {
-                noexitoCustom("Error al listar Estado del Contrato.");
-            }
-        });
-    };
+    //var fillCboEstado = function () {
+    //    $.ajax({
+    //        type: "post",
+    //        url: "vistas/np/ajax/npmemco.ashx?OPCION=LECO&ESTADO_IND=A",
+    //        contenttype: "application/json;",
+    //        datatype: "json",
+    //        async: false,
+    //        success: function (datos) {
+    //            $('#cboEstado').empty();
+    //            if (!isEmpty(datos)) {
+    //                $('#cboEstado').append('<option value="">TODOS</option>');
+    //                for (var i = 0; i < datos.length; i++) {
+    //                    $('#cboEstado').append('<option value="' + datos[i].CODIGO + '" >' + datos[i].DESCRIPCION + '</option>');
+    //                }
+    //                $('#cboEstado').select2('val', '').change();
+    //            } else {
+    //                $('#cboEstado').select2('val', '');
+    //            }
+    //        },
+    //        error: function (msg) {
+    //            noexitoCustom("Error al listar Estado del Contrato.");
+    //        }
+    //    });
+    //};
 
     var eventoControles = function () {
 
@@ -128,9 +124,9 @@
             GetContratos();
         });
 
-        $('#cboEstado').on('change', function () {
-            GetContratos();
-        });
+        //$('#cboEstado').on('change', function () {
+        //    GetContratos();
+        //});
 
 
     }
@@ -138,7 +134,7 @@
 
     function cargainicial() {
         fillCboEmpresa();
-        fillCboEstado();
+        //fillCboEstado();
     }
 
     return {
@@ -1191,7 +1187,8 @@ var GetContratos = function () {
                    ]
                }
            })
-           //.columns(0).visible(false);
+           //columns(8).visible(false);
+           $('#tblContratos').DataTable().columns(10).visible(false);
            actualizarEstilos()
            $('#tblContratos tbody').on('click', 'tr', function () {
                if ($(this).hasClass('selected')) {
@@ -1205,7 +1202,7 @@ var GetContratos = function () {
                    var row = table.fnGetData(pos);
                    var code = row[0];
                    var nro = row[1];
-                   var ctlg_code = row[9];
+                   var ctlg_code = row[10];
                    
                    window.location.href = '?f=npmemco&pidm=' + code + "&nro=" + nro + "&ctlg_code=" + ctlg_code ;
                }

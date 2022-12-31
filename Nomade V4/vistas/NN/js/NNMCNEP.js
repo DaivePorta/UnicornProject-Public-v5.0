@@ -907,10 +907,17 @@ var NNMCNEP = function () {
 
                
             }
-         
-            Suma = parseInt(oM) + parseInt(oA);
-            Suma_1 = parseInt(oM_1) + parseInt(oA_2);
-            
+
+            if (oA == oA_2) {
+                Suma = parseInt(oM) + parseInt(oA);
+                Suma_1 = parseInt(oM_1) + parseInt(oA_2);
+            } else if (oA < oA_2) {
+                Suma = 1
+                Suma_1 = 2
+            } else {
+                Suma = 1
+                Suma_1 = 1
+            }            
            
             if ($("#txt_mes").val() != "" && $("#txt_anho").val() == "") { array.push("txt_anho") }
             if ($("#txt_anho").val() != "" && $("#txt_mes").val() == "") { array.push("txt_mes") }
@@ -943,7 +950,7 @@ var NNMCNEP = function () {
                     $('#btn_regresar').attr("disabled", false);
                     $("#tabla").attr("style", "")
                     } else { infoCustom2("Fecha INICIO no debe ser mayor a la fecha FIN") }
-                } else { infoCustom2("Fecha INICIO no debe ser igual a la fecha FIN") }
+                } else { infoCustom2("Fecha INICIO no debe ser igual o menor a la fecha FIN") }
               }
           
            

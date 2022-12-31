@@ -7,6 +7,7 @@ Imports System.Web
 Imports System.Data
 Imports System.IO
 Imports System.IO.FileStream
+Imports QRCoder
 
 Public Class CAMNGCL : Implements IHttpHandler
 
@@ -433,6 +434,8 @@ Public Class CAMNGCL : Implements IHttpHandler
 
             'VARIABLE PARA COLOCAR EL QR EN EL PDF
             Dim rutaQr As String = ""
+            'VARIABLE PARA COLOCAR LA INFORMACIÓN DEL QR
+            Dim cadenaQR As String = ""
             'PARAMETROS TABLAS
             Dim border As String = "1"
             Dim marginBottom As String = "10px"
@@ -450,9 +453,12 @@ Public Class CAMNGCL : Implements IHttpHandler
             Dim wPrec As String = "15%"
             Dim wSubt As String = "15%"
 
+            'Cadena con la información del QR
+            cadenaQR = "6" + "|" + dtCabecera(0)("RUC").ToString + "|" + dtCabecera(0)("CLIE_DOID").ToString + "|" + dtCabecera(0)("CLIE_DCTO_NRO").ToString + "|" + "07" + "|" + dtCabecera(0)("DOCUMENTO").ToString + "|" + dtCabecera(0)("FECHA_SUNAT").ToString + "|" + dtCabecera(0)("IGV").ToString + "|" + dtCabecera(0)("IMPORTE_TOTAL").ToString
+
             'LA RUTA QUE VA A TENER
-            'rutaQr = dtCabecera.Rows(0)("IMAGEN_QR")
-            rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE)
+            'rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE, p_CTLG_CODE)
+            rutaQr = "data:image/png;base64," + fnGetCodigoQR_fast(cadenaQR)
 
             tabla.Append("<table id='tblDctoImprimir1' class='tblDctoImprimir' border='" + border + "' style='width: 100%;margin-bottom:" + marginBottom + "' cellpadding='" + cellpadding + "'  align='center'>")
             tabla.Append("<tbody>")
@@ -756,7 +762,7 @@ Public Class CAMNGCL : Implements IHttpHandler
         Dim htmlText As String = ""
         Dim cNomArch As String = CODIGO & ".pdf"
         htmlText = getHtmlTextPDF(CODIGO, CTLG)
-        HTMLToPDF(htmlText, cNomArch, CODIGO)
+        HTMLToPDF(htmlText, cNomArch, CODIGO, CTLG)
         Return ress
     End Function
 
@@ -769,13 +775,16 @@ Public Class CAMNGCL : Implements IHttpHandler
         Return htmlText.ToString
     End Function
 
-    Sub HTMLToPDF(ByVal HTML As String, ByVal FilePath As String, ByVal p_CODE As String)
+    Sub HTMLToPDF(ByVal HTML As String, ByVal FilePath As String, ByVal p_CODE As String, ByVal p_CTLG_CODE As String)
 
         Dim nc As New Nomade.NC.NCEmpresa("Bn")
         Dim dtCabecera As DataTable
         dtCabecera = caNotaCredito.ListarNotaCreditoGenerica(p_CODE, "", "", "", "X", "0000-00-00", "0000-00-00")
 
         Dim imgS, imgI As String
+        Dim cadenaQR As String = ""
+        'Cadena con la información del QR
+        cadenaQR = "6" + "|" + dtCabecera(0)("RUC").ToString + "|" + dtCabecera(0)("CLIE_DOID").ToString + "|" + dtCabecera(0)("CLIE_DCTO_NRO").ToString + "|" + "07" + "|" + dtCabecera(0)("DOCUMENTO").ToString + "|" + dtCabecera(0)("FECHA_SUNAT").ToString + "|" + dtCabecera(0)("IGV").ToString + "|" + dtCabecera(0)("IMPORTE_TOTAL").ToString
 
         Dim imgSuperior As String = dtCabecera(0)("IMG_SUPERIOR").ToString
         imgS = imgSuperior.Replace("../../../", String.Empty)
@@ -811,7 +820,8 @@ Public Class CAMNGCL : Implements IHttpHandler
 
         'If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
         If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And p_CODE <> "" And p_CODE <> "undefined" Then
-            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(codigoQR.fnGetCodigoQR(p_CODE))) 'SOLO PARA ´DOCS ELECTRÓNICOS
+            'imgCabConQR(FilePath, imgS, imgI, Base64ToImage(codigoQR.fnGetCodigoQR(p_CODE, p_CTLG_CODE))) 'SOLO PARA ´DOCS ELECTRÓNICOS
+            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(fnGetCodigoQR_fast(cadenaQR))) 'SOLO PARA ´DOCS ELECTRÓNICOS
         Else
             imgC(FilePath, imgS, imgI)
         End If
@@ -976,11 +986,21 @@ Public Class CAMNGCL : Implements IHttpHandler
         Return fecha
     End Function
 
-
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False
         End Get
     End Property
 
+    Private Function fnGetCodigoQR_fast(ByVal informacionQR As String) As String 'DPORTA 07/12/2022
+        Dim qrGenerator = New QRCodeGenerator()
+        Dim qrCodeData = qrGenerator.CreateQrCode(informacionQR, QRCodeGenerator.ECCLevel.Q)
+        Dim bitMapByteCode As BitmapByteQRCode = New BitmapByteQRCode(qrCodeData)
+        Dim bitMap = bitMapByteCode.GetGraphic(20)
+        Dim byteImage As Byte()
+        Dim MS As MemoryStream = New MemoryStream()
+        MS.Write(bitMap, 0, bitMap.Length)
+        byteImage = MS.ToArray()
+        Return Convert.ToBase64String(byteImage)
+    End Function
 End Class

@@ -111,7 +111,7 @@
         });
 
         $('#buscar').on('click', function () {
-            if (vErrors(["cboEmpresa", "txtRuc"])) {
+            if (vErrors(["cboEmpresa"])) {
                 obtenerReporteCuentasPorPagar();
             }
         });
@@ -124,7 +124,7 @@
         var data = new FormData();
         data.append('p_CTLG_CODE', $("#cboEmpresa").val());
         data.append('p_USUA_ID', $("#ctl00_txtus").val());
-        data.append('p_PROV_PIDM', $("#hfPIDM").val());
+        data.append('p_PROV_PIDM', $("#hfPIDM").val() == "" ? 0 : $("#hfPIDM").val());
         data.append('p_DESDE', $("#txtDesde").val());
         data.append('p_HASTA', $("#txtHasta").val());
 
@@ -171,6 +171,10 @@
                        ]
                    }
                })
+               var oTable = $('#tblCuentasPorPagar').dataTable();
+               oTable.fnSort([[3, "desc"]]);
+
+               $("#tblCuentasPorPagar").DataTable();
                actualizarEstilos()
 
            } else {

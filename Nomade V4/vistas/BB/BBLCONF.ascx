@@ -48,17 +48,17 @@
             <div class="portlet-body">
                 <div class="row-fluid">
                     <div class="span12">
-                        <table id="tblConfiguracion" border="0" class="display DTTT_selectable" style="display: block;">
+                        <table id="tblConfiguracion" border="0" class="display DTTT_selectable">
                             <thead>
                                 <tr>
-                                    <th style="display: none;">CÓDIGO</th>
-                                    <th style="display: none;">COLUMNA</th>
+                                    <th>CÓDIGO</th>
+                                    <%--<th>COLUMNA</th>--%>
                                     <th style="text-align:left;">DESCRIPCIÓN</th>
                                     <th>GRUPO</th>
                                     <th>AFP</th>
                                     <th>ONP</th>
-                                    <th style="display: none;">OTROS</th>
-                                     <th>ESTADO</th>
+                                    <th>OTROS</th>
+                                    <th>ESTADO</th>
                                 </tr>
                             </thead>
                         </table>

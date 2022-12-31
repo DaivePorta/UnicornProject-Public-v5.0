@@ -508,6 +508,27 @@
             Throw (ex)
         End Try
     End Function
+    Public Function fnAnularGasto(ByVal p_GASTO_CODE As String) As String
+        Try
+            Dim msg As String
+
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("PFS_ANULAR_GASTO", CommandType.StoredProcedure)
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_GASTO_CODE", p_GASTO_CODE, ParameterDirection.Input, 253))
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RPTA", String.Empty, ParameterDirection.Output, 253))
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg = cmd1.Parameters("@p_RPTA").Value
+
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 
     Public Function Listar_Provision_gasto(ByVal p_ESTADO As String,
                                            Optional TIPO As String = "1",

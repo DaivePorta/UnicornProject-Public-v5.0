@@ -7,9 +7,9 @@ Imports System.Web
 Imports System.Data
 Imports System.IO
 Imports System.IO.FileStream
+Imports QRCoder
 
 Public Class NVMDOVS : Implements IHttpHandler
-
 
     Dim OPCION, USUARIO, CTLG_CODE, MONEDA_CODE, CODE_PARAMETRO, TIPO_DCTO, PROD_CODE, NUM_DCTO, p_CODE, p_DETALLES_BONI As String
 
@@ -271,7 +271,7 @@ Public Class NVMDOVS : Implements IHttpHandler
                     dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "X")
                     If p_CODE.Length = 9 And dtCabecera.Rows(0)("COMPLETO_IND") = "S" Then
                         Try
-                            GenerarPDF(p_CODE)
+                            GenerarPDF(p_CODE, p_CTLG_CODE)
                         Catch ex As Exception
                             msgError = "ERROR: " + ex.Message
                         End Try
@@ -364,7 +364,7 @@ Public Class NVMDOVS : Implements IHttpHandler
                 Case "IMPRT"
                     context.Response.ContentType = "application/text; charset=utf-8"
                     USAR_IGV_IND = context.Request("USAR_IGV_IND") ' Si es nothing se usará el de la tabla
-                    res = GenerarDctoImprimirTicket(p_CODE, USAR_IGV_IND)
+                    res = GenerarDctoImprimirTicket(p_CODE, p_CTLG_CODE, USAR_IGV_IND)
                 'DPORTA
                 Case "IMPRTICKET"
                     context.Response.ContentType = "application/text; charset=utf-8"
@@ -458,7 +458,7 @@ Public Class NVMDOVS : Implements IHttpHandler
 
     End Sub
 
-    Public Function GenerarDctoImprimirTicket(ByVal p_CODE As String, ByVal USAR_IGV_IND As String) As String
+    Public Function GenerarDctoImprimirTicket(ByVal p_CODE As String, ByVal p_CTLG_CODE As String, ByVal USAR_IGV_IND As String) As String
         Dim tabla As New StringBuilder
 
         Dim dtCabecera As New DataTable
@@ -505,13 +505,15 @@ Public Class NVMDOVS : Implements IHttpHandler
             'OBTENER LOGO
             'dtEmpresas = ncEmpresa.ListarEmpresa(dtCabecera.Rows(0)("EMPRESA"), "A", "")
             rutaLogo = dtCabecera(0)("RUTA_IMAGEN").ToString
-
+            'VARIABLE PARA COLOCAR LA INFORMACIÓN DEL QR
+            Dim cadenaQR As String = ""
             'OBTENER EL TEXTO QUE VA A IR EN LA IMPRESION COMO PIE DE PAGINA
             pie_pagina = dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString
-
+            'Cadena con la información del QR
+            cadenaQR = "6" + "|" + dtCabecera(0)("RUC").ToString + "|" + dtCabecera(0)("CLIE_DOID").ToString + "|" + dtCabecera(0)("CLIE_DCTO_NRO").ToString + "|" + dtCabecera(0)("TIPO_DCTO_SUNAT").ToString + "|" + dtCabecera(0)("NUM_DCTO").ToString + "|" + dtCabecera(0)("FECHA_SUNAT").ToString + "|" + dtCabecera(0)("IGV").ToString + "|" + dtCabecera(0)("IMPORTE").ToString
             'LA RUTA QUE VA A TENER
-            'rutaQr = dtCabecera(0)("IMAGEN_QR").ToString
-            rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE)
+            'rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE, p_CTLG_CODE)
+            rutaQr = "data:image/png;base64," + fnGetCodigoQR_fast(cadenaQR)
 
             tabla.Append("<table id='tblDctoImprimir' border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'>")
             tabla.Append("<thead>")
@@ -843,10 +845,16 @@ Public Class NVMDOVS : Implements IHttpHandler
             tabla.Append("</tbody>")
             tabla.Append("</table>")
 
-
             tabla.Append("<table border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'><tbody>")
             tabla.Append("<tbody>")
             tabla.Append("<tr style='border-top: 1px dashed black;'>")
+            tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
+
+            If dtCabecera.Rows(0)("DETRACCION_IND") = "S" Then
+                tabla.Append("<div>&nbsp;</div>")
+                tabla.AppendFormat("<div style='text-align: left'><strong>Cuenta de detracciones: {0}</strong></div>", dtCabecera.Rows(0)("NRO_CUENTA_DETRACCION"))
+                'tabla.Append("<div>&nbsp;</div>")
+            End If
 
             If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" Then
                 'LUGAR DONDE SE VA A DIBUJAR EL QR EN EL PDF
@@ -1463,7 +1471,7 @@ Public Class NVMDOVS : Implements IHttpHandler
         resb.AppendFormat("<table id=""tblDocumento"" class=""display DTTT_selectable"" border=""0"">")
         resb.AppendFormat("<thead>")
         resb.AppendFormat("<th style='max-width:52px;'>CÓDIGO</th>")
-        resb.AppendFormat("<th style='max-width:70px;'>ORDEN DE SERVICIO</th>")
+        resb.AppendFormat("<th style='max-width:250px;'>ORDEN DE SERVICIO</th>")
         resb.AppendFormat("<th style='max-width:70px;'>DOCUMENTO</th>")
         resb.AppendFormat("<th style='max-width:52px;'>FECHA<br/>EMISIÓN</th>")
         resb.AppendFormat("<th style='max-width:90px;'>NRO. DOC.</th>")
@@ -1494,7 +1502,7 @@ Public Class NVMDOVS : Implements IHttpHandler
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("MOPA_DESC").ToString())
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("FOPA_DESC").ToString())
                 'resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("NOMBRE_VENDEDOR").ToString())
-                resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("VENDEDOR_USUA_ID").ToString())
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("VENDEDOR_USUA_ID").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("ATENDIDO").ToString())
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("ANULADO").ToString())
                 resb.AppendFormat("<td style='text-align:center;'>")
@@ -1565,31 +1573,34 @@ Public Class NVMDOVS : Implements IHttpHandler
 
 
     'CORREO    
-    Public Function GenerarPDF(ByVal CODIGO As String) As String
+    Public Function GenerarPDF(ByVal CODIGO As String, ByVal p_CTLG_CODE As String) As String
         Dim ress As String = ""
         Dim htmlText As String = ""
         Dim cNomArch As String = CODIGO & ".pdf"
-        htmlText = getHtmlTextPDF(CODIGO)
-        HTMLToPDF(htmlText, cNomArch, CODIGO)
+        htmlText = getHtmlTextPDF(CODIGO, p_CTLG_CODE)
+        HTMLToPDF(htmlText, cNomArch, CODIGO, p_CTLG_CODE)
         Return ress
     End Function
 
-    Function getHtmlTextPDF(ByVal codigo As String) As String
+    Function getHtmlTextPDF(ByVal codigo As String, ByVal p_CTLG_CODE As String) As String
         Dim htmlText As New StringBuilder
         htmlText.Length = 0
         Dim documento As String = ""
-        documento = GenerarDctoCorreo(codigo, USAR_IGV_IND, "")
+        documento = GenerarDctoCorreo(codigo, p_CTLG_CODE, USAR_IGV_IND, "")
         htmlText.Append(documento)
         Return htmlText.ToString
     End Function
 
-    Sub HTMLToPDF(ByVal HTML As String, ByVal FilePath As String, ByVal p_CODE As String)
+    Sub HTMLToPDF(ByVal HTML As String, ByVal FilePath As String, ByVal p_CODE As String, ByVal p_CTLG_CODE As String)
 
         Dim nc As New Nomade.NC.NCEmpresa("Bn")
         Dim dtCabecera As DataTable
         dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "C")
 
         Dim imgS, imgI As String
+        Dim cadenaQR As String = ""
+        'Cadena con la información del QR
+        cadenaQR = "6" + "|" + dtCabecera(0)("RUC").ToString + "|" + dtCabecera(0)("CLIE_DOID").ToString + "|" + dtCabecera(0)("CLIE_DCTO_NRO").ToString + "|" + dtCabecera(0)("TIPO_DCTO_SUNAT").ToString + "|" + dtCabecera(0)("NUM_DCTO").ToString + "|" + dtCabecera(0)("FECHA_SUNAT").ToString + "|" + dtCabecera(0)("IGV").ToString + "|" + dtCabecera(0)("IMPORTE").ToString
 
         Dim imgSuperior As String = dtCabecera(0)("IMG_SUPERIOR").ToString
         imgS = imgSuperior.Replace("../../../", String.Empty)
@@ -1625,7 +1636,8 @@ Public Class NVMDOVS : Implements IHttpHandler
 
         'If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And dtCabecera(0)("IMAGEN_QR").ToString <> "" And dtCabecera(0)("IMAGEN_QR").ToString <> "undefined" Then 'DPORTA 20/05/2022
         If dtCabecera.Rows(0)("ELECTRONICO_IND") = "S" And p_CODE <> "" And p_CODE <> "undefined" Then
-            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(codigoQR.fnGetCodigoQR(p_CODE))) 'SOLO PARA ´DOCS ELECTRÓNICOS
+            'imgCabConQR(FilePath, imgS, imgI, Base64ToImage(codigoQR.fnGetCodigoQR(p_CODE, p_CTLG_CODE))) 'SOLO PARA ´DOCS ELECTRÓNICOS
+            imgCabConQR(FilePath, imgS, imgI, Base64ToImage(fnGetCodigoQR_fast(cadenaQR))) 'SOLO PARA ´DOCS ELECTRÓNICOS
         Else
             imgC(FilePath, imgS, imgI)
         End If
@@ -1764,7 +1776,7 @@ Public Class NVMDOVS : Implements IHttpHandler
     '-----------DOCUMENTO PARA CORREO ELECTRÓNICO-------------
     '----------------------------------------------------------
 
-    Public Function GenerarDctoCorreo(ByVal p_CODE As String, ByVal USAR_IGV_IND As String, ByVal COPIA_IND As String) As String
+    Public Function GenerarDctoCorreo(ByVal p_CODE As String, ByVal p_CTLG_CODE As String, ByVal USAR_IGV_IND As String, ByVal COPIA_IND As String) As String
         Dim tabla As New StringBuilder
         Dim dtCabecera As New DataTable
         Dim dtDetalles As New DataTable
@@ -2205,4 +2217,15 @@ Public Class NVMDOVS : Implements IHttpHandler
         Return dtv.ToTable()
     End Function
 
+    Private Function fnGetCodigoQR_fast(ByVal informacionQR As String) As String 'DPORTA 07/12/2022
+        Dim qrGenerator = New QRCodeGenerator()
+        Dim qrCodeData = qrGenerator.CreateQrCode(informacionQR, QRCodeGenerator.ECCLevel.Q)
+        Dim bitMapByteCode As BitmapByteQRCode = New BitmapByteQRCode(qrCodeData)
+        Dim bitMap = bitMapByteCode.GetGraphic(20)
+        Dim byteImage As Byte()
+        Dim MS As MemoryStream = New MemoryStream()
+        MS.Write(bitMap, 0, bitMap.Length)
+        byteImage = MS.ToArray()
+        Return Convert.ToBase64String(byteImage)
+    End Function
 End Class

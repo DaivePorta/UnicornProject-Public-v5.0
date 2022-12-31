@@ -180,13 +180,9 @@ Public Class NFLVACO : Implements IHttpHandler
                 For i As Integer = 0 To dt.Rows.Count - 1
                     nroCorrelativo += 1
                     contador += 1
-                    cadena += dt.Rows(i)("RUC").ToString() + "|" + dt.Rows(i)("COD_SUNAT").ToString() + "|" + dt.Rows(i)("SERIE").ToString() + "|" + dt.Rows(i)("CORRELATIVO").ToString() + "|" + dt.Rows(i)("FECHA_EMISION").ToString() + "|" + dt.Rows(i)("TOTAL").ToString() + "|"
+                    cadena += dt.Rows(i)("RUC").ToString() + "|" + dt.Rows(i)("COD_SUNAT").ToString() + "|" + dt.Rows(i)("SERIE").ToString() + "|" + dt.Rows(i)("CORRELATIVO").ToString() + "|" + dt.Rows(i)("FECHA_EMISION").ToString() + "|" + dt.Rows(i)("TOTAL").ToString()
                     If cantidad_datos <> nroCorrelativo And contador <> 100 Then
                         cadena += vbCrLf
-                        'ElseIf contador = 100 Then
-                        '    If Right(cadena, 6) = vbCrLf Then
-                        '        cadena = Left(cadena, Len(cadena) - 6)
-                        '    End If
                     End If
                     If contador = 100 Then
 
@@ -202,7 +198,7 @@ Public Class NFLVACO : Implements IHttpHandler
                         End If
 
                         Dim fd As New StreamWriter(archivo, True)
-                        fd.WriteLine(cadena)
+                        fd.Write(cadena)
                         fd.Close()
                         cadena = ""
                     ElseIf (contador = registrosFaltantes) And (archivosMax = numArchivos + 1) Then
@@ -216,7 +212,7 @@ Public Class NFLVACO : Implements IHttpHandler
                         End If
 
                         Dim fd As New StreamWriter(archivo, True)
-                        fd.WriteLine(cadena)
+                        fd.Write(cadena)
                         fd.Close()
                     End If
                 Next

@@ -189,25 +189,25 @@
 
     var eventos = function () {
         $('#cboEmpresa').on('change', function () {
-            cargarSucursales();
-            $('#cboSucursal').select2('val', '');
-            $('#tblLISTA').DataTable().column(9).search($(this).val()).draw();
+            cargarSucursales();            
+            $('#tblLISTA').DataTable().column(10).search($(this).val()).draw();
+            $('#cboSucursal').select2('val', ' ').change();
         });
 
         $('#cboSucursal').on('change', function () {
-            $('#tblLISTA').DataTable().column(10).search($(this).val()).draw();
+            $('#tblLISTA').DataTable().column(11).search($(this).val()).draw();
         });
     };
 
     return {
         init: function () {
             plugins();
+            cargarEmpresas();
             listarPOS();
             eventos();
-            cargarEmpresas();
-            $('#cboEmpresa').select2('val', $('#ctl00_hddctlg').val());
             cargarSucursales();
-            $('#cboSucursal').select2('val', ' ');
+            $('#cboSucursal').select2('val', ' ').change();
+            $('#cboEmpresa').change();
         }
     };
 }();
@@ -462,21 +462,25 @@ var NCMPOST = function () {
 }();
 
 var cargarEmpresas = function () {
-    var select = $('#cboEmpresa');
+    var selectEmpresa = $('#cboEmpresa');
     $.ajax({
         type: "post",
-        url: 'vistas/nc/ajax/ncmnipl.ashx?opcion=0&usua=' + $('#ctl00_txtus').val(),
+        url: "vistas/NC/ajax/NCMCAJA.ashx?OPCION=6&USUA_ID=" + $('#ctl00_txtus').val(),
         contenttype: "application/json;",
         datatype: "json",
         async: false,
-        success: function (data) {
-            $(select).html('');
-            for (var i = 0; i < data.length; i++) {
-                $(select).append('<option value="' + data[i].CODIGO + '">' + data[i].DESCRIPCION + '</option>');
+        success: function (datos) {
+            selectEmpresa.empty();
+            selectEmpresa.append('<option></option>');
+            if (datos != null) {
+                for (var i = 0; i < datos.length; i++) {
+                    selectEmpresa.append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+                }
             }
+            selectEmpresa.select2('val', $('#ctl00_hddctlg').val()).change();
         },
         error: function (msg) {
-            alertCustom(msg.d);
+            alertCustom('Error al listar empresas.');
         }
     });
 };

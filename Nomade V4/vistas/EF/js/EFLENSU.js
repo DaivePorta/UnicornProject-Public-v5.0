@@ -24,7 +24,7 @@
                 $('#txtHasta').datepicker('setStartDate', $('#txtDesde').val());
             }
         });
-        fnSetRangoDatePickerMesHoy('txtDesde', 'txtHasta', true);
+        //fnSetRangoDatePickerMesHoy('txtDesde', 'txtHasta', true);
     }    
 
     var fillCboEmpresa = function () {
@@ -85,7 +85,8 @@
             },
             complete: function () {
                 if (ObtenerQueryString("scsl") == undefined) {
-                    $("#cboEstablecimiento").select2("val", $("#ctl00_hddestablecimiento").val());
+                    //$("#cboEstablecimiento").select2("val", $("#ctl00_hddestablecimiento").val());
+                    $('#cboEstablecimiento').select2('val', 'TODOS');
                 } else {
                     $("#cboEstablecimiento").select2("val", ObtenerQueryString("scsl"));
                     $("#txtDesde").val(ObtenerQueryString("desde"));
@@ -1388,7 +1389,28 @@
             $("#divConfirmacion").modal('hide');
         });
 
-       
+        $("#txtHasta").datepicker({
+            dateFormat: 'dd/mm/yy',
+            firstDay: 1
+        }).datepicker("setDate", new Date());
+
+        var fecha = new Date();
+        var ano = fecha.getFullYear();
+        var mes = fecha.getMonth() + 1;
+
+        if (mes == 1) {
+            mes = 12;
+            ano = ano - 1
+        } else {
+            //mes = mes - 1;
+        }
+
+        if (mes >= 10)
+            var fNueva = '01/' + mes + '/' + ano;
+        else
+            var fNueva = '01/0' + mes + '/' + ano;
+
+        $("#txtDesde").val(fNueva);
 
         $('#btnConfirmarEnviarTodos').on('click', function () {
 
@@ -1514,7 +1536,7 @@
             lstSeleccionados = [];
             var emp = $('#cboEmpresa').val();
             var suc = $("#cboEstablecimiento").val() == 'TODOS' ? '' : $('#cboEstablecimiento').val();
-            var doc = $('#cboDocumento').val();
+            var doc = $("#cboDocumento").val() == 'TODOS' ? '' : $('#cboDocumento').val();
             var des = $('#txtDesde').val();
             var has = $('#txtHasta').val();
 
@@ -1671,8 +1693,8 @@
     var fillCboTipoDocumento = function () {
         var emp = $('#cboEmpresa').val();
         var sucu = $("#cboEstablecimiento").val() == 'TODOS' ? '' : $('#cboEstablecimiento').val();
-        $('#cboDocumento').html("<option value=''></option>");
-        $('#cboDocumento').select2('val', '');
+        //$('#cboDocumento').html("<option value=''>TODOS</option>");
+        //$('#cboDocumento').select2('val', 'TODOS');
         $.ajax({
             type: "post",
             url: "vistas/NC/ajax/NCMAUTD.ashx?OPCION=LDCE&P_SCSL_CODE=" + sucu + "&P_CTLG_CODE=" + emp,
@@ -1682,11 +1704,13 @@
             success: function (datos) {
                 if (isEmpty(datos)) {
                     return;
-                }                                
+                }
+                $('#cboDocumento').append('<option Value="TODOS">TODOS</option>');//se comenta esta línea y se oculta la opción de todos
                 for (var i = 0; i < datos.length; i++) {
                     $('#cboDocumento').append('<option value="' + datos[i].TIPO_DOC_CODE + '">' + datos[i].TIPO_DOC + '</option>');
                 }
-                $('#cboDocumento').select2('val', datos[0].TIPO_DOC_CODE);
+                //$('#cboDocumento').select2('val', datos[0].TIPO_DOC_CODE);
+                $('#cboDocumento').select2('val', 'TODOS');
             },
             complete: function () {                             
                 fillCliente();
@@ -1784,4 +1808,7 @@ var AnularDocumento = function (documento) {
     alert('Anular documento');
 }
 
+var NuevaPantalla = function () {
+    window.location.href = '?f=EFLENSU';
+}
 

@@ -16,10 +16,12 @@ Partial Class vistas_CO_COLRECN
         Dim filep As String
         Dim filen, ruta As String
         filep = "Archivos\"
+        p_MES = Me.hddMes.Value
+
         If hfind_vacio.Value = "N" Then
-            filen = "LE" + hddRuc.Value + hddAnio.Value + "0" + hddMes.Value + "00080200" + "00" + "1" + "1" + "1" + "1" + ".pdf"
+            filen = "LE" + hddRuc.Value + hddAnio.Value + hddMes.Value + "00080200" + "00" + "1" + "1" + "1" + "1" + ".pdf"
         Else
-            filen = "LE" + hddRuc.Value + hddAnio.Value + "0" + hddMes.Value + "00080200" + "00" + "1" + "0" + "1" + "1" + ".pdf"
+            filen = "LE" + hddRuc.Value + hddAnio.Value + hddMes.Value + "00080200" + "00" + "1" + "0" + "1" + "1" + ".pdf"
         End If
 
         ruta = Server.MapPath("~") + filep + filen
@@ -45,10 +47,12 @@ Partial Class vistas_CO_COLRECN
         Dim filep As String
         Dim filen, ruta As String
         filep = "Archivos\"
+        p_MES = Me.hddMes.Value
+
         If hfind_vacio.Value = "N" Then
-            filen = "LE" + hddRuc.Value + hddAnio.Value + "0" + hddMes.Value + "00080200" + "00" + "1" + "1" + "1" + "1" + ".txt"
+            filen = "LE" + hddRuc.Value + hddAnio.Value + hddMes.Value + "00080200" + "00" + "1" + "1" + "1" + "1" + ".txt"
         Else
-            filen = "LE" + hddRuc.Value + hddAnio.Value + "0" + hddMes.Value + "00080200" + "00" + "1" + "0" + "1" + "1" + ".txt"
+            filen = "LE" + hddRuc.Value + hddAnio.Value + hddMes.Value + "00080200" + "00" + "1" + "0" + "1" + "1" + ".txt"
         End If
 
         ruta = Server.MapPath("~") + filep + filen
@@ -71,16 +75,16 @@ Partial Class vistas_CO_COLRECN
 
     Protected Sub btnXls_Click(sender As Object, e As EventArgs) Handles btnLibroXls.Click
 
-        p_ANIO = "2018"
-        p_MES = "1"
+        p_ANIO = Me.hddAnio.Value
+        p_MES = Me.hddMes.Value
         p_MES_DES = Me.hddDescMes.Value
-        p_CTLG_CODE = "N"
+        p_CTLG_CODE = Me.hddCtlg.Value
 
         Dim dt As New System.Data.DataTable
         dt = coRegistroCompras.ListarRegistroCompras_Libro8(p_ANIO, p_MES, p_CTLG_CODE, "")
         resb = GenerarTablaRegistroCompras(dt)
 
-        Dim nombreArch As String = "LE" + hddRuc.Value + hddAnio.Value + "0" + hddMes.Value + "00080200" + "00" + "1" + "0" + "1" + "1" + ""
+        Dim nombreArch As String = "LE" + hddRuc.Value + hddAnio.Value + hddMes.Value + "00080200" + "00" + "1" + "0" + "1" + "1" + ""
 
         HttpContext.Current.Response.Clear()
         HttpContext.Current.Response.AddHeader("Content-type", "")

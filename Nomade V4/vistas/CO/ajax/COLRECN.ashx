@@ -127,9 +127,9 @@ Public Class COLRECN : Implements IHttpHandler
         Dim cNomArch As String = ""
         Dim htmlText As New StringBuilder
         If Not dt Is Nothing Then
-            cNomArch = "LE" + p_RUC + p_ANIO + "0" + p_MES + "00080200" + "00" + "1" + "1" + "1" + "1" + ".pdf"
+            cNomArch = "LE" + p_RUC + p_ANIO + p_MES + "00080200" + "00" + "1" + "1" + "1" + "1" + ".pdf"
         Else
-            cNomArch = "LE" + p_RUC + p_ANIO + "0" + p_MES + "00080200" + "00" + "1" + "0" + "1" + "1" + ".pdf"
+            cNomArch = "LE" + p_RUC + p_ANIO + p_MES + "00080200" + "00" + "1" + "0" + "1" + "1" + ".pdf"
         End If
 
         'dt=
@@ -170,9 +170,9 @@ Public Class COLRECN : Implements IHttpHandler
         Dim res As String = ""
         Try
             If Not dt Is Nothing Then
-                res = "Archivos\" + "LE" + p_RUC + p_ANIO + "0" + p_MES + "00080200" + "00" + "1" + "1" + "1" + "1" + ".txt"
+                res = "Archivos\" + "LE" + p_RUC + p_ANIO + p_MES + "00080200" + "00" + "1" + "1" + "1" + "1" + ".txt"
             Else
-                res = "Archivos\" + "LE" + p_RUC + p_ANIO + "0" + p_MES + "00080200" + "00" + "1" + "0" + "1" + "1" + ".txt"
+                res = "Archivos\" + "LE" + p_RUC + p_ANIO + p_MES + "00080200" + "00" + "1" + "0" + "1" + "1" + ".txt"
             End If
 
             archivo = HttpContext.Current.Server.MapPath("~") + res
@@ -299,12 +299,12 @@ Public Class COLRECN : Implements IHttpHandler
                     cadena += dt.Rows(i)("ESTADO_AJUSTE").ToString() + "|"
                     cadena += vbCrLf
                 Next
-                fd.WriteLine(cadena)
+                fd.Write(cadena)
                 fd.Close()
                 res = "ok"
             Else
                 Dim fd As New StreamWriter(archivo, True)
-                fd.WriteLine(cadena)
+                fd.Write(cadena)
                 fd.Close()
                 res = "vacio"
             End If

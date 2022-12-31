@@ -1690,7 +1690,7 @@
 
 <!-- IMPORTAMOS LOS PLUGINS QUE SE USARAN-->
 <script type="text/javascript" src="../vistas/NV/js/NVMANTI.js"></script>
-<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>
+<%--<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>--%>
 
 <script>
     jQuery(document).ready(function () {

@@ -3057,36 +3057,36 @@ var listarDetallesGasto = function (CODE) {
 
 
 
-function VerificaExiste(p_pidm, p_dcto, p_serie, p_numero) {
+//function VerificaExiste(p_pidm, p_dcto, p_serie, p_numero) {
 
-    if (p_dcto != '' && (p_serie != '' || p_numero != '')) {
-        var data = new FormData();
+//    if (p_dcto != '' && (p_serie != '' || p_numero != '')) {
+//        var data = new FormData();
 
-        data.append("OPCION", "VERIFICA");
+//        data.append("OPCION", "VERIFICA");
 
-        data.append("p_PIDM_BENEFICIARIO", p_pidm);
-        data.append("p_TIPO_DCTO", p_dcto);
-        data.append("p_SERIE", p_serie);
-        data.append("p_NUMERO", p_numero);
+//        data.append("p_PIDM_BENEFICIARIO", p_pidm);
+//        data.append("p_TIPO_DCTO", p_dcto);
+//        data.append("p_SERIE", p_serie);
+//        data.append("p_NUMERO", p_numero);
 
-        $.ajax({
-            url: "vistas/CP/ajax/CPMPGAS.ASHX",
-            type: "post",
-            contentType: false,
-            data: data,
-            async: false,
-            processData: false,
-            cache: false,
-            success: function (datos) {
-                $("#hf_existe").val(datos);
-            },
-            error: function (msg) {
-                noexitoCustom("Error al Verificar Documento!");
-            }
-        });
-    }
+//        $.ajax({
+//            url: "vistas/CP/ajax/CPMPGAS.ASHX",
+//            type: "post",
+//            contentType: false,
+//            data: data,
+//            async: false,
+//            processData: false,
+//            cache: false,
+//            success: function (datos) {
+//                $("#hf_existe").val(datos);
+//            },
+//            error: function (msg) {
+//                noexitoCustom("Error al Verificar Documento!");
+//            }
+//        });
+//    }
 
-}
+//}
 
 var Guardar = function () {
 
@@ -3291,7 +3291,7 @@ var Guardar = function () {
 
     }
 
-    VerificaExiste(p_PIDM_BENEFICIARIO, p_TIPO_DCTO, p_SERIE, p_NUMERO);
+    //VerificaExiste(p_PIDM_BENEFICIARIO, p_TIPO_DCTO, p_SERIE, p_NUMERO);
 
     if (vErrors(arraY)) {
         Bloquear("ventana");
@@ -3987,7 +3987,7 @@ var Aprobar = function () {
             arraY.splice(index, 1)
         }
 
-        VerificaExiste(p_PIDM_BENEFICIARIO, p_TIPO_DCTO, p_SERIE, p_NUMERO);
+        //VerificaExiste(p_PIDM_BENEFICIARIO, p_TIPO_DCTO, p_SERIE, p_NUMERO);
         //if ($("#hf_existe").val() == 0) {
 
         if (vErrors(arraY)) {
@@ -4253,8 +4253,10 @@ function CalcularDetraccion() {
         for (var i = 0; i < detallesGasto.length; i++) {
             //Suma montos netos de aquellos productos que tengan detraccion
             if (parseFloat(detallesGasto[i].DETRACCION) > 0) {
-                montoParaDetraccion += parseFloat(detallesGasto[i].TOTAL_NETO);
-                detraccionActual += parseFloat(detallesGasto[i].DETRACCION);
+                //montoParaDetraccion += parseFloat(detallesGasto[i].TOTAL_NETO);
+                //detraccionActual += parseFloat(detallesGasto[i].DETRACCION);
+                montoParaDetraccion += Math.round(parseFloat(detallesGasto[i].TOTAL_NETO));
+                detraccionActual += Math.round(parseFloat(detallesGasto[i].DETRACCION));
             }
         }
 

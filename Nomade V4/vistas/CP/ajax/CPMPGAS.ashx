@@ -14,6 +14,7 @@ Public Class CPMPGAS : Implements IHttpHandler
         p_HABIDO_IND, p_TIPO_BIEN, p_OPERACION, p_DECLARA, p_FECHA_VENCI, p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_IMPORTE_PAGAR As String
     Dim dt As DataTable
     Dim p_DATO_FRECUENCIA, p_PIDM_BENEFICIARIO As Integer
+    Dim p_GASTO_CODE As String
     Dim p_MONTO As Decimal
     Dim res As String
     Dim resb As New StringBuilder
@@ -72,6 +73,7 @@ Public Class CPMPGAS : Implements IHttpHandler
             p_IMPORTE_DETRACCION = context.Request("p_IMPORTE_DETRACCION")
             p_IMPORTE_PAGAR = context.Request("p_IMPORTE_PAGAR")
             '---------------------------------------------
+            p_GASTO_CODE = context.Request("p_GASTO_CODE")
 
             Select Case OPCION
                 Case "CORR"
@@ -630,6 +632,13 @@ Public Class CPMPGAS : Implements IHttpHandler
                     Else
                         res = Utilities.DataTableToJSON(oDT)
                     End If
+
+                Case "ANULAR_GASTO"
+                    context.Response.ContentType = "text/plain"
+
+                    Dim oCPCuentaPorPagar As New Nomade.CP.CPCuentaPorPagar("Bn")
+
+                    res = oCPCuentaPorPagar.fnAnularGasto(p_GASTO_CODE)
 
                 Case "LGASTOS_NO_PROG" ' LISTA PROVISION DE GASTOS UNICOS //CPLPGAS
                     context.Response.ContentType = "application/json; charset=utf-8"

@@ -201,12 +201,29 @@ function cargarParametrosSistema() {
             alertCustom("No se recuperó el Impuesto General a la Ventas correctamente!");
         }
     });
+    //QUE SE GENERE O NO EL ASIENTO CONTABLE
+    $.ajax({
+        type: "post",
+        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: false,
+        success: function (datos) {
+            if (datos != null) {
+                prmtACON = datos[0].VALOR;
+            }
+            else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
+        },
+        error: function (msg) {
+            alertCustom("No se recuperó correctamente el parámetro ACON!");
+        }
+    });
 }
 
 // PARA OBTENER LOS CODIGOS DE LAS SERIES DE MANERA GLOBAL
 var FNC = "";
 var BNC = "";
-
+var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
 var CAMNOCL = function () {
     
 
@@ -1461,7 +1478,7 @@ function enviarWhatsapp() {
             type: "post",
             url: "vistas/ca/ajax/CAMNOCL.ashx?OPCION=whatsapp" +
                 "&p_NOCC_CODE=" + $("#hfCodigoNotaCredito").val() +
-                "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
+                "&p_CTLG_CODE=" + $('#cboEmpresa').val() +
                 "&RECIPIENT_PHONE_NUMBER=" + RECIPIENT_PHONE_NUMBER +
                 "&MENSAJEWHATSAPP=" + $('#txtContenidoWhatsapp').val(),
             contentType: "application/json;",
@@ -1723,10 +1740,10 @@ function GrabarNotaCredito() {
                            $("#divTotales").slideDown();
                            $("#btnImprimirDcto").removeAttr("style");
                            //$("#btnEFac").removeClass("hidden");
-
-                           vAsientoContable.sCodDoc = $("#hfCodigoNotaCredito").val();
-                           $('#btnGenerarAsiento').click();
-
+                           if (prmtACON == "SI") {
+                               vAsientoContable.sCodDoc = $("#hfCodigoNotaCredito").val();
+                               $('#btnGenerarAsiento').click();
+                           }
                            //GenerarAsiento(datos[0].CODIGO);
                        }
 

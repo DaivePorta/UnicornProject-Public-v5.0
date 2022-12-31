@@ -182,13 +182,12 @@ Public Class EFLEXML : Implements IHttpHandler
 
             If Not dt Is Nothing Then
                 Dim fd As New StreamWriter(archivo, True)
-
-                fd.WriteLine(cadena)
+                fd.Write(cadena)
                 fd.Close()
                 res = "ok"
             Else
                 Dim fd As New StreamWriter(archivo, True)
-                fd.WriteLine(cadena)
+                fd.Write(cadena)
                 fd.Close()
                 res = "vacio"
             End If

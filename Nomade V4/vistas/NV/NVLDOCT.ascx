@@ -171,33 +171,29 @@
 
                 <div class="row-fluid">
                     <div class="span1">
-                        <div class="control-group">
-                                <label id="Label1" class="control-label" for="txtDesde">Desde</label>
+                        <div class="control-group ">
+                            <label id="Label1" class="control-label" for="txtDesde">
+                                Desde</label>
                         </div>
                     </div>
                     <div class="span4">
-                        <div class="span4">
-                            <div style="padding-left: 7px;" class="control-group">
-                                <div class="controls">
-                                    <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtDesde" data-date-format="dd/mm/yyyy" maxlength="10" />
-                                </div>
+                        
+                        <div class="control-group span4">
+                            <div class="controls">
+                                <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtDesde" data-date-format="dd/mm/yyyy"  maxlength="10"/>
                             </div>
                         </div>
-                    
-                        <div class="span4">
-                            <div class="control-group">
-                                <label id="Label3" class="control-label" for="txtHasta" style="text-align: center;">Hasta</label>
-                            </div>
+                        <div class="control-group span4">
+                            <label id="Label3" class="control-label" for="txtHasta" style="text-align:center;">
+                                Hasta</label>
                         </div>
-                        <div class="span4">
-                            <div class="control-group">
-                                <div class="controls">
-                                    <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtHasta" data-date-format="dd/mm/yyyy" maxlength="10" />
-                                </div>
+
+                        <div class="control-group span4">
+                            <div class="controls">
+                                <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txtHasta" data-date-format="dd/mm/yyyy" maxlength="10" />
                             </div>
                         </div>
                     </div>
-                    
                     <div class="span1"></div>
                     <div class="span1">
                         <div class="control-group span2">
@@ -205,14 +201,12 @@
                                 <a id="btnBuscarDoc" class="btn blue">BUSCAR</a>
                             </div>
                         </div>
-                    </div>
-
-                    
+                    </div>                   
 
                     <div class="span4">
                         <div class="control-group">
                             <div class="controls">
-                                <button type="button" id="btnBusquedaAvanz" class="btn btn-link" data-ver="false"><i id="iconAvanz" class="icon-chevron-down"></i>  Busqueda Avanzada....</button>
+                                <button type="button" id="btnBusquedaAvanz" class="btn btn-link" data-ver="false"><i id="iconAvanz" class="icon-chevron-down"></i>  Busqueda Avanzada...</button>
                             </div>
                         </div>
                     </div>                                
@@ -476,7 +470,7 @@
                                         PAGO</th>
                                     <th>FORMA<br />
                                         PAGO</th>
-                                    <th>NOMBRE VENDEDOR</th>
+                                    <%--<th>NOMBRE VENDEDOR</th>--%>
                                     <th>VENDEDOR</th>
                                     <th>USUA REG.</th>
                                     <th>ESTADO</th>
@@ -606,7 +600,9 @@
                         </tr>
                         <tr>
                             <th>CLIENTE</th>
-                            <td colspan="5" id="tblCliente"></td>
+                            <td colspan="3" id="tblCliente"></td>
+                            <th>NRO. DOCUMENTO</th>
+                            <td colspan="2" id="tblClie_doid"></td>
                         </tr>
                         <tr>
                             <th>MODO PAGO</th>

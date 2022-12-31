@@ -29,7 +29,7 @@ var bCargaTC = false;
 // PARA OBTENER LOS 
 var FNC = "";
 var BNC = "";
-
+var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
 var bCargaInicial = false;
 //------
 function fillTblDocumentos() {
@@ -95,6 +95,23 @@ function cargarParametrosSistema() {
                 Desbloquear("divBtnAgregar");
             }
             alertCustom("No se recuperó el Impuesto General a la Ventas correctamente!");
+        }
+    });
+    //QUE SE GENERE O NO EL ASIENTO CONTABLE
+    $.ajax({
+        type: "post",
+        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: false,
+        success: function (datos) {
+            if (datos != null) {
+                prmtACON = datos[0].VALOR;
+            }
+            else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
+        },
+        error: function (msg) {
+            alertCustom("No se recuperó correctamente el parámetro ACON!");
         }
     });
 }
@@ -1477,9 +1494,10 @@ function GrabarNotaCredito() {
                        ////setTimeout(guardarQR, 0.0000000000000001);
                        //setTimeout(guardarQR, 500);
                        $("#btnImprimirDcto").removeAttr("style");
-
-                       vAsientoContable.sCodDoc = $("#hfCodigoNotaCredito").val();
-                       $('#btnGenerarAsiento').click();
+                       if (prmtACON == "SI") {
+                           vAsientoContable.sCodDoc = $("#hfCodigoNotaCredito").val();
+                           $('#btnGenerarAsiento').click();
+                       }                       
                    } else if (datos[0].CODIGO == "LIMITE") {
                        alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> Se ha excedido el límite de documentos autorizados!");
                    }
@@ -1693,7 +1711,7 @@ function enviarCorreo() {
             type: "post",
             url: "vistas/ca/ajax/CAMNGCL.ashx?OPCION=correo" +
                 "&p_CODE=" + $("#hfCodigoNotaCredito").val() +
-                "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
+                "&p_CTLG_CODE=" + $('#cboEmpresa').val() +
                 "&REMITENTE=" + $('#txtRemitente').val() +
                 "&NREMITENTE=" + $('#txtRemitente').val() +
                 "&DESTINATARIOS=" + destinos +
@@ -1797,7 +1815,7 @@ function enviarWhatsapp() {
             type: "post",
             url: "vistas/ca/ajax/CAMNGCL.ashx?OPCION=whatsapp" +
                 "&p_CODE=" + $("#hfCodigoNotaCredito").val() +
-                "&p_CTLG_CODE=" + $('#cbo_Empresa').val() +
+                "&p_CTLG_CODE=" + $('#cboEmpresa').val() +
                 "&RECIPIENT_PHONE_NUMBER=" + RECIPIENT_PHONE_NUMBER +
                 "&MENSAJEWHATSAPP=" + $('#txtContenidoWhatsapp').val(),
             contentType: "application/json;",

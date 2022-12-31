@@ -18,6 +18,7 @@
                 <h4><i class="icon-reorder"></i>LISTADO DE FACTURAS ELECTRONICAS EMITIDAS Y NO EMITIDAS</h4>
                 <div class="actions">
                     <%--<a id="btnMail" class="btn purple"><i class="icon-envelope"></i>&nbsp Mail</a>--%>
+                    <a class="btn green" onclick="javascript:NuevaPantalla();"><i class="icon-plus"></i>&nbsp;Nuevo</a>
                     <a class="btn black" onclick="javascript:imprimirDiv('divDocumento');"><i class="icon-print"></i>&nbsp;Imprimir</a>
                     <%-- <a id="idTestConexion" class="btn green"><i class="icon-plus"></i>&nbsp;Test-Conexion Efact</a>--%>
                 </div>

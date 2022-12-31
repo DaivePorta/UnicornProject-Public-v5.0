@@ -741,7 +741,7 @@
 
 <!-- IMPORTAMOS LOS PLUGINS QUE SE USARAN-->
 <script type="text/javascript" src="../vistas/CA/js/CAMNGCL.js"></script>
-<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>
+<%--<script type="text/javascript" src="../../recursos/plugins/qrcode/qrcode.js"></script>--%>
 <script>
     jQuery(document).ready(function () {
         // Se Inicializa el modulo de javascript para esta forma.

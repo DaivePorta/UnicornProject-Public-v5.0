@@ -12,7 +12,7 @@
                 $('#txtHasta').datepicker('setStartDate', $('#txtDesde').val());
             }
         });
-        fnSetRangoDatePickerMesHoy('txtDesde', 'txtHasta', true);
+        //fnSetRangoDatePickerMesHoy('txtDesde', 'txtHasta', true);
     }
 
     var fillCboEmpresa = function () {
@@ -73,7 +73,8 @@
             },
             complete: function () {
                 if (ObtenerQueryString("scsl") == undefined) {
-                    $("#cboEstablecimiento").select2("val", $("#ctl00_hddestablecimiento").val());
+                    //$("#cboEstablecimiento").select2("val", $("#ctl00_hddestablecimiento").val());
+                    $('#cboEstablecimiento').select2('val', 'TODOS');
                 } else {
                     $("#cboEstablecimiento").select2("val", ObtenerQueryString("scsl"));
                     $("#txtDesde").val(ObtenerQueryString("desde"));
@@ -225,7 +226,30 @@
                 listarComprobantes();
                 listarArchivosTXTDescarga();
             }
-        });        
+        });
+
+        $("#txtHasta").datepicker({
+            dateFormat: 'dd/mm/yy',
+            firstDay: 1
+        }).datepicker("setDate", new Date());
+
+        var fecha = new Date();
+        var ano = fecha.getFullYear();
+        var mes = fecha.getMonth() + 1;
+
+        if (mes == 1) {
+            mes = 12;
+            ano = ano - 1
+        } else {
+            //mes = mes - 1;
+        }
+
+        if (mes >= 10)
+            var fNueva = '01/' + mes + '/' + ano;
+        else
+            var fNueva = '01/0' + mes + '/' + ano;
+
+        $("#txtDesde").val(fNueva);
     }    
 
     function fnGenerarPDF() {

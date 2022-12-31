@@ -41,6 +41,7 @@
             <div class="portlet-title">
                 <h4><i class="icon-reorder"></i>LIBRO SUNAT: REGISTRO DE VENTAS</h4>
                 <div class="actions">
+                    <a class="btn green" onclick="javascript:NuevaPantalla();"><i class="icon-plus"></i>&nbsp;Nuevo</a>
                     <a class="btn black" href="javascript:imprimirDiv2(['divRegistroVentas']);"><i class="icon-print"></i>&nbsp;Imprimir</a>
                 </div>
             </div>
@@ -138,15 +139,39 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="span2">
+                        <%--<div class="span2">
                             <div class="control-group">
                                 <div class="controls">
                                     <a id="btnGenerarLibro" class="btn orange span12">Generar Libro</a>
                                 </div>
                             </div>
+                        </div>--%>
+
+                        <div class="span8" >
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                         <a id="btnDescargarLibroPDF" class="btn red span12">Libro PDF</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                         <a id="btnDescargarLibroTXT" class="btn black span12">Libro TXT</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <asp:Button class="btn green" ID="btnLibroXls" CssClass="btnLibroXls btn green span12" runat="server" Text="Libro XLS" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="span8">
+                        <div class="span8" style="display: none;">
                             <div class="span4">
                                 <div class="control-group">
                                     <div class="controls">
@@ -163,19 +188,19 @@
                                 </div>
                             </div>
 
-                            <div class="span4">
+                            <%--<div class="span4">
                                 <div class="control-group">
                                     <div class="controls">
                                         <asp:Button class="btn green" ID="btnLibroXls" CssClass="btnLibroXls btn green span12" runat="server" Text="Libro XLS" />
                                     </div>
                                 </div>
-                            </div>
+                            </div>--%>
                         </div>
                     </div>
                 </div>
 
                 <div class="row-fluid">
-                    <div id="divRegistroVentas" style="overflow: scroll; height: 450px; margin-bottom: 20px; resize: vertical;">
+                    <div id="divRegistroVentas" style="overflow: scroll; height: 550px; margin-bottom: 20px; resize: vertical;">
                     </div>
                 </div>
 

@@ -8325,8 +8325,8 @@ function CalcularDetraccion() {
         for (var i = 0; i < detallesVenta.length; i++) {
             //Suma montos netos de aquellos productos que tengan detraccion
             if (parseFloat(detallesVenta[i].MONTO_DETRAC) > 0) {
-                montoParaDetraccion += parseFloat(detallesVenta[i].TOTAL_NETO);
-                detraccionActual += parseFloat(detallesVenta[i].MONTO_DETRAC);
+                montoParaDetraccion += Math.round(parseFloat(detallesVenta[i].TOTAL_NETO));
+                detraccionActual += Math.round(parseFloat(detallesVenta[i].MONTO_DETRAC));
             }
         }
 
@@ -8334,7 +8334,8 @@ function CalcularDetraccion() {
         var valorCambio = parseFloat($("#txt_valor_cambio").val());
         var valorCambioOfi = parseFloat($("#txt_valor_cambio_Oficial").val());
 
-        $("#txt_monto_detraccion").val(detraccionActual.toFixed(2));
+        //$("#txt_monto_detraccion").val(detraccionActual.toFixed(2));
+        $("#txt_monto_detraccion").val(detraccionActual);
 
 
         var detraccionMoal, montoParaDetraccionMoal;
@@ -8353,9 +8354,9 @@ function CalcularDetraccion() {
 
             $('#chk_detraccion').prop('checked', true).parent().addClass('checked');
             if ($("#cbo_moneda :selected").attr("data-tipo") == "MOAL") {
-                $("#txt_detraccion").val(detraccionMoal.toFixed(2));
+                $("#txt_detraccion").val(detraccionMoal);
             } else {
-                $("#txt_detraccion").val(detraccionActual.toFixed(2));
+                $("#txt_detraccion").val(detraccionActual);
             }
 
             $("#txt_num_op_detrac,#txt_fec_comp_detrac").prop('disabled', false);
@@ -9349,9 +9350,9 @@ function GrabarCompletarDctoVenta() {
                 } else {
                     continuar = false;
                     if (verificaNroOpera.substring(0, 1) == 'B') { //BANCO
-                        infoCustom2("El Nro. de Op. " + verificaNroOpera.substring(3) + " ya se encuentra registrado en el sistema");
+                        infoCustom2("El Nro. de Op. " + verificaNroOpera.substring(2) + " ya se encuentra registrado en el sistema");
                     } else { //CAJA
-                        infoCustom2("El Cod. de Aut. " + verificaNroOpera.substring(3) + " ya se encuentra registrado en el sistema");
+                        infoCustom2("El Cod. de Aut. " + verificaNroOpera.substring(2) + " ya se encuentra registrado en el sistema");
                     }
                 }
             }
@@ -10985,6 +10986,8 @@ function ImprimirDctoVenta() {
         data.append('p_CTA_DETRACCION', cta_detraccion.toString())
         data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
         data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+        data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
+
         var jqxhr = $.ajax({
             type: "POST",
             url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
@@ -11019,6 +11022,8 @@ function ImprimirDctoVenta() {
             data.append('p_CTA_DETRACCION', cta_detraccion.toString())
             data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
             data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+            data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
+
             var jqxhr = $.ajax({
                 type: "POST",
                 url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
@@ -14677,7 +14682,7 @@ var DescargarPDFAlt = function (sCodVenta) {
         var data = new FormData();
         data.append("OPCION", "pdfAlternativo");
         data.append("p_CODE", sCodVenta);
-        data.append("p_CTLG_CODE", $("#cboEmpresa").val());
+        data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
         data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
         data.append("p_PLAZO", $("#txt_plazo_pago").val());
         data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
@@ -14708,7 +14713,7 @@ var DescargarPDFAlt = function (sCodVenta) {
             var data = new FormData();
             data.append("OPCION", "pdfAlternativo");
             data.append("p_CODE", sCodVenta);
-            data.append("p_CTLG_CODE", $("#cboEmpresa").val());
+            data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
             data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
             data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
 
