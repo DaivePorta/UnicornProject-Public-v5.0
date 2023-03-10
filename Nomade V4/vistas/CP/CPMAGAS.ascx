@@ -514,11 +514,12 @@
                                                             <div class="control-group">
                                                                 <label class="control-label" for="cbx_destino">Operación</label>
                                                                 <div class="controls">
-                                                                    <div class="span10">
+                                                                    <div class="span12">
                                                                         <select id="cbx_destino" class="limpiar combo m-wrap span12 required" name="cbo_subgasto" data-placeholder="Operación" tabindex="1">
                                                                             <option value="DSTGRA">DESTINO GRAVADO</option>
-                                                                            <option value="DSTMIX">DESTINO MIXTO</option>
-                                                                            <option value="DSTNGR">DESTINO NO GRAVADO</option>
+                                                                            <option value="DGRAES">DEST. GRAVADO ESPECIAL</option>
+                                                                            <%--<option value="DSTMIX">DESTINO MIXTO</option>
+                                                                            <option value="DSTNGR">DESTINO NO GRAVADO</option>--%>
                                                                             <option value="ORGNGR">ORIGEN NO GRAVADO</option>
                                                                             <option value="OTRTRI">OTROS TRIBUTOS</option>
                                                                         </select>

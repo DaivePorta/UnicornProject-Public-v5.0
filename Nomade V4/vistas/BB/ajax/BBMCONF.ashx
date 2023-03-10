@@ -11,12 +11,12 @@ Public Class BBMCONF : Implements IHttpHandler
     Dim dtCombo As DataTable
     Dim Comision As New Nomade.BB.BBComisionSistemaPension("Bn")
     Dim Opcion, Codigo, Emp, cm As String
-  
+
     Dim Parametro As New Nomade.NC.NCParametros("Bn")
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         'context.Response.ContentType = "text/plain"
         'context.Response.Write("Hello World")
-       
+
         Dim cFecha As String = context.Request("fe")
         Opcion = context.Request("Opcion")
         Codigo = context.Request("codigo")
@@ -62,36 +62,39 @@ Public Class BBMCONF : Implements IHttpHandler
                         res = resb.ToString()
                     End If
                 Case "C"
-                    Dim fecha = Now()
-                    Dim anio = fecha.Year().ToString
-                    Dim mes = fecha.Month().ToString
-                   
-                  
+
+                    cFecha = cFecha.Replace("+", " ")
                     res = Comision.CrearConfiguracion(p_FTCONFI_CODE, p_FTCONFI_DESCRIPCION.ToString().ToUpper, p_FTCONFI_ESTADO_IND,
-                                                      p_FTCONFI_USUA_ID, p_FTCONFI_CTLG_CODE, p_FTCONFI_PADRE.ToString().ToUpper, Devuelve_Nombre_Mes(mes) + " " + anio, p_FTCONFI_bAFP, p_FTCONFI_bONP,
+                                                      p_FTCONFI_USUA_ID, p_FTCONFI_CTLG_CODE, p_FTCONFI_PADRE.ToString().ToUpper, cFecha, p_FTCONFI_bAFP, p_FTCONFI_bONP,
                                                       p_FTCONFI_bOTROS, p_FTCONFI_TIPO, p_SALIDA)
                 Case "M"
-                    
-                    Dim fecha = Now()
-                    Dim anio = fecha.Year().ToString
+
+                    cFecha = cFecha.Replace("+", " ")
                     Dim DT As DataTable = Comision.ListarConfiguracion(p_FTCONFI_CODE, "", "")
-                    
-                    If DT(0)("FTCONFI_FCOPERI_CODE").ToString().ToUpper().Equals((Devuelve_Nombre_Mes(fecha.Month().ToString) + " " + anio)) Then
-                        
+
+                    If DT(0)("FTCONFI_FCOPERI_CODE").ToString().ToUpper().Equals(cFecha) Then
+
                         res = Comision.ActualizarConfiguracion(p_FTCONFI_CODE, 1, p_FTCONFI_DESCRIPCION.ToString().ToUpper, p_FTCONFI_ESTADO_IND,
                                                      p_FTCONFI_USUA_ID, p_FTCONFI_PADRE.ToString().ToUpper, p_FTCONFI_bAFP, p_FTCONFI_bONP,
                                                      p_FTCONFI_bOTROS, p_FTCONFI_TIPO, p_SALIDA)
                     Else
                         res = "E"
-                        
+
                     End If
-                    
-                   
-                    
-         
+
+
+
+
                 Case "X"
                     Dim Html As String = ""
-                    dt = Comision.Listar_Concepto(String.Empty, String.Empty, p_Tipo_Padre)
+
+                    If String.IsNullOrEmpty(cFecha) Then
+                        cFecha = String.Empty
+                    Else
+                        cFecha = cFecha.Replace("+", " ")
+                    End If
+
+                    dt = Comision.Listar_Concepto(String.Empty, String.Empty, p_Tipo_Padre, cFecha)
                     If Not dt Is Nothing Then
                         For i = 0 To dt.Rows.Count - 1
                             Html = Html + "<option value='" & dt.Rows(i)("RHCNPL_CODE_PLAN").ToString & "'>" & dt.Rows(i)("RHCNPL_DESCRIPCION").ToString & "</option>"
@@ -99,23 +102,29 @@ Public Class BBMCONF : Implements IHttpHandler
                     End If
                     res = Html
                 Case "Z"
-                  
                     Dim Html As String = ""
-                    dt = Comision.Listar_Concepto(String.Empty, context.Request("codg"), p_Tipo_Padre)
+
+                    If String.IsNullOrEmpty(cFecha) Then
+                        cFecha = String.Empty
+                    Else
+                        cFecha = cFecha.Replace("+", " ")
+                    End If
+
+                    dt = Comision.Listar_Concepto(String.Empty, context.Request("codg"), p_Tipo_Padre, cFecha)
                     If Not dt Is Nothing Then
                         For i = 0 To dt.Rows.Count - 1
                             Html = Html + "<option value='" & dt.Rows(i)("RHCNPL_CODE_PLAN").ToString & "'>" & dt.Rows(i)("RHCNPL_DESCRIPCION").ToString & "</option>"
                         Next
                     End If
                     res = Html
-                    
-                    
+
+
                 Case "P"
                     'context.Response.ContentType = "application/json; charset=utf-8"
                     dt = New DataTable
-                    
+
                     dt = Parametro.ListarParametros("", "", "PRM")
-                   
+
                     If Not (dt Is Nothing) Then
                         'resb.Append("[")
                         'resb.Append("<option value='" & "0" & "' >")
@@ -128,29 +137,29 @@ Public Class BBMCONF : Implements IHttpHandler
                     Else
                         res = "[]"
                     End If
-                    
-                    
-                    
+
+
+
             End Select
-        
+
         Catch ex As Exception
             context.Response.Write(ex.Message)
         End Try
         context.Response.Write(res)
-                    
+
     End Sub
- 
+
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False
         End Get
     End Property
-    
-    
+
+
     Public Function Devuelve_Nombre_Mes(omes As String) As String
-        
+
         Dim cMes As String = ""
-        
+
         If omes = "1" Then
             cMes = "ENERO"
         ElseIf omes = "2" Then
@@ -176,10 +185,10 @@ Public Class BBMCONF : Implements IHttpHandler
         ElseIf omes = "12" Then
             cMes = "DICIEMBRE"
         End If
-        
+
         Return cMes
     End Function
-    
-    
+
+
 
 End Class

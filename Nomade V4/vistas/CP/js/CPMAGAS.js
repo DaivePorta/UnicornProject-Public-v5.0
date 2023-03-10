@@ -1361,9 +1361,9 @@ var CPMAGAS = function () {
             sHtml += "<th style='text-align:center;font-weight: 600;'>F. Emisión</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Doc Id</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Persona</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Cuenta</th>";
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";            
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>HaberMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeME</th>";
@@ -1383,9 +1383,9 @@ var CPMAGAS = function () {
                     var sFEmision = value.FECHA_DCTO;
                     var sCodIdent = value.DOC_IDENT;
                     var sPersona = value.PERSONA;
-                    var sDescripcionItem = value.CTAS;
-                    var sCCosto = value.CCOSTO_DET;
                     var sCuenta = value.CTAS_CODE;
+                    var sDescripcionItem = value.CTAS;
+                    var sCCosto = value.CCOSTO_DET;                    
                     var nDebeMN = value.DEBE_MN;
                     var nHaberMN = value.HABER_MN;
                     var nDebeME = value.DEBE_ME;
@@ -1397,9 +1397,9 @@ var CPMAGAS = function () {
                     sHtml += ("<td style='text-align:center;'>" + sFEmision + "</td>");
                     sHtml += ("<td style='text-align:center;'>" + sCodIdent + "</td>");
                     sHtml += ("<td>" + sPersona + "</td>");
-                    sHtml += ("<td>" + sDescripcionItem + "</td>");
-                    sHtml += ("<td>" + sCCosto + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + sCuenta + "</td>");
+                    sHtml += ("<td>" + sDescripcionItem + "</td>");
+                    sHtml += ("<td>" + sCCosto + "</td>");                    
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nHaberMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeME) + "</td>");
@@ -2562,16 +2562,14 @@ var CPMAGAS = function () {
 
                             $("#div_ce_costos").empty();
                             $("#div_ce_costos").html(' <input id="txt_centro_costo" class="b span12 m-wrap" type="text" >');
-                            listarDetallesGasto(CODE);
-                            var sCodGasto = $("#hfcodgasto").val();
-                            sCodGasto = $.trim(sCodGasto);
-                            var oDocGasto = fnGetGasto(sCodGasto);
-
+                            listarDetallesGasto(CODE);                            
                             
-
-                            fnCargaTablaCuentasC(sCodGasto, oDocGasto, sCodGasto); //CAMBIO AVENGER
-
-                            
+                            if (prmtACON == "SI") {
+                                var sCodGasto = $("#hfcodgasto").val();
+                                sCodGasto = $.trim(sCodGasto);
+                                var oDocGasto = fnGetGasto(sCodGasto);
+                                fnCargaTablaCuentasC(sCodGasto, oDocGasto, sCodGasto); //CAMBIO AVENGER
+                            }                         
 
                             Bloquear("MuestraModal");
                             setTimeout(function () {                                
@@ -2723,20 +2721,29 @@ var CPMAGAS = function () {
 
                             $(".b").attr("disabled", true);
 
-                            var sCodGasto = $("#hfcodgasto").val();
-                            sCodGasto = $.trim(sCodGasto);
-                            var oDocGasto = fnGetGasto(sCodGasto);
+                            if (prmtACON == "SI") {
+                                var sCodGasto = $("#hfcodgasto").val();
+                                sCodGasto = $.trim(sCodGasto);
+                                var oDocGasto = fnGetGasto(sCodGasto);
 
-                            fnCargaTablaCuentasC(sCodGasto, oDocGasto, sCodGasto); //CAMBIO AVENGER
-                            //fnCargaTablaCuentasC(); 
+                                fnCargaTablaCuentasC(sCodGasto, oDocGasto, sCodGasto); //CAMBIO AVENGER
+                                //fnCargaTablaCuentasC(); 
+                            } else {
+                                $("#asientos_contables").hide();
+                            }
                         }
                         else { noexito(); }
                     }
                 });
             }
-        } else {           
-            fnCargaTablaCuentasC();
-            $("#btnGenerarAsiento").attr("style", "display:none");
+        } else {
+            if (prmtACON == "SI") {
+                fnCargaTablaCuentasC();
+            }
+            if (prmtACON == "NO") {
+                $("#asientos_contables").hide();
+            }
+            
         }
 
     }
@@ -3200,7 +3207,7 @@ var Aprobar = function () {
 
                             $("#cabecera").attr("style", "display:none");
                             if (prmtACON == "SI") {
-                                var sCodGasto = p_CODE_REF_GASTO;
+                                var sCodGasto = $('#hfcodgasto').val();
                                 sCodGasto = $.trim(sCodGasto);
                                 var oDocGasto = fnGetGasto(sCodGasto);
                                 vAsientoContable.sCodDoc = sCodGasto;
@@ -3211,8 +3218,12 @@ var Aprobar = function () {
                                 } else {
                                     $("#btnGenerarAsiento").attr("style", "display:display");
                                 }
-                            } 
-
+                            } else {
+                                var sCodGasto = $('#hfcodgasto').val();
+                                sCodGasto = $.trim(sCodGasto);
+                                var oDocGasto = fnGetGasto(sCodGasto);
+                                fnCargaTablaCuentasC(sCodGasto, oDocGasto, sCodGasto); //CAMBIO AVENGER
+                            }
                         }
                     }
                     if (datos[0].ERROR == "X") {
@@ -3256,6 +3267,19 @@ var fnGetGasto = function (sCodGasto) {
     return aoDocGasto;
 };
 
+var fnCargaTablaCuentasC = function (sCodGasto, oDocGasto, sCodAsiento) {
+    $("#asientos_contables").load('../../vistas/CT/abstract/LAsientoContable.html', function (html) {
+        $.getScript("../../vistas/CT/abstract/js/LAsientoContable.js")
+            .done(function (script, textStatus) {
+                vAsientoContable = LAsientoContable;
+                vAsientoContable.sTipoMov = sCodModulo;
+                vAsientoContable.sCodDoc = sCodGasto;
+                vAsientoContable.objDoc = oDocGasto;
+                vAsientoContable.init(sCodAsiento);
+            });
+    });
+
+}
 
 var obtenerDetalle = function () {
     var detalles = "";
@@ -3522,8 +3546,8 @@ function CalcularDetraccion() {
     for (var i = 0; i < detallesGasto.length; i++) {
         //Suma montos netos de aquellos productos que tengan detraccion
         if (parseFloat(detallesGasto[i].DETRACCION) > 0) {
-            montoParaDetraccion += Math.round(parseFloat(detallesGasto[i].TOTAL_NETO));
-            detraccionActual += Math.round(parseFloat(detallesGasto[i].DETRACCION));
+            montoParaDetraccion += parseFloat(detallesGasto[i].TOTAL_NETO);
+            detraccionActual += parseFloat(detallesGasto[i].DETRACCION);
         }
     }
 
@@ -3550,9 +3574,9 @@ function CalcularDetraccion() {
 
         //$('#chk_detraccion').prop('checked', true).parent().addClass('checked');
         if ($("#cbo_moneda").val() == "0003") {
-            parseFloat($("#hfMontoDetraccion").val(detraccionMoal));
+            parseFloat($("#hfMontoDetraccion").val(detraccionMoal)).toFixed(2);
         } else {
-            parseFloat($("#hfMontoDetraccion").val(detraccionActual));
+            parseFloat($("#hfMontoDetraccion").val(detraccionActual)).toFixed(2);
         }
 
         //$("#txt_num_op_detrac,#txt_fec_comp_detrac").prop('disabled', false);

@@ -9,6 +9,7 @@ var vAsientoContable = null;
 const sCodModulo = "0003";
 var prmtACON = "NO";
 var token_migo = '';//dporta
+var count = 0;
 var CPLPGAS = function () {
 
     var plugin = function () {
@@ -1149,9 +1150,9 @@ var CPMPGAS = function () {
             sHtml += "<th style='text-align:center;font-weight: 600;'>F. Emisión</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Doc Id</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Persona</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Cuenta</th>";
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";            
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>HaberMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeME</th>";
@@ -1171,9 +1172,9 @@ var CPMPGAS = function () {
                     var sFEmision = value.FECHA_DCTO;
                     var sCodIdent = value.DOC_IDENT;
                     var sPersona = value.PERSONA;
-                    var sDescripcionItem = value.CTAS;
-                    var sCCosto = value.CCOSTO_DET;
                     var sCuenta = value.CTAS_CODE;
+                    var sDescripcionItem = value.CTAS;
+                    var sCCosto = value.CCOSTO_DET;                    
                     var nDebeMN = value.DEBE_MN;
                     var nHaberMN = value.HABER_MN;
                     var nDebeME = value.DEBE_ME;
@@ -1185,9 +1186,9 @@ var CPMPGAS = function () {
                     sHtml += ("<td style='text-align:center;'>" + sFEmision + "</td>");
                     sHtml += ("<td style='text-align:center;'>" + sCodIdent + "</td>");
                     sHtml += ("<td>" + sPersona + "</td>");
-                    sHtml += ("<td>" + sDescripcionItem + "</td>");
-                    sHtml += ("<td>" + sCCosto + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + sCuenta + "</td>");
+                    sHtml += ("<td>" + sDescripcionItem + "</td>");
+                    sHtml += ("<td>" + sCCosto + "</td>");                    
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nHaberMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeME) + "</td>");
@@ -1867,7 +1868,7 @@ var CPMPGAS = function () {
                 $("#input").empty();
                 $("#input").html('<input id="txt_beneficiario" class="limpiar span12" type="text" >');
                 filltxtBeneficiario('#txt_beneficiario', '');
-            }, 1000);
+            }, 500);
         });
 
         var emp_ant = "";
@@ -1885,7 +1886,7 @@ var CPMPGAS = function () {
                     fillCbo_Periodo();
                     emp_ant = $(this).val();
 
-                }, 1000);
+                }, 500);
 
             } else { emp_ant = ""; }
         });
@@ -1965,8 +1966,14 @@ var CPMPGAS = function () {
                     $('#cboDeclara').select2('val', '0004');
                     $("#cboDeclara").change();
                 } else if (anioEmision == anioPeriodo && mesEmision > mesPeriodo) {
-                    infoCustom2('La fecha de emisíon del documento no debe exceder al periodo.');
-                    $('#cboDeclara').select2('val', '');
+                    count = count + 1;
+                    if (count % 2 == 0) {
+                        infoCustom2('La fecha de emisíon del documento no debe exceder al periodo.');
+                        $('#cboDeclara').select2('val', '');
+                    }
+                    if (count == 3) {
+                        count = 0;
+                    }
                 } else {
                     $('#cboDeclara').select2('val', '0005');
                     $("#cboDeclara").change();
@@ -2801,11 +2808,14 @@ var CPMPGAS = function () {
                                 $(".btnEliminarDetalle").attr("style", "display:none");
                             }
 
-                            var sCodGasto = CODE;
-                            sCodGasto = $.trim(sCodGasto);
-                            var oDocGasto = fnGetGasto(sCodGasto);
-                            fnCargaTablaCuentasC(sCodGasto, oDocGasto, sCodGasto); //CAMBIO AVENGER
-
+                            if (prmtACON == "SI") {
+                                var sCodGasto = CODE;
+                                sCodGasto = $.trim(sCodGasto);
+                                var oDocGasto = fnGetGasto(sCodGasto);
+                                fnCargaTablaCuentasC(sCodGasto, oDocGasto, sCodGasto); //CAMBIO AVENGER
+                            } else {
+                                $("#asientos_contables").hide();
+                            }
 
                         }
                         else { noexito(); }
@@ -2821,8 +2831,12 @@ var CPMPGAS = function () {
             }
         }
         else {
-            $("#btnGenerarAsiento").attr("style", "display:none");
-            fnCargaTablaCuentasC();
+            if (prmtACON == "SI") {
+                fnCargaTablaCuentasC();
+            }
+            if (prmtACON == "NO") {
+                $("#asientos_contables").hide();
+            }
             filltxtBeneficiario('#txt_beneficiario', '');
         }
 
@@ -4038,9 +4052,12 @@ var Aprobar = function () {
                                     } else {
                                         $("#btnGenerarAsiento").attr("style", "display:display");
                                     }
+                                } else {
+                                    var sCodGasto = $("#txtCodigo").val();
+                                    sCodGasto = $.trim(sCodGasto);
+                                    var oDocGasto = fnGetGasto(sCodGasto);
+                                    fnCargaTablaCuentasC(sCodGasto, oDocGasto, sCodGasto); //CAMBIO AVENGER
                                 }
-
-
                             }
                             else {
                                 $("#estado").show();
@@ -4253,8 +4270,6 @@ function CalcularDetraccion() {
         for (var i = 0; i < detallesGasto.length; i++) {
             //Suma montos netos de aquellos productos que tengan detraccion
             if (parseFloat(detallesGasto[i].DETRACCION) > 0) {
-                //montoParaDetraccion += parseFloat(detallesGasto[i].TOTAL_NETO);
-                //detraccionActual += parseFloat(detallesGasto[i].DETRACCION);
                 montoParaDetraccion += Math.round(parseFloat(detallesGasto[i].TOTAL_NETO));
                 detraccionActual += Math.round(parseFloat(detallesGasto[i].DETRACCION));
             }
@@ -4283,9 +4298,9 @@ function CalcularDetraccion() {
 
             //$('#chk_detraccion').prop('checked', true).parent().addClass('checked');
             if ($("#cbo_moneda :selected").attr("data-tipo") == "MOAL") {
-                parseFloat($("#txt_detraccion").val(detraccionMoal)).toFixed(2);
+                parseFloat($("#txt_detraccion").val(detraccionMoal));
             } else {
-                parseFloat($("#txt_detraccion").val(detraccionActual)).toFixed(2);
+                parseFloat($("#txt_detraccion").val(detraccionActual));
             }
 
             //$("#txt_num_op_detrac,#txt_fec_comp_detrac").prop('disabled', false);

@@ -609,6 +609,7 @@
                                                             <div class="control-group">
                                                                 <select id="cbx_destino" class="span12 limpiar" data-placeholder="Operación">
                                                                     <option value="DSTGRA">DESTINO GRAVADO</option>
+                                                                    <option value="DGRAES">DEST. GRAVADO ESPECIAL</option>
                                                                     <%--<option value="DSTMIX">DESTINO MIXTO</option>
                                                                     <option value="DSTNGR">DESTINO NO GRAVADO</option>--%>
                                                                     <option value="ORGNGR">ORIGEN NO GRAVADO</option>

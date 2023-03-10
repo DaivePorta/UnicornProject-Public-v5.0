@@ -23,7 +23,7 @@
                     <a id="btnDiferirEfectivo" class="btn orange" href="#"><i class="icon-money"></i>&nbsp;Diferir Efec.</a>
                     <a class="btn green" id="btnWhatsapp" href="#"><i class="icon-phone"></i>&nbsp;Whatsapp</a>
                     <a id="btnMail" class="btn purple" href="#"><i class="icon-envelope"></i>&nbsp;Enviar Mail</a>
-                    <a class="btn black" href="javascript:$('#styleImpresion').remove();imprimirTodo(['divTotales','detalles']);"><i class="icon-print"></i>&nbsp;Imprimir</a>
+                   <%-- <a class="btn black" href="javascript:$('#styleImpresion').remove();imprimirTodo(['divTotales','detalles']);"><i class="icon-print"></i>&nbsp;Imprimir</a>--%>
                     <a id="btnRegresar" class="btn black"><i class="icon-circle-arrow-left"></i>&nbsp;Regresar</a>
                 </div>
             </div>

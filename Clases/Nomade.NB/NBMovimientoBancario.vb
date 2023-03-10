@@ -11,7 +11,7 @@
                                                    ByVal p_nro_operacion As String, ByVal p_fecha_ope As String, ByVal p_monto As String,
                                                    ByVal p_tc As String, ByVal p_fecha_valor As String, ByVal p_completo_ind As String, ByVal p_usua_id As String, ByVal p_scsl_code As String,
                                                     ByVal p_tipo_movimiento As String, ByVal p_pidm As String, ByVal p_cta_code As String,
-                                                    Optional ByVal p_tipo_ingreso As String = "") As String
+                                                    Optional ByVal p_tipo_ingreso As String = "", Optional ByVal p_tipo_operacion As String = "") As String
         Try
             Dim msg As String
 
@@ -41,6 +41,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_pidm, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTA_CODE", p_cta_code, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_INGRESO", p_tipo_ingreso, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_OPERACION", p_tipo_operacion, ParameterDirection.Input, 253))
 
 
 
@@ -59,7 +60,7 @@
     Public Function ActualizarMovimientoBancarioDetalle(ByVal p_CODIGO As String, ByVal p_oficina As String, ByVal p_descripcion As String, ByVal p_canal As String,
                                                  ByVal p_nro_operacion As String, ByVal p_fecha_ope As String, ByVal p_monto As String,
                                                  ByVal p_tc As String, ByVal p_fecha_valor As String, ByVal p_completo_ind As String, ByVal p_usua_id As String, ByVal p_scsl_code As String,
-                                                  ByVal p_tipo_movimiento As String, ByVal p_pidm As String, ByVal p_cta_code As String) As String
+                                                  ByVal p_tipo_movimiento As String, ByVal p_pidm As String, ByVal p_cta_code As String, ByVal p_tope As String, ByVal p_PIDM_cliente As String) As String
         Try
             Dim msg As String
 
@@ -88,6 +89,8 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_MOVIMIENTO", p_tipo_movimiento, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_pidm, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTA_CODE", p_cta_code, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_OPERACION", p_tope, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM_CLIENTE", p_PIDM_cliente, ParameterDirection.Input, 253))
 
 
 

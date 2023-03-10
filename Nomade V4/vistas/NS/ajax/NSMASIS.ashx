@@ -11,7 +11,7 @@ Public Class NSMASIS : Implements IHttpHandler
     Dim Asistencia As New Nomade.NS.NSAsistencia("Bn")
     Dim Sucursal As New Nomade.NC.NCSucursal("Bn")
     Dim dt As New DataTable
-    
+
     Dim p_RHCONAS_CODE As String
     Dim p_RHCONAS_COD_BIO As String
     Dim p_RHCONAS_FECHA As String
@@ -23,12 +23,12 @@ Public Class NSMASIS : Implements IHttpHandler
     Dim p_SALIDA As String
     Dim p_RHMANAS_FCOPERI_CODE As String
     Dim p_TIPO As String
-    
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         Opcion = context.Request("Opcion")
         Empr = context.Request("Emp")
         Sucur = context.Request("Suc")
-        
+
         p_RHCONAS_CODE = context.Request("cod")
         p_RHCONAS_COD_BIO = context.Request("bio")
         p_RHCONAS_FECHA = context.Request("fec")
@@ -37,11 +37,11 @@ Public Class NSMASIS : Implements IHttpHandler
         p_RHCONAS_HOR_ENT_TRAB = context.Request("het")
         p_RHCONAS_HOR_SAL_TRAB = context.Request("hst")
         p_RHCONAS_USUA_ID = context.Request("us")
-        
+
         p_RHMANAS_FCOPERI_CODE = context.Request("peri")
         'p_RHCONAS_USUA_ID = context.Request("Suc")
         'p_SALIDA = context.Request("Suc")
-        
+
         Try
             Select Case Opcion
                 Case "O"
@@ -53,13 +53,13 @@ Public Class NSMASIS : Implements IHttpHandler
                         Else
                             res = res + "<option selected='selected' value='" & dt.Rows(i)("CODIGO").ToString() & "'>" & dt.Rows(i)("DESCRIPCION").ToString() & "</option>"
                         End If
-                        
-                        
+
+
                     Next
                     'context.Response.ContentType = "text/plain"
                     'context.Response.Write("Hello World")
                 Case "L"
-                    
+
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = Asistencia.Listar_Configuracion(Empr, Sucur)
                     If Not (dt Is Nothing) Then
@@ -115,8 +115,8 @@ Public Class NSMASIS : Implements IHttpHandler
                     html = html & "</thead>"
 
                     dt = Asistencia.Listar_Asistencia(Empr, Sucur, p_RHMANAS_FCOPERI_CODE)
-                   
-                   
+
+
                     If Not dt Is Nothing Then
                         html = html & "<tbody>"
                         For i = 0 To dt.Rows.Count - 1
@@ -133,18 +133,18 @@ Public Class NSMASIS : Implements IHttpHandler
                         Next
                         html = html & "</tbody>"
                     Else
-                        
+
                     End If
-                    
+
                     res = html
-                    
+
             End Select
             context.Response.Write(res)
         Catch ex As Exception
             context.Response.Write(ex.Message)
         End Try
     End Sub
-    
+
     Public Function Actualizar_Configuracion(ByVal p_RHCONAS_CODE As String, ByVal p_RHCONAS_COD_BIO As String,
                                          ByVal p_RHCONAS_FECHA As String, ByVal p_RHCONAS_HOR_ENT As String,
                                          ByVal p_RHCONAS_HOR_SAL As String, ByVal p_RHCONAS_HOR_ENT_TRAB As String,
@@ -160,30 +160,30 @@ Public Class NSMASIS : Implements IHttpHandler
         End Try
         Return cResultado
     End Function
-    
-    
-    
+
+
+
     Public Function Crear_Asistencia(ByVal p_RHMANAS_CODE As String, ByVal p_RHMANAS_CTLG_CODE As String,
                                       ByVal p_RHMANAS_FTVSCSL_CODE As String, ByVal p_RHMANAS_FCOPERI_CODE As String,
                                       ByVal p_RHMANAS_CODE_BIO As String, ByVal p_RHMANAS_NOMBRE As String,
                                       ByVal p_RHMANAS_FECHA As String, ByVal p_RHMANAS_HORA_ENTRADA As String,
                                       ByVal p_RHMANAS_HORA_SALIDA As String, ByVal p_RHMANAS_HORA_ENTRADA_TRABAJADOR As String,
                                       ByVal p_RHMANAS_HORA_SALIDA_TRABAJADOR As String, ByVal p_RHMANAS_USUA_ID As String,
-                                      ByVal p_SALIDA As String) As String
+                                      ByVal p_SALIDA As String, ByVal p_TIPO As String, ByVal p_RHMANAS_FALTA_TRABAJADOR As String, ByVal p_RHMANAS_HORA_EXTRA_TRABAJADOR As String) As String
 
         Try
-             Dim cResultado As String = ""
+            Dim cResultado As String = ""
             cResultado = Asistencia.Crear_Asistencia(p_RHMANAS_CODE, p_RHMANAS_CTLG_CODE, p_RHMANAS_FTVSCSL_CODE, p_RHMANAS_FCOPERI_CODE,
                                        p_RHMANAS_CODE_BIO, p_RHMANAS_NOMBRE, p_RHMANAS_FECHA, p_RHMANAS_HORA_ENTRADA, p_RHMANAS_HORA_SALIDA,
-                                       p_RHMANAS_HORA_ENTRADA_TRABAJADOR, p_RHMANAS_HORA_SALIDA_TRABAJADOR, p_RHMANAS_USUA_ID, p_SALIDA, p_TIPO)
+                                       p_RHMANAS_HORA_ENTRADA_TRABAJADOR, p_RHMANAS_HORA_SALIDA_TRABAJADOR, p_RHMANAS_USUA_ID, p_SALIDA, p_TIPO, p_RHMANAS_FALTA_TRABAJADOR, p_RHMANAS_HORA_EXTRA_TRABAJADOR)
             Return cResultado
 
         Catch ex As Exception
             Throw (ex)
         End Try
     End Function
-    
-    
+
+
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False

@@ -342,14 +342,39 @@
                         </div>
                     </div>
 
+                </div>
 
+                <div class="row-fluid">
+                    <div class="span1">
+                        <div class="control-group ">
+                            <label class="control-label" for="slcOperacion">Tipo Operacion</label>
+                        </div>
+                    </div>
 
+                    <div class="span4">
+                        <div class="control-group">
+                            <div class="controls">
+                                <select class="span12" id="slcOperacion">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="slcPersona">Persona</label>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div class="control-group">
+                            <div class="controls" id="inputPersona">
+                                <input id="slcPersona" class="span11" type="text" data-provide="typeahead" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!---fin linea -->
-
-
-
-
 
                 <div class="form-actions">
                     <a id="grabar" class="btn blue" href="javascript:crearMovimiento();"><i class="icon-save"></i> Grabar</a>
@@ -363,7 +388,7 @@
 </div>
 
 <script type="text/javascript" src="../vistas/NB/js/NBMMOCB.js"></script>
-
+<input id="hfPIDM" type="hidden" />
 <script>
 
     jQuery(document).ready(function () {

@@ -12,7 +12,7 @@ Public Class COLREVE : Implements IHttpHandler
 
     Dim OPCION As String
     Dim p_PERS_PIDM, p_CTLG_CODE, p_SCSL_CODE, p_USUA_ID As String
-    Dim p_ANIO, p_MES, p_MES_DES As String
+    Dim p_ANIO, p_MES, p_MES_DES, p_DESC_EMPRESA As String
     Dim p_RUC As String
 
     Dim ccCuentaPorCobrar As New Nomade.CC.CCCuentaPorCobrar("Bn")
@@ -30,7 +30,7 @@ Public Class COLREVE : Implements IHttpHandler
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
 
         OPCION = context.Request("OPCION")
-
+        p_DESC_EMPRESA = context.Request("p_DESC_EMPRESA")
         p_CTLG_CODE = context.Request("p_CTLG_CODE")
         p_SCSL_CODE = context.Request("p_SCSL_CODE")
         p_USUA_ID = context.Request("p_USUA_ID")
@@ -170,15 +170,15 @@ Public Class COLREVE : Implements IHttpHandler
                     'NUMERO FINAL
                     cadena += dt.Rows(i)("NRO_FINAL").ToString() + "|"
                     ''INFORMACIÓN DEL CLIENTE                                    
-                    If dt.Rows(i)("TIPO_DCTO_CLIE").ToString() <> "" And dt.Rows(i)("NRO_DCTO_CLIE").ToString() <> "" Then
-                        cadena += dt.Rows(i)("TIPO_DCTO_CLIE").ToString() + "|" + dt.Rows(i)("NRO_DCTO_CLIE").ToString() + "|"
-                    Else
-                        If (dt.Rows(i)("DNI").ToString() = "" Or dt.Rows(i)("RUC").ToString() <> "") Then
-                            cadena += "6" + "|" + dt.Rows(i)("RUC").ToString() + "|"
-                        Else
-                            cadena += "1" + "|" + dt.Rows(i)("DNI").ToString() + "|"
-                        End If
-                    End If
+                    'If dt.Rows(i)("TIPO_DCTO_CLIE").ToString() <> "" And dt.Rows(i)("NRO_DCTO_CLIE").ToString() <> "" Then
+                    cadena += dt.Rows(i)("TIPO_DCTO_CLIE").ToString() + "|" + dt.Rows(i)("NRO_DCTO_CLIE").ToString() + "|"
+                    'Else
+                    'If (dt.Rows(i)("DNI").ToString() = "" Or dt.Rows(i)("RUC").ToString() <> "") Then
+                    '    cadena += "6" + "|" + dt.Rows(i)("RUC").ToString() + "|"
+                    'Else
+                    '    cadena += "1" + "|" + dt.Rows(i)("DNI").ToString() + "|"
+                    'End If
+                    'End If
                     cadena += dt.Rows(i)("RAZON_SOCIAL").ToString() + "|"
                     'VALOR DE LA EXPORTACION
                     If Decimal.Parse(dt.Rows(i)("VALOR_EXPORTACION").ToString()) = 0 Then
@@ -303,8 +303,8 @@ Public Class COLREVE : Implements IHttpHandler
         res = ""
         resb.Clear()
         '------
-        Dim dtEmpresa As New DataTable
-        dtEmpresa = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "")
+        'Dim dtEmpresa As New DataTable
+        'dtEmpresa = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "X")
         resb.AppendFormat("<table border=""0"" width=""100%"" >")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "PERIODO:")
@@ -312,11 +312,11 @@ Public Class COLREVE : Implements IHttpHandler
         resb.AppendFormat("</tr>")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "RUC:")
-        resb.AppendFormat("<td id='ruc' width='75%'>{0}</td>", dtEmpresa.Rows(0)("RUC").ToString())
+        resb.AppendFormat("<td id='ruc' width='75%'>{0}</td>", p_RUC)
         resb.AppendFormat("</tr>")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "APELLIDOS Y NOMBRES, DENOMINACIÓN O RAZÓN SOCIAL:")
-        resb.AppendFormat("<td width='75%'>{0}</td>", dtEmpresa.Rows(0)("DESCRIPCION").ToString())
+        resb.AppendFormat("<td width='75%'>{0}</td>", p_DESC_EMPRESA)
         resb.AppendFormat("</tr>")
         resb.AppendFormat("</table>")
         resb.AppendFormat("<br/>")
@@ -430,18 +430,18 @@ Public Class COLREVE : Implements IHttpHandler
                 'N° FINAL
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_FINAL").ToString()) '**
                 'INFORMACIÓN DEL CLIENTE
-                If dt.Rows(i)("TIPO_DCTO_CLIE").ToString() <> "" And dt.Rows(i)("NRO_DCTO_CLIE").ToString() <> "" Then
-                    resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_DCTO_CLIE").ToString())
-                    resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_DCTO_CLIE").ToString())
-                Else
-                    If (dt.Rows(i)("DNI").ToString() = "" Or dt.Rows(i)("RUC").ToString() <> "") Then
-                        resb.AppendFormat("<td align='center' >{0}</td>", "6")
-                        resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("RUC").ToString())
-                    Else
-                        resb.AppendFormat("<td align='center' >{0}</td>", "1")
-                        resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("DNI").ToString())
-                    End If
-                End If
+                'If dt.Rows(i)("TIPO_DCTO_CLIE").ToString() <> "" And dt.Rows(i)("NRO_DCTO_CLIE").ToString() <> "" Then
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_DCTO_CLIE").ToString())
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_DCTO_CLIE").ToString())
+                'Else
+                'If (dt.Rows(i)("DNI").ToString() = "" Or dt.Rows(i)("RUC").ToString() <> "") Then
+                '    resb.AppendFormat("<td align='center' >{0}</td>", "6")
+                '    resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("RUC").ToString())
+                'Else
+                '    resb.AppendFormat("<td align='center' >{0}</td>", "1")
+                '    resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("DNI").ToString())
+                'End If
+                'End If
 
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("RAZON_SOCIAL").ToString())
                 'VALOR DE LA EXPORTACION

@@ -6,7 +6,7 @@ Imports System.Data
 
 Public Class NBLRCBA : Implements IHttpHandler
 
-    Dim OPCION, USUARIO, CTLG_CODE, SCSL_CODE, CTA_BANCARIA, DESDE, HASTA, MONE_CODE, CHK_DETALLE As String
+    Dim OPCION, USUARIO, CTLG_CODE, SCSL_CODE, CTA_BANCARIA, DESC_CTA_BANCARIA, DESDE, HASTA, MONE_CODE, CHK_DETALLE As String
 
     Dim ncSucursal As New Nomade.NC.NCSucursal("Bn")
     Dim g As New Nomade.NC.NCGrupos("Bn")
@@ -44,6 +44,7 @@ Public Class NBLRCBA : Implements IHttpHandler
         CTLG_CODE = vChar(context.Request("CTLG_CODE"))
         SCSL_CODE = context.Request("SCSL_CODE")
         CTA_BANCARIA = context.Request("CTA_BANCARIA")
+        DESC_CTA_BANCARIA = context.Request("DESC_CTA_BANCARIA")
         DESDE = context.Request("DESDE")
         HASTA = context.Request("HASTA")
         Try
@@ -54,7 +55,7 @@ Public Class NBLRCBA : Implements IHttpHandler
                     context.Response.ContentType = "application/json; charset=utf-8"
                     Dim fecha = HASTA
                     Dim b As New Nomade.NB.NBChequera("bn")
-                    dt = b.ListarMovimientosCuentasBancarias(CHK_DETALLE, MONE_CODE, SCSL_CODE, CTA_BANCARIA, Utilities.fechaLocal(DESDE), Utilities.fechaLocal(HASTA))
+                    dt = b.ListarMovimientosCuentasBancarias(CTLG_CODE, CHK_DETALLE, MONE_CODE, SCSL_CODE, CTA_BANCARIA, DESC_CTA_BANCARIA, Utilities.fechaLocal(DESDE), Utilities.fechaLocal(HASTA))
                     If Not dt Is Nothing Then
 
                         res = Utilities.Datatable2Json(dt) 'GenerarTablaDocumento(dt)

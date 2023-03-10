@@ -603,7 +603,7 @@ function VerificarPersona() {
                 //  $.ajaxSetup({ async: false });
                 $.post("vistas/NC/ajax/NCMPERS.ASHX",
                     {
-                        OPCION: 1,
+                        OPCION: 1.5,
                         DOID_CODE: DOID_CODE,
                         NRO: NRO
                     })
@@ -629,13 +629,16 @@ function VerificarPersona() {
                             if (bModalVisible)
                                 $('#PerNoExiste').modal('show');
                         } else {
-                            $('#hfPPBIDEN_PIDM').val(res);
-                            RecuperarDatos(res, DOID_CODE, NRO);
+                            $('#hfPPBIDEN_PIDM').val(res.split(",")[0]);
+                            RecuperarDatos(res.split(",")[0], DOID_CODE, NRO);
                             if (ide.substr(0, 1) == '2' && ide.length == 11) {
 
                             }
                             if ((ide.substr(0, 1) != '2') || ((ide.substr(0, 1) == '2') && (ide.length != 11))) {
 
+                            }
+                            if (DOID_CODE !== res.split(",")[2]) {
+                                infoCustom2("Persona ya se encuentra registrada con " + res.split(",")[1]);
                             }
                         }
                         Desbloquear("verificar");
@@ -667,7 +670,7 @@ function VerificarPersona() {
             //  $.ajaxSetup({ async: false });
             $.post("vistas/NC/ajax/NCMPERS.ASHX",
                 {
-                    OPCION: 1,
+                    OPCION: 1.5,
                     DOID_CODE: DOID_CODE,
                     NRO: NRO
                 })
@@ -694,13 +697,16 @@ function VerificarPersona() {
                         if (bModalVisible)
                             $('#PerNoExiste').modal('show');
                     } else {
-                        $('#hfPPBIDEN_PIDM').val(res);
-                        RecuperarDatos(res, DOID_CODE, NRO);
+                        $('#hfPPBIDEN_PIDM').val(res.split(",")[0]);
+                        RecuperarDatos(res.split(",")[0], DOID_CODE, NRO);
                         if (ide.substr(0, 1) == '2' && ide.length == 11) {
 
                         }
                         if ((ide.substr(0, 1) != '2') || ((ide.substr(0, 1) == '2') && (ide.length != 11))) {
 
+                        }
+                        if (DOID_CODE !== res.split(",")[2]) {
+                            infoCustom2("Persona ya se encuentra registrada con " + res.split(",")[1]);
                         }
                     }
                     Desbloquear("verificar");

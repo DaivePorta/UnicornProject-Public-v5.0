@@ -74,7 +74,8 @@
             datatype: "json",
             async: true,
             success: function (data) {
-                //select.empty();
+                select.empty();
+                select.append('<option></option>');
                 for (var i = 0; i < data.length; i++) {
                     select.append('<option value="' + data[i].CODIGO + '" moneda="' + data[i].MONEDA_CODE + '">' + data[i].DESCRIPCION + '</option>');
                 }
@@ -224,6 +225,7 @@
             var CTLG_CODE = $("#cboEmpresa").val();
             var SCSL_CODE = $("#cboEstablecimiento").val();
             var CTA_BANCARIA = $("#cboCtaBancaria").val();
+            var DESC_CTA_BANCARIA = $("#cboCtaBancaria option:selected").html();
             var MONE_CODE = $("#cboMoneda").val();
             var CHK_DETALLE = $("#chkDespachoVenta").is(":checked") ? "S" : "N";
 
@@ -232,6 +234,7 @@
             data.append('CTLG_CODE', CTLG_CODE);
             data.append('SCSL_CODE', SCSL_CODE);
             data.append('CTA_BANCARIA', CTA_BANCARIA);
+            data.append('DESC_CTA_BANCARIA', DESC_CTA_BANCARIA);
             data.append('DESDE', $("#txtDesde").val());
             data.append('HASTA', $("#txtHasta").val());
 
@@ -299,6 +302,8 @@
             var valEmpresa = $(this).val();
             // CARGA DE ESTABLECIMIENTOS
             fillCboEstablecimiento(valEmpresa);
+            $('#cboCtaBancaria, #cboMoneda').select2("val", "");
+            $("#cboMoneda").attr("disabled", true);
             fillCboCuentas(valEmpresa);
         });
 
@@ -328,7 +333,7 @@
             mes = 12;
             ano = ano - 1
         } else {
-            mes = mes - 1;
+            //mes = mes - 1;
         }
 
         if (mes >= 10)

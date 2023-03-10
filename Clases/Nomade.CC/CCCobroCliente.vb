@@ -1,4 +1,6 @@
-﻿Public Class CCCobroCliente
+﻿Imports System.Security.Cryptography
+
+Public Class CCCobroCliente
 
     Private cn As Nomade.Connection
     Dim dt As DataTable
@@ -56,6 +58,7 @@
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_MENSAJE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_GENERADO", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_CODIGO_MOV_BANC", String.Empty, ParameterDirection.Output, 253))
 
 
             cn.Ejecuta_parms(cmd)
@@ -87,7 +90,7 @@
             Dim msg(2) As String
 
             Dim cmd As IDbCommand
-            Dim cmd1 As IDbCommand
+            'Dim cmd1 As IDbCommand
 
             cmd = cn.GetNewCommand("PFB_CREAR_COBRO_CLIENTE", CommandType.StoredProcedure)
 
@@ -122,6 +125,7 @@
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_MENSAJE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_GENERADO", String.Empty, ParameterDirection.Output, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODIGO_MOV_BANC", String.Empty, ParameterDirection.Output, 253))
 
             cn.Ejecuta_parms(cmd)
 
@@ -129,6 +133,7 @@
 
             msg(0) = cmd.Parameters("@p_CODE_GENERADO").Value
             msg(1) = cmd.Parameters("@p_MENSAJE").Value
+            msg(2) = cmd.Parameters("@p_CODIGO_MOV_BANC").Value
 
             Return msg
 
@@ -145,7 +150,7 @@
             Dim msg(2) As String
 
             Dim cmd As IDbCommand
-            Dim cmd1 As IDbCommand
+            'Dim cmd1 As IDbCommand
 
             cmd = cn.GetNewCommand("PFB_CREAR_COBRO_CLIENTE", CommandType.StoredProcedure)
 
@@ -180,6 +185,7 @@
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_MENSAJE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_GENERADO", String.Empty, ParameterDirection.Output, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_CODIGO_MOV_BANC", String.Empty, ParameterDirection.Output, 253))
 
             cn.Ejecuta_parms(cmd)
 

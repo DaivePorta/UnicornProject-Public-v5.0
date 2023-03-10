@@ -12,373 +12,8 @@ eventOrigenBco = false;
 eventOrigenCaj = false;
 jsonPersonas = null;
 json_selec = new Array();
-var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
-var CPLPGPR = function () {
 
-    var plugins = function () {
-
-        $("#cboempresa").select2();
-        fnSetRangoDatePickerMesHoy("txtFeIn", "txtFeFi");
-
-    }
-
-    var cargarEmpresas = function () {
-        var select = $('#cboempresa');
-        $.ajax({
-            type: "post",
-            url: 'vistas/nc/ajax/ncmnipl.ashx?opcion=0&usua=' + $('#ctl00_txtus').val(),
-            contenttype: "application/json",
-            datatype: "json",
-            async: true,
-            success: function (data) {
-
-                for (var i = 0; i < data.length; i++) {
-                    select.append('<option value="' + data[i].CODIGO + '">' + data[i].DESCRIPCION + '</option>');
-                }
-            },
-            error: function (msg) {
-                alertCustom('Error al cargar empresas.');
-            },
-            complete: function () {
-                //  select.change();
-            }
-        });
-    };
-
-    var cargarSucursales = function () {
-        var select = $('#slcEstablec');
-        $.ajax({
-            type: "post",
-            url: 'vistas/NC/ajax/NCMCAJA.ashx?OPCION=7&CTLG_CODE=' + $('#cboempresa').val(),
-            beforesend: function () { Bloquear($(select.parents("div")[0])); },
-            contenttype: "application/json",
-            datatype: "json",
-            async: true,
-            success: function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    select.append('<option value="' + data[i].CODIGO + '">' + data[i].DESCRIPCION + '</option>');
-                }
-            },
-            error: function (msg) {
-                alertCustom('Error al cargar Sucursales.');
-            },
-            complete: function () {
-
-
-                select.multiselect({
-                    nonSelectedText: 'TODOS'
-
-                });
-             
-                Desbloquear($(select.parents("div")[0]));
-            }
-        });
-    };
-
-    var cargarProveedores = function () {
-        var select = $("#slcProveedor")
-        $.ajax({
-            type: "post",
-            url: "vistas/CP/ajax/CPMPGPR.ashx?flag=3&empresa=" + $('#cboempresa').val(),
-            async: true,
-            beforeSend: function () { Bloquear($(select.parents("div")[0])) },
-            success: function (data) {
-                data = data.split("<option></option>").join("");
-                select.append(data);
-
-            },
-            error: function (msg) {
-                alertCustom('Error al cargar Sucursales.');
-            },
-            complete: function () {
-                select.multiselect({
-                    nonSelectedText: 'TODOS',
-                    includeSelectAllOption: true,
-                    enableFiltering: true,
-                    enableCaseInsensitiveFiltering: true,
-                    maxHeight: 200
-                });
-               
-                Desbloquear($(select.parents("div")[0]));
-            }
-        });
-
-
-    }
-
-    var eventos = function () {
-        $('#cboempresa').change(function () {
-            cargarSucursales();
-            cargarProveedores();
-        });
-
-        $("#btnFiltrar").click(function () {
-
-            $.ajax({
-                type: "post",
-                url: "vistas/CP/ajax/CPMPGPR.ashx?flag=L&empresa=" + $('#cboempresa').val()+
-                    "&establec=" + ($("#slcEstablec").val() === null ? '' : $("#slcEstablec").val().toString()) + 
-                    "&proveedor=" + ($("#slcProveedor").val() === null ? '' : $("#slcProveedor").val().toString()) +
-                    "&fini=" + $('#txtFeIn').val() + "&ffin=" + $('#txtFeFi').val(),
-                async: true,
-                contenttype: "application/json",
-                datatype: "json",
-                beforeSend: function () { Bloquear($($("#tblPagoPr").parents("div")[0])) },
-                success: function (data) {
-
-                    oTablePagoPr.fnClearTable();
-
-                    if (data.length > 0) {
-
-                        oTablePagoPr.fnAddData(data);
-
-                    } else {
-
-                        infoCustom2("No se encontraron datos!");
-
-                    }
-
-                },
-                error: function (msg) {
-                    alertCustom('Error al cargar Sucursales.');
-                },
-                complete: function () {
-
-                    Desbloquear($($("#tblPagoPr").parents("div")[0]));
-                }
-
-            });
-        });
-    }
-
-    var tablaVacia = function () {
-
-        var parms = {
-            data: null,
-            columns: [
-                   {
-                       data: null,
-                       defaultContent: "  <img src='recursos/img/details_open.png' class='detDoc' />",
-                       createdCell: function (td, cellData, rowData, row, col) {
-
-                           $(td).attr('align', 'center')
-
-                       }
-                   },
-                { data: "PROVEEDOR" },
-                {
-                    data: "FECHA_PAGO", type: "fecha", createdCell: function (td, cellData, rowData, row, col) {
-                        $(td)                          
-                            .css({ "text-align": "center" });
-                    }
-                },
-                {
-                    data: "MONEDA", createdCell: function (td, cellData, rowData, row, col) {
-                        $(td)
-                            .css({ "text-align": "center" });
-                    }
-                },
-                {
-                    data: "MONTO",
-                    type:"formatoMiles"
-                },
-                 { data: "ORIGEN" },
-                 {
-                     data: "CAJA_BCO", createdCell: function (td, cellData, rowData, row, col) {
-                         $(td)
-                             .css({ "text-align": "center" });
-                     }
-                 },
-                  { data: "FORMA_PAGO" },
-                  { data: "NRO_OP" },
-                  {
-                      data: null,
-                      defaultContent: '',
-                      createdCell: function (cell, cellData, row) {
-                          if (row.FOTO != "") {
-                              $(cell).append('<a class="btn glocat blue"><i class="icon-picture"></i></a>');
-                          }
-                          $(cell).css('text-align', 'center');
-
-                      }
-                  }
-
-            ]
-
-        }
-        oTablePagoPr = iniciaTabla('tblPagoPr', parms);
-   
-    }
-
-    var obtenerImagen = function (img) {
-        $.ajax({
-            type: "post",
-            url: 'vistas/CC/ajax/CCMCBCL.ASHX',
-            data: { flag: 'PI', RUTA_IMAGEN: img }, 
-            async: true,
-            beforeSend: function () { $('#divVerImagen').modal('show'); Bloquear($($("#imgProtesto").parents("div")[0]),"Obteniendo Imagen...")},
-            success: function (res) {
-                $('#imgProtesto').attr("src", res);                
-            },
-            error: function (msg) {
-                alertCustom('Error al cargar imagen.');
-            },
-            complete: function () {
-                Desbloquear($($("#imgProtesto").parents("div")[0]));
-            }
-        });
-    }
-
-    var eventosTabla = function () {
-
-        $("#tblPagoPr").on('click', '.glocat', function (e) {
-            var img = $('#tblPagoPr').DataTable().row($(this).parents('tr')).data().FOTO;
-            obtenerImagen(img);           
-        });
-
-        $('#tblPagoPr tbody').on('click', '.detDoc', function () {
-
-            var pos = oTablePagoPr.api(true).row($(this).parents("tr")[0]).index();
-            var row = oTablePagoPr.fnGetData(pos);
-
-            var id = row.CODE_DOCUMENTO;
-            var nTr = $(this).parents('tr')[0];
-
-            if (oTablePagoPr.fnIsOpen(nTr)) {
-                /* This row is already open - close it */
-                this.src = "recursos/img/details_open.png";
-                oTablePagoPr.fnClose(nTr);
-            }
-            else {
-                /* Open this row */
-                this.src = "recursos/img/details_close.png";
-                //$(this).parents('tbody').prepend('<tr><td coslpan="9"></td></tr>');
-
-                oTablePagoPr.fnOpen(nTr, fnFormatDetails(nTr, id.split(",").join("")), 'details');
-                oTablePagoPr.fnOpen(nTr, '<div id="c' + id.split(",").join("") + '" style="border:1px solid #cbcbcb; text-align:center;"></div>', 'details');
-           //     $('#c' + id).html('<img src="./recursos/img/loading.gif" align="absmiddle">');
-               
-                $.ajax({
-                    type: "POST",
-                    url: "vistas/cp/ajax/cpmpgpr.ashx?flag=LA&codigo=" + id,
-                    beforeSend: function () { Bloquear($('#c' + id.split(",").join(""))); },
-                    async: true,
-                    success: function (datos) {
-                        Desbloquear("ventana");
-                        var str = "";
-                        var resb = "";
-                        if (datos.length<1) { resb = "No hay datos disponibles!"; $('#c' + id.split(",").join("")).html(resb); }
-                        else {
-                            resb += "<table id='tblBandejaDetalleF" + id.split(",").join("") + "' class='DTTT_selectable' border='0' style='width:100%;'>";
-                            resb += "<thead>";
-                            resb += '<tr align="center">';
-                            resb += "<th>DOCUMENTO</th>";
-                            resb += "<th>MONTO AMORT.</th>";       
-                            resb += "<th>MONTO TOTAL</th>";
-                            resb += "<th>F. EMISION</th>";
-                            resb += "<th>F. VENCIMIENTO</th>";
-                            resb += "<th>PAGADO</th>";
-                            resb += "</tr>";
-                            resb += "</thead>";
-                            resb += "</table>";
-
-                            $('#c' + id.split(",").join("")).html(resb);
-
-                            cargatablaDetalleF("tblBandejaDetalleF" + id.split(",").join(""), datos);
-                        }
-                    },
-                   complete:function(){ Desbloquear($('#c' + id.split(",").join(""))); }
-
-                    
-                });
-
-            }
-
-        });
-
-        function fnFormatDetails(nTr, id) {
-            //var aData = oTable.fnGetData(nTr);
-            var sOut = '<div id="c' + id.split(",").join("") + '"></div>';
-            return sOut;
-        }
-
-    }
-
-    var cargatablaDetalleF = function(id, json) {
-
-        oTableDeudasDetalle = $("#"+id).dataTable({
-            data: json,
-            columns: [
-                {
-                    data: "DOCUMENTO",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('align', 'center');
-
-                    }
-                },
-                 {
-                     data: "MONTO",
-                     createdCell: function (td, cellData, rowData, row, col) {
-                         $(td).html(rowData.SMONEDA + formatoMiles(rowData.MONTO));
-                     }
-                 },
-                 {
-                     data: "MONTO_TOTAL_DOC",
-                     createdCell: function (td, cellData, rowData, row, col) {
-                         $(td).html(rowData.SMONEDA_ORIGEN + formatoMiles(rowData.MONTO_TOTAL_DOC));
-                     }
-                 },
-                 {
-                     data: "FECHA_EMISION",
-                     createdCell: function (td, cellData, rowData, row, col) {
-                         $(td).attr('align', 'center');
-                     },
-                     type:"fecha"
-                 },
-
-
-
-                {
-                    data: "FECHA_VCTO",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('align', 'center');
-                    },
-                    type: "fecha"
-                },
-
-
-                {
-                    data: "PAGADO",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('align', 'center');
-                      
-                    }
-                }
-
-
-            ],
-            "paging": false,
-            scrollCollapse: true,
-            //  sort: false,
-            "sDom": "t"
-
-        });
-
-
-    }
-
-    return {
-        init: function () {
-            plugins();
-            eventos();
-            cargarEmpresas();
-            tablaVacia();
-            eventosTabla();
-        }
-    };
-}();
-
-var CPMPGPR = function () {
+var CCMCMDT = function () {
 
     function decimalAdjust(type, value, exp) {
         // Si el exp no está definido o es cero...
@@ -406,7 +41,7 @@ var CPMPGPR = function () {
     }
 
     var plugins = function () {
-        $('#cboProveedores').select2();
+        $('#cboClientes').select2();
         $('#cbo_OrigenPago').select2();
         $('#cboCtaEmpresa').select2();
         $('#cboMedioPago').select2();
@@ -417,36 +52,49 @@ var CPMPGPR = function () {
         inifechas("txtFeIn", "txtFeFi");
         $("#slcEmpresa").select2();
 
+        $('.danger-toggle-button-custom').toggleButtons({
+            //width: 220,
+            style: {
+                // Accepted values ["primary", "danger", "info", "success", "warning"] or nothing
+                enabled: "info",
+                disabled: "danger"
+            },
+            label: {
+                enabled: "SI",
+                disabled: "NO"
+            }
+        });
+
         $("#txtMonto").keyup(function () {
             var monto_base = $('#txt_monto_base').attr('monto');
             var monto_alt = $('#txt_monto_alt').attr('monto');
-            var tc = parseFloat($("#txt_TC").val());     
+            var tc = parseFloat($("#txt_TC").val());
             var monto_actual = this.value;
             var moneda_activa_cod = $("select.moneda.activo").val();
             var moneda_activa_tipo = $(".moneda.activo :selected").attr("tipo");
             var nTotaSoloNotas = json_select_NotaCredito.filter(obj => obj.MONE_CODE == moneda_activa_cod).map(obj => parseFloat(obj.MONTO_USABLE).Redondear(2))
-                .concat(json_select_NotaCredito.filter(obj => obj.MONE_CODE !== moneda_activa_cod).map(obj => parseFloat(moneda_activa_cod == '0002' ? obj.MONTO_USABLE * tc : obj.MONTO_USABLE / tc).Redondear(2))).reduce((sum, obj) => (sum + obj), 0).Redondear(2);            
+                .concat(json_select_NotaCredito.filter(obj => obj.MONE_CODE !== moneda_activa_cod).map(obj => parseFloat(moneda_activa_cod == '0002' ? obj.MONTO_USABLE * tc : obj.MONTO_USABLE / tc).Redondear(2))).reduce((sum, obj) => (sum + obj), 0).Redondear(2);
 
             if (monto_base.indexOf(',') !== -1) { // Valida si el monto contiene el caracter ","
                 var re = /,/g;
                 monto_base = $('#txt_monto_base').attr('monto').replace(re, '');
-            } 
+            }
 
             if (monto_alt.indexOf(',') !== -1) { // Valida si el monto contiene el caracter ","
                 var re = /,/g;
                 monto_alt = $('#txt_monto_alt').attr('monto').replace(re, '');
-            } 
-          
+            }
+
             var montoSeleccionado = (moneda_activa_tipo == 'MOBA') ? monto_base : monto_alt;
 
             if (monto_actual.indexOf(',') !== -1) { // Valida si el monto contiene el caracter ","
                 var re = /,/g;
                 monto_actual = this.value.replace(re, '');
-            } 
+            }
 
             if (monto_actual < 0 || monto_actual > (montoSeleccionado - nTotaSoloNotas)) {
                 this.value = (montoSeleccionado - nTotaSoloNotas).Redondear(2);
-            }; 
+            };
 
         });
 
@@ -456,11 +104,11 @@ var CPMPGPR = function () {
 
         // CARGA DE CATALOGOS
         $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: 5 },
-          function (res) {
-              if (res != null && res != "" && res.indexOf("error") < 0) {
-                  $("#slcEmpresa").html(res);
-              }
-          });
+            function (res) {
+                if (res != null && res != "" && res.indexOf("error") < 0) {
+                    $("#slcEmpresa").html(res);
+                }
+            });
 
         // EVENTOS COMBOS
         $("#slcEmpresa").change(function () {
@@ -469,20 +117,20 @@ var CPMPGPR = function () {
 
             limpiaCampos();
 
-          
+
 
             // CARGA DE ESTABLECIMIENTOS
             cargarSucursales(valEmpresa);
 
-            filltxtproveedor();
+            filltxtcliente();
 
             // CARGA MONEDAS DE LA EMPRESA
             $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MO", empresa: valEmpresa },
-                       function (res) {
-                           if (res != null && res != "" && res.indexOf("error") < 0) {
-                               $("#cbo_moneda").html(res)
-                           }
-                       });           
+                function (res) {
+                    if (res != null && res != "" && res.indexOf("error") < 0) {
+                        $("#cbo_moneda").html(res)
+                    }
+                });
         });
 
         $("#cbo_moneda").change(function () {
@@ -504,7 +152,7 @@ var CPMPGPR = function () {
                 });
 
                 //var moneda_simbolo = val0r == "0002" ? "S/." : "$.";
-                if (json_notacredito.length | 0 && val0r||0)
+                if (json_notacredito.length | 0 && val0r || 0)
                     $("#divMontoAgregado").css("display", "inline-block");
                 else
                     $("#divMontoAgregado").css("display", "none");
@@ -522,8 +170,17 @@ var CPMPGPR = function () {
         });
 
         cargaMediosDePago();
+
+        $("#chboAutodetracc").on("change", function () {
+            let bValorAnterior = $("#chboAutodetracc").data("valactual");
+            let bValorActual = $("#chboAutodetracc").is(":checked");
+            if (bValorAnterior === bValorActual)
+                return;
+            $("#chboAutodetracc").data("valactual", bValorActual);
+            limpiaCampos();
+        });
     }
-    
+
     var cargarSucursales = function (empresa) {
         var select = $('#slcEstablec');
         select.multiselect('destroy');
@@ -552,37 +209,25 @@ var CPMPGPR = function () {
                 Desbloquear($(select.parents("div")[0]));
             }
         });
-    };  
+    };
 
     var funcionalidad = function () {
 
-        $("#cboProveedores").change(function () {
+        $("#cboClientes").change(function () {
             $("#cbo_OrigenPago").attr("disabled", false);
 
             $("#txt_monto_base").attr("monto", 0.00).val("S/. 0.00");
             $("#txt_monto_alt").attr("monto", 0.00).val("US$ 0.00");
 
-            $("#btnNotaCredito, .incluye_nota").css("display", "none");
-
-            json_nota_dcto = new Array();
-
-
-
-            json_select_NotaCredito = new Array();
-            $("#form_medioPago").css("display", "block")
-            $("#chkSoloNota").attr("checked", false); $("#chkSoloNota").parent().removeClass("checked");
-            $(".NotaCreditoItem").remove();
-            $("#divMontoAgregado").css("display", "none");
             limpiaCampos();
         });
 
 
-        $("#btnConsultar").click(function () {          
-            if (!isEmpty($("#cboProveedores").val()) && !isEmpty($("#slcEmpresa").val())) {
+        $("#btnConsultar").click(function () {
+            if (!isEmpty($("#cboClientes").val()) && !isEmpty($("#slcEmpresa").val())) {
                 consultaDeudas();
-                consultaNotaCredito();
             } else {
-                $($("#cboProveedores").siblings("div")[0]).pulsate({
+                $($("#cboClientes").siblings("div")[0]).pulsate({
                     color: "#33AECD",
                     reach: 20,
                     repeat: 3,
@@ -645,7 +290,7 @@ var CPMPGPR = function () {
                 }
                 else {
                     $(this).val(formatoMiles($(this).val()))
-                    .attr("monto", $(this).val().split(",").join(""));
+                        .attr("monto", $(this).val().split(",").join(""));
                 }
 
             }
@@ -656,7 +301,7 @@ var CPMPGPR = function () {
             }
 
             if (json_select_NotaCredito.length > 0) {
-               // $("#divMontoAgregado").css("display", "inline-block");
+                // $("#divMontoAgregado").css("display", "inline-block");
                 $("#montoNotaAgregado").html(formatoMiles(d)); ///actualiza montos de notas de credito
                 $("#montoTotalAgregado").html(formatoMiles(d + parseFloat($("#txtMonto").attr("monto") == undefined ? 0 : $("#txtMonto").attr("monto"))))
             }
@@ -697,71 +342,6 @@ var CPMPGPR = function () {
             $("#cbo_moneda").val("").change();
 
             switch (OrigenActual) {
-
-                case "Caja":
-
-                    $("#lbl_detalle1").html("Caja");
-                    $("#divSaldoCaja").addClass("activo");
-                    $("#divSaldoCtas").removeClass("activo");
-
-                    $("#cbo_Det_Origen").off("change");
-                    $("#cbo_Det_Origen").attr("data-placeholder", "CAJA").select2("val", "").change();
-                    $("#cbDestino").select2("val", "");
-
-
-
-                    $.ajaxSetup({ async: false });
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 7, empresa: $("#slcEmpresa").val(), usuario: $("#ctl00_txtus").val(), establec: ($("#slcEstablec").val() == null ? "" : $('#slcEstablec').val().toString()), },
-                         function (res) {
-                             if (res != null && res != "" && res.indexOf("error") < 0) {
-
-                                 $("#cbo_Det_Origen").html(res).attr("disabled", false).change(function () {
-                                     if ($('#cbo_OrigenPago').val() == "Caja") {
-                                         /***/
-                                         if (!eventOrigenCaj)
-                                             $("#iconDetSaldo").click();
-                                         /***/
-                                         eventOrigenCaj |= 1;
-                                         $("#txtMontoDisponibleMOBA").val(formatoMiles($("#cbo_Det_Origen :selected").attr("monto")));
-                                         $("#txtMontoDisponibleMOAL").val(formatoMiles($("#cbo_Det_Origen :selected").attr("monto_d")));
-
-                                         if ($("#cbo_moneda :selected").attr("tipo") == "MOBA") {
-                                             $("#txtMonto").attr("placeholder", "max. " + $("#cbo_Det_Origen :selected").attr("monto")).Redondear(2);
-                                         } else {
-                                             if (($("#cbo_moneda :selected").attr("tipo") == "MOAL"))
-                                                 $("#txtMonto").attr("placeholder", "max. " + $("#cbo_Det_Origen :selected").attr("monto_d")).Redondear(2);
-                                             else
-                                                 $("#txtMonto").attr("placeholder", "");
-                                         }
-                                     }
-                                 });
-
-                             } else {
-                                 $("#cbo_Det_Origen").html("").attr("disabled", true);
-
-                             }
-                         });
-                    $.ajaxSetup({ async: true });
-
-                    //
-                    $("#cbo_moneda").change(function () {
-                        $("#txtMonto").val("").change();
-                        if ($("#cbo_moneda :selected").attr("tipo") == "MOBA") {
-                            $("#txtMonto").attr("placeholder", "max. " + ($("#cbo_Det_Origen :selected").attr("monto")|0).Redondear(2));
-                        } else {
-                            if (($("#cbo_moneda :selected").attr("tipo") == "MOAL"))
-                                $("#txtMonto").attr("placeholder", "max. " + ($("#cbo_Det_Origen :selected").attr("monto_d")|0).Redondear(2));
-                            else
-                                $("#txtMonto").attr("placeholder", "");
-                        }
-                    });
-                    //***
-
-                    $("#cboMedioPago").html(StringMediosPago);
-                    $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0001" && valorO != "0008" && valorO != "") $(j).remove(); });
-                    $("#cboMedioPago").attr("disabled", false);
-                    break;
-
                 case "Banco":
                     $("#divSaldoCaja").removeClass("activo");
                     $("#divSaldoCtas").addClass("activo");
@@ -775,48 +355,62 @@ var CPMPGPR = function () {
                     //CargarCuentas Origen
                     $("#cbo_Det_Origen").val("").change().attr("data-placeholder", "CUENTA BANCARIA").select2();
 
+                    var empresa = "";
+                    if ($("#chboAutodetracc").is(":checked") == false) {
+                        empresa = $("#cboClientes").val();
+                    } else {
+                        empresa = $("#slcEmpresa :selected").attr("pidm");
+                    }
+
                     $.ajaxSetup({ async: false });
+                    $.post("vistas/CC/ajax/CCMCMDT.ASHX", { flag: 6, empresapidm: empresa, banco: "", moneda: "" },
+                        function (res) {
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
+                                $("#cbo_Det_Origen").html(res).attr("disabled", false).change(function () {
+                                    if ($('#cbo_OrigenPago').val() == "Banco") {
 
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6, empresapidm: $("#slcEmpresa :selected").attr("pidm"), banco: "", moneda: "" },
-                      function (res) {
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#cbo_Det_Origen").html(res).attr("disabled", false).change(function () {
-                                  if ($('#cbo_OrigenPago').val() == "Banco") {
+                                        /***/
 
-                                      /***/
+                                        if (!eventOrigenBco)
+                                            $("#iconDetSaldo").click();
 
-                                      if (!eventOrigenBco)
-                                          $("#iconDetSaldo").click();
+                                        /***/
 
-                                      /***/
+                                        eventOrigenBco |= 1;
+                                        $("#cboMedioPago").change();
+                                        var mone_code = $("#cbo_Det_Origen :selected").attr("moneda");
+                                        $("#cbo_moneda").select2("val", mone_code).change();
+                                        $("#txtMonto").attr("placeholder", "max. " + ($("#cbo_Det_Origen :selected").attr("monto") == undefined ? "0" : $("#cbo_Det_Origen :selected").attr("monto")));
+                                        $("#txtMontoDisponibleCta").val(formatoMiles($("#cbo_Det_Origen :selected").attr("monto") == undefined ? "0" : $("#cbo_Det_Origen :selected").attr("monto")));
+                                        if (mone_code == "0002") {//soles
+                                            $($("#txtMontoDisponibleCta").siblings("span")).addClass("Rojo").removeClass("Azul").html("S/.")
 
-                                      eventOrigenBco |= 1;
-                                      $("#cboMedioPago").change();
-                                      var mone_code = $("#cbo_Det_Origen :selected").attr("moneda");
-                                      $("#cbo_moneda").select2("val", mone_code).change();
-                                      $("#txtMonto").attr("placeholder", "max. " + ($("#cbo_Det_Origen :selected").attr("monto") == undefined ? "0" : $("#cbo_Det_Origen :selected").attr("monto")));
-                                      $("#txtMontoDisponibleCta").val(formatoMiles($("#cbo_Det_Origen :selected").attr("monto") == undefined ? "0" : $("#cbo_Det_Origen :selected").attr("monto")));
-                                      if (mone_code == "0002") {//soles
-                                          $($("#txtMontoDisponibleCta").siblings("span")).addClass("Rojo").removeClass("Azul").html("S/.")
+                                        } else {//dolares
+                                            $($("#txtMontoDisponibleCta").siblings("span")).addClass("Azul").removeClass("Rojo").html("US$.")
+                                        }
+                                        $("#txtMontoDisponibleCta").css("border-color", $($("#txtMontoDisponibleCta").siblings("span")).css("border-color"));
 
-                                      } else {//dolares
-                                          $($("#txtMontoDisponibleCta").siblings("span")).addClass("Azul").removeClass("Rojo").html("US$.")
-                                      }
-                                      $("#txtMontoDisponibleCta").css("border-color", $($("#txtMontoDisponibleCta").siblings("span")).css("border-color"));
+                                    }
+                                }
+                                );
+                            } else {
+                                $("#cbo_Det_Origen").html("<option></option>").change();
+                            }
 
-                                  }
-                              }
-                              );
-                          } else {
-                              $("#cbo_Det_Origen").html("<option></option>").change();
-                          }
-
-                      });
+                        });
                     $.ajaxSetup({ async: true });
 
 
                     $("#cboMedioPago").html(StringMediosPago);
-                    $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0013" && valorO != "0006" && valorO != "0005" && valorO != "") $(j).remove(); });
+                    $("#cboMedioPago option").filter(function (e, j) {
+                        var valorO = $(j).val();
+                        if (valorO != "0001" && valorO != "0003" && valorO != "") {
+                            $(j).remove();
+                        }
+                        else if ($("#chboAutodetracc").is(":checked") == true && valorO != "0003") {
+                            $(j).remove();
+                        }
+                    });
                     $("#cboMedioPago").attr("disabled", false);
 
                     break;
@@ -831,40 +425,34 @@ var CPMPGPR = function () {
             $("#txtNroOpe").removeClass("personas").attr("disabled", false);
 
             $("#cbDestino").val("").select2();
-
             $("#cbDestino").attr("disabled", false).off("change");
 
             $("#txtNroOpe").val("");
+            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
 
             switch (MedioActual) {
 
                 case "0001"://DEPOSITO BANCARIO
 
                     $("#lbl_detalle3").html("Destino");
-                    $("#lbl_detalle4").html("Nro. Op.");
+                    $("#lbl_detalle4").html("Nro. Operación");
 
 
                     $.ajaxSetup({ async: false });
                     $("#cbDestino").off("change");
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6, empresapidm: $("#cboProveedores").val(), banco: "", moneda: "" },
-                      function (res) {
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#cbDestino").html(res).change(function () {
-
-
-                                  var mone_code = $("#cbDestino :selected").attr("moneda");
-                                  $("#cbo_moneda").select2("val", mone_code).change();
-
-                              }
-
-                              );
-                          } else {
-                              $("#cbDestino").html("<option></option>").change();
-                          }
-
-                      });
+                    $.post("vistas/CC/ajax/CCMCMDT.ASHX", { flag: 6.5, empresapidm: $("#slcEmpresa :selected").attr("pidm"), banco: "", moneda: "" },
+                        function (res) {
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
+                                $("#cbDestino").html(res).change(function () {
+                                    var mone_code = $("#cbDestino :selected").attr("moneda");
+                                    $("#cbo_moneda").select2("val", mone_code).change();
+                                }
+                                );
+                            } else {
+                                $("#cbDestino").html("<option></option>").change();
+                            }
+                        });
                     $.ajaxSetup({ async: true });
-
 
                     $("#cbDestino").attr("disabled", false).select2();
                     $("#cbo_moneda").attr("disabled", true);
@@ -872,168 +460,37 @@ var CPMPGPR = function () {
                     $(".mPersona").css("display", "none");
                     offObjectEvents("txtNroOpe");
                     $("#txtNroOpe").removeClass("personas").attr("disabled", false);
-                    $("#txtMonto").attr("disabled", false);
-                    break;
-
-                case "0008": //EFECTIVO
-
-                    $("#lbl_detalle3").html("Destino");
-                    $("#lbl_detalle4").html("Persona Recibe");
-
-
-                    $("#cbDestino").html("<option>ENTREGA DIRECTA A PROVEEDOR</option>").attr("disabled", true).select2();
-
-                    $(".mPersona").css("display", "block");
-
-
-
-                    $("#txtNroOpe").addClass("personas").attr("disabled", false);
-                    cargarInputsPersona();
-
-                    $("#cbo_moneda").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                     $("#txtMonto").attr("disabled", false);
                     break;
 
                 case "0003": //transferencia
 
                     $("#lbl_detalle3").html("Destino");
-                    $("#lbl_detalle4").html("Nro. Op.");
-
-
+                    $("#lbl_detalle4").html("Nro. Operación");
 
                     $.ajaxSetup({ async: false });
                     $("#cbDestino").off("change");
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: $("#cboProveedores").val() },
-                      function (res) {
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#cbDestino").html(res).select2();
-                          } else {
-                              $("#cbDestino").html("<option></option>").select2();
-                          }
+                    $.post("vistas/CC/ajax/CCMCMDT.ASHX", { flag: 6.5, empresapidm: $("#slcEmpresa :selected").attr("pidm"), banco: "", moneda: "" },
+                        function (res) {
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
+                                $("#cbDestino").html(res).select2();
+                            } else {
+                                $("#cbDestino").html("<option></option>").select2();
+                            }
 
-                      });
-                    $.ajaxSetup({ async: true });
-                    $.ajaxSetup({ async: false });
-
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6, banco: $("#cbo_Det_Origen :selected").attr("banco"), moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: $("#cboProveedores").val() },
-                      function (res) {
-                          if (res != null && res != "" < 0) {
-                              $("#cbDestino option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
-                              if (res != "error") {
-                                  $("#cbDestino").append(res.split("<option></option")[1]);
-                              }
-                          } else {
-                              $("#cbDestino").html("<option></option>").change();
-                          }
-
-                      });
+                        });
                     $.ajaxSetup({ async: true });
 
 
                     $("#cbDestino").attr("disabled", false).change();
                     $("#cbo_moneda").attr("disabled", true);
                     $("#txtMonto").attr("disabled", false);
-                    $("#txtNroOpe").attr("disabled", false);
-
+                    //$("#txtNroOpe").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                     break;
-
-                case "0013": //cheques bancarios
-
-                    $("#lbl_detalle3").html("N° Cheque");
-                    $("#lbl_detalle4").html("Girado a");
-
-                    $("#cbDestino").attr("disabled", false);
-                    $.ajaxSetup({ async: false });
-
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 8, cuenta: $("#cbo_Det_Origen").val(), pidmcuenta: $("#slcEmpresa :selected").attr("pidm") },
-                      function (res) {
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#cbDestino").html(res).change(function () {
-                                  $("#txtNroOpe").val($("#cbDestino :selected").attr("ngiradoa"));
-                                  $("#txtNroOpe")
-                                      .attr("valor", $("#cbDestino :selected").attr("giradoa"))
-                                  ;
-                                  $("#txtMonto")
-                                      .val($("#cbDestino :selected").attr("monto"))
-                                      .change();
-                              }
-
-                              );
-                          } else {
-                              $("#cbDestino").html("<option></option>").select2();
-                          }
-
-                      });
-                    $.ajaxSetup({ async: true });
-
-
-                    $("#txtNroOpe").attr("disabled", true);
-                    $("#txtMonto").attr("disabled", true);
-                    break;
-
-                case "0006": //tarjeta de credito
-
-                    $("#lbl_detalle3").html("N° Tarjeta");
-                    $("#lbl_detalle4").html("Nro. Op.");
-
-                    $("#txtNroOpe").attr("disabled", false);
-                    $("#txtMonto").attr("disabled", false);
-
-                    $("#cbDestino").attr("disabled", false);
-                    $.ajaxSetup({ async: false });
-
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 9, cuenta: $("#cbo_Det_Origen").val(), pidmcuenta: $("#slcEmpresa :selected").attr("pidm"), tipo: "0006" },
-                      function (res) {
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#cbDestino").html(res).change(function () {
-
-                              }
-
-                              );
-                          } else {
-                              $("#cbDestino").html("<option></option>").select2();
-                          }
-
-                      });
-                    $.ajaxSetup({ async: true });
-
-                    break;
-
-                case "0005": // tarjeta de debito
-
-                    $("#lbl_detalle3").html("N° Tarjeta");
-                    $("#lbl_detalle4").html("Nro. Op.");
-
-                    $("#txtNroOpe").attr("disabled", false);
-                    $("#txtMonto").attr("disabled", false);
-
-                    $("#cbDestino").attr("disabled", false);
-                    $.ajaxSetup({ async: false });
-
-                    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 9, cuenta: $("#cbo_Det_Origen").val(), pidmcuenta: $("#slcEmpresa :selected").attr("pidm"), tipo: "0005" },
-                      function (res) {
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#cbDestino").html(res).change(function () {
-
-                              }
-
-                              );
-                          } else {
-                              $("#cbDestino").html("<option></option>").select2();
-                          }
-
-                      });
-                    $.ajaxSetup({ async: true });
-
-
-                    break;
-
             }
-
-
         });
-
-
         cargarJson();
     }
 
@@ -1101,7 +558,7 @@ var CPMPGPR = function () {
         });
 
     }
-    
+
     var cargainicial = function () {
 
         inputFile("fileSustento", "imgSustento", "../../recursos/img/no_disponible.jpg", 350, 350, 1);
@@ -1131,12 +588,12 @@ var CPMPGPR = function () {
 
         $('#txtFechaPago').datepicker();
         $('#txtFechaPago').inputmask("date",
-        {
-            yearrange: {
-                minyear: 1900,
-                maxyear: 2099
-            }
-        });
+            {
+                yearrange: {
+                    minyear: 1900,
+                    maxyear: 2099
+                }
+            });
 
         $('#txtFechaPago').datepicker("setDate", new Date());
         $("#txtFechaTransaccion").datepicker({ dateFormat: "yy/mm/dd" }).datepicker("setDate", new Date());
@@ -1162,25 +619,25 @@ var CPMPGPR = function () {
             var monto_base = $("#txt_monto_base").attr("monto");
             var monto_alt = $("#txt_monto_alt").attr("monto");
 
-            if (monto_base.indexOf(',') !== -1) { 
+            if (monto_base.indexOf(',') !== -1) {
                 var re = /,/g;
                 monto_base = $('#txt_monto_base').attr('monto').replace(re, '');
             }
 
-            if (monto_alt.indexOf(',') !== -1) { 
+            if (monto_alt.indexOf(',') !== -1) {
                 var re = /,/g;
                 monto_alt = $('#txt_monto_alt').attr('monto').replace(re, '');
             }
 
 
             var moba = row.ES_MONEDA_BASE == 'N' && $("#txt_TC").val() != "" ? parseFloat(row.POR_PAGAR_ALTER) * parseFloat($("#txt_TC").val()) : parseFloat(row.POR_PAGAR_BASE);//moneda base
-            if (formatoMiles(moba).indexOf(',') !== -1) { 
+            if (formatoMiles(moba).indexOf(',') !== -1) {
                 var re = /,/g;
                 moba = formatoMiles(moba).replace(re, '');
             }
 
             var moal = row.ES_MONEDA_BASE == 'S' && $("#txt_TC").val() != "" ? parseFloat(row.POR_PAGAR_BASE) / parseFloat($("#txt_TC").val()) : parseFloat(row.POR_PAGAR_ALTER);//moneda alterna
-            if (formatoMiles(moal).indexOf(',') !== -1) { 
+            if (formatoMiles(moal).indexOf(',') !== -1) {
                 var re = /,/g;
                 moal = formatoMiles(moal).replace(re, '');
             }
@@ -1244,13 +701,13 @@ var CPMPGPR = function () {
                 oTableDeudas.fnOpen(nTr, fnFormatDetails(nTr, id), 'details');
                 oTableDeudas.fnOpen(nTr, '<div id="c' + id + '" style="border:1px solid #cbcbcb; text-align:center;"></div>', 'details');
                 $('#c' + id).html('<img src="./recursos/img/loading.gif" align="absmiddle">');
-            
+
                 $.ajax({
                     type: "POST",
-                    url: "vistas/cp/ajax/cpmpgpr.ashx?flag=4.5&factura=" + id,
+                    url: "vistas/cc/ajax/CCMCMDT.ashx?flag=4.5&factura=" + id,
                     async: true,
                     success: function (datos) {
-                        
+
                         var str = "";
                         var resb = "";
                         if (datos == "") { resb = "No hay datos disponibles!"; $('#c' + id).html(resb); }
@@ -1323,7 +780,7 @@ var CPMPGPR = function () {
                 $('#tblBandeja tbody input[type=checkbox]').parent().removeClass('checked');
                 $('#tblBandeja tbody tr').removeClass('selected');
 
-            }            
+            }
 
             $('#tblBandeja tbody .selecChk').each(function () {
 
@@ -1391,7 +848,7 @@ var CPMPGPR = function () {
                     .attr("monto", formatoMiles(valor_moal));
 
                 $("#txtMonto").keyup();
-                    
+
             });
 
 
@@ -1413,18 +870,18 @@ var CPMPGPR = function () {
             var row = oTableModalNotaCredito.fnGetData(pos);
 
             var element = '<li class="NotaCreditoItem" style="cursor: pointer;" id="' + row.CODIGO + '"><div class="col1">' +
-            '					<div class="cont">' +
-            '						<div class="cont-col1">' +
-            '							<div class="label" style="background-color: #B6ADB9!important;">' +
-            '								<i class="icon-ok"></i>' +
-            '							</div>' +
-            '						</div>' +
-            '						<div class="cont-col2">' +
-            '							<div class="desc">' +
-            '							</div>' +
-            '						</div>' +
-            '					</div>' +
-            '				</div></li>';
+                '					<div class="cont">' +
+                '						<div class="cont-col1">' +
+                '							<div class="label" style="background-color: #B6ADB9!important;">' +
+                '								<i class="icon-ok"></i>' +
+                '							</div>' +
+                '						</div>' +
+                '						<div class="cont-col2">' +
+                '							<div class="desc">' +
+                '							</div>' +
+                '						</div>' +
+                '					</div>' +
+                '				</div></li>';
 
 
             $("#muestralistap").modal("hide");
@@ -1448,15 +905,15 @@ var CPMPGPR = function () {
             var monto_base = $("#txt_monto_base").attr("monto");
             var monto_alt = $("#txt_monto_alt").attr("monto");
 
-            if (monto_base.indexOf(',') !== -1) { 
+            if (monto_base.indexOf(',') !== -1) {
                 var re = /,/g;
                 monto_base = $("#txt_monto_base").attr("monto").replace(re, '');
-            } 
+            }
 
             if (monto_alt.indexOf(',') !== -1) {
                 var re = /,/g;
                 monto_alt = $("#txt_monto_alt").attr("monto").replace(re, '');
-            } 
+            }
 
             $("#montoNotaAgregado").html(formatoMiles(d)); //actualiza monto de notas de creditos
             if ((d + parseFloat($("#txtMonto").attr("monto"))) > parseFloat($("#cbo_moneda :selected").attr("tipo") == "MOBA" ? parseFloat(monto_base) : parseFloat(monto_alt))) {
@@ -1595,7 +1052,6 @@ var CPMPGPR = function () {
 
     return {
         init: function () {
-            cargarParametrosSistema();
             eventos();
             plugins();
             cargarCombos();
@@ -1607,42 +1063,19 @@ var CPMPGPR = function () {
     };
 }();
 
-function cargarParametrosSistema() {
-    //QUE SE GENERE O NO EL ASIENTO CONTABLE
-    $.ajax({
-        type: "post",
-        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
-        contenttype: "application/json;",
-        datatype: "json",
-        async: true,
-        success: function (datos) {
-            if (datos != null) {
-                prmtACON = datos[0].VALOR;
-            }
-            else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
-        },
-        error: function (msg) {
-            alertCustom("No se recuperó correctamente el parámetro ACON!");
-        }
-    });
-}
 
-function filltxtproveedor() {
+function filltxtcliente() {
     $.ajax({
         type: "post",
-        url: "vistas/CP/ajax/CPMPGPR.ashx?flag=3&empresa=" + $('#slcEmpresa').val(),
+        url: "vistas/CC/ajax/CCMCMDT.ashx?flag=3&empresa=" + $('#slcEmpresa').val(),
         async: true,
-        beforeSend: function () { Bloquear("s2id_cboProveedores"); $("#btnConsultar").attr("disabled", true); },
+        beforeSend: function () { Bloquear("s2id_cboClientes"); $("#btnConsultar").attr("disabled", true); },
         success: function (datos) {
             if (datos != null) {
 
-                $('#cboProveedores').empty();
+                $('#cboClientes').empty();
 
-
-                $('#cboProveedores').html(datos).select2("val", "").change();
-
-
-
+                $('#cboClientes').html(datos).select2("val", "").change();
 
             }
         },
@@ -1650,50 +1083,26 @@ function filltxtproveedor() {
             alert(msg);
         },
         complete: function () {
-            Desbloquear("s2id_cboProveedores");
+            Desbloquear("s2id_cboClientes");
             $("#btnConsultar").attr("disabled", false);
         }
     });
 }
 
-function consultaNotaCredito() {
-    $.ajax({
-        type: "post",
-        url: "vistas/CP/ajax/CPMPGPR.ashx?flag=10&empresa=" + $('#slcEmpresa').val() + "&proveedor=" + $('#cboProveedores').val() + "&establec="+($("#slcEstablec").val() == null ? "" : $('#slcEstablec').val().toString()),
-        async: true,
-        //beforeSend: function () { Bloquear($($("div.NotaCreditoAgregados").parents("div")[0]),"Verificando Notas de Crédito...");},
-        success: function (datos) {
-
-            if (datos != "SIN_NOTAS") {
-                $("#btnNotaCredito, .incluye_nota").css("display", "inline-block");
-                json_notacredito = JSON.parse(datos);
-            } else {
-                $("#btnNotaCredito, .incluye_nota").css("display", "none");
-                json_notacredito = [];
-
-            }
-
-        },
-        //complete: function () { Desbloquear($($("div.NotaCreditoAgregados").parents("div")[0]));}
-    });
-
-
-
-}
-
 function consultaDeudas() {
-    if ($("#cboProveedores").val() != "") {
+    if ($("#cboClientes").val() != "") {
         var oData = {
             flag: 4, empresa: $("#slcEmpresa").val(),
-            proveedor: $('#cboProveedores').val() == null ? 0 : $('#cboProveedores').val(),
+            cliente: $('#cboClientes').val() == null ? 0 : $('#cboClientes').val(),
             establec: $("#slcEstablec").val() == null ? "" : $('#slcEstablec').val().toString(),
             fini: $("#txtFeIn").val(),
-            ffin: $("#txtFeFi").val()
+            ffin: $("#txtFeFi").val(),
+            autodetracc_ind: ($("#chboAutodetracc").is(":checked") == false) ? 'N' : 'S'
         };
 
         $.ajax({
             type: "post",
-            url: "vistas/CP/ajax/CPMPGPR.ashx",
+            url: "vistas/CC/ajax/CCMCMDT.ashx",
             data: oData,
             async: true,
             beforeSend: function () { Bloquear("div_body", "Obteniendo Deudas..."); },
@@ -1711,12 +1120,12 @@ function consultaDeudas() {
                     llenarTablaDeudas(null);
                 }
             },
-            complete: function () { Desbloquear("div_body");}
+            complete: function () { Desbloquear("div_body"); }
         });
     } else {
         llenarTablaDeudas(null);
-        infoCustom2("No se ha seleccionado un proveedor!");
-        $("#s2id_cboProveedores").pulsate({
+        infoCustom2("No se ha seleccionado un cliente!");
+        $("#s2id_cboClientes").pulsate({
             color: "#33AECD",
             reach: 20,
             repeat: 3,
@@ -1743,7 +1152,13 @@ function cargatablavacia() {
                 }
             },
             {
-                data: "DOCUMENTO",
+                data: "CODIGO",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "OPERACION",
                 createdCell: function (td, cellData, rowData, row, col) {
                     $(td).attr('align', 'center');
                 }
@@ -1785,17 +1200,17 @@ function cargatablavacia() {
                 }
             },
 
-             {
-                 data: "POR_PAGAR_BASE",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center')
-                     var valor = cellData;
-                     if (rowData.ES_MONEDA_BASE == 'N' && $("#txt_TC").val() != "") {
-                         valor = parseFloat(rowData.POR_PAGAR_ALTER) * parseFloat($("#txt_TC").val());
-                     }
-                     $(td).html(formatoMiles(valor));
-                 }
-             },
+            {
+                data: "POR_PAGAR_BASE",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center')
+                    var valor = cellData;
+                    if (rowData.ES_MONEDA_BASE == 'N' && $("#txt_TC").val() != "") {
+                        valor = parseFloat(rowData.POR_PAGAR_ALTER) * parseFloat($("#txt_TC").val());
+                    }
+                    $(td).html(formatoMiles(valor));
+                }
+            },
 
             {
                 data: "POR_PAGAR_ALTER",
@@ -1817,13 +1232,11 @@ function cargatablavacia() {
 
                 }
             }
-
-
         ],
         "scrollY": "280px",
         "scrollCollapse": false,
         "paginate": false,
-        "order": [[2, 'asc'], [5, 'asc']],
+        "order": [[3, 'desc'], [6, 'desc']],
 
         info: false
 
@@ -1866,19 +1279,19 @@ function cargatablavaciaModalNotaCredito() {
                     $(td).html(formatoMiles(valor));
                 }
             },
-               {
-                   data: "MONEDA",
-                   createdCell: function (td, cellData, rowData, row, col) {
-                       $(td).attr('align', 'center');
-                   }
-               },
+            {
+                data: "MONEDA",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
 
-             {
-                 data: "ORIGEN_TIPO_DOC_DESC",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center');
-                 }
-             },
+            {
+                data: "ORIGEN_TIPO_DOC_DESC",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
 
             {
                 data: "DOCUMENTO_ORIGEN",
@@ -1900,43 +1313,42 @@ function cargatablavaciaModalNotaCredito() {
     $($("#tblNotaCredito").parent()).attr("id", "divtblNotaCredito");
     $("#btnActualizaNotaCr").click(function () {
         Bloquear("divtblNotaCredito");
-        consultaNotaCredito();
-        llenarTablaModalNotaCredito();
+        //consultaNotaCredito();
+        //llenarTablaModalNotaCredito();
         Desbloquear("divtblNotaCredito");
     });
 }
 
-function llenarTablaModalNotaCredito() {
+//function llenarTablaModalNotaCredito() {
 
-    oTableModalNotaCredito.fnClearTable();
+//    oTableModalNotaCredito.fnClearTable();
 
-    var json_aux = JSON.parse(JSON.stringify(json_notacredito));
+//    var json_aux = JSON.parse(JSON.stringify(json_notacredito));
 
-    if (json_aux.length > 0) {
-        if (json_select_NotaCredito.length > 0) {
-            json_select_NotaCredito.filter(function (e, d) {
+//    if (json_aux.length > 0) {
+//        if (json_select_NotaCredito.length > 0) {
+//            json_select_NotaCredito.filter(function (e, d) {
 
-                if (json_aux != []) {
-                    json_aux.filter(function (f, g) {
-                        if (f.CODIGO == e.CODIGO) {
-                            json_aux.splice(g, 1);
-                        }
-                    });
+//                if (json_aux != []) {
+//                    json_aux.filter(function (f, g) {
+//                        if (f.CODIGO == e.CODIGO) {
+//                            json_aux.splice(g, 1);
+//                        }
+//                    });
 
 
-                } else { json_aux = []; return false; }
-            });
-        }
+//                } else { json_aux = []; return false; }
+//            });
+//        }
 
-        if (json_aux.length > 0)
-        { oTableModalNotaCredito.fnAddData(json_aux); oTableModalNotaCredito.fnAdjustColumnSizing(); }
+//        if (json_aux.length > 0) { oTableModalNotaCredito.fnAddData(json_aux); oTableModalNotaCredito.fnAdjustColumnSizing(); }
 
-    }
-}
+//    }
+//}
 
 function cargatablavaciaDetalleF(id, json) {
 
-    oTableDeudasDetalle = $("#"+id).dataTable({
+    oTableDeudasDetalle = $("#" + id).dataTable({
         data: json,
         columns: [
             {
@@ -1946,24 +1358,24 @@ function cargatablavaciaDetalleF(id, json) {
 
                 }
             },
-             {
-                 data: "ORIGEN",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center');
-                 }
-             },
-             {
-                 data: "DESTINO",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center');
-                 }
-             },
-             {
-                 data: "FORMA_PAGO",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center');
-                 }
-             },
+            {
+                data: "ORIGEN",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "DESTINO",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "FORMA_PAGO",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
 
 
 
@@ -2055,14 +1467,22 @@ function verificaPago() {
 }
 
 function pagar() {
-
+    //var verificaNroOpera = "";//DPORTA 21/04/2021
     cade_pagar = "";
     var p_empresa = $("#slcEmpresa").val();
     var p_user = $("#ctl00_txtus").val();
     var cade_pagoConNotacredito = "";
     var p_fecha_pago = $("#txtFechaPago").val();
+    var p_origen = $("#cbo_Det_Origen :selected").text();
+    var p_origen_pidm = "";
+    var p_origen_codigo_banco = "";
 
-    var cantidad_doc_venta = json_selec.length;   
+    if ($('#cboMedioPago').val() === "0003") {
+        p_origen_pidm = $("#cbo_Det_Origen :selected").attr("pidm");
+        p_origen_codigo_banco = $("#cbo_Det_Origen :selected").val();
+    }
+
+    var cantidad_doc_venta = json_selec.length;
     var cantidad_notacredito = json_nota_dcto.length;
 
     var moneda_activa_cod = $("select.moneda.activo").val();
@@ -2077,12 +1497,12 @@ function pagar() {
     var monto_base = $("#txt_monto_base").attr("monto");
     var monto_alt = $("#txt_monto_alt").attr("monto");
 
-    if (monto_base.indexOf(',') !== -1) { 
+    if (monto_base.indexOf(',') !== -1) {
         var re = /,/g;
         monto_base = $('#txt_monto_base').attr('monto').replace(re, '');
     }
 
-    if (monto_alt.indexOf(',') !== -1) { 
+    if (monto_alt.indexOf(',') !== -1) {
         var re = /,/g;
         monto_alt = $('#txt_monto_alt').attr('monto').replace(re, '');
     }
@@ -2102,7 +1522,6 @@ function pagar() {
 
         } else {
 
-
             if (cantidad_notacredito > 0) {
 
                 json_nota_dcto.filter(function (e, d) {
@@ -2118,12 +1537,12 @@ function pagar() {
                             if (moneda_activa_tipo == "MOBA") {
                                 f.POR_PAGAR_BASE -= parseFloat(e.Nota.MONE_CODE == "0002" ? e.monto : (parseFloat($("#txt_TC").val()) * e.monto).Redondear(2));
                                 if (f.POR_PAGAR_BASE <= 0) {
-                                   // pagado_comp_ind = 'S';
+                                    // pagado_comp_ind = 'S';
                                     if (f.POR_PAGAR_BASE < 0) {
                                         e.monto = Math.abs(f.POR_PAGAR_BASE);
                                         f.POR_PAGAR_BASE = 0;
                                     }
-                                } 
+                                }
                             }
                             else {
                                 f.POR_PAGAR_ALTER -= parseFloat(e.Nota.MONE_CODE == "0002" ? (e.monto / parseFloat($("#txt_TC").val())).Redondear(2) : (e.monto));
@@ -2190,7 +1609,7 @@ function pagar() {
 
                     if (monto >= 0) {
 
-                        cade_pagar += ("|" + e.CODIGO + "," + e.DOCUMENTO + "," + (monto_pb == "" ? 0 : monto_pb) + "," + (monto_pa == "" ? 0 : monto_pa) + "," + e.SUCURSAL_CODE + ",S");
+                        cade_pagar += ("|" + e.CODIGO + "," + e.DOCUMENTO + "," + (monto_pb == "" ? 0 : monto_pb) + "," + (monto_pa == "" ? 0 : monto_pa) + "," + e.SUCURSAL + ",S");
                     }
                     else {
                         monto_pp += monto;
@@ -2204,26 +1623,22 @@ function pagar() {
                         monto_pb = monto_pb == "" ? 0 : monto_pb;
                         monto_pa = monto_pa == "" ? 0 : monto_pa;
                         if (monto_pa != 0 || monto_pb != 0) {
-                            cade_pagar += ("|" + e.CODIGO + "," + e.DOCUMENTO + "," + (monto_pb == "" ? 0 : monto_pb) + "," + (monto_pa == "" ? 0 : monto_pa) + "," + e.SUCURSAL_CODE + ",N");
+                            cade_pagar += ("|" + e.CODIGO + "," + e.DOCUMENTO + "," + (monto_pb == "" ? 0 : monto_pb) + "," + (monto_pa == "" ? 0 : monto_pa) + "," + e.SUCURSAL + ",N");
                         }
-                    }        
+                    }
 
                 });
-
-
-
 
                 //var p_caja = "";         
                 var p_caja = $("#cbo_Det_Origen").val(); // origen
                 var cod_ape = "";
                 var p_moneda = $("#cbo_moneda").val();
                 var medio_pa = $("#cboMedioPago").val();
-              
+
                 var p_destino = $("#cbDestino :selected").html();
                 var p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
                 var p_flag = 1;
                 var adicional = "";
-
 
                 var det_desc = "", pidm_cta = "", cta = "", compl = "";
 
@@ -2238,44 +1653,29 @@ function pagar() {
                     switch ($("#cboMedioPago").val()) {
                         case "0003": //transferencia
 
-                            det_desc = "*" + $("#cboProveedores :selected").html();
-
-                            break;
-
-                        case "0013": //cheques bancarios
-
-                            det_desc = "CHEQ.PAGADOR N°:" + $("#cbDestino").val();
-                            adicional = $("#cbDestino").val() + "|" + $("#cbDestino :selected").attr("tipo");
-                            compl = "N";
-                            p_documento = "";
-
-                            break;
-
-                        case "0006": //tarjeta de credito
-
-                            det_desc = $("#cboProveedores :selected").html() + "/" + $("#cbDestino :selected").html();
-
-                            break;
-
-                        case "0005": // tarjeta de debito
-
-                            det_desc = $("#cboProveedores :selected").html() + "/" + $("#cbDestino :selected").html();
+                            det_desc = "TRANSFERENCIA*" + "/" + $("#cboClientes :selected").html(); //"*" + $("#cboClientes :selected").html();
 
                             break;
                     }
                 } else if (ind_tipo == "C") {
 
-
-
                     cod_ape = $("#cbo_Det_Origen :selected").attr("codigo");
 
                 }
 
-                var descripcion = ind_tipo == "C" ? "PAGO A PROVEEDOR" : det_desc;
+                var descripcion = "";
+                json_selec.filter(function (f, g) {
+                    if (f.OPERACION == 'GASTO') {
+                        descripcion = ind_tipo == "C" ? "PAGO A BENEFICIARIO" : det_desc;
+                    } else {
+                        descripcion = ind_tipo == "C" ? "DEVOLUCION A CLIENTE" : det_desc;
+                    }
+                });                
+                
             } else {
 
                 var p_flag = 1.6;
-            }          
+            }
 
             var data = new FormData();
 
@@ -2296,14 +1696,16 @@ function pagar() {
             data.append('completo', compl);
             data.append('adicional', adicional);
             data.append('monto_total', $("#txtMonto").val().split(",").join(""));
+            data.append('origen', p_origen);
+            data.append('origen_pidm', p_origen_pidm);
+            data.append('origen_codigo_banco', p_origen_codigo_banco);
             data.append('notacredito', cade_pagoConNotacredito.substring(1));
             data.append('tipo_cambio', $("#txt_TC").val());
-            data.append('asiento_contable', prmtACON);
             data.append('RUTA_IMAGEN', $("#imgSustento").attr("src"));
-
+            //Bloquear("ventana");
             var jqxhr = $.ajax({
                 type: "POST",
-                url: "vistas/CP/ajax/CPMPGPR.ASHX",
+                url: "vistas/CC/ajax/CCMCMDT.ASHX",
                 contentType: false,
                 data: data,
                 processData: false,
@@ -2313,7 +1715,7 @@ function pagar() {
                 .success(function (res) {
                     Desbloquear("ventana");
                     var datos = $.parseJSON(res);
-                 
+
                     if (datos[0].SUCCESS != null && datos[0].SUCCESS != "" && res.indexOf("error") < 0) {
                         switch (datos[0].SUCCESS) {
 
@@ -2329,7 +1731,7 @@ function pagar() {
                             case "SI": // Saldo insuficiente caja/banco
                                 alertCustom("No posee saldo suficiente en la " + ($("#cbo_OrigenPago").val().substring(0, 1) === "B" ? "cuenta" : "caja") + " seleccionada!");
                                 break;
-                            case "TC": // Transaccion realizada correctamente                             
+                            case "TC": // Transaccion realizada correctamente
                                 if (datos[0].CODE_GENERADO != "") {
                                     consultaDeudas();
                                     json_selec = new Array();
@@ -2345,8 +1747,8 @@ function pagar() {
                                     json_nota_dcto = new Array();
                                     json_select_NotaCredito = new Array();
 
-                                    consultaNotaCredito();
-                                    llenarTablaModalNotaCredito();
+                                    //consultaNotaCredito();
+                                    //llenarTablaModalNotaCredito();
                                     limpiaCampos(); eventOrigenBco = false;
                                     eventOrigenCaj = false;
                                     if ($("#txtMonto").attr("placeholder") !== undefined)
@@ -2359,7 +1761,7 @@ function pagar() {
                                 } else {
                                     alertCustom("El pago no se realizó por ser Caja de otra Sucursal");
                                     break;
-                                }                                   
+                                }                                 
                         }
                     }
                     else {
@@ -2368,108 +1770,26 @@ function pagar() {
                     }
                 })
                 .error(function () {
-                    Desbloquear($("#ventana"))
+                    Desbloquear("ventana");
                 });
-
-
-            //$.ajax({
-            //    type: "post",
-            //    url: "vistas/CP/ajax/CPMPGPR.ASHX",
-            //    data: {
-            //        flag: p_flag,
-            //        empresa: p_empresa,
-            //        detalle: cade_pagar.substring(1),
-            //        caja: p_caja,
-            //        usuario: p_user,
-            //        codigo_apertura: cod_ape,
-            //        moneda: p_moneda,
-            //        medio_pago: medio_pa,
-            //        descripcion: descripcion,
-            //        fecha_pago: p_fecha_pago,
-            //        destino: p_destino,
-            //        documento: p_documento,
-            //        pidmcuenta: pidm_cta,
-            //        cuenta: cta,
-            //        completo: compl,
-            //        adicional: adicional,
-            //        monto_total: $("#txtMonto").val().split(",").join(""),
-            //        notacredito: cade_pagoConNotacredito.substring(1),
-            //        tipo_cambio: $("#txt_TC").val()
-            //    },
-            //    contenttype: "application/json;",
-            //    datatype: "json",
-            //    beforeSend: function () { Bloquear($("#ventana"), "Grabando Datos"); },
-            //    async: true,
-            //    success: function (res) {
-            //        if (res != null && res != "" && res.indexOf("error") < 0) {
-            //            switch (res) {
-
-            //                case "NA": // Uno de los documentos no puede ser amortizado por el monto indicado
-            //                    alertCustom("Uno de los documentos ya ha sido amortizado!");
-            //                    break;
-            //                case "NG": // El monto usable de la nota de credito generica es 0
-            //                    alertCustom("La nota de crédito genérica seleccionada no posee monto usable! ");
-            //                    break;
-            //                case "NC": // El monto usable de la nota de credito es 0
-            //                    alertCustom("La nota de crédito seleccionada no posee monto usable!");
-            //                    break;
-            //                case "SI": // Saldo insuficiente caja/banco
-            //                    alertCustom("No posee saldo suficiente en la " + ($("#cbo_OrigenPago").val().substring(0, 1) === "B" ? "cuenta" : "caja") + " seleccionada!");
-            //                    break;
-            //                case "TC": // Transaccion realizada correctamente                             
-            //                    consultaDeudas();
-            //                    json_selec = new Array();
-            //                    exito();
-            //                    $("#txt_monto_base, #txt_monto_alt, #txtMonto").val("");
-            //                    $("#txt_monto_base, #txt_monto_alt").attr("monto", 0.00);
-            //                    conNotaCredito = false;
-            //                    $(".gen").remove();
-            //                    $("#form_medioPago").css("display", "block")
-            //                    $("#chkSoloNota").attr("checked", false); $("#chkSoloNota").parent().removeClass("checked");
-            //                    $(".NotaCreditoItem").remove();
-            //                    $("#divMontoAgregado").css("display", "none")
-            //                    json_nota_dcto = new Array();
-            //                    json_select_NotaCredito = new Array();
-
-            //                    consultaNotaCredito();
-            //                    llenarTablaModalNotaCredito();
-            //                    limpiaCampos(); eventOrigenBco = false;
-            //                    eventOrigenCaj = false;
-            //                    if($("#txtMonto").attr("placeholder") !== undefined)
-            //                        if ($("#txtMonto").attr("placeholder").indexOf("max.") > -1)
-            //                            $("#txtMonto").attr("placeholder", "max. " + (parseFloat($("#txtMonto").attr("placeholder").split("max. ")[1]) - parseFloat($("#txtMonto").val())).Redondear(2))
-            //                    break;
-            //            }
-            //        }
-            //        else {
-            //            noexito();
-            //        }
-            //    },
-            //    complete: function () {
-            //        Desbloquear($("#ventana"))
-            //    }
-            //});
-           
         }
-
     }
-
 }
 
 function cargaMediosDePago() {
 
 
     $.ajaxSetup({ async: false });
-    $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 2 },
-      function (res) {
-          if (res != null && res != "" && res.indexOf("error") < 0) {
+    $.post("vistas/CC/ajax/CCMCMDT.ASHX", { flag: 2 },
+        function (res) {
+            if (res != null && res != "" && res.indexOf("error") < 0) {
 
 
-              StringMediosPago = res;
+                StringMediosPago = res;
 
-          }
+            }
 
-      });
+        });
     $.ajaxSetup({ async: true });
 
 
@@ -2487,7 +1807,7 @@ $(document).on("change", ".slcModDocumento", function () {
     var notActual = json_select_NotaCredito.filter(function (e, d) { return e.CODIGO == codigoNotaCredito; })[0];
     var docActual = json_selec.filter(function (obj, d) { return obj.CODIGO == val0r; })[0];
 
-    var montoDocuActual = notActual.MONE_CODE == codeMoneda && tipoMoneda == 'MOBA' && docActual.ES_MONEDA_BASE=='S'? docActual.POR_PAGAR_BASE : docActual.POR_PAGAR_ALTER;
+    var montoDocuActual = notActual.MONE_CODE == codeMoneda && tipoMoneda == 'MOBA' && docActual.ES_MONEDA_BASE == 'S' ? docActual.POR_PAGAR_BASE : docActual.POR_PAGAR_ALTER;
     var montoNotaActual = parseFloat(notActual.MONTO_USABLE).Redondear(2);
 
     var oAmortizacionesDoc = ArrObjectValidacionDocu.filter(function (obj) { return obj.codigo == val0r; });
@@ -2505,7 +1825,7 @@ $(document).on("change", ".slcModDocumento", function () {
     //verificacion
 
     if (montoDocuActual >= montoNotaActual) { // se usa la nota en su totalidad para un documento / sobra para otra nota
-               
+
         var flag_existe = false;
         var posicion = 0;
         json_nota_dcto.filter(function (e, d) {
@@ -2517,7 +1837,7 @@ $(document).on("change", ".slcModDocumento", function () {
 
         if (flag_existe) {
             json_nota_dcto.splice(posicion, 1);
-        }      
+        }
 
         ArrObjectValidacionDocu.filter(function (e, d) {
             if (e.nota == codigoNotaCredito && e.montoAmort == montoNotaActual) {
@@ -2528,17 +1848,17 @@ $(document).on("change", ".slcModDocumento", function () {
 
         if (flag_existe) {
             ArrObjectValidacionDocu.splice(posicion, 1);
-        }  
+        }
 
-     
-        ArrObjectValidacionDocu.push({ "codigo": val0r, "nota": codigoNotaCredito,"montoAmort": montoNotaActual });
 
-        json_nota_dcto.push({ "Documento": docActual, "Nota": notActual, "monto": montoNotaActual, "completo": (montoNotaActual == montoDocuActual?"S":"N") });
+        ArrObjectValidacionDocu.push({ "codigo": val0r, "nota": codigoNotaCredito, "montoAmort": montoNotaActual });
+
+        json_nota_dcto.push({ "Documento": docActual, "Nota": notActual, "monto": montoNotaActual, "completo": (montoNotaActual == montoDocuActual ? "S" : "N") });
 
     } else { // sobra dinero en la nota para otro documento
 
         this.setAttribute("disabled", true);
-       
+
         objComboDocumentos.item(this.selectedIndex).setAttribute("disabled", true);
 
 
@@ -2551,7 +1871,7 @@ $(document).on("change", ".slcModDocumento", function () {
 
         ArrObjectValidacionNota.push({ "codigo": codigoNotaCredito, "montoAmort": montoDocuActual });
 
-        json_nota_dcto.push({ "Documento": docActual, "Nota": notActual, "monto": montoDocuActual, "completo":"S" });
+        json_nota_dcto.push({ "Documento": docActual, "Nota": notActual, "monto": montoDocuActual, "completo": "S" });
 
         // se crea otro objeto
         objComboDocumentos.setAttribute("scodnota", codigoNotaCredito);
@@ -2569,15 +1889,15 @@ function verificarPagoNotaCredito() {
 
     ArrObjectValidacionNota = new Array();
     ArrObjectValidacionDocu = new Array();
-   
+
 
 
     var cantidad = json_select_NotaCredito.length; //Array que contiene a las notas de créditos agregadas
     var cantidad2 = json_selec.length; // Array de Documentos a pagar seleccionados 
-  
+
 
     $(".gen").remove();
-    
+
     if (cantidad > 0) { // si existen notas de credito
 
         if (cantidad2 > 1) { // si existe mas de un documento a pagar
@@ -2592,7 +1912,7 @@ function verificarPagoNotaCredito() {
                 for (var i = 0; i < cantidad2; i++) { // agregar documentos a oCombo
                     var objItemCombo = document.createElement("option");
                     objItemCombo.innerHTML = json_selec[i].DOCUMENTO + " <b>|</b> " + (json_select_NotaCredito[j].MONE_CODE == "0002" ? (" S/." + formatoMiles(json_selec[i].POR_PAGAR_BASE)) : (" $." + formatoMiles(json_selec[i].POR_PAGAR_ALTER)));
-                    objItemCombo.value = json_selec[i].CODIGO;            
+                    objItemCombo.value = json_selec[i].CODIGO;
                     objComboDocumentos.append(objItemCombo);
                 }
 
@@ -2603,10 +1923,10 @@ function verificarPagoNotaCredito() {
 
                 objComboDocumentos.setAttribute("scodnota", json_select_NotaCredito[j].CODIGO);
 
-                insertar_fila("#divbody", objLabel.outerHTML, objComboDocumentos.outerHTML);             
-            }          
+                insertar_fila("#divbody", objLabel.outerHTML, objComboDocumentos.outerHTML);
+            }
 
-          //  $(".slcModDocumento").select2();
+            //  $(".slcModDocumento").select2();
 
             $("#modElijeDocu").modal("show");
 
@@ -2616,10 +1936,10 @@ function verificarPagoNotaCredito() {
             var tc = parseFloat($("#txt_TC").val());
             json_select_NotaCredito.forEach(
                 function (obj) {
-                    var montoLetra = parseFloat(obj.MONTO_USABLE).Redondear(2);           
+                    var montoLetra = parseFloat(obj.MONTO_USABLE).Redondear(2);
                     json_nota_dcto.push({ "Documento": json_selec[0], "Nota": obj, "monto": montoLetra, "completo": "N" });
                 }
-            );         
+            );
 
             return true;
 
@@ -2654,17 +1974,17 @@ function verificaNotaDcto() {
 function insertar_fila(padre, html1, html2) {
 
     var filaHtml = '<div class="row-fluid gen">' +
-                 '  <div class="span6">' +
-                 '      <div class="control-group ">' +
-                 html1 +
-                 '     </div>' +
-                 ' </div>' +
-                 ' <div class="span6">' +
-                 '     <div class="control-group ">' +
-                 html2 +
-                 '     </div>' +
-                 ' </div>' +
-                 '</div>';
+        '  <div class="span6">' +
+        '      <div class="control-group ">' +
+        html1 +
+        '     </div>' +
+        ' </div>' +
+        ' <div class="span6">' +
+        '     <div class="control-group ">' +
+        html2 +
+        '     </div>' +
+        ' </div>' +
+        '</div>';
     $(padre).append(filaHtml);
 }
 

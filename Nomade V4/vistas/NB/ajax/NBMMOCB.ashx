@@ -23,6 +23,8 @@ Public Class NBMMOCB : Implements IHttpHandler
     Dim fecha_ope As String
     Dim fecha_valor As String
     Dim monto As String
+    Dim cta10 As String
+    Dim p_tope As String
     Dim tc As String
     Dim user As String
     Dim tipo As String
@@ -35,6 +37,8 @@ Public Class NBMMOCB : Implements IHttpHandler
     Dim stbl As String
     Dim tipoChq As String
     Dim origen As String
+
+    Dim persona As String
 
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         context.Response.ContentType = "text/plain"
@@ -59,7 +63,8 @@ Public Class NBMMOCB : Implements IHttpHandler
             fecha_valor = Utilities.fechaLocal(context.Request("fecha_valor"))
         End If
         monto = context.Request("monto")
-
+        cta10 = context.Request("cta10")
+        p_tope = context.Request("p_tope")
 
         user = context.Request("user")
         tipo = context.Request("tipo")
@@ -73,6 +78,7 @@ Public Class NBMMOCB : Implements IHttpHandler
         tipoChq = context.Request("tipoChq")
         origen = context.Request("origen")
 
+        persona = context.Request("persona")
         Try
 
             Select Case flag
@@ -83,7 +89,18 @@ Public Class NBMMOCB : Implements IHttpHandler
 
                     Dim P As New Nomade.NB.NBMovimientoBancario("Bn")
 
-                    res = P.CrearMovimientoBancarioDetalle(oficina, descripcion, canal, nro_operacion, fecha_ope, IIf(monto = 0, monto_d, monto), tc, fecha_valor, "S", user, stbl, tipo, pidm, cta_code, IIf(caja <> String.Empty, "C", "M"))
+                    Dim arrSplitDesc() As String
+
+                    arrSplitDesc = Split(descripcion, ",")
+
+                    Dim desc, nro_cuen As String
+
+                    desc = arrSplitDesc(0)
+                    persona = arrSplitDesc(1)
+                    p_tope = arrSplitDesc(2)
+                    nro_cuen = arrSplitDesc(3)
+
+                    res = P.CrearMovimientoBancarioDetalle(oficina, desc, canal, nro_operacion, fecha_ope, IIf(monto = 0, monto_d, monto), tc, fecha_valor, "S", user, stbl, tipo, pidm, cta_code, IIf(caja <> String.Empty, "C", "M"))
                     Dim ref = res
                     If (Not res Is Nothing) And (caja <> String.Empty) Then
                         Dim p1 As New NOMADE.CA.CAMovimientos("Bn")
@@ -95,13 +112,17 @@ Public Class NBMMOCB : Implements IHttpHandler
 
                         End If
                     End If
-                   ' res = ref
+
+                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                    Dim strCodAsientoCobroDetracDocVenta As String
+                    strCodAsientoCobroDetracDocVenta = oCTGeneracionAsientos.GenerarAsientoMovBancario(ref, "N", "ADMINSIS", p_tope, nro_cuen, persona)
+
                 Case "2"
                     Dim q As New NOMADE.FI.SWTipoCambio("Bn")
                     tc = q.TipoCambioHoy().Rows(0)("Venta").ToString
 
                     Dim P As New NOMADE.NB.NBMovimientoBancario("Bn")
-                    res = P.ActualizarMovimientoBancarioDetalle(codigo, oficina, descripcion, canal, nro_operacion, fecha_ope, monto, tc, fecha_valor, "S", user, String.Empty, tipo, pidm, cta_code)
+                    res = P.ActualizarMovimientoBancarioDetalle(codigo, oficina, descripcion, canal, nro_operacion, fecha_ope, monto, tc, fecha_valor, "S", user, String.Empty, tipo, pidm, cta_code, p_tope, persona)
 
 
 
@@ -245,6 +266,8 @@ Public Class NBMMOCB : Implements IHttpHandler
                         resb.Append("""PIDM"":""" & dt.Rows(0)("PIDM").ToString & """,")
                         resb.Append("""CAJA_CODE"":""" & dt.Rows(0)("CAJA_CODE").ToString & """,")
                         resb.Append("""RESPONSABLE"":""" & dt.Rows(0)("RESPONSABLE").ToString & """,")
+                        resb.Append("""PERSONA"":""" & dt.Rows(0)("PERSONA").ToString.Trim() & """,")
+                        resb.Append("""CODIGO_OPERACION"":""" & dt.Rows(0)("CODIGO_OPERACION").ToString.Trim() & """,")
                         resb.Append("""TIPO_REG"":""" & dt.Rows(0)("TIPO_REGISTRO").ToString & """")
                         resb.Append("}")
                         resb.Append("]")

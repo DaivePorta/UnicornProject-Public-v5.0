@@ -82,6 +82,20 @@
                     </div>
                 </div>
                 <div class="row-fluid">
+                    <div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="txtRuc">Cliente</label>
+                        </div>
+                    </div>
+                    <div class="span3">
+                        <div class="control-group">
+                            <div class="controls" id="inputRazsocial">
+                                <input id="txtrazsocial" class="span11" type="text" data-provide="typeahead" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
                     <div class="span4" align="center">
                         <span>Importe Detracciones</span>
                         <span id="TotalDetra" style="font-weight:bold;"></span>
@@ -99,6 +113,7 @@
                                     <th>MONTO</th>
                                     <th>FECHA EMISION</th>
                                     <th>ESTADO</th>
+                                    <th>RUC</th>
                                     <th>CLIENTE</th>
                                     <th></th>
                                 </tr>
@@ -289,3 +304,4 @@
         CCMCBDT.init();
     });
 </script>
+<input id="hfPIDM" type="hidden" />

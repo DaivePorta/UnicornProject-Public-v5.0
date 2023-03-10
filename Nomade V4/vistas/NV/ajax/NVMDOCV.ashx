@@ -590,23 +590,44 @@ Public Class NVMDOCV : Implements IHttpHandler
 
                 Case "GEN_ASIENTO"
                     Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
-                    Dim strCodAsientoVenta As String
-                    strCodAsientoVenta = oCTGeneracionAsientos.AsientoVenta(p_CODE, p_NCMOCONT_CODIGO, USUA_ID)
-
-                    Dim lstCodAsientoVentaAplicacionAnticipo As New List(Of String)
-                    lstCodAsientoVentaAplicacionAnticipo = oCTGeneracionAsientos.AsientoVentaAplicacionAnticipo(p_CODE, USUA_ID)
-
-                    Dim strCodAsientoVentaAlmacen As String
-
+                    Dim strCodAsientoVenta As String = ""
+                    Dim strCodAsientoCobroVenta As String = ""
                     Dim dtCabecera As New DataTable
-                    dtCabecera = nvVenta.ListarDocumentosVenta(p_CODE, "", "", "", "", "", "", "", "")
 
-                    If dtCabecera.Rows(0)("VENTA_RAPIDA_IND") = "S" Then
-                        strCodAsientoVentaAlmacen = oCTGeneracionAsientos.AsientoVentaAlmacen(p_CODE, USUA_ID)
+                    dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "Y")
+
+                    If dtCabecera.Rows(0)("TIPO_DCTO") <> "0101" Then 'DINERO POR ENCARGO, TICKETS Y OTROS (EL CODÍGO 0101 SE LE ASIGNA A ESE TIPO DE DOCS.)
+                        strCodAsientoVenta = oCTGeneracionAsientos.GenerarAsientoVenta(p_CODE, p_NCMOCONT_CODIGO, USUA_ID) 'DPORTA 17/01/2023
+                    Else
+                        strCodAsientoVenta = "NO_ASIENTO_VENTA"
                     End If
 
-                    Dim strCodAsientoCobroVenta As String
-                    strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(p_CODE)
+                    If dtCabecera.Rows(0)("ANTICIPO_IND") = "SI" Then
+                        Dim lstCodAsientoVentaAplicacionAnticipo As New List(Of String)
+                        lstCodAsientoVentaAplicacionAnticipo = oCTGeneracionAsientos.AsientoVentaAplicacionAnticipo(p_CODE, USUA_ID)
+                    End If
+
+                    'If dtCabecera.Rows(0)("VENTA_RAPIDA_IND") = "S" Then
+                    '    Dim strCodAsientoVentaAlmacen As String
+                    '    strCodAsientoVentaAlmacen = oCTGeneracionAsientos.AsientoVentaAlmacen(p_CODE, USUA_ID)
+                    'End If
+
+                    If dtCabecera.Rows(0)("ASIENTO_COBRO") <> "SIN_AMORTIZAR" Then 'SOLO SE HA GENERADO EL CRÉDITO EN NVMDOCV O NVMDOCS
+                        If dtCabecera.Rows(0)("ASIENTO_COBRO") = "NO" Or dtCabecera.Rows(0)("PAGADO_IND") = "NO" Then
+                            strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(p_CODE, dtCabecera.Rows(0)("ASIENTO_COBRO"), dtCabecera.Rows(0)("PAGADO_IND"))
+                            If strCodAsientoCobroVenta = "" Then
+                                strCodAsientoCobroVenta = "SIN_CTA_CONTABLE_ORIGEN_COBRO"
+                            End If
+                        ElseIf dtCabecera.Rows(0)("ASIENTO_COBRO") = "SI" Then
+                            strCodAsientoCobroVenta = "YA_TIENE_ASIENTO_COBRO"
+                        End If
+                    Else
+                        strCodAsientoVenta = "NO_GENERA_ASIENTO_VENTA"
+                    End If
+
+                    If strCodAsientoVenta = "NO_ASIENTO_VENTA" Then
+                        strCodAsientoVenta = strCodAsientoCobroVenta
+                    End If
 
                     res = strCodAsientoVenta
 
@@ -824,7 +845,7 @@ Public Class NVMDOCV : Implements IHttpHandler
                             resb.Append("""USUA_ID"":""" & row("USUA_ID").ToString & """,")
                             resb.Append("""FECHA_ACTV"":""" & row("FECHA_ACTV").ToString & """,")
                             resb.Append("""IMPRESORA_CODE"":""" & row("IMPRESORA_CODE").ToString & """,")
-                            resb.Append("""IMPR_AUTORIZACION"":""" & row("IMPR_AUTORIZACION").ToString & """,")
+                            'resb.Append("""IMPR_AUTORIZACION"":""" & row("IMPR_AUTORIZACION").ToString & """,")
                             resb.Append("""IMPR_SERIE"":""" & row("IMPR_SERIE").ToString & """,")
                             resb.Append("""COD_AUT"":""" & row("COD_AUT").ToString & """,")
                             resb.Append("""DIRECCION_VENTA"":""" & row("DIRECCION_VENTA").ToString & """,")
@@ -838,9 +859,10 @@ Public Class NVMDOCV : Implements IHttpHandler
                             resb.Append("""MOTIVO_EFECTIVO"":""" & row("MOTIVO_EFECTIVO").ToString & """,")
                             resb.Append("""MOTIVO_DESPACHO"":""" & row("MOTIVO_DESPACHO").ToString & """,")
                             resb.Append("""MOVCONT_CODE"":""" & row("MOVCONT_CODE").ToString & """,")
-                            resb.Append("""FORMATO_TICKET_IND"":""" & row("FORMATO_TICKET_IND").ToString & """,")
+                            'resb.Append("""FORMATO_TICKET_IND"":""" & row("FORMATO_TICKET_IND").ToString & """,")
                             resb.Append("""AUTODETRACCION"":""" & row("AUTODETRACCION").ToString & """,") 'DPORTA 25/02/2021
                             resb.Append("""FECHA_EMISION"":""" & row("FECHA_EMISION").ToString & """,") 'DPORTA 10/02/2022
+                            'resb.Append("""ASIENTO_COBRO"":""" & row("ASIENTO_COBRO").ToString & """,") 'DPORTA 10/02/2022
                             resb.Append("""ESTADO_DOC_ELECT"":""" & row("ESTADO_DOC_ELECT").ToString & """")
                             resb.Append("},")
                         Next
@@ -1194,6 +1216,7 @@ Public Class NVMDOCV : Implements IHttpHandler
                         p_ESTADO_IND = IIf(p_ESTADO_IND Is Nothing, "A", p_ESTADO_IND)
                         dt = aut.ListarAutorizacion(String.Empty, p_ESTADO_IND, CTLG, SCSL, TIPO_DCTO)
                         If Not (dt Is Nothing) Then
+                            'dt = SortDataTableColumn(dt, "CODIGO", "ASC")
                             resb.Append("[")
                             Dim formato As String = ""
                             For Each row As DataRow In dt.Rows

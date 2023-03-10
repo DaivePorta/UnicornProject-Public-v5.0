@@ -83,9 +83,6 @@ Public Class NSLAPHO : Implements IHttpHandler
                             End If
                             resb.Append("""ESTADO"" :" & """" & Estado & """,")
 
-
-
-
                             resb.Append("""AUTORIZA"" :" & """" & MiDataRow("AUT_USUA").ToString & """")
                             resb.Append("}")
                             resb.Append(",")
@@ -183,7 +180,8 @@ Public Class NSLAPHO : Implements IHttpHandler
                     dt_faltas_dia = dh.Listar_Faltas_Empleado(ANIO, MES, Nothing, Empr, Sucur, "1")
                     dt_faltas_horas = dh.Listar_Faltas_Empleado(ANIO, MES, Nothing, Empr, Sucur, "2")
                     dtHorasSPro = dh.Listar_Horas_Regularizadas_Sin_Procesar(Empr, Sucur)
-                    dtFechaNPro = lista_fechas_no_procesadas()
+                    'dtFechaNPro = lista_fechas_no_procesadas()
+                    dtFechaNPro = Nothing
                     'New Nomade.NN.NNPlanilla("Bn").Listar_Fechas_No_Procesadas_Biometrico(ANIO, MES, Empr, Sucur)
                     dtHorasSReg = New Nomade.NN.NNPlanilla("Bn").Verifica_marcaciones_no_regularizadas(ANIO, MES, Empr, Sucur)
                     Dim dscto_fal_injust As Double = 0
@@ -237,7 +235,8 @@ Public Class NSLAPHO : Implements IHttpHandler
                                         If dt_faltas_dia(k)("PIDM").ToString = dtEmpleados(i)("PIDM").ToString Then
                                             resb.Append("""FALTAS"" :" & """" & dt_faltas_dia(k)("TOTAL_FALTAS").ToString & """,")
                                             resb.Append("""DSCTO_FAL_INJUST"" :" & """" & dt_faltas_dia(k)("DESCUENTO_X_FALTA").ToString & """,")
-                                            dscto_fal_injust = CDbl(dt_faltas_dia(k)("DESCUENTO_X_FALTA").ToString)
+                                            'dscto_fal_injust = CDbl(dt_faltas_dia(k)("DESCUENTO_X_FALTA").ToString)
+                                            dscto_fal_injust = -Math.Round(CDbl(dt_faltas_dia(k)("REM_EMPLEADO_DIA").ToString()) * Int(dt_faltas_dia(k)("DIAS_NO_LABORADOS").ToString()), 2)
                                             bool2 = True
                                             Exit For
 

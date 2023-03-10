@@ -15,26 +15,13 @@
 
             </div>--%>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         <div class="row-fluid">
             <div class="span12">
                 <div id="Div1" class="portlet box blue">
                     <div class="portlet-title">
                         <h4><i class="icon-reorder"></i>MATENEDOR DE ASISTENCIAS</h4>
                         <div class="actions">
-                            <a class="btn green" href="?f=nsmform"><i class="icon-plus"></i>Nuevo</a>
+                            <a class="btn green" href="?f=nsmasis"><i class="icon-plus"></i>Nuevo</a>
                             <a class="btn red" href="?f=nslform"><i class="icon-list"></i>Listar</a>
                         </div>
 
@@ -60,15 +47,15 @@
                     </div>
                 </div>--%>
                         <div class="row-fluid">
-                            <div class="span6">
+                            <div class="span12">
                                 <div class="row-fluid">
-                                    <div class="span4">
+                                    <div class="span2">
                                         <div class="control-group">
                                             <label class="control-label" for="cboSucursal">
                                                 SUCURSAL</label>
                                         </div>
                                     </div>
-                                    <div class="span8">
+                                    <div class="span10">
                                         <div class="control-group">
                                             <div class="controls">
                                                 <%--<input id="txtBiometrico" class="span12" type="number" min="0" max="7"/>--%>
@@ -79,11 +66,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="span6">
+                            <%--<div class="span6">
                                 <div class="control-group">
-                                    <%--<a id="A1" class="btn blue" href="javascript:CargaConfiguracion();"><i class="icon-search"></i>  MOSTRAR</a>--%>
+                                    <a id="A1" class="btn blue" href="javascript:CargaConfiguracion();"><i class="icon-search"></i>  MOSTRAR</a>
                                 </div>
-                            </div>
+                            </div>--%>
                         </div>
 
 

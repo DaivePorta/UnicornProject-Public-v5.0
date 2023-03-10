@@ -399,7 +399,7 @@ Public Class NVMANTI : Implements IHttpHandler
                                     resb.Append("""USUA_ID"":""" & row("USUA_ID").ToString & """,")
                                     resb.Append("""FECHA_ACTV"":""" & row("FECHA_ACTV").ToString & """,")
                                     resb.Append("""IMPRESORA_CODE"":""" & row("IMPRESORA_CODE").ToString & """,")
-                                    resb.Append("""IMPR_AUTORIZACION"":""" & row("IMPR_AUTORIZACION").ToString & """,")
+                                    'resb.Append("""IMPR_AUTORIZACION"":""" & row("IMPR_AUTORIZACION").ToString & """,")
                                     resb.Append("""IMPR_SERIE"":""" & row("IMPR_SERIE").ToString & """,")
                                     resb.Append("""COD_AUT"":""" & row("COD_AUT").ToString & """,")
                                     resb.Append("""MOVCONT_CODE"":""" & row("MOVCONT_CODE").ToString & """,")
@@ -476,78 +476,86 @@ Public Class NVMANTI : Implements IHttpHandler
 
                 Case "GEN_ASIENTO" ' Suma fecha de emision más plazo de pago
 
-                    Dim oNCParametros As New Nomade.NC.NCParametros("Bn")
-                    Dim oDT_Param As New DataTable()
-                    oDT_Param = oNCParametros.ListarParametros("ECON", "")
-                    If oDT_Param Is Nothing Then
-                        Throw New System.Exception("No se encontró el parámetro ECON: Empresa usa Contabilidad.")
-                    End If
-                    If oDT_Param.Rows.Count = 0 Then
-                        Throw New System.Exception("No se encontró el parámetro ECON: Empresa usa Contabilidad.")
-                    End If
-                    Dim sUsaContab As String = oDT_Param.Rows(0)("VALOR")
-                    If Not sUsaContab.Equals("S") Then
-                        Throw New System.Exception("[Advertencia]: La empresa no tiene la opción contable activada.")
-                    End If
+                    'Dim oNCParametros As New Nomade.NC.NCParametros("Bn")
+                    'Dim oDT_Param As New DataTable()
+                    'oDT_Param = oNCParametros.ListarParametros("ECON", "")
+                    'If oDT_Param Is Nothing Then
+                    '    Throw New System.Exception("No se encontró el parámetro ECON: Empresa usa Contabilidad.")
+                    'End If
+                    'If oDT_Param.Rows.Count = 0 Then
+                    '    Throw New System.Exception("No se encontró el parámetro ECON: Empresa usa Contabilidad.")
+                    'End If
+                    'Dim sUsaContab As String = oDT_Param.Rows(0)("VALOR")
+                    'If Not sUsaContab.Equals("S") Then
+                    '    Throw New System.Exception("[Advertencia]: La empresa no tiene la opción contable activada.")
+                    'End If
 
-                    Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+                    'Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
 
-                    Dim oDT_ConfigAsientoDocVenta As New DataTable
-                    oDT_ConfigAsientoDocVenta = oCTMovimientoContable.fnGetConfigAsientoDocAnticipo(p_CODE)
-                    Dim oDT_Asiento As New DataTable
-                    oDT_Asiento = oCTMovimientoContable.fnGetAsientoContDocAnticipo(p_CODE)
-
+                    ''Dim oDT_ConfigAsientoDocVenta As New DataTable
+                    ''oDT_ConfigAsientoDocVenta = oCTMovimientoContable.fnGetConfigAsientoDocAnticipo(p_CODE)
+                    'Dim oDT_Asiento As New DataTable
+                    'oDT_Asiento = oCTMovimientoContable.fnGetAsientoContDocAnticipo(p_CODE)
+                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
                     Dim sCodMovCont As String = ""
 
-                    Dim oDT_DocVenta As New DataTable
-                    oDT_DocVenta = nvVenta.fnGetDocAnti(p_CODE)
-                    If oDT_DocVenta Is Nothing Then
-                        Throw New System.Exception("No se pudo generar el Asiento Contable. No se encontró el documento de anticipo.")
-                    End If
+                    sCodMovCont = oCTGeneracionAsientos.GenerarAsientoAnticipo(p_CODE, p_NCMOCONT_CODIGO, USUA_ID) 'DPORTA 02/02/2023
 
-                    Dim oDR_DocVenta As DataRow = oDT_DocVenta.NewRow
-                    oDR_DocVenta = oDT_DocVenta.Rows(0)
+                    Dim dtCabecera As New DataTable
+                    dtCabecera = nvVenta.ListarCabAnticipo(p_CODE)
 
-                    Dim sAnuladoInd As String = oDR_DocVenta("AnuladoInd")
-                    If sAnuladoInd.Equals("S") Then
-                        Throw New System.Exception("[Advertencia]: No se pudo generar el Asiento Contable. El documento de anticipo está anulado.")
-                    End If
+                    Dim strCodAsientoCobroVenta As String
+                    strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroAnticipo(p_CODE, dtCabecera.Rows(0)("ASIENTO_COBRO"), dtCabecera.Rows(0)("PAGADO_IND"))
 
-                    Dim sCompletoInd As String = oDR_DocVenta("CompletoInd")
-                    If sCompletoInd.Equals("N") Then
-                        Throw New System.Exception("[Advertencia]: No se pudo generar el Asiento Contable. El documento de anticipo no está completado.")
-                    End If
+                    'Dim oDT_DocVenta As New DataTable
+                    'oDT_DocVenta = nvVenta.fnGetDocAnti(p_CODE)
+                    'If oDT_DocVenta Is Nothing Then
+                    '    Throw New System.Exception("No se pudo generar el Asiento Contable. No se encontró el documento de anticipo.")
+                    'End If
 
-                    oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+                    'Dim oDR_DocVenta As DataRow = oDT_DocVenta.NewRow
+                    'oDR_DocVenta = oDT_DocVenta.Rows(0)
 
-                    Dim sFechaEmision As String = Utilities.fechaLocal(oDR_DocVenta("FECHA_EMISION"))
-                    Dim sFechaTransac As String = Utilities.fechaLocal(oDR_DocVenta("FECHA_TRANS"))
-                    sCodMovCont = oCTMovimientoContable.fnAgregarMovCont(oDR_DocVenta("CodEmpresa"), oDR_DocVenta("CodEstablec"), oDR_DocVenta("ANIO_PERIODO"),
-                                                                         oDR_DocVenta("MES_PERIODO"), p_NCMOCONT_CODIGO, "A", sFechaEmision, sFechaTransac,
-                                                                         oDR_DocVenta("GLOSA"), oDR_DocVenta("MONE_CODE"), oDR_DocVenta("TC"), oDR_DocVenta("PIDM"),
-                                                                         oDR_DocVenta("CodAnticipo"), USUA_ID,, oTransaction)
+                    'Dim sAnuladoInd As String = oDR_DocVenta("AnuladoInd")
+                    'If sAnuladoInd.Equals("S") Then
+                    '    Throw New System.Exception("[Advertencia]: No se pudo generar el Asiento Contable. El documento de anticipo está anulado.")
+                    'End If
 
-                    If oDT_Asiento Is Nothing Then
-                        Throw New System.Exception("[Advertencia]: No se pudo generar el Asiento Contable. No se pudo obtener la configuración del asiento contable.")
-                    End If
+                    'Dim sCompletoInd As String = oDR_DocVenta("CompletoInd")
+                    'If sCompletoInd.Equals("N") Then
+                    '    Throw New System.Exception("[Advertencia]: No se pudo generar el Asiento Contable. El documento de anticipo no está completado.")
+                    'End If
 
-                    Dim iItem As Integer = 0
-                    Dim sFechaDoc As String
-                    For Each oDR As DataRow In oDT_Asiento.Rows
-                        iItem = iItem + 1
-                        sFechaDoc = Utilities.fechaLocal(oDR("FECHA_DCTO"))
-                        Dim sCOD_CCOSTO_CAB As String = IIf(IsDBNull(oDR("COD_CCOSTO_CAB")), Nothing, oDR("COD_CCOSTO_CAB"))
-                        Dim sCOD_CCOSTO_DET As String = IIf(IsDBNull(oDR("COD_CCOSTO_DET")), Nothing, oDR("COD_CCOSTO_DET"))
-                        oCTMovimientoContable.fnAgregarMovContabDet(sCodMovCont, iItem, oDR("ITEM_TIPO"), oDR("GLOSA"), oDR("PIDM"), oDR("COD_DOC_IDENT"), oDR("COD_SUNAT_DOC_IDENT"),
-                                                                    oDR("DOC_IDENT"), oDR("NRO_DOC_IDENT"), sCOD_CCOSTO_CAB, sCOD_CCOSTO_DET, oDR("CCOSTO"), oDR("COD_DCTO"),
-                                                                    oDR("COD_SUNAT_DCTO"), oDR("DCTO"), oDR("SERIE_DCTO"), oDR("NRO_DCTO"), sFechaDoc, oDR("COD_MONE"),
-                                                                    oDR("COD_SUNAT_MONE"), oDR("CTA_ID"), oDR("CTA"), oDR("TC"), oDR("DEBE"), oDR("HABER"),
-                                                                    oDR("DEBE_MN"), oDR("HABER_MN"), oDR("DEBE_ME"), oDR("HABER_ME"), oTransaction)
-                    Next
+                    'oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
 
-                    nvVenta.fnActualizarCodContabDocAnticipo(p_CODE, sCodMovCont, oTransaction)
+                    'Dim sFechaEmision As String = Utilities.fechaLocal(oDR_DocVenta("FECHA_EMISION"))
+                    'Dim sFechaTransac As String = Utilities.fechaLocal(oDR_DocVenta("FECHA_TRANS"))
+                    'sCodMovCont = oCTMovimientoContable.fnAgregarMovCont(oDR_DocVenta("CodEmpresa"), oDR_DocVenta("CodEstablec"), oDR_DocVenta("ANIO_PERIODO"),
+                    '                                                     oDR_DocVenta("MES_PERIODO"), p_NCMOCONT_CODIGO, "A", sFechaEmision, sFechaTransac,
+                    '                                                     oDR_DocVenta("GLOSA"), oDR_DocVenta("MONE_CODE"), oDR_DocVenta("TC"), oDR_DocVenta("PIDM"),
+                    '                                                     oDR_DocVenta("CodAnticipo"), USUA_ID,, oTransaction)
 
-                    oTransaction.fnCommitTransaction()
+                    'If oDT_Asiento Is Nothing Then
+                    '    Throw New System.Exception("[Advertencia]: No se pudo generar el Asiento Contable. No se pudo obtener la configuración del asiento contable.")
+                    'End If
+
+                    'Dim iItem As Integer = 0
+                    'Dim sFechaDoc As String
+                    'For Each oDR As DataRow In oDT_Asiento.Rows
+                    '    iItem = iItem + 1
+                    '    sFechaDoc = Utilities.fechaLocal(oDR("FECHA_DCTO"))
+                    '    Dim sCOD_CCOSTO_CAB As String = IIf(IsDBNull(oDR("COD_CCOSTO_CAB")), Nothing, oDR("COD_CCOSTO_CAB"))
+                    '    Dim sCOD_CCOSTO_DET As String = IIf(IsDBNull(oDR("COD_CCOSTO_DET")), Nothing, oDR("COD_CCOSTO_DET"))
+                    '    oCTMovimientoContable.fnAgregarMovContabDet(sCodMovCont, iItem, oDR("ITEM_TIPO"), oDR("GLOSA"), oDR("PIDM"), oDR("COD_DOC_IDENT"), oDR("COD_SUNAT_DOC_IDENT"),
+                    '                                                oDR("DOC_IDENT"), oDR("NRO_DOC_IDENT"), sCOD_CCOSTO_CAB, sCOD_CCOSTO_DET, oDR("CCOSTO"), oDR("COD_DCTO"),
+                    '                                                oDR("COD_SUNAT_DCTO"), oDR("DCTO"), oDR("SERIE_DCTO"), oDR("NRO_DCTO"), sFechaDoc, oDR("COD_MONE"),
+                    '                                                oDR("COD_SUNAT_MONE"), oDR("CTA_ID"), oDR("CTA"), oDR("TC"), oDR("DEBE"), oDR("HABER"),
+                    '                                                oDR("DEBE_MN"), oDR("HABER_MN"), oDR("DEBE_ME"), oDR("HABER_ME"), oTransaction)
+                    'Next
+
+                    'nvVenta.fnActualizarCodContabDocAnticipo(p_CODE, sCodMovCont, oTransaction)
+
+                    'oTransaction.fnCommitTransaction()
 
                     res = sCodMovCont
 

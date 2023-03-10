@@ -98,6 +98,21 @@
                         </div>
                     </div>
 
+                    <div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="txtCodigo">PERIODO</label>
+                        </div>
+                    </div>
+
+                   <div class="span2">
+                        <div class="control-group">
+                            <div class="controls">
+                                <input class="span10" style="width: 75%;" data-date-format="yyyy" type="text" id="optanho" name="optanho">
+                                <input class="span10" style="width: 75%;" type="text" id="optmes" data-date-format="MM" aria-disabled="true" name="optmes">
+                                
+                            </div>
+                        </div>                      
+                    </div>
 
                 </div>
 

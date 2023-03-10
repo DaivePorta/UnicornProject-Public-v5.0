@@ -120,6 +120,7 @@
         data.append('p_MES', mes);
         data.append('p_RUC', $('#cboEmpresa option:selected').attr('ruc'));
         data.append('p_MES_DES', $('#cboMes option:selected').html());
+        data.append('p_DESC_EMPRESA', $('#cboEmpresa option:selected').html());
 
         //Bloquear("ventana");
         var jqxhr = $.ajax({

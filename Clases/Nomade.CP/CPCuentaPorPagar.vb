@@ -1060,7 +1060,7 @@
     End Function
 
     Public Function Verificar_Provision_Gasto(ByVal p_PIDM_BENEFICIARIO As String, ByVal p_SERIE As String,
-                                        ByVal p_NUMERO As String, p_TIPO As String, p_COD_GASTO As String, ByVal p_TIPO_DCTO As String) As String
+                                        ByVal p_NUMERO As String, p_TIPO As String, p_COD_GASTO As String, ByVal p_TIPO_DCTO As String, ByVal p_CTLG_CODE As String) As String
         Try
             Dim msg As String
 
@@ -1075,7 +1075,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO", p_TIPO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_COD_GASTO", p_COD_GASTO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_DCTO", p_TIPO_DCTO, ParameterDirection.Input, 253))
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SALIDA", String.Empty, ParameterDirection.Output, 253))
             cmd1 = cn.Ejecuta_parms(cmd)
             msg = cmd1.Parameters("@p_SALIDA").Value

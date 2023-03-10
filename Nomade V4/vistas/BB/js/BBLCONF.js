@@ -8,7 +8,7 @@
         var mm = $("#optmes").val();
         var fe = mm + " " + aa;
         fe = fe.toUpperCase();
- 
+
 
         $.ajax({
             type: "POST",
@@ -18,16 +18,16 @@
             success: function (datos) {
                 if (datos == null) {
                     iniciaTabla('tblConfiguracion');
-          
+
                     return false;
                 }
                 var combo = "";
-           
+
                 var parms = {
                     data: datos,
                     /*"iDisplayLength": -1,*/
                     columns: [
-                
+
                         {
                             data: "CODIGO",
                             createdCell: function (td, cellData, rowData, row, col) {
@@ -37,60 +37,60 @@
                         },
                         //{
                         //    data: "COLUMNA",
-                        
+
                         //    createdCell: function (td, cellData, rowData, row, col) {
-                           
+
                         //        $(td).attr('align', 'center')
                         //       /* $(td).css('display', 'none')*/
-                           
+
                         //    }
                         //},
                         {
                             data: "DESCRIPCION",
                             createdCell: function (td, cellData, rowData, row, col) {
-                     
+
                                 $(td).attr('align', 'left')
                             }
                         },
                         {
                             data: "PADRE",
                             createdCell: function (td, cellData, rowData, row, col) {
-                           
+
                                 $(td).attr('align', 'center')
                             }
                         },
-                
+
                         {
                             data: "AFP",
                             createdCell: function (td, cellData, rowData, row, col) {
-                          
+
                                 $(td).attr('align', 'center')
                             }
                         },
                         {
                             data: "ONP",
                             createdCell: function (td, cellData, rowData, row, col) {
-                       
+
                                 $(td).attr('align', 'center')
                             }
                         },
                         {
                             data: "OTROS",
                             createdCell: function (td, cellData, rowData, row, col) {
-                          
+
                                 $(td).attr('align', 'center')
                                 /*$(td).css('display', 'none')*/
                             }
                         },
-                         {
-                             data: "NESTADO",
-                             createdCell: function (td, cellData, rowData, row, col) {
+                        {
+                            data: "NESTADO",
+                            createdCell: function (td, cellData, rowData, row, col) {
 
-                                 $(td).attr('align', 'center')
-             
-                             }
-                         }
-              
+                                $(td).attr('align', 'center')
+
+                            }
+                        }
+
                     ]
 
                 }
@@ -99,34 +99,34 @@
 
                 $('#tblConfiguracion').removeAttr('style');
 
-         
-                    $('#tblConfiguracion tbody').on('click', 'tr', function () {
 
-                        if ($(this).hasClass('selected')) {
-                            $(this).removeClass('selected');
-                        }
-                        else {
-                            oTableRegimen.$('tr.selected').removeClass('selected');
-                            $(this).addClass('selected');
+                $('#tblConfiguracion tbody').on('click', 'tr', function () {
 
-                            var pos = oTableRegimen.fnGetPosition(this);
-                            var row = oTableRegimen.fnGetData(pos);
-                            var codigo = row.CODIGO;
-                    
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                    }
+                    else {
+                        oTableRegimen.$('tr.selected').removeClass('selected');
+                        $(this).addClass('selected');
 
-                         aa = $("#optanho").val();
-                         mm = $("#optmes").val();
-                         fe = mm + " " + aa;
-                         fe = fe.toUpperCase();
+                        var pos = oTableRegimen.fnGetPosition(this);
+                        var row = oTableRegimen.fnGetData(pos);
+                        var codigo = row.CODIGO;
 
-                            window.location.href = '?f=BBMCONF&codigo=' + codigo + "&fe=" + fe + "&Emp=" + emp;
-                     
-                        }
 
-                    });
-           
+                        aa = $("#optanho").val();
+                        mm = $("#optmes").val();
+                        fe = mm + " " + aa;
+                        fe = fe.toUpperCase();
 
-          
+                        window.location.href = '?f=BBMCONF&codigo=' + codigo + "&fe=" + fe + "&Emp=" + emp;
+
+                    }
+
+                });
+
+
+
 
 
 
@@ -151,7 +151,7 @@
         });
 
 
-        
+
     }
 
 
@@ -160,7 +160,7 @@
     return {
         init: function () {
 
-        
+
             eventos();
             $('#optanho').datepicker({ 'minViewMode': 2, 'autoclose': true }).datepicker("setDate", new Date()).datepicker('setEndDate', '-0y').datepicker('setStartDate', '-10y').keydown(function () { return false; });
             $('#optmes').datepicker({ 'minViewMode': 1, 'autoclose': true }).on("show", function (e) { $(".datepicker-months thead").hide(); $(".datepicker-months tbody tr td").css("width", "180px"); }).keydown(function () { return false; }).datepicker("setDate", new Date());
@@ -175,8 +175,8 @@
 
 
 
-   
-    
+
+
 }();
 
 
@@ -188,9 +188,13 @@
 function Listar_Concepto() {
     $('#cboConcepto').html('');
     var tipa = $('#cboParemetro').val();
+    aa = $("#optanho").val();
+    mm = $("#optmes").val();
+    var fe = mm + " " + aa;
+    fe = fe.toUpperCase();
     $.ajax({
         type: "post",
-        url: "vistas/BB/ajax/BBMCONF.ASHX?Opcion=X&tipa=" + tipa,
+        url: "vistas/BB/ajax/BBMCONF.ASHX?Opcion=X&tipa=" + tipa + "&fe=" + fe,
         async: false,
         success: function (datos) {
             $('#cboConcepto').append(datos);
@@ -205,9 +209,12 @@ function Listar_Concepto() {
 function Listar_Concepto_Codigo(codg) {
     $('#cboConcepto').html('');
     var tipa = $('#cboParemetro').val();
+    aa = $("#optanho").val();
+    mm = $("#optmes").val();
+    var fe = mm + " " + aa;
     $.ajax({
         type: "post",
-        url: "vistas/BB/ajax/BBMCONF.ASHX?Opcion=Z&codg=" + codg + "&tipa=" + tipa,
+        url: "vistas/BB/ajax/BBMCONF.ASHX?Opcion=Z&codg=" + codg + "&tipa=" + tipa + "&fe=" + fe,
         async: false,
         success: function (datos) {
             $('#cboConcepto').append(datos);
@@ -220,9 +227,21 @@ function Listar_Concepto_Codigo(codg) {
 };
 
 
+function changeDate(ev) {
+    var fechaSeleccionada = new Date(ev.date);
+    var year = fechaSeleccionada.getFullYear();
+    var month = fechaSeleccionada.getMonth() + 1;
+    var monthName = monthNames[month - 1];
 
+    var fe = monthName + " " + year;
+    Listar_Concepto(fe); // Apply changes to Listar_Concepto function
 
-
+    // Apply changes to Listar_Concepto_Codigo function
+    var codg = $("#txtCodigo").val();
+    if (codg != "") {
+        Listar_Concepto_Codigo(codg, fe);
+    }
+}
 
 
 var BBMCONF = function () {
@@ -247,8 +266,26 @@ var BBMCONF = function () {
     var CargaInicial = function () {
 
         var codigo = ObtenerQueryString("codigo");
-        var fe = ObtenerQueryString("fe");
         var emp = ObtenerQueryString("Emp");
+        var fe = ObtenerQueryString("fe");
+
+        if (typeof fe !== 'undefined') {
+            var feParts = fe.split("%20");
+            var monthNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+            var monthName = fe.match(/^[a-zA-Z]+/)[0].toUpperCase();
+            var mes = monthNames.indexOf(monthName) + 2;
+            var year = feParts[1];
+            var day = "01";
+            if (mes == 13) {
+                mes = 1;
+                year++;
+            }
+            var dateString = year + "-" + (mes < 10 ? "0" : "") + mes + "-" + day;
+            var dateObj = new Date(dateString);
+            $('#optanho').datepicker('update', dateObj);
+            $('#optmes').datepicker('update', dateObj);
+        }
+
         if (codigo != null) {
 
             $("#grabar").html("<i class='icon-pencil'></i>Modificar");
@@ -269,15 +306,14 @@ var BBMCONF = function () {
                     $("#cboConcepto").val(datos[0].DESCRIPCION);
                     $('#cboConcepto').change();
                     $("#hfEstado").val(datos[0].ESTADO);
-                 
+
                     $("#hfPeriodo").val(datos[0].PERIODO);
                     $("#hfEmpresa").val(emp);
                     //$("#cboTipo").val(datos[0].TIPO);
                     $("#cboTipo").select2("val", datos[0].TIPO).change();
 
-
                     if (datos[0].AFP == "1") {
-          
+
                         $('#uniform-cbAFP span').removeClass().addClass("checked");
                         $('#cbAFP').attr('checked', true);
                     } else {
@@ -300,27 +336,36 @@ var BBMCONF = function () {
                         $('#uniform-cboEstado span').removeClass();
                         $('#cboEstado').attr('checked', false);
                     }
-  
+
                 },
                 error: function (msg) {
                     alert(msg);
                 }
             });
         } else {
-            $("#hfPeriodo").val(fe);
+            $("#hfPeriodo").val(fe); // Use feISO instead of fe
             $("#hfEmpresa").val(emp);
-  
+
         }
     }
 
 
     return {
         init: function () {
+
+            $('#optanho').datepicker({ 'minViewMode': 2, 'autoclose': true }).datepicker("setDate", new Date()).datepicker('setEndDate', '-0y').datepicker('setStartDate', '-10y').on('changeDate', function () {
+                Listar_Concepto();
+            }).keydown(function () { return false; });
+            $('#optmes').datepicker({ 'minViewMode': 1, 'autoclose': true }).on("show", function (e) { $(".datepicker-months thead").hide(); $(".datepicker-months tbody tr td").css("width", "180px"); }).on('changeDate', function () {
+                Listar_Concepto();
+            }).keydown(function () { return false; }).datepicker("setDate", new Date());
+
+
             Listar_Parametro();
             Listar_Concepto();
             CargaInicial();
-          
-            
+
+
         }
     };
 
@@ -337,7 +382,7 @@ function Nuevo() {
 
     window.location.href = "?f=BBMCONF&fe=" + fe + "&Emp=" + emp;
 
- 
+
 }
 
 function NuevoListado() {
@@ -359,11 +404,10 @@ function Crear() {
         var descripcion = $('#cboConcepto').val();
         var padre = $('#cboParemetro').val();
         var usuario = $('#ctl00_lblusuario').html();
-
-  
-
-
-
+        aa = $("#optanho").val();
+        mm = $("#optmes").val();
+        var fe = mm + " " + aa;
+        fe = fe.toUpperCase();
 
         var tipo = $('#cboTipo').val();
 
@@ -372,14 +416,14 @@ function Crear() {
         var afp = $('#cbAFP').is(':checked') ? '1' : '0';
         var onp = $('#cbONP').is(':checked') ? '1' : '0';
         var otro = "0";
-   
+
 
         Bloquear("ventana");
 
         $.post("vistas/BB/ajax/BBMCONF.ASHX",
             {
                 opcion: 'C', emp: emp, descripcion: descripcion, padre: padre, estado: estado,
-                afp: afp, onp: onp, otro: otro, usuario: usuario, tipo: tipo
+                afp: afp, onp: onp, otro: otro, usuario: usuario, tipo: tipo, fe: fe
             },
             function (res) {
                 Desbloquear("ventana");
@@ -389,9 +433,9 @@ function Crear() {
                     $("#grabar").attr("href", "javascript:Modificar()");
                     exito();
                 } else {
-                    
 
-            
+
+
                 }
             });
     }
@@ -404,14 +448,19 @@ function Modificar() {
     v_Errors = Validar();
 
     if (v_Errors) {
-        
+
         var codigo = $("#txtCodigo").val();
         var emp = $("#ctl00_hddctlg").val();
         var descripcion = $('#cboConcepto').val();
         var padre = $('#cboParemetro').val();
         var usuario = $('#ctl00_lblusuario').html();
         var periodo = $("#hfPeriodo").val();
-      
+
+        aa = $("#optanho").val();
+        mm = $("#optmes").val();
+        var fe = mm + " " + aa;
+        fe = fe.toUpperCase();
+
 
         var estado = $('#cboEstado').is(':checked') ? '1' : '0';
 
@@ -420,19 +469,19 @@ function Modificar() {
         var afp = $('#cbAFP').is(':checked') ? '1' : '0';
         var onp = $('#cbONP').is(':checked') ? '1' : '0';
         var otro = "0";
-             
+
 
         Bloquear("ventana");
 
         $.post("vistas/BB/ajax/BBMCONF.ASHX",
             {
-                opcion: 'M',codigo:codigo, emp: emp, descripcion: descripcion,periodo:periodo, padre: padre, estado: estado,
-                afp: afp, onp: onp, otro: otro, usuario: usuario, tipo: tipo
+                opcion: 'M', codigo: codigo, emp: emp, descripcion: descripcion, periodo: periodo, padre: padre, estado: estado,
+                afp: afp, onp: onp, otro: otro, usuario: usuario, tipo: tipo, fe: fe
             },
             function (res) {
-               
+
                 if (res == 'OK') {
-                    
+
                     exito();
                 }
 
@@ -456,8 +505,8 @@ function Validar() {
     //}
     //else {
     if (!vErrorsNotMessage(["cboConcepto"])) {
-            v_Errors = false;
-        }
+        v_Errors = false;
+    }
     //}
 
     if (!v_Errors) {

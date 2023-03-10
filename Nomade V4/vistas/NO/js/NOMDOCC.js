@@ -3212,7 +3212,7 @@ var calcularDetraccionOrigen = function () {
     if ($('#cbo_doc_origen').val() !== '') {
         totales.each(function () {
             if (!isNaN(parseFloat($(this).val()))) {
-                detraccion_origen += Math.round(($(this).val()));
+                detraccion_origen += parseFloat($(this).val());
             } else {
                 detraccion_origen += 0;
             }
@@ -4197,7 +4197,7 @@ var AddProdDet = function () {
     data.append('PAGO_FINAL_IND', $("#chk_pag_final").is(":checked") ? "S" : "N");
     data.append('IMPUESTO_IND', $("#chk_inc_igv").is(":checked") ? "S" : "N");
     if (tipoDocCode == '0001') {
-        data.append('DETALLE_DETRACCION', (parseFloat($("#hfporcentaje_detraccion").val()) * parseFloat($("#txt_importe").val()) / 100));
+        data.append('DETALLE_DETRACCION', Math.round(parseFloat($("#hfporcentaje_detraccion").val()) * parseFloat($("#txt_importe").val()) / 100));
     } else {
         data.append('DETALLE_DETRACCION', 0);
     }
@@ -4207,7 +4207,7 @@ var AddProdDet = function () {
     }
 
     if (tipoDocCode == '0001') {
-        var monto_dtrac = parseFloat($("#txt_monto_detraccion").val()) + (parseFloat($("#hfporcentaje_detraccion").val()) * parseFloat($("#txt_importe").val()) / 100);
+        var monto_dtrac = Math.round(parseFloat($("#txt_monto_detraccion").val()) + (parseFloat($("#hfporcentaje_detraccion").val()) * parseFloat($("#txt_importe").val()) / 100));
     } else {
         var monto_dtrac = 0;
     }

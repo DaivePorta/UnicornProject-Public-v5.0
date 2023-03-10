@@ -212,12 +212,12 @@ var NCMCOAC = function () {
                 async: false,
                 success: function (datos) {
                     select.empty();
-                    select.append('<option value="T">TODOS</option>');
+                    //select.append('<option value="T">TODOS</option>');
                     if (datos != null) {
                         for (var i = 0; i < datos.length; i++) {
                             select.append('<option  value="' + datos[i].COD + '">' + datos[i].PERIODO_DESC + '</option>');
                         }
-                        select.select2("val", "T");
+                        //select.select2("val", "");
 
                     } else {
                         alertCustom("Error cargar periodo")
@@ -698,7 +698,7 @@ var NCMCOAC = function () {
                                                 $("#txtPeriodoNoActual").attr("disabled", "disabled");
                                             }
                                         } else {
-                                            $("#cboPeriodoG").select2("val", "T");
+                                            $("#cboPeriodoG").select2("val", "");
                                             $("#cboPeriodoG").attr("disabled", "disabled");
                                             $(".lb_periodo").hide();
                                             $(".slt_periodo").hide();
@@ -709,24 +709,103 @@ var NCMCOAC = function () {
                                         }
                                         
                                     } else {
-                                        $("#cboPeriodoG").attr("disabled", "disabled");
-                                        $(".lb_periodo").hide();
-                                        $(".slt_periodo").hide();
-                                        $('.cbo_periodo').hide();
-                                        if ($("#txtPeriodoNoActual").length) {
-                                            $("#txtPeriodoNoActual").val("");
-                                        }
+                                        //$("#cboPeriodoG").attr("disabled", "disabled");
+                                        //$(".lb_periodo").hide();
+                                        //$(".slt_periodo").hide();
+                                        //$('.cbo_periodo').hide();
+                                        //if ($("#txtPeriodoNoActual").length) {
+                                        //    $("#txtPeriodoNoActual").val("");
+                                        //}
+                                        $(".lb_periodo").show();
+                                        $(".slt_periodo").show();
+                                        $("#cboPeriodoG").removeAttr("disabled");
+                                        $("#cboPeriodoG").select2("val", "");
                                     }
                                 } else {
-                                    $("#chkComprasG").attr("disabled", true);
+                                    //$("#chkComprasG").attr("disabled", true);
+                                    //$('#uniform-chkComprasG span').removeClass();
+                                    //$('#chkComprasG').attr('checked', false);
+                                    //$("#content_compra_periodo").show();
+                                    //$(".lb_periodo").hide();
+                                    //$(".slt_periodo").hide();
+                                    //$('.cbo_periodo').hide();
+                                    //if ($("#txtPeriodoNoActual").length) {
+                                    //    $("#txtPeriodoNoActual").val("");
+                                    //}
+                                    $("#chkComprasG").removeAttr("disabled");
                                     $('#uniform-chkComprasG span').removeClass();
                                     $('#chkComprasG').attr('checked', false);
                                     $("#content_compra_periodo").show();
-                                    $(".lb_periodo").hide();
-                                    $(".slt_periodo").hide();
-                                    $('.cbo_periodo').hide();
-                                    if ($("#txtPeriodoNoActual").length) {
-                                        $("#txtPeriodoNoActual").val("");
+                                    //$(".lb_periodo").show();
+                                    //$(".slt_periodo").show();
+                                    //$("#cboPeriodoG").removeAttr("disabled");
+                                    //$("#cboPeriodoG").select2("val", "T");
+                                    if (anio_trib !== "" && mes_trib != "") {
+
+                                        var nombre_mes = parseMes(parseFloat(mes_trib));
+                                        var value_periodo = mes_trib + "-" + anio_trib;
+                                        var periodo = nombre_mes + " - " + anio_trib;
+
+                                        $("#cboPeriodoG").select2("val", value_periodo);
+
+                                        if ($("#cboPeriodoG").val() !== null) {
+                                            if ($("#cboPeriodoG").val() == value_periodo) {
+                                                $('.cbo_periodo').hide();
+                                                if ($("#txtPeriodoNoActual").length) {
+                                                    $("#txtPeriodoNoActual").val("");
+                                                }
+                                                $(".lb_periodo").show();
+                                                $(".slt_periodo").show();
+                                                $("#cboPeriodoG").removeAttr("disabled");
+                                            } else {
+                                                $("#cboPeriodoG").attr("disabled", "disabled");
+                                                $(".slt_periodo").hide();
+                                                $(".lb_periodo").show();
+                                                $(".cbo_periodo").show();
+                                                if ($("#txtAnioPeriodo").length && $("#txtMesPeriodo").length) {
+                                                    $("#txtAnioPeriodo").val(anio_trib);
+                                                    $("#txtMesPeriodo").val(mes_trib);
+                                                } else {
+                                                    $('<input/>', {
+                                                        'id': 'txtAnioPeriodo',
+                                                        'type': 'hidden',
+                                                        'value': anio_trib
+                                                    }).appendTo('#data_transaction');
+                                                    $('<input/>', {
+                                                        'id': 'txtMesPeriodo',
+                                                        'type': 'hidden',
+                                                        'value': mes_trib
+                                                    }).appendTo('#data_transaction');
+                                                }
+                                                if ($("#txtPeriodoNoActual").length) {
+                                                    $("#txtPeriodoNoActual").val(periodo);
+                                                } else {
+                                                    $('<input/>', {
+                                                        'id': 'txtPeriodoNoActual',
+                                                        'type': 'text',
+                                                        'class': 'span12',
+                                                        'value': periodo
+                                                    }).appendTo('.cbo_periodo');
+                                                }
+
+                                                $("#txtPeriodoNoActual").attr("disabled", "disabled");
+                                            }
+                                        } else {
+                                            $("#cboPeriodoG").select2("val", "");
+                                            $("#cboPeriodoG").attr("disabled", "disabled");
+                                            $(".lb_periodo").hide();
+                                            $(".slt_periodo").hide();
+                                            $('.cbo_periodo').hide();
+                                            if ($("#txtPeriodoNoActual").length) {
+                                                $("#txtPeriodoNoActual").val("");
+                                            }
+                                        }
+
+                                    } else {
+                                        $(".lb_periodo").show();
+                                        $(".slt_periodo").show();
+                                        $("#cboPeriodoG").removeAttr("disabled");
+                                        $("#cboPeriodoG").select2("val", "");
                                     }
                                 }
 
@@ -945,7 +1024,7 @@ var NCMCOAC = function () {
                     if ($("#chkComprasG").is(":checked")) {
                         chkComprasG = "S";
                         if ($(".slt_periodo").css("display") !== 'none') {
-                            if ($("#cboTipoDocumentoG :selected").attr("gastos") === "S" && $("#cboPeriodoG").val() !== "T") {
+                            if ($("#cboTipoDocumentoG :selected").attr("gastos") === "S" && $("#cboPeriodoG").val() !== "") {
                                 mesPeriodo = $("#cboPeriodoG").val().split("-")[0];
                                 anioPeriodo = $("#cboPeriodoG").val().split("-")[1];
                             }

@@ -70,29 +70,29 @@ Public Class CPMPGDT : Implements IHttpHandler
         origen = context.Request("origen")
         nro_seq = context.Request("nro_seq")
         Try
-        
+
             Select Case flag.ToString()
 
                 Case "1" 'crear pago x banco
                     res = DetraccionProveedor.PagarDetraccionProveedorBanco(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, adicional)
-              
+
                 Case "1B" 'crear pago x caja
                     res = DetraccionProveedor.PagarDetraccionProveedorCaja(detalle, origen, usuario, codigo_apertura, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, monto_total)
-              
-                    
+
+
                 Case "1.1" ' crea lote pago detraccion
                     res = LotePagoDetraccion.CrearLotePagoDetraccion(nro_seq, fecha_pago, monto_total, empresa, detalle, medio_pago, usuario, origen, destino, descripcion, moneda, codigo_apertura, cuenta, pidmcuenta, adicional, tipo)(0)
-                  
+
                 Case "1.2" 'completa pago lote detracciones
                     res = LotePagoDetraccion.CompletarPagoLoteDetraccion(medio_pago, codigo, fecha_pago, usuario, origen, destino, documento, descripcion, codigo_apertura, cuenta, pidmcuenta, adicional, tipo)
-                    
+
                 Case "1.3" ' lista lotes de detracciones detracciones
                     dt = LotePagoDetraccion.ListarPagoLoteDetraccion(String.Empty, empresa, completo)
                     If Not dt Is Nothing Then
                         resb.Append("[")
 
                         For Each row As DataRow In dt.Rows
-                            
+
                             resb.Append("{")
                             resb.Append("""CODIGO"":""" & row("CODIGO").ToString & """,")
                             resb.Append("""NRO_SECUENCIAL"":""" & row("NRO_SECUENCIAL").ToString & """,")
@@ -105,9 +105,9 @@ Public Class CPMPGDT : Implements IHttpHandler
                             resb.Append("""COMPLETADO_IND"":""" & row("COMPLETADO_IND").ToString & """,")
                             resb.Append("""DETALLE"":")
                             resb.Append("[")
-                            
+
                             For Each rowDet As String In row("DETALLE").ToString().Split("|")
-                                dt2 = DetraccionProveedor.ListarDetraccionProveedor(rowDet.ToString().Split(",")(0), String.Empty, String.Empty, empresa, "")
+                                dt2 = DetraccionProveedor.ListarDetraccionProveedor(rowDet.ToString().Split(",")(0), String.Empty, String.Empty, empresa, String.Empty, "")
                                 resb.Append("{")
                                 resb.Append("""CODIGO"":""" & dt2.Rows(0)("CODIGO_DETRACCION").ToString & """,")
                                 resb.Append("""TIPO_DOC"":""" & dt2.Rows(0)("TIPO_DOC").ToString & """,")
@@ -120,12 +120,12 @@ Public Class CPMPGDT : Implements IHttpHandler
                                 resb.Append("""PROVEEDOR"":{""CODIGO"":""" & dt2.Rows(0)("PROVEEDOR").ToString & """,""DOCUMENTO"":""" & dt2.Rows(0)("PROVEEDOR_NDOC").ToString & """,""NOMBRE"":""" & dt2.Rows(0)("NPROVEEDOR").ToString & """}")
                                 resb.Append("},")
                             Next
-                            
+
                             resb.Append("-")
                             resb.Replace("},-", "}")
                             resb.Append("],")
-                            
-                            
+
+
                             resb.Append("""MEDIO_PAGO"":{""CODIGO"":""" & row("MEDIO_PAGO").ToString & """,""NOMBRE"":""" & row("NMEDIO_PAGO").ToString & """},")
                             resb.Append("""USUARIO_COMPLETO"":""" & row("USUARIO_COMPLETO").ToString & """,")
                             resb.Append("""ORIGEN"":""" & row("ORIGEN").ToString & """,")
@@ -136,37 +136,37 @@ Public Class CPMPGDT : Implements IHttpHandler
                             resb.Append("""APERTURA_CODE"":""" & row("APERTURA_CODE").ToString & """,")
                             resb.Append("""ADICIONAL"":""" & row("ADICIONAL").ToString & """,")
                             resb.Append("""CUENTA"":{""CODIGO"":""" & row("CUENTA_CODE").ToString & """,""PIDM"":""" & row("PIDM_CUENTA") & """}")
-                           
+
                             resb.Append("},")
-                          
+
                         Next
-                   
-                    
+
+
                         resb.Append("-")
                         resb.Replace("},-", "}")
-                   
-                        
+
+
                         resb.Append("]")
                         res = resb.ToString()
                     Else
                         res = ""
                     End If
-                   
+
                 Case "1.4"
                     res = LotePagoDetraccion.LitsarSgteNroLoteDetraccion(empresa)
-                    
-                    
+
+
                 Case "2" 'lista forma de pago
-       
+
                     dt = ccPercepcion.ListarFormasPago("", "", "", "A")
                     If dt Is Nothing Then
                         res = GenerarSelect(dt, "codigo", "descripcion_corta", "FOPA")
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "descripcion_corta", "ASC"), "codigo", "descripcion_corta", "FOPA")
                     End If
-             
-                   
-             
+
+
+
                 Case "3"
                     dt = prov.ListarProveedor("0", "A", empresa)
                     If dt Is Nothing Then
@@ -174,20 +174,20 @@ Public Class CPMPGDT : Implements IHttpHandler
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "razon_social", "ASC"), "pidm", "razon_social", "PROVEEDOR")
                     End If
-                
-                    
-                    
+
+
+
                 Case "4"
-                 
+
                     Dim dt As DataTable
                     Dim resb As New StringBuilder
 
-                    dt = DetraccionProveedor.ListarDetraccionProveedor(String.Empty, String.Empty, tipo, empresa, "")
+                    dt = DetraccionProveedor.ListarDetraccionProveedor(String.Empty, String.Empty, tipo, empresa, String.Empty, "")
                     If Not dt Is Nothing Then
                         resb.Append("[")
 
                         For Each row As DataRow In dt.Rows
-                            
+
                             resb.Append("{")
                             resb.Append("""CODIGO"":""" & row("CODIGO_DETRACCION").ToString & """,")
                             resb.Append("""LOTE"":""" & row("LOTE").ToString & """,")
@@ -205,24 +205,24 @@ Public Class CPMPGDT : Implements IHttpHandler
                             resb.Append("""MONEDA"":{""CODIGO"":""" & row("MONE_CODE") & """,""SIMBOLO"":""" & row("MONEDA").ToString & """},")
                             resb.Append("""CTA_DETRACCION"":""" & row("CTA_DETRACCION").ToString & """,")
                             resb.Append("""PROVEEDOR"":{""CODIGO"":""" & row("PROVEEDOR").ToString & """,""DOCUMENTO"":""" & row("PROVEEDOR_NDOC") & """,""NOMBRE"":""" & row("NPROVEEDOR").ToString & """}")
-                           
+
                             resb.Append("},")
-                          
+
                         Next
-                   
-                    
+
+
                         resb.Append("-")
                         resb.Replace("},-", "}")
-                   
-                        
+
+
                         resb.Append("]")
                         res = resb.ToString()
                     Else
                         res = ""
                     End If
-                   
-         
-                    
+
+
+
                 Case "5"
                     Dim p As New NOMADE.NC.NCEmpresa("BN")
                     dt = p.ListarEmpresa(String.Empty, "A", HttpContext.Current.User.Identity.Name)
@@ -231,19 +231,19 @@ Public Class CPMPGDT : Implements IHttpHandler
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "codigo", "descripcion", "EMPRESA")
                     End If
-                
-                
+
+
                 Case "6"
-                  
+
                     dt = s.Listar_DatosBancarios(empresapidm, "", banco, moneda, String.Empty, "A") '0005 cuenta detracciones
                     If dt Is Nothing Then
                         res = GenerarSelect(dt, "code", "DESCRIPCION", "CTABANC")
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "code", "DESCRIPCION", "CTABANC")
                     End If
-                    
+
                 Case "6.5"
-                  
+
                     dt = s.Listar_DatosBancarios(empresapidm, "", "", moneda, "", "A")
 
                     If dt Is Nothing Then
@@ -251,7 +251,7 @@ Public Class CPMPGDT : Implements IHttpHandler
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "DES", "ASC"), "code", "DES", "CTABANC")
                     End If
-                    
+
                 Case "7"
                     Dim p As New NOMADE.NC.NCCaja("BN")
                     dt = p.ListarCajasAperturadas(String.Empty, empresa, String.Empty, String.Empty, "A", usuario)
@@ -260,14 +260,14 @@ Public Class CPMPGDT : Implements IHttpHandler
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "CODIGO", "DESCRIPCION", "CAJA")
                     End If
-                    
+
                     'VALIDA CAJA ACTIVA
                 Case "7.5"
                     Dim p As New NOMADE.NC.NCCaja("BN")
                     res = p.ListarCajasAperturadas(codigo, empresa, String.Empty, String.Empty, "A").Rows(0)("MONTOCAJA").ToString()
-              
-                    
-                    
+
+
+
                 Case "8"
                     Dim p As New NOMADE.NB.NBCheque("Bn")
                     dt = p.ListarCheque("", cuenta, pidmcuenta, "", "E", "P")
@@ -276,7 +276,7 @@ Public Class CPMPGDT : Implements IHttpHandler
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "NUMERO_CHEQ", "ASC"), "NUMERO_CHEQ", "NUMERO_CHEQ", "CHEQUE")
                     End If
-                    
+
                 Case "9"
                     Dim p As New NOMADE.NC.NCTarjetasEmpresa("Bn")
                     dt = p.ListarTarjetaEmpresa("", pidmcuenta, cuenta, "A", tipo)
@@ -285,32 +285,32 @@ Public Class CPMPGDT : Implements IHttpHandler
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "NUMERO", "ASC"), "CODE", "NUMERO", "NTARJETA")
                     End If
-                    
+
                 Case "M"
                     Dim p As New NOMADE.NC.NCMonedas("BN")
                     dt = p.ListarMoneda(codigo, String.Empty, "A")
                     res = dt.Rows(0)("Simbolo").ToString
-                    
+
                 Case "MO"
                     Dim p As New NOMADE.GL.GLLetras("Bn")
                     dt = p.ListarMoneda(empresa)
                     res = GenerarSelect(dt, "codigo", "descripcion", "MONEDA")
-                    
+
             End Select
 
             context.Response.Write(res)
-       
+
         Catch ex As Exception
 
             context.Response.Write("error" & ex.ToString)
-            
+
         End Try
-        
+
     End Sub
- 
+
     Public Function GenerarSelect(ByVal dt As DataTable, ByVal cvalue As String, ByVal chtml As String, ByVal clase As String) As String
         If Not dt Is Nothing Then
-         
+
             res = "<option></option>"
             For i As Integer = 0 To dt.Rows.Count - 1
                 If clase = "EMPRESA" Then
@@ -337,22 +337,22 @@ Public Class CPMPGDT : Implements IHttpHandler
                     End If
                 End If
             Next
-          
+
         Else
             res = "error"
         End If
         Return res
     End Function
-    
-     
+
+
     Private Function SortDataTableColumn(ByVal dt As DataTable, ByVal column As String, ByVal sort As String) As DataTable
         Dim dtv As New DataView(dt)
         dtv.Sort = column & " " & sort
         Return dtv.ToTable()
     End Function
-    
-    
-    
+
+
+
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False

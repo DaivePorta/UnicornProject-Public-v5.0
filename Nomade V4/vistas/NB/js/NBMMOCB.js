@@ -8,7 +8,13 @@
             '<option value="AGX" oficina="AGTE. EXPRESS">AGENTE EXPRESS</option>' +
             '<option value="BTE" oficina="BCA. TELEFONO">BANCA POR TELEFONO</option>' +
             '<option value="SCA" oficina="BCA. AUTOMATIC.">SISTEMA CASH</option>'
-;
+    ;
+
+var slc_op = '<option value="" disabled selected></option>' +
+    '<option value="1" data-value="12.2.1.1.12">ANTICIPO POR COMPENSAR - 12.2.1.1.12</option>' +
+    '<option value="2" data-value="94.3.9.1.13">MANTENIMIENTO CUENTA - 94.3.9.1.13</option>' +
+    '<option value="3" data-value="45.1.2.1.11">PRESTAMO DE TERCEROS - 45.1.2.1.11</option>' +
+    '<option value="4" data-value="45.1.2.1.12">PRESTAMO DE TITULAR - 45.1.2.1.12</option>'
 
 _u_monto = 0;
 _CERRADO_IND = "";
@@ -415,7 +421,10 @@ var NBMMOCB = function () {
     var cargarCombos = function () {
 
         $("#slcEmpr, #slcCta, #slcMoneda, #slcTipo").select2();
+        $("#slcOperacion").prop("disabled", true);
 
+        $("#inputPersona").html("");
+        $("#inputPersona").html(`<input id="slcPersona" class="span11" type="text" data-provide="typeahead" placeholder="CLIENTES VARIOS ."/>`);
 
         $("#slcOperacionTipo").html(op_op).select2().change(function () {
             $("#txtCanal").val($(this).val());
@@ -435,6 +444,31 @@ var NBMMOCB = function () {
                     $("#txtOficina").val(n_of).attr("disabled", true);
                 }
             }
+        });
+
+        $("#slcOperacion").html(slc_op);
+
+        $("#slcTipo").on("change", function () {
+            $("#slcOperacion").html('');
+            var selectedValue = $(this).val();
+            var filtered_op = "";
+            if (selectedValue === "I") {
+                filtered_op = '<option value="1" data-value="12.2.1.1.12">ANTICIPO POR COMPENSAR - 12.2.1.1.12</option>' +
+                    '<option value="3" data-value="45.1.2.1.11">PRESTAMO DE TERCEROS - 45.1.2.1.11</option>' +
+                    '<option value="4">PRESTAMO DE TITULAR - 45.1.2.1.11</option>';
+            } else if (selectedValue === "E") {
+                filtered_op = '<option value="2" data-value="94.3.9.1.13">MANTENIMIENTO CUENTA - 94.3.9.1.13</option>' +
+                    '<option value="3" data-value="45.1.2.1.11">PRESTAMO DE TERCEROS  - 45.1.2.1.11</option>' +
+                    '<option value="4" data-value="45.1.2.1.12">PRESTAMO DE TITULAR - 45.1.2.1.12</option>';
+            }
+            $("#slcOperacion").html(filtered_op);
+            $("#slcOperacion").select2();
+            checkOperacionValue();
+            $("#slcOperacion").prop("disabled", false);
+        });
+
+        $("#slcOperacion").on("change", function () {
+            checkOperacionValue();
         });
 
         $.ajaxSetup({ async: false });
@@ -467,6 +501,8 @@ var NBMMOCB = function () {
                     $.ajaxSetup({ async: true });
 
                     cargarJsonEmpleado($(this).val());
+
+                    fillPersona('#slcPersona', '');
 
                     arrayPersonasEmpleado = new Array();
 
@@ -560,8 +596,25 @@ var NBMMOCB = function () {
                     if ($("#txtFeVa").val() != "") { $("#txtFeVa").attr("disabled", true); }
 
                     $("#txtNroOpe").val(datos[0].NRO_OPERACION);
-                    if ($("#txtNroOpe").val() != "") { $("#txtNroOpe").attr("disabled", true); }
+
                     $("#slcTipo").select2("val", datos[0].TIPO);
+                    $("#slcTipo").prop("disabled", true);
+
+                    $("#slcOperacion").val(datos[0].CODIGO_OPERACION).trigger("change");
+                    $("#slcOperacion").select2();
+
+                    $("#hfPIDM").val(datos[0].PERSONA)
+
+                    var pidm = $("#hfPIDM").val();
+                    var selectedClient = persona.find(function (client) {
+                        return client.PIDM == pidm;
+                    });
+
+                    if (selectedClient) {
+                        $("#slcPersona").val(selectedClient.RAZON_SOCIAL);
+                    }
+
+                    $("#slcPersona").prop("disabled", false);
 
                     if (datos[0].TIPO_REG != "M" && datos[0].TIPO_REG != "C") {
                         $(".bl").attr("disabled", true);
@@ -605,6 +658,16 @@ var NBMMOCB = function () {
     }
 
 }();
+
+function checkOperacionValue() {
+    if ($("#slcOperacion").val() === '2') {
+        $("#slcPersona").html('').prop("disabled", true);
+        $("#slcPersona").prop("placeholder", "");
+    } else {
+        $("#slcPersona").prop("disabled", false);
+        $("#slcPersona").prop("placeholder", "CLIENTES VARIOS .");
+    }
+}
 
 $.ajaxSetup({ async: false });
 
@@ -702,6 +765,68 @@ $("#chkChqPag").click(function () {
 
 });
 
+function fillPersona(v_ID, v_value) {
+
+    var selectRazonSocial = $(v_ID);
+    //Proveedores
+    $.ajax({
+        type: "post",
+        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2&p_CTLG_CODE=" + $("#slcEmpr").val(),
+        contenttype: "application/json;",
+        datatype: "json",
+        async: false,
+        success: function (datos) {
+            if (datos != null) {
+                persona = datos;
+                selectRazonSocial.typeahead({
+                    source: function (query, process) {
+                        arrayRazonSocial = [];
+                        map = {};
+                        var obj = "[";
+                        for (var i = 0; i < datos.length; i++) {
+                            arrayRazonSocial.push(datos[i].RAZON_SOCIAL);
+                            obj += '{';
+                            obj += '"DNI":"' + datos[i].DNI + '","RUC":"' + datos[i].RUC + '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL + '","PIDM":"' + datos[i].PIDM + '"';
+                            obj += '},';
+                        }
+                        obj += "{}";
+                        obj = obj.replace(",{}", "");
+                        obj += "]";
+                        var json = $.parseJSON(obj);
+                        $.each(json, function (i, objeto) {
+                            map[objeto.RAZON_SOCIAL] = objeto;
+                        });
+                        process(arrayRazonSocial);
+                    },
+
+                    updater: function (item) {
+                        $("#hfPIDM").val("");
+                        $("#hfPIDM").val(map[item].PIDM);
+                        $("#slcPersona").val(map[item].RAZON_SOCIAL);
+
+                        return item;
+                    },
+
+                });
+                selectRazonSocial.keyup(function () {
+                    if ($(this).val().length === 0) {
+                        $("#hfPIDM").val("1");
+                    }
+                });
+
+            } else {
+                persona = [];
+            }
+            if (datos != null && $.trim(v_value).length > 0) {
+                selectRazonSocial.val(v_value);
+            }
+        },
+        error: function (msg) {
+            alert(msg);
+        }
+    });
+ }
+
 function cargarJsonEmpleado(empresa) {
     $.ajax({
         type: "post",
@@ -758,7 +883,9 @@ $("#rptasi").click(function () {
 });
 
 function ejecutaMovimiento() {
-
+    var selectedOption = $("#slcOperacion option:selected");
+    var optionValue = selectedOption.val();
+    var dataValue = selectedOption.data("value");
 
     var p_moneda = $("#slcCta :selected").attr("moneda");
     var p_tipo = $("#slcTipo").val();
@@ -767,6 +894,9 @@ function ejecutaMovimiento() {
     var p_cana = $("#txtCanal").val();
     var p_nuop = $("#txtNroOpe").val();
     var p_feop = $("#txtFeOp").val();
+    var p_cta10 = dataValue;
+    var p_tope = optionValue;
+    var p_persona = $("#hfPIDM").val();
     var p_mont = p_moneda == "0002" ? $("#txtMonto").val().split(",").join("") : 0;
     var p_mond = p_moneda == "0002" ? 0 : $("#txtMonto").val().split(",").join("");
     var p_feva = $("#txtFeVa").val();
@@ -783,10 +913,12 @@ function ejecutaMovimiento() {
     $.post("vistas/NB/ajax/NBMMOCB.ASHX", {
         flag: 1,
         oficina: p_ofic,
-        descripcion: p_desc,
+        descripcion: p_desc + ',' + p_persona + ',' + optionValue + ',' + dataValue,
         canal: p_cana,
         nro_operacion: p_nuop,
         fecha_ope: p_feop,
+        cta10: p_cta10,
+        p_tope: p_tope,
         monto: p_mont,
         fecha_valor: p_feva,
         user: p_user,
@@ -798,7 +930,8 @@ function ejecutaMovimiento() {
         monto_d: p_mond,
         stbl: p_stbl,
         tipoChq: p_tipoChq,
-        origen:p_origen
+        origen: p_origen,
+        persona: p_persona
 
     },
         function (res) {
@@ -836,6 +969,11 @@ function actualizarMovimiento() {
     var p_pidm = $("#slcEmpr :selected").attr("pidm");
     var p_ctco = $("#slcCta").val();
 
+    var selectedOption = $("#slcOperacion option:selected");
+    var optionValue = selectedOption.val();
+    var p_persona = $("#hfPIDM").val();
+
+
     var p_user = $('#ctl00_lblusuario').html();
 
 
@@ -854,8 +992,9 @@ function actualizarMovimiento() {
             user: p_user,
             tipo: p_tipo,
             pidm: p_pidm,
-            cta_code: p_ctco
-
+            cta_code: p_ctco,
+            p_tope: optionValue,
+            persona: p_persona,
         },
             function (res) {
                 Desbloquear("ventana");

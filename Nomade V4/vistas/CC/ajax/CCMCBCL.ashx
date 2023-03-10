@@ -56,7 +56,7 @@ Public Class CCMCBCL : Implements IHttpHandler
     Dim ffin As String
     Dim establec, VALIDAR_IMG As String
     Dim sRutaImagenes As String = System.Configuration.ConfigurationManager.AppSettings("PathImagenes") + "Sustentos"
-
+    Dim asiento_contable As String
     Dim RUTA_IMAGEN As String = ""
     Dim RUTA As String = ""
 
@@ -100,7 +100,7 @@ Public Class CCMCBCL : Implements IHttpHandler
         tipo_cambio = context.Request("tipo_cambio")
 
         CODIGO_VENTA = context.Request("CODIGO_VENTA") 'SI ES VACIO CARGA TODAS LAS DEUDAS, SINO UNA EN ESPECIFICO
-
+        asiento_contable = context.Request("asiento_contable")
         RUTA_IMAGEN = context.Request("RUTA_IMAGEN")
 
         scsl = context.Request("scsl")
@@ -149,13 +149,15 @@ Public Class CCMCBCL : Implements IHttpHandler
 
                     resArray = CobroCliente.CobrarClienteCaja(detalle, origen, usuario, codigo_apertura, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, tipo_cambio, VALIDAR_IMG, efectivo_recibido, efectivo_recibido_alterno, vuelto, vuelto_alterno, adicional, notaCredito)
 
-                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
-                    Dim strCodAsientoCobroVenta As String
-                    For Each item As String In detalle.Split("|")
-                        'Ejemplo de traza: V01039153,B/BE01 - 0026864,10,0,S,0001|V01039155,B/BE01 - 0026865,20,0,S,0001
-                        Dim strCodVenta As String = item.Split(",")(0)
-                        strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(strCodVenta)
-                    Next
+                    If asiento_contable = "SI" Then
+                        Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                        Dim strCodAsientoCobroVenta As String
+                        For Each item As String In detalle.Split("|")
+                            'Ejemplo de traza: V01039153,B/BE01 - 0026864,10,0,S,0001|V01039155,B/BE01 - 0026865,20,0,S,0001
+                            Dim strCodVenta As String = item.Split(",")(0)
+                            strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(strCodVenta, "", "")
+                        Next
+                    End If
 
                     resb.Append("[")
                     resb.Append("{")
@@ -180,13 +182,17 @@ Public Class CCMCBCL : Implements IHttpHandler
 
                     resArray = CobroCliente.CobrarClienteBanco(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, tipo_cambio, VALIDAR_IMG, efectivo_recibido, efectivo_recibido_alterno, vuelto, vuelto_alterno, adicional, origen, notaCredito)
 
-                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
-                    Dim strCodAsientoCobroVenta As String
-                    For Each item As String In detalle.Split("|")
-                        'Ejemplo de traza: V01039153,B/BE01 - 0026864,10,0,S,0001|V01039155,B/BE01 - 0026865,20,0,S,0001
-                        Dim strCodVenta As String = item.Split(",")(0)
-                        strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(strCodVenta)
-                    Next
+                    If asiento_contable = "SI" Then
+                        Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                        Dim strCodAsientoCobroVenta As String
+                        Dim strCodAsientoITF As String
+                        For Each item As String In detalle.Split("|")
+                            'Ejemplo de traza: V01039153,B/BE01 - 0026864,10,0,S,0001|V01039155,B/BE01 - 0026865,20,0,S,0001
+                            Dim strCodVenta As String = item.Split(",")(0)
+                            strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(strCodVenta, "", "")
+                            strCodAsientoITF = oCTGeneracionAsientos.GenerarAsientoITF("", "", strCodVenta)
+                        Next
+                    End If
 
                     resb.Append("[")
                     resb.Append("{")
@@ -473,7 +479,6 @@ Public Class CCMCBCL : Implements IHttpHandler
                         res = "SIN_NOTAS"
                     End If
 
-
                 Case "11"
                     Dim p As New Nomade.CA.NotaCredito("Bn")
                     dt = p.ListarNotaCreditoCobro(empresa, clientepidm)
@@ -509,6 +514,43 @@ Public Class CCMCBCL : Implements IHttpHandler
                         End If
                     Else
                         res = "SIN_NOTAS"
+                    End If
+
+                Case "ANTICIPO_COMPENSAR"
+                    Dim p As New Nomade.CA.NotaCredito("Bn")
+                    dt = p.ListarNotaCreditoCobro(empresa, clientepidm)
+                    If Not dt Is Nothing Then
+                        resb.Append("[")
+                        For Each row As DataRow In dt.Rows
+
+                            If row("MONTO_USABLE") > 0 Then
+                                resb.Append("{")
+                                resb.Append("""DOCUMENTO_ORIGEN"":""" & row("DOCUMENTO_ORIGEN").ToString & """,")
+                                resb.Append("""MONTO_USABLE"":""" & row("MONTO_USABLE").ToString & """,")
+                                resb.Append("""DOCUMENTO"":""" & row("DOCUMENTO").ToString & """,")
+                                resb.Append("""MONTO_TOTAL"":""" & row("MONTO_TOTAL").ToString & """,")
+                                resb.Append("""ORIGEN_TIPO_DOC_DESC"":""" & row("ORIGEN_TIPO_DOC_DESC").ToString & """,")
+                                resb.Append("""MONEDA"":""" & row("MONEDA").ToString & """,")
+                                resb.Append("""MONEDA_SIMBOLO"":""" & row("MONEDA_SIMBOLO").ToString & """,")
+                                resb.Append("""MONE_CODE"":""" & row("MONE_CODE").ToString & """,")
+                                resb.Append("""MOTIVO"":""" & row("MOTIVO").ToString & """,")
+                                resb.Append("""SUCURSAL_DESC"":""" & row("SUCURSAL_DESC").ToString & """,")
+                                resb.Append("""CODIGO"":""" & row("CODIGO").ToString & """")
+                                resb.Append("},")
+                            End If
+                        Next
+                        resb.Append("-")
+                        resb.Replace("},-", "}")
+
+                        resb.Append("]")
+
+                        res = resb.ToString()
+
+                        If res = "[-]" Then
+                            res = "SIN_ANTICIPOS_A_COMPENSAR"
+                        End If
+                    Else
+                        res = "SIN_ANTICIPOS_A_COMPENSAR"
                     End If
 
                 Case "M"

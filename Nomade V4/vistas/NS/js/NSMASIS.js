@@ -27,16 +27,20 @@
         }
     };
     function ListarSucursal() {
-        var emp = $("#ctl00_hddctlg").val();
         $('#cboSucursal').empty();
         $.ajax({
             type: "post",
-            url: "vistas/NS/ajax/NSMASIS.ashx?Opcion=O&emp=" + emp,
+            //url: "vistas/NS/ajax/NSMASIS.ashx?Opcion=O&emp=" + $("#ctl00_hddctlg").val(),
+            url: "vistas/NC/ajax/NCMCAJA.ashx?OPCION=7&CTLG_CODE=" + $("#ctl00_hddctlg").val(),
             async: false,
             success: function (datos) {
                 if (datos != null) {
-                    $('#cboSucursal').append(datos);
+                    //$('#cboSucursal').append(datos);
+                    for (var i = 0; i < datos.length; i++) {
+                        $('#cboSucursal').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+                    }
                 }
+                $("#cboSucursal").select2("val", $("#ctl00_hddestablecimiento").val());
             },
             error: function (msg) {
                 alert(msg.d);
@@ -129,6 +133,7 @@ function CargaConfiguracion() {
                     $('#cboHoraSalida').val(datos[0].HORA_SALIDA);
                     $('#cboHoraEntradaTrabajador').val(datos[0].HORA_ENTRADA_TRABAJADOR);
                     $('#cboHoraSalidaTrabajador').val(datos[0].HORA_SALIDA_TRABAJADOR);
+                    $("#cboBiometrico, #cboFecha, #cboHoraEntrada, #cboHoraSalida, #cboHoraEntradaTrabajador, #cboHoraSalidaTrabajador").change();
                     $('#lblTitulo').text(" CONFIGURACIÓN DE COLUMNAS " + $('#cboSucursal :selected').text());
                     ListarAsistencia();
                 //}
@@ -239,6 +244,16 @@ var ListarAsistencia = function () {
     });
   
 }
+
+$('#optmes').on('change', function () {
+
+    var aa = $("#optanho").val();
+    var mm = $("#optmes").val();
+    var cm = mm + " " + aa;
+
+    $('#ctl00_cph_ctl00_PCONGEN1_ctl00_hfPeriodo').val(cm.toUpperCase());
+});
+
 //function Modificar() {
 
 

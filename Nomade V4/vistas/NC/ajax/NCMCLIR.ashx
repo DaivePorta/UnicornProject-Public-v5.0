@@ -176,6 +176,8 @@ Public Class NCMCLIR : Implements IHttpHandler
                             resb.AppendFormat("""PERCEPCION_IND"":""{0}"",", row("PERCEPCION_IND").ToString)
                             resb.AppendFormat("""PERCEPCION_DESDE "":""{0}"",", row("PERCEPCION_DESDE").ToString)
                             resb.AppendFormat("""NRO_DCTO"":""{0}"",", row("NRO_DCTO").ToString)
+                            resb.AppendFormat("""TIPO_DOC"":""{0}"",", row("TIPO_DOC").ToString)
+                            resb.AppendFormat("""DESC_DOCUMENTO"":""{0}"",", row("DESC_DOCUMENTO").ToString)
                             resb.AppendFormat("""FECNAC"":""{0}"",", row("FECNAC").ToString)
                             resb.AppendFormat("""ENTIDAD_IND"":""{0}"",", row("ENTIDAD_IND").ToString)
                             resb.AppendFormat("""GENERO"":""{0}"",", row("GENERO").ToString)

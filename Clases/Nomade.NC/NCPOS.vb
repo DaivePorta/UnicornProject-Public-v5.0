@@ -116,11 +116,11 @@
         End Try
     End Function
 
-    Public Function CrearMovPOS(ByVal p_MCAJ_CODE As String, ByVal p_TIPO_TARJ_IND As String, _
-                                ByVal p_TIPO_TRAN_IND As String, ByVal p_MONE_CODE As String, _
-                                ByVal p_BANC_CODE As String, ByVal p_ULT_DIGITOS As String, _
-                                ByVal p_CODIGO_AUTORIZACION As String, ByVal P_OPERADOR_PIDM As String, _
-                                 ByVal p_USUA_ID As String, ByVal p_FECHA_OPERACION As String, _
+    Public Function CrearMovPOS(ByVal p_MCAJ_CODE As String, ByVal p_TIPO_TARJ_IND As String,
+                                ByVal p_TIPO_TRAN_IND As String, ByVal p_MONE_CODE As String,
+                                ByVal p_BANC_CODE As String, ByVal p_ULT_DIGITOS As String,
+                                ByVal p_CODIGO_AUTORIZACION As String, ByVal P_OPERADOR_PIDM As String,
+                                 ByVal p_USUA_ID As String, ByVal p_FECHA_OPERACION As String,
                                  ByVal p_MARCA_CODE As String, ByVal p_TIPO_REGISTRO_IND As String, ByVal p_POS_CODE As String) As String
         Try
             Dim msg As String
@@ -150,10 +150,10 @@
         End Try
     End Function
 
-    Public Function CerrarLotePos(ByVal p_NRO As String, ByVal p_FECHA As String, _
-                               ByVal p_MONTO_CIERRE As String, ByVal p_POS_COD As String, _
-                               ByVal p_MONEDA_CODE As String, ByVal p_CTLG_CODE As String, _
-                               ByVal p_SCSL_CODE As String, ByVal p_DETALLE As String, _
+    Public Function CerrarLotePos(ByVal p_NRO As String, ByVal p_FECHA As String,
+                               ByVal p_MONTO_CIERRE As String, ByVal p_POS_COD As String,
+                               ByVal p_MONEDA_CODE As String, ByVal p_CTLG_CODE As String,
+                               ByVal p_SCSL_CODE As String, ByVal p_DETALLE As String,
                                 ByVal p_USUA_ID As String, ByVal p_TIPO_TRANSACCION As String) As String
         Try
             Dim msg As String
@@ -285,7 +285,7 @@
         End Try
     End Function
 
-    Public Function ListarCierreLote(ByVal p_POS_CODE As String, ByVal p_MONE_CODE As String, Optional ByVal p_OPERADOR As String = "", _
+    Public Function ListarCierreLote(ByVal p_POS_CODE As String, ByVal p_MONE_CODE As String, Optional ByVal p_OPERADOR As String = "",
                                      Optional ByVal p_FECHA_INICIO As String = "", Optional ByVal p_FECHA_FIN As String = "") As DataTable
         Try
             Dim cmd As IDbCommand
@@ -319,11 +319,11 @@
         End Try
     End Function
 
-    Public Function ActualizarMovPOS(ByVal p_MCAJ_CODE As String, ByVal p_TIPO_TARJ_IND As String, _
-                                ByVal p_TIPO_TRAN_IND As String, ByVal p_MONE_CODE As String, _
-                                ByVal p_BANC_CODE As String, ByVal p_ULT_DIGITOS As String, _
-                                ByVal p_CODIGO_AUTORIZACION As String, ByVal P_OPERADOR_PIDM As String, _
-                                 ByVal p_USUA_ID As String, ByVal p_FECHA_OPERACION As String, _
+    Public Function ActualizarMovPOS(ByVal p_MCAJ_CODE As String, ByVal p_TIPO_TARJ_IND As String,
+                                ByVal p_TIPO_TRAN_IND As String, ByVal p_MONE_CODE As String,
+                                ByVal p_BANC_CODE As String, ByVal p_ULT_DIGITOS As String,
+                                ByVal p_CODIGO_AUTORIZACION As String, ByVal P_OPERADOR_PIDM As String,
+                                 ByVal p_USUA_ID As String, ByVal p_FECHA_OPERACION As String,
                                  ByVal p_MARCA_CODE As String, ByVal p_TIPO_REGISTRO_IND As String, ByVal p_POS_CODE As String) As String
         Try
             Dim msg As String

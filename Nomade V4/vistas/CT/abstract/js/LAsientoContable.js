@@ -118,9 +118,9 @@
             sHtml += "<th style='text-align:center;font-weight: 600;'>F. Emisión</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Doc Id</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Persona</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Cuenta</th>";
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";            
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>HaberMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeME</th>";
@@ -140,9 +140,9 @@
                     var sFEmision = value.FECHA_DCTO;
                     var sCodIdent = value.DOC_IDENT;
                     var sPersona = value.PERSONA;
-                    var sDescripcionItem = value.CTAS;
-                    var sCCosto = value.CCOSTO_DET;
                     var sCuenta = value.CTAS_CODE;
+                    var sDescripcionItem = value.CTAS;
+                    var sCCosto = value.CCOSTO_DET;                    
                     var nDebeMN = value.DEBE_MN;
                     var nHaberMN = value.HABER_MN;
                     var nDebeME = value.DEBE_ME;
@@ -154,9 +154,9 @@
                     sHtml += ("<td style='text-align:center;'>" + sFEmision + "</td>");
                     sHtml += ("<td style='text-align:center;'>" + sCodIdent + "</td>");
                     sHtml += ("<td>" + sPersona + "</td>");
-                    sHtml += ("<td>" + sDescripcionItem + "</td>");
-                    sHtml += ("<td>" + sCCosto + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + sCuenta + "</td>");
+                    sHtml += ("<td>" + sDescripcionItem + "</td>");
+                    sHtml += ("<td>" + sCCosto + "</td>");                    
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nHaberMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeME) + "</td>");
@@ -308,6 +308,16 @@
                 }
                 if (response.indexOf("[Error]:") > -1) {
                     alertCustom(response);
+                    return;
+                }
+
+                if (response == "SIN_CTA_CONTABLE_ORIGEN_COBRO") {
+                    infoCustom2("No se pudo generar el asiento. El origen de cobro no tiene asociada una cuenta contable.");
+                    return;
+                }
+
+                if (response == "NO_GENERA_ASIENTO_VENTA") {
+                    infoCustom2("Solo se genera asiento de cobro para este tipo de documento.");
                     return;
                 }
 

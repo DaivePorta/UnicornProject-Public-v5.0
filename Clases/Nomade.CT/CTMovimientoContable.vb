@@ -753,11 +753,118 @@
         End Try
     End Function
 
-    Public Function fnGenerarAsientoCobroDocVenta(p_CodDocVenta As String, Optional ByRef oTransaction As Nomade.DataAccess.Transaccion = Nothing) As String
+    Public Function fnGenerarAsientoAnticipo(p_CodAnticipo As String, p_CodModulo As String, p_Usuario As String, Optional ByRef oTransaction As Nomade.DataAccess.Transaccion = Nothing) As String
+        Try
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SpCon_GenerarAsientoAnticipo", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodAnticipo", p_CodAnticipo, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodModulo", p_CodModulo, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_Usuario", p_Usuario, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MOVCONT_CODE", Nothing, ParameterDirection.Output, 253))
+
+            If oTransaction Is Nothing Then
+                cmd = cn.Ejecuta_parms(cmd)
+            Else
+                oTransaction.fnExecute_StoreProcedure(cmd)
+            End If
+
+            Return cmd.Parameters("@p_MOVCONT_CODE").Value
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function fnGenerarAsientoCobroAnticipo(p_CodAnticipo As String, p_AsientoCobro As String, p_PagadoInd As String, Optional ByRef oTransaction As Nomade.DataAccess.Transaccion = Nothing) As String
+        Try
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SpCon_GenerarAsientoCobroAnticipo", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodAnticipo", p_CodAnticipo, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_AsientoCobro", p_AsientoCobro, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PagadoInd", p_PagadoInd, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MOVCONT_CODE", Nothing, ParameterDirection.Output, 253))
+
+            If oTransaction Is Nothing Then
+                cmd = cn.Ejecuta_parms(cmd)
+            Else
+                oTransaction.fnExecute_StoreProcedure(cmd)
+            End If
+
+            Return cmd.Parameters("@p_MOVCONT_CODE").Value
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function fnGenerarAsientoGasto(p_CodDocGasto As String, p_CodModulo As String, p_Usuario As String, Optional ByRef oTransaction As Nomade.DataAccess.Transaccion = Nothing) As String
+        Try
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SpCon_GenerarAsientoGasto", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodDocGasto", p_CodDocGasto, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodModulo", p_CodModulo, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_Usuario", p_Usuario, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MOVCONT_CODE", Nothing, ParameterDirection.Output, 253))
+
+            If oTransaction Is Nothing Then
+                cmd = cn.Ejecuta_parms(cmd)
+            Else
+                oTransaction.fnExecute_StoreProcedure(cmd)
+            End If
+
+            Return cmd.Parameters("@p_MOVCONT_CODE").Value
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function fnGenerarAsientoGastoDestino(p_CodDocGasto As String, p_CodModulo As String, p_Usuario As String, Optional ByRef oTransaction As Nomade.DataAccess.Transaccion = Nothing) As String
+        Try
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SpCon_GenerarAsientoGastoDestino", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodDocGasto", p_CodDocGasto, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodModulo", p_CodModulo, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_Usuario", p_Usuario, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MOVCONT_CODE", Nothing, ParameterDirection.Output, 253))
+
+            If oTransaction Is Nothing Then
+                cmd = cn.Ejecuta_parms(cmd)
+            Else
+                oTransaction.fnExecute_StoreProcedure(cmd)
+            End If
+
+            Return cmd.Parameters("@p_MOVCONT_CODE").Value
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function fnGenerarAsientoVenta(p_CodDocVenta As String, p_CodModulo As String, p_Usuario As String, Optional ByRef oTransaction As Nomade.DataAccess.Transaccion = Nothing) As String
+        Try
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SpCon_GenerarAsientoVenta", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodDocVenta", p_CodDocVenta, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodModulo", p_CodModulo, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_Usuario", p_Usuario, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MOVCONT_CODE", Nothing, ParameterDirection.Output, 253))
+
+            If oTransaction Is Nothing Then
+                cmd = cn.Ejecuta_parms(cmd)
+            Else
+                oTransaction.fnExecute_StoreProcedure(cmd)
+            End If
+
+            Return cmd.Parameters("@p_MOVCONT_CODE").Value
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function fnGenerarAsientoCobroDocVenta(p_CodDocVenta As String, p_AsientoCobro As String, p_PagadoInd As String, Optional ByRef oTransaction As Nomade.DataAccess.Transaccion = Nothing) As String
         Try
             Dim cmd As IDbCommand
             cmd = cn.GetNewCommand("SpCon_GenerarAsientoCobroDocVenta", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CodDocVenta", p_CodDocVenta, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_AsientoCobro", p_AsientoCobro, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PagadoInd", p_PagadoInd, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_MOVCONT_CODE", Nothing, ParameterDirection.Output, 253))
 
             If oTransaction Is Nothing Then
@@ -895,6 +1002,70 @@
             cmd = cn.GetNewCommand("SpCon_GenerarAsientoNotaCreditoGenericaProveedor", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CodNC", p_CodNC, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_USUA_ID", p_Usuario, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MOVCONT_CODE", Nothing, ParameterDirection.Output, 253))
+
+            If oTransaction Is Nothing Then
+                cmd = cn.Ejecuta_parms(cmd)
+            Else
+                oTransaction.fnExecute_StoreProcedure(cmd)
+            End If
+
+            Return cmd.Parameters("@p_MOVCONT_CODE").Value
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function GenerarAsientoMovBancario(p_CodMovBanc As String, p_CTLG As String, p_Usuario As String, p_tope As String, p_CTA10 As String, p_PIDM As String, Optional ByRef oTransaction As Nomade.DataAccess.Transaccion = Nothing) As String
+        Try
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SpCon_GenerarAsientoMovBancario", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodMovBanc", p_CodMovBanc, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG", p_CTLG, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_USUA_ID", p_Usuario, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_OPERACION", p_tope, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTA10", p_CTA10, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MOVCONT_CODE", Nothing, ParameterDirection.Output, 253))
+
+            If oTransaction Is Nothing Then
+                cmd = cn.Ejecuta_parms(cmd)
+            Else
+                oTransaction.fnExecute_StoreProcedure(cmd)
+            End If
+
+            Return cmd.Parameters("@p_MOVCONT_CODE").Value
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+    Public Function GenerarAsientoCierrePos(p_CodMovBanc As String, p_CodMovPos As String, Optional ByRef oTransaction As Nomade.DataAccess.Transaccion = Nothing) As String
+        Try
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SpCon_GenerarAsientoPOS", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodMovBanc", p_CodMovBanc, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodMovPos", p_CodMovPos, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MOVCONT_CODE", Nothing, ParameterDirection.Output, 253))
+
+            If oTransaction Is Nothing Then
+                cmd = cn.Ejecuta_parms(cmd)
+            Else
+                oTransaction.fnExecute_StoreProcedure(cmd)
+            End If
+
+            Return cmd.Parameters("@p_MOVCONT_CODE").Value
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+    Public Function GenerarAsientoITF(Optional p_CodMovBanc As String = "", Optional ByVal p_CodMovPos As String = "",
+                                      Optional ByVal p_CodDoc As String = "", Optional ByRef oTransaction As Nomade.DataAccess.Transaccion = Nothing) As String
+        Try
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SpCon_GenerarAsientoITF", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodMovBanc", p_CodMovBanc, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodMovPos", p_CodMovPos, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodDoc", p_CodDoc, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_MOVCONT_CODE", Nothing, ParameterDirection.Output, 253))
 
             If oTransaction Is Nothing Then

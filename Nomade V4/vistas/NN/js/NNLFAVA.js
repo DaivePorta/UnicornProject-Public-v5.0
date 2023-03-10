@@ -534,7 +534,6 @@ var ArmaCadena = function () {
     }
     if (array.length > 0) {
         bool2 = true;
-    
     }
 
     if (bool2 && bool) {
@@ -556,25 +555,18 @@ var ArmaCadena = function () {
             cadena += $("#hf_anio").val() + "/"
             cadena += $("#hf_mes").val() + ";"
 
-          
-            
-
         }
         cadena += "?"
         cadena = cadena.replace(";?", "");
         Bloquear("ventana")
         setTimeout(function () {
             Generar($("#hf_anio").val(), $("#hf_mes").val(), cadena);
-        }, 1000);
+        }, 500);
 
     } else {
         alertCustom("Seleccionar catalago,establecimiento ,periodo o no hay datos que procesar.");
     }
- 
-
 }
-
-
 
 var Generar = function (anio,mes,cadena) {
 

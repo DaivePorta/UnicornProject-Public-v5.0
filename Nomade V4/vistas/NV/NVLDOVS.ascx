@@ -63,7 +63,7 @@
         <!-- INICIA CUADRO PARA LA FORMA -->
         <div class="portlet box blue" id="ventana">
             <div class="portlet-title">
-                <h4><i class="icon-reorder"></i>LISTA DOCUMENTO VENTA SERVICIOS</h4>
+                <h4><i class="icon-reorder"></i>LISTA DOCUMENTO VENTA RÁPIDA SERVICIOS</h4>
                 <div class="actions">
                     <a class="btn black" onclick="javascript:imprimirListaDctosVenta();"><i class="icon-print"></i>&nbsp;Imprimir</a>
                     <a class="btn green" href="?f=nvmdovs"><i class="icon-plus"></i>&nbsp;Nuevo</a>

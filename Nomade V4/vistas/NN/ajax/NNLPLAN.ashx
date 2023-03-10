@@ -187,7 +187,7 @@ Public Class NNLPLAN : Implements IHttpHandler
         '------
         Dim dtEmpresa As New DataTable
         Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
-        dtEmpresa = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "")
+        dtEmpresa = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "X")
         resb.AppendFormat("<table border='0' width='100%' >")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "PERIODO:")
@@ -1569,7 +1569,7 @@ Public Class NNLPLAN : Implements IHttpHandler
 
         Dim dtEmpresa As New DataTable
         Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
-        dtEmpresa = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "")
+        dtEmpresa = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "X")
         resb.AppendFormat("<table border='0' width='100%' >")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "PERIODO:")

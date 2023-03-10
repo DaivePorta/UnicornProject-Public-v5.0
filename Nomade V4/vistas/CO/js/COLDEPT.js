@@ -179,7 +179,7 @@ var COLDEPT = function () {
             var row = oTableCompras.fnGetData(pos);
             var cod = row.CODIGO;
 
-            dataGasto = { "CODIGO": cod, "columnId": "0", "value":""};
+            dataGasto = { "CODIGO": cod, "columnId": "13", "value":""};
             $("#P1").html("El gasto de " + row.RAZON_SOCIAL + " con número de documento " + row.NRO_DOCUMENTO + " será retirado del libro de compras. ¿Desea Continuar?");
             $("#modalconfir").modal("show");          
 

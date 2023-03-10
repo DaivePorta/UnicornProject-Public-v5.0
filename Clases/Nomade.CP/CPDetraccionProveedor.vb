@@ -145,6 +145,7 @@
       ByVal p_FVCDETRA_DOC_CODE As String,
       ByVal p_FVCDETRA_PAGADO_IND As String,
       ByVal p_FVCDETRA_CTLG_CODE As String,
+      ByVal p_FVCDETRA_CLIENTE As String,
       ByVal p_FVCDETRA_AUTODETRA As String
      ) As DataTable
         Try
@@ -155,6 +156,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_FVCDETRA_DOC_CODE", p_FVCDETRA_DOC_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_FVCDETRA_PAGADO_IND", p_FVCDETRA_PAGADO_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_FVCDETRA_CTLG_CODE", p_FVCDETRA_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FVCDETRA_CLIENTE", p_FVCDETRA_CLIENTE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_FVCDETRA_AUTODETRA", p_FVCDETRA_AUTODETRA, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)

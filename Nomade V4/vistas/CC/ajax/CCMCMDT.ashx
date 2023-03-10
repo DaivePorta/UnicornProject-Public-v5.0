@@ -1,15 +1,20 @@
-﻿  <%@ WebHandler Language="VB" Class="CCMCBDT" %>
+﻿  <%@ WebHandler Language="VB" Class="CCMCMDT" %>
 
 Imports System
 Imports System.Web
 Imports System.Data
+Imports System.IO
+Imports System.Drawing
+Imports System.Drawing.Imaging
 
 
-Public Class CCMCBDT : Implements IHttpHandler
+Public Class CCMCMDT : Implements IHttpHandler
     Dim dt, dt2 As DataTable
     Dim s As New Nomade.NC.NCEAdicionales("bn")
-    Dim DetraccionCliente As New Nomade.CC.CCDetraccionCliente("Bn")
+    Dim ccdetraccion As New Nomade.CC.CCDetraccionCliente("Bn")
+    Dim PagoProveedor As New Nomade.CP.CPPagoProveedor("Bn")
     Dim ccPercepcion As New Nomade.CC.CCPercepcion("Bn")
+    Dim nceCliente As New Nomade.NC.NCECliente("Bn")
     Dim flag As String
     Dim res As String
     Dim resb As New StringBuilder
@@ -17,7 +22,6 @@ Public Class CCMCBDT : Implements IHttpHandler
     Dim codigo As String
     Dim empresa As String
     Dim cliente As String
-    Dim proveedor As String
     Dim prov As New Nomade.NC.NCEProveedor("Bn")
     Dim estable As String
     Dim detalle As String
@@ -41,9 +45,21 @@ Public Class CCMCBDT : Implements IHttpHandler
     Dim origen As String
     Dim origen_pidm As String
     Dim origen_codigo_banco As String
-    Dim estado As String '25/02/2021
-    Dim quitarCtaDetraccion As String
+    Dim estado As String
     Dim esCliente As String
+    Dim notaCredito As String
+    Dim tipo_cambio As String
+    Dim establec, VALIDAR_IMG As String
+    Dim sRutaImagenes As String = System.Configuration.ConfigurationManager.AppSettings("PathImagenes") + "Sustentos"
+    Dim RUTA_IMAGEN As String = ""
+    Dim RUTA As String = ""
+    Dim autodetracc_ind As String
+
+    Dim resArray As Array
+
+    Dim fini As String
+    Dim ffin As String
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         context.Response.ContentType = "text/plain"
 
@@ -52,7 +68,6 @@ Public Class CCMCBDT : Implements IHttpHandler
         codigo = context.Request("codigo")
         empresa = context.Request("empresa")
         cliente = context.Request("cliente")
-        proveedor = context.Request("proveedor")
         detalle = context.Request("detalle")
         caja = context.Request("caja")
         usuario = context.Request("usuario")
@@ -75,25 +90,83 @@ Public Class CCMCBDT : Implements IHttpHandler
         origen_pidm = context.Request("origen_pidm")
         origen_codigo_banco = context.Request("origen_codigo_banco")
         estado = context.Request("estado")
-        quitarCtaDetraccion = context.Request("quitarCtaDetraccion")
         esCliente = context.Request("esCliente")
+        notaCredito = context.Request("notacredito")
+        tipo_cambio = context.Request("tipo_cambio")
+        establec = context.Request("establec")
+        fini = context.Request("fini")
+        autodetracc_ind = context.Request("autodetracc_ind")
 
+        RUTA_IMAGEN = context.Request("RUTA_IMAGEN")
+
+        If fini <> "" Then
+            fini = Utilities.fechaLocal(fini)
+        End If
+        ffin = context.Request("ffin")
+        If ffin <> "" Then
+            ffin = Utilities.fechaLocal(ffin)
+        End If
         Try
 
             Select Case flag.ToString()
 
-                Case "1" 'crear pago x banco
-                    res = DetraccionCliente.CobrarDetraccionCliente(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, origen, origen_pidm, origen_codigo_banco)
+                Case "1" 'crear pago x caja
+                    If RUTA_IMAGEN = "../../recursos/img/no_disponible.jpg" Then
+                        VALIDAR_IMG = "NO"
+                    Else
+                        VALIDAR_IMG = "SI"
+                    End If
 
-                    If res.Equals("TC") Then
+                    resArray = ccdetraccion.PagarDetraccionesVariasCaja(detalle, caja, usuario, codigo_apertura, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, tipo_cambio, VALIDAR_IMG, "CAJ", notaCredito, "", "", "", "", "", "", monto_total)
+
+                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                    Dim strCodAsientoDetraccion As String
+                    For Each item As String In detalle.Split("|")
+                        Dim p_CodDetracCode As String = item.Split(",")(0)
+                        strCodAsientoDetraccion = oCTGeneracionAsientos.GenerarAsientoCobroDetraccionDocVenta(p_CodDetracCode)
+                    Next
+
+                    If RUTA_IMAGEN <> "" And resArray(1) = "TC" And VALIDAR_IMG = "SI" Then
+                        RUTA = GrabaImagen(RUTA_IMAGEN, context, resArray(0).ToString + ".jpg")
+                    End If
+
+                    resb.Append("[")
+                    resb.Append("{")
+                    resb.Append("""CODE_GENERADO"" :" & """" & resArray(0).ToString & """,")
+                    resb.Append("""SUCCESS"" :" & """" & resArray(1).ToString & """")
+                    resb.Append("}")
+                    resb.Append("]")
+
+                    res = resb.ToString()
+
+                Case "1.5" 'crear pago x banco
+                    If RUTA_IMAGEN = "../../recursos/img/no_disponible.jpg" Then
+                        VALIDAR_IMG = "NO"
+                    Else
+                        VALIDAR_IMG = "SI"
+                    End If
+                    resArray = ccdetraccion.PagarDetraccionesVariasBanco(detalle, caja, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, tipo_cambio, VALIDAR_IMG, origen, origen_pidm, origen_codigo_banco, adicional, "BAN", "", "", codigo_apertura)
+                    If resArray(1).Equals("TC") Then
                         Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
                         Dim strCodAsientoCobroDetracDocVenta As String
                         For Each item As String In detalle.Split("|")
-                            'Ejemplo de traza: D000000517,FE01-0012284,300.000,0,S
                             Dim p_CodDetracCode As String = item.Split(",")(0)
                             strCodAsientoCobroDetracDocVenta = oCTGeneracionAsientos.GenerarAsientoCobroDetraccionDocVenta(p_CodDetracCode)
                         Next
                     End If
+
+                    If RUTA_IMAGEN <> "" And resArray(1) = "TC" And VALIDAR_IMG = "SI" Then
+                        RUTA = GrabaImagen(RUTA_IMAGEN, context, resArray(0).ToString + ".jpg")
+                    End If
+
+                    resb.Append("[")
+                    resb.Append("{")
+                    resb.Append("""CODE_GENERADO"" :" & """" & resArray(0).ToString & """,")
+                    resb.Append("""SUCCESS"" :" & """" & resArray(1).ToString & """")
+                    resb.Append("}")
+                    resb.Append("]")
+
+                    res = resb.ToString()
 
                 Case "2" 'lista forma de pago
 
@@ -104,52 +177,47 @@ Public Class CCMCBDT : Implements IHttpHandler
                         res = GenerarSelect(SortDataTableColumn(dt, "descripcion_corta", "ASC"), "codigo", "descripcion_corta", "FOPA")
                     End If
 
-
                 Case "3"
-                    dt = prov.ListarProveedor("0", "A", empresa)
+                    dt = ccdetraccion.ListarClientesPorPagarDetracciones(empresa) 'DPORTA 18/03/2021
                     If dt Is Nothing Then
-                        res = GenerarSelect(dt, "pidm", "razon_social", "PROVEEDOR")
+                        res = "<option></option>"
                     Else
-                        res = GenerarSelect(SortDataTableColumn(dt, "razon_social", "ASC"), "pidm", "razon_social", "PROVEEDOR")
+                        res = GenerarSelect(SortDataTableColumn(dt, "NCLIENTE", "ASC"), "pidm", "NCLIENTE", "CLIENTE")
                     End If
 
                 Case "4"
+                    dt = ccdetraccion.ListarDeudasDetraccionCliente(empresa, "N", "A", cliente, autodetracc_ind, establec, fini, ffin)
+                    Dim ind As Boolean = False
+                    If Not dt Is Nothing Then
+                        res = Utilities.Datatable2Json(dt)
+                    Else
+                        res = ""
+                    End If
 
-                    Dim dt As DataTable
-                    Dim resb As New StringBuilder
-
-                    dt = DetraccionCliente.ListarDetraccionCliente(String.Empty, String.Empty, "N", empresa, cliente, estado)
+                Case "4.5"
+                    dt = ccdetraccion.ListarAmortizacionesDetracciones(factura)
                     If Not dt Is Nothing Then
                         resb.Append("[")
-
                         For Each row As DataRow In dt.Rows
-
                             resb.Append("{")
-                            resb.Append("""CODIGO"":""" & row("CODIGO_DETRACCION").ToString & """,")
-                            resb.Append("""NOMBRE"":""" & row("NOMBRE").ToString & """,")
-                            resb.Append("""TIPO_DOC"":""" & row("TIPO_DOC").ToString & """,")
-                            resb.Append("""DOCUMENTO"":{""CODIGO"":""" & row("CODIGO_DOC").ToString & """,""RUC"":""" & row("RUC").ToString & """,""NUMERO"":""" & row("NUMERO_DOC").ToString & """},")
-                            resb.Append("""FECHA_EMISION_DCTO"":{""display"":""" & row("FECHA_EMISION_DCTO").ToString & """,""order"":""" & String.Join("", row("FECHA_EMISION_DCTO").ToString.Split("/").Reverse()) & """},")
-                            resb.Append("""ES_MONEDA_BASE"":""" & row("ES_MONEDA_BASE").ToString & """,")
-                            resb.Append("""MONTO"":""" & row("MONTO").ToString & """,")
-                            resb.Append("""MONEDA"":{""CODIGO"":""" & row("MONE_CODE") & """,""SIMBOLO"":""" & row("MONEDA").ToString & """},")
-                            resb.Append("""AUTODETRACCION"":""" & row("AUTODETRACCION").ToString & """,") '25/02/2021
-                            resb.Append("""CLIENTE"":{""CODIGO"":""" & row("CLIENTE").ToString & """,""NOMBRE"":""" & row("NCLIENTE").ToString & """}")
+                            resb.Append("""DESTINO"":""" & row("DESTINO").ToString & """,")
+                            resb.Append("""ORIGEN"":""" & row("ORIGEN").ToString & """,")
+                            resb.Append("""FECHA"":{""display"":""" & row("FECHA_FORMATO").ToString & """,""order"":""" & String.Join("", row("FECHA_FORMATO").ToString.Split("/").Reverse()) & """},")
+                            resb.Append("""FORMA_PAGO"":""" & row("FORMA_PAGO").ToString & """,")
+                            resb.Append("""DOCUMENTO"":""" & row("DOCUMENTO").ToString & """,")
+                            resb.Append("""SIMBOLO_MONEDA"":""" & row("SIMBOLO_MONEDA").ToString & """,")
+                            resb.Append("""MONTO"":""" & row("MONTO").ToString & """")
                             resb.Append("},")
 
                         Next
-
-
                         resb.Append("-")
                         resb.Replace("},-", "}")
-
 
                         resb.Append("]")
                         res = resb.ToString()
                     Else
                         res = ""
                     End If
-
 
 
                 Case "5"
@@ -162,86 +230,44 @@ Public Class CCMCBDT : Implements IHttpHandler
                     End If
 
 
+                Case "5.5"
+                    Dim p As New Nomade.NC.NCSucursal("BN")
+                    dt = p.ListarSucursal(empresa, String.Empty, "A")
+                    If dt Is Nothing Then
+                        res = GenerarSelect(dt, "codigo", "descripcion", "SUCURSAL")
+                    Else
+                        res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "codigo", "descripcion", "SUCURSAL")
+                    End If
+
+
                 Case "6"
-                    dt = s.Listar_DatosBancarios(empresapidm, "", banco, moneda, "0005", "A", "S") '0005 cuenta detracciones
+
+                    dt = s.Listar_DatosBancarios(empresapidm, "", banco, moneda, "", "A")
                     If dt Is Nothing Then
                         res = GenerarSelect(dt, "code", "DESCRIPCION", "CTABANC")
-                    ElseIf String.IsNullOrEmpty(quitarCtaDetraccion) Then
-                        res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "code", "DESCRIPCION", "CTABANC")
-                    ElseIf Not quitarCtaDetraccion.Equals("S") Then
-                        res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "code", "DESCRIPCION", "CTABANC")
                     Else
-                        Dim dtClone As New DataTable
-                        dtClone = dt.Clone
-
-                        For Each row As DataRow In dt.Rows
-                            If Not row("TCUE_CODE").ToString.Equals("0005") Then
-                                dtClone.ImportRow(row)
-                            End If
-                        Next
-
-                        If dtClone.Rows.Count = 0 Then
-                            res = GenerarSelect(dtClone, "code", "DES", "CTABANC")
-                        Else
-                            res = GenerarSelect(SortDataTableColumn(dtClone, "DES", "ASC"), "code", "DES", "CTABANC")
-                        End If
+                        res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "code", "DESCRIPCION", "CTABANC")
                     End If
 
                 Case "6.5"
-                    esCliente = IIf(String.IsNullOrEmpty(esCliente), "N", esCliente)
-                    dt = s.Listar_DatosBancarios(empresapidm, "", "", moneda, "", "A", IIf(esCliente.Equals("S"), "N", "S"))
-                    If dt Is Nothing Then
-                        res = GenerarSelect(dt, "code", "DES", "CTABANC")
-                    ElseIf String.IsNullOrEmpty(quitarCtaDetraccion) Then
-                        res = GenerarSelect(SortDataTableColumn(dt, "DES", "ASC"), "code", "DES", "CTABANC")
-                    ElseIf Not quitarCtaDetraccion.Equals("S") Then
-                        res = GenerarSelect(SortDataTableColumn(dt, "DES", "ASC"), "code", "DES", "CTABANC")
-                    Else
-                        Dim dtClone As New DataTable
-                        dtClone = dt.Clone
 
-                        For Each row As DataRow In dt.Rows
-                            If Not row("TCUE_CODE").ToString.Equals("0005") Then
-                                dtClone.ImportRow(row)
-                            End If
-                        Next
+                    dt = s.Listar_DatosBancarios(empresapidm, "", "", moneda, "", "A")
 
-                        If dtClone.Rows.Count = 0 Then
-                            res = GenerarSelect(dtClone, "code", "DES", "CTABANC")
-                        Else
-                            res = GenerarSelect(SortDataTableColumn(dtClone, "DES", "ASC"), "code", "DES", "CTABANC")
-                        End If
+                    Dim rows() As DataRow = dt.Select("TCUE_CODE = '0005'")
+
+                    If rows.Length > 0 Then
+                        dt = rows.CopyToDataTable()
                     End If
 
-                Case "6.6"
-                    dt = s.Listar_DatosBancarios(empresapidm, "", "", moneda, "", "A", "S")
-
                     If dt Is Nothing Then
                         res = GenerarSelect(dt, "code", "DES", "CTABANC")
-                    ElseIf String.IsNullOrEmpty(quitarCtaDetraccion) Then
-                        res = GenerarSelect(SortDataTableColumn(dt, "DES", "ASC"), "code", "DES", "CTABANC")
-                    ElseIf Not quitarCtaDetraccion.Equals("S") Then
-                        res = GenerarSelect(SortDataTableColumn(dt, "DES", "ASC"), "code", "DES", "CTABANC")
                     Else
-                        Dim dtClone As New DataTable
-                        dtClone = dt.Clone
-
-                        For Each row As DataRow In dt.Rows
-                            If Not row("TCUE_CODE").ToString.Equals("0005") Then
-                                dtClone.ImportRow(row)
-                            End If
-                        Next
-
-                        If dtClone.Rows.Count = 0 Then
-                            res = GenerarSelect(dtClone, "code", "DES", "CTABANC")
-                        Else
-                            res = GenerarSelect(SortDataTableColumn(dtClone, "DES", "ASC"), "code", "DES", "CTABANC")
-                        End If
+                        res = GenerarSelect(SortDataTableColumn(dt, "DES", "ASC"), "code", "DES", "CTABANC")
                     End If
 
                 Case "7"
                     Dim p As New Nomade.NC.NCCaja("BN")
-                    dt = p.ListarCajasAperturadas(String.Empty, empresa, String.Empty, String.Empty, "A", usuario)
+                    dt = p.ListarCajasAperturadas(String.Empty, empresa, establec, String.Empty, "A", usuario)
                     If dt Is Nothing Then
                         res = GenerarSelect(dt, "CODIGO", "DESCRIPCION", "CAJA")
                     Else
@@ -273,16 +299,6 @@ Public Class CCMCBDT : Implements IHttpHandler
                         res = GenerarSelect(SortDataTableColumn(dt, "NUMERO", "ASC"), "CODE", "NUMERO", "NTARJETA")
                     End If
 
-                Case "M"
-                    Dim p As New Nomade.NC.NCMonedas("BN")
-                    dt = p.ListarMoneda(codigo, String.Empty, "A")
-                    res = dt.Rows(0)("Simbolo").ToString
-
-                Case "MO"
-                    Dim p As New Nomade.GL.GLLetras("Bn")
-                    dt = p.ListarMoneda(empresa)
-                    res = GenerarSelect(dt, "codigo", "descripcion", "MONEDA")
-
             End Select
 
             context.Response.Write(res)
@@ -294,6 +310,40 @@ Public Class CCMCBDT : Implements IHttpHandler
         End Try
 
     End Sub
+
+    Public Function GrabaImagen(ByVal img As String, ByVal context As HttpContext, ByVal nombrearch As String) As String
+        Dim rp As String = String.Empty
+        Try
+            Dim savepath As String = sRutaImagenes
+            Dim filename As String = nombrearch
+
+            If Not Directory.Exists(savepath) Then
+                Directory.CreateDirectory(savepath)
+            End If
+
+            File.WriteAllBytes(savepath & "\" & filename, Utilities.Base64ImgToBytes(img))
+            rp = "/" & filename
+
+            context.Response.StatusCode = 200
+
+        Catch ex As Exception
+            context.Response.Write("error" & ex.ToString)
+        End Try
+
+        Return rp
+    End Function
+
+
+    Private Function GetEncoder(ByVal format As ImageFormat) As ImageCodecInfo
+        Dim codecs As ImageCodecInfo() = ImageCodecInfo.GetImageDecoders()
+        Dim codec As ImageCodecInfo
+        For Each codec In codecs
+            If codec.FormatID = format.Guid Then
+                Return codec
+            End If
+        Next codec
+        Return Nothing
+    End Function
 
     Public Function GenerarSelect(ByVal dt As DataTable, ByVal cvalue As String, ByVal chtml As String, ByVal clase As String) As String
         If Not dt Is Nothing Then
@@ -307,7 +357,7 @@ Public Class CCMCBDT : Implements IHttpHandler
                         res += "<option monto=""" & dt.Rows(i)("SALDO") & """ banco=""" & dt.Rows(i)("BANC_CODE") & """ moneda=""" & dt.Rows(i)("MONE_CODE").ToString() & """ pidm=""" & dt.Rows(i)("PIDM").ToString() & """ value=""" & dt.Rows(i)(cvalue).ToString() & """>" & dt.Rows(i)(chtml).ToString() & "</option>"
                     Else
                         If clase = "MONEDA" Then
-                            res += "<option tipo=""" & dt.Rows(i)("TIPO").ToString() & """ value=""" & dt.Rows(i)(cvalue).ToString() & """>" & dt.Rows(i)(chtml).ToString() & "</option>"
+                            res += "<option simbolo=""" & dt.Rows(i)("SIMBOLO").ToString() & """ tipo=""" & dt.Rows(i)("TIPO").ToString() & """ value=""" & dt.Rows(i)(cvalue).ToString() & """>" & dt.Rows(i)(chtml).ToString() & "</option>"
                         Else
                             If clase = "CAJA" Then
                                 res += "<option monto=""" & dt.Rows(i)("MONTOCAJA").ToString() & """ monto_d=""" & dt.Rows(i)("MONTOCAJA_DOLARES").ToString() & """ codigo=""" & dt.Rows(i)("CODIGO_APERTURA").ToString() & """ stbl=""" & dt.Rows(i)("SUCURSAL").ToString() & """ value=""" & dt.Rows(i)(cvalue).ToString() & """>" & dt.Rows(i)(chtml).ToString() & "</option>"

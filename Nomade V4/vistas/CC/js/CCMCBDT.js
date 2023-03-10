@@ -14,6 +14,10 @@ var CCMCBDT = function () {
 
                       $("#cbo_moneda").attr("disabled", true);
 
+                      $("#inputRazsocial").html("");
+                      $("#inputRazsocial").html(`<input id="txtrazsocial" class="span11" type="text" data-provide="typeahead" placeholder="TODOS"/>`);
+                      filltxtrazsocial('#txtrazsocial', '');
+                      $("#hfPIDM").val("");
 
                       $.ajaxSetup({ async: false });
 
@@ -88,6 +92,7 @@ var CCMCBDT = function () {
                     }   
                 },
                 { data: "AUTODETRACCION" }, //DPORTA 25/02/2021
+                { data: "DOCUMENTO.RUC" },
                 { data: "CLIENTE.NOMBRE" },
                 {
                     data: null,
@@ -307,7 +312,7 @@ var CCMCBDT = function () {
                         $("#cboMedioPago").html(StringMediosPago);
 
                         if (objData.AUTODETRACCION === "AUTODETRACCIÓN")
-                            $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "") $(j).remove(); });
+                            $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0001" && valorO != "") $(j).remove(); });
                         else
                             $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0001" && valorO != "") $(j).remove(); });
 
@@ -619,6 +624,71 @@ var CCMCBDT = function () {
     };
 }();
 
+function filltxtrazsocial(v_ID, v_value) {
+
+    var selectRazonSocial = $(v_ID);
+    //Proveedores
+    $.ajax({
+        type: "post",
+        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2&p_CTLG_CODE=" + $("#slcEmpresa").val(),
+        contenttype: "application/json;",
+        datatype: "json",
+        async: false,
+        success: function (datos) {
+            if (datos != null) {
+                persona = datos;
+                selectRazonSocial.typeahead({
+                    source: function (query, process) {
+                        arrayRazonSocial = [];
+                        map = {};
+                        var obj = "[";
+                        for (var i = 0; i < datos.length; i++) {
+                            arrayRazonSocial.push(datos[i].RAZON_SOCIAL);
+                            obj += '{';
+                            obj += '"DNI":"' + datos[i].DNI + '","RUC":"' + datos[i].RUC + '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL + '","PIDM":"' + datos[i].PIDM + '"';
+                            obj += '},';
+                        }
+                        obj += "{}";
+                        obj = obj.replace(",{}", "");
+                        obj += "]";
+                        var json = $.parseJSON(obj);
+                        $.each(json, function (i, objeto) {
+                            map[objeto.RAZON_SOCIAL] = objeto;
+                        });
+                        process(arrayRazonSocial);
+                    },
+
+                    updater: function (item) {
+                        $("#hfPIDM").val("");
+                        $("#hfPIDM").val(map[item].PIDM);
+                        $("#txtrazsocial").val(map[item].RAZON_SOCIAL);
+                        return item;
+                    },
+
+                });
+                selectRazonSocial.keyup(function () {
+                    $(this).siblings("ul").css("width", $(this).css("width"))
+                    if ($("#txtrazsocial").val().length <= 0) {
+                        $(this).attr("placeholder", "TODOS");
+                        //$("#txtRuc").val("");
+                        $("#hfPIDM").val("");
+                    }
+                });
+
+            } else {
+                persona = [];
+            }
+            if (datos != null && $.trim(v_value).length > 0) {
+                selectRazonSocial.val(v_value);
+            }
+        },
+        error: function (msg) {
+            alert(msg);
+        }
+    });
+
+}
+
 $(".btnexit").click(function () {
 
     obj.removeClass('selected');
@@ -846,8 +916,8 @@ function limpiaCampos() {
 }
 
 function consultaDeudas() {
-  
-    $.post("vistas/CC/ajax/CCMCBDT.ASHX", { flag: 4, empresa: $("#slcEmpresa").val(), estado: $("#cboAutoDetra").val()}, //DPORTA 25/02/2021
+    var pidm = $("#hfPIDM").val();
+    $.post("vistas/CC/ajax/CCMCBDT.ASHX", { flag: 4, empresa: $("#slcEmpresa").val(), cliente: $("#hfPIDM").val(), estado: $("#cboAutoDetra").val()}, //DPORTA 25/02/2021
     function (datos) {
         if (datos != "" && datos != null) {
             var json = $.parseJSON(datos);

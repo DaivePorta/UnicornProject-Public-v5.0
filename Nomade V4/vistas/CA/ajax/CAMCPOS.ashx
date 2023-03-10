@@ -6,7 +6,7 @@ Imports System.Data
 
 Public Class CAMCPOS : Implements IHttpHandler
 
-    Dim flag, res As String  
+    Dim flag, res As String
     Dim resb As New StringBuilder
     Dim sb As New StringBuilder
     Dim dt As DataTable
@@ -23,10 +23,10 @@ Public Class CAMCPOS : Implements IHttpHandler
     Dim usuario As String
     Dim ttransaccion As String
     Dim operador As String
-    
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         context.Response.ContentType = "text/plain"
-        
+
         flag = context.Request("flag")
         empresapidm = context.Request("empresapidm")
         codigo = context.Request("codigo")
@@ -44,25 +44,34 @@ Public Class CAMCPOS : Implements IHttpHandler
         usuario = context.Request("usuario")
         ttransaccion = context.Request("ttransaccion")
         operador = context.Request("operador")
-        
+
         Try
-        
+
             Select Case flag.ToString()
-                
+
                 Case "1"
                     Dim p As New Nomade.NC.NCPOS("Bn")
                     res = p.CerrarLotePos(numero, fecha, monto_cierre, pos, moneda, empresa, establecimiento, detalle, usuario, ttransaccion)
-                 
+                    Dim parts() As String = res.Split("-")
+                    Dim CodMovBanc As String = parts(1)
+                    Dim CodMovPos As String = parts(2)
+
+                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                    Dim strCodAsientoCierrePos As String
+                    strCodAsientoCierrePos = oCTGeneracionAsientos.GenerarAsientoCierrePos(CodMovBanc, CodMovPos)
+                    Dim strCodAsientoITF As String
+                    strCodAsientoITF = oCTGeneracionAsientos.GenerarAsientoITF(CodMovBanc, CodMovPos, "")
+
                 Case "ld"
                     Dim p As New Nomade.NC.NCPOS("Bn")
                     resb.Append("[")
                     For Each mcod As String In detalle.Split(",")
-                       
+
                         dt = p.ListarMovPOS(mcod, String.Empty, "P", "", String.Empty, String.Empty, "", "", "N", "S")
                         If Not dt Is Nothing Then
 
                             For Each row As DataRow In dt.Rows
-                          
+
                                 resb.Append("{")
                                 resb.Append("""CODIGO_MCAJA"":""" & row("MCAJ_CODE").ToString & """,")
                                 resb.Append("""DOCUMENTO"":{""valor"":""" & row("DOCUMENTO").ToString & """,""codigo"":""" & row("DOCUMENTO_CODE").ToString & """},")
@@ -75,22 +84,22 @@ Public Class CAMCPOS : Implements IHttpHandler
                                 resb.Append("""TIPO_TRAN_IND"":""" & row("TIPO_TRAN_IND").ToString & """,")
                                 resb.Append("""MONTO"":""" & row("MONTO").ToString & """")
                                 resb.Append("},")
-                            
+
                             Next
-            
+
                         End If
-                    
-                       
+
+
                     Next
                     resb.Append("-")
                     resb.Replace("},-", "}")
                     resb.Append("]")
                     res = resb.ToString()
-                    
+
                 Case "L"
                     Dim P As New Nomade.NC.NCPOS("Bn")
-                 
-             
+
+
 
                     dt = P.ListarCierreLote(pos, moneda)
 
@@ -119,7 +128,7 @@ Public Class CAMCPOS : Implements IHttpHandler
 
                     End If
                     res = sb.ToString()
-                    
+
                 Case "3"
                     Dim p As New Nomade.NC.NCPOS("Bn")
                     dt = p.ListarMovPOS(String.Empty, String.Empty, "P", moneda, String.Empty, String.Empty, "", pos)
@@ -127,7 +136,7 @@ Public Class CAMCPOS : Implements IHttpHandler
                         resb.Append("[")
 
                         For Each row As DataRow In dt.Rows
-                          
+
                             resb.Append("{")
                             resb.Append("""CODIGO_MCAJA"":""" & row("MCAJ_CODE").ToString & """,")
                             resb.Append("""DOCUMENTO"":{""valor"":""" & row("DOCUMENTO").ToString & """,""codigo"":""" & row("DOCUMENTO_CODE").ToString & """},")
@@ -140,7 +149,7 @@ Public Class CAMCPOS : Implements IHttpHandler
                             resb.Append("""TIPO_TRAN_IND"":""" & row("TIPO_TRAN_IND").ToString & """,")
                             resb.Append("""MONTO"":""" & row("MONTO").ToString & """")
                             resb.Append("},")
-                            
+
                         Next
                         resb.Append("-")
                         resb.Replace("},-", "}")
@@ -148,11 +157,11 @@ Public Class CAMCPOS : Implements IHttpHandler
                         resb.Append("]")
                         res = resb.ToString()
                     Else
-            
+
                     End If
-                    
-                    
-                
+
+
+
                 Case "4"
                     Dim p As New Nomade.NC.NCPOS("Bn")
                     dt = p.ListarPOS("", empresa, establecimiento, "", "A")
@@ -161,7 +170,7 @@ Public Class CAMCPOS : Implements IHttpHandler
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "codigo", "DESCRIPCION", "POS")
                     End If
-        
+
                 Case "5"
                     Dim p As New Nomade.NC.NCEmpresa("BN")
                     dt = p.ListarEmpresa(String.Empty, "A", HttpContext.Current.User.Identity.Name)
@@ -170,7 +179,7 @@ Public Class CAMCPOS : Implements IHttpHandler
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "codigo", "descripcion", "EMPRESA")
                     End If
-        
+
                 Case "V1"
                     Dim p As New Nomade.NC.NCPOS("Bn")
                     dt = p.ListarAjuste("", "", Nothing, Nothing, empresa, moneda, operador)
@@ -179,7 +188,7 @@ Public Class CAMCPOS : Implements IHttpHandler
                     Else
                         res = ""
                     End If
-                    
+
                 Case "V2"
                     Dim p As New Nomade.NC.NCPOS("Bn")
                     dt = p.ListarAjuste("", "", Nothing, Nothing, empresa, moneda, operador, fecha)
@@ -188,33 +197,33 @@ Public Class CAMCPOS : Implements IHttpHandler
                     Else
                         res = "NO"
                     End If
-                   
+
                 Case "M"
                     Dim p As New Nomade.NC.NCMonedas("BN")
                     dt = p.ListarMoneda(codigo, String.Empty, "A")
                     res = dt.Rows(0)("Simbolo").ToString
-                    
+
                 Case "MO"
                     Dim p As New Nomade.GL.GLLetras("Bn")
                     dt = p.ListarMoneda(empresa)
                     res = GenerarSelect(dt, "codigo", "descripcion", "MONEDA")
-                    
+
             End Select
 
             context.Response.Write(res)
-       
+
         Catch ex As Exception
 
             context.Response.Write("error" & ex.ToString)
-            
+
         End Try
-        
-        
+
+
     End Sub
-    
+
     Public Function GenerarSelect(ByVal dt As DataTable, ByVal cvalue As String, ByVal chtml As String, ByVal clase As String) As String
         If Not dt Is Nothing Then
-         
+
             res = "<option></option>"
             For i As Integer = 0 To dt.Rows.Count - 1
                 If clase = "EMPRESA" Then
@@ -232,29 +241,29 @@ Public Class CAMCPOS : Implements IHttpHandler
                                 If dt.Rows(i)(chtml).ToString() <> String.Empty Then
                                     res += "<option  value=""" & dt.Rows(i)(cvalue).ToString() & """>" & dt.Rows(i)(chtml).ToString() & "</option>"
                                 End If
-                               
+
                             End If
                         End If
                     End If
                 End If
             Next
-          
+
         Else
             res = "error"
         End If
         Return res
     End Function
-    
-    
- 
+
+
+
     Private Function SortDataTableColumn(ByVal dt As DataTable, ByVal column As String, ByVal sort As String) As DataTable
         Dim dtv As New DataView(dt)
         dtv.Sort = column & " " & sort
         Return dtv.ToTable()
     End Function
-    
-    
-    
+
+
+
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False

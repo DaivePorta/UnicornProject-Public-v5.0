@@ -682,18 +682,59 @@ function rucValido(ruc) {
     } else {
         return false;
     }
-
+}
+//DocumentosIdentidad
+function fillCboTipoDoc_2(tipo_doc) {
+    Bloquear("divCboTipoDoc");
+    $.ajax({
+        type: "post",
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=DOID",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: true,
+        success: function (datos) {
+            Desbloquear("divCboTipoDoc");
+            $('#cboTipoDoc').empty();
+            $('#cboTipoDoc').append('<option></option>');
+            if (datos != null) {
+                for (var i = 0; i < datos.length; i++) {
+                    $('#cboTipoDoc').append('<option value="' + datos[i].CODIGO + '" data-sunat="' + datos[i].CODIGO_SUNAT + '">' + datos[i].DESC_CORTA + '</option>');
+                }
+            }
+            $('#cboTipoDoc').select2('val', tipo_doc);
+        },
+        error: function (msg) {
+            Desbloquear("divCboTipoDoc");
+            alertCustom("Documentos de Identidad no se listaron correctamente.");
+        }
+    });
 }
 
 function CargarDatosCliente(nuevoInd, datos) {
     if (nuevoInd == undefined) {
         nuevoInd = true;
     }
-    $("#lblTipoDocumento").html($("#cboTipoDoc :selected").html());
-    $("#txtNroDocumento").val(personaSeleccionada.NRO_DCTO);
+
+    $("#lblTipoDocumento").html(nuevoInd == true ? $("#cboTipoDoc :selected").html() : datos[0].DESC_DOCUMENTO);
+
+    if (nuevoInd !== true) {
+        $("#lblTipoDocumento").pulsate({
+            color: "#33AECD",
+            reach: 20,
+            repeat: 3,
+            glow: true
+        });
+        fillCboTipoDoc_2(datos[0].TIPO_DOC);
+        $("#txtNroDocumento").val(personaSeleccionada.NRO_DCTO);
+    }    
 
     if (nuevoInd) {//NUEVA PERSONA
         LimpiarCampos();
+        if ($("#cboTipoDoc").val() == '6') {
+            DesbloquearCamposJuridico();
+        } else {
+            DesbloquearCamposNatural();
+        }        
         $("#divBotones").slideDown();
         $("#divGrabarCliente").hide();
         //DPORTA
@@ -758,7 +799,12 @@ function CargarDatosCliente(nuevoInd, datos) {
 
         //Ocultar/bloquear Datos
         if (datos[0].CLIENTE_IND == "S") {
-            infoCustom2("Cliente YA EXISTE en el ERP.");
+            if (personaSeleccionada.TIPO_DCTO == datos[0].TIPO_DOC) {
+                infoCustom2("Cliente YA EXISTE en el ERP" + (datos[0].ESTADO == "A" ? "." : ". Si desea, puede activarlo."));
+            } else {
+                infoCustom2("Cliente ya se encuentra registrado con " + datos[0].DESC_DOCUMENTO + (datos[0].ESTADO == "A" ? "." : ". Si desea, puede activarlo."));
+            }           
+
             $("#divBotones").slideUp();
             $("#divGrabarCliente").slideUp();
             $(".oblig").hide();
@@ -772,8 +818,12 @@ function CargarDatosCliente(nuevoInd, datos) {
                 $("#chkActivoNA").attr("style", "display:inline");
             }
         } else {
-           
-            infoCustom2("Persona EXISTE, pero NO es cliente de la empresa seleccionada.");
+            if (personaSeleccionada.TIPO_DCTO == datos[0].TIPO_DOC) {
+                infoCustom2("Persona EXISTE, pero NO es cliente de la empresa seleccionada.");
+            } else {
+                infoCustom2("Persona EXISTE y está registrada con " + datos[0].DESC_DOCUMENTO + ", pero NO es cliente de la empresa seleccionada.");
+            }
+            
             $(".oblig").hide();
             $("#divGrabarCliente").slideDown();
             $("#divBotones").hide();
@@ -1140,6 +1190,25 @@ function BloquearCamposJuridico() {
         'chkretencion', 'txtfecharetencion', 'chkpercepcion', 'txtfechapercepcion', 'cboClaseClienteJ'];
     for (var i = 0; i < ids.length; i++) {
         $("#" + ids[i] + "").attr("disabled", "disabled");
+    }
+    $("#divBotones").hide();
+}
+
+function DesbloquearCamposNatural() {
+    var ids = ['txtApePaterno', 'txtApeMaterno', 'txtNombres', 'rbnMasculino', 'rbnFemenino',
+        'txtDireccionN', 'txtFechaNacimiento', 'txtTelefonoN', 'txtEmailN', 'cboClaseCliente'];
+    for (var i = 0; i < ids.length; i++) {
+        $("#" + ids[i] + "").removeAttr("disabled", false);
+    }
+    $("#divBotones").hide();
+}
+
+function DesbloquearCamposJuridico() {
+    var ids = ['txtRazonSocial', 'txtNombreComercial', 'txtDireccionJ', 'txtActividad',
+        'txtTelefonoJ', 'txtFechaActividad', 'txtEmailJ',
+        'chkretencion', 'txtfecharetencion', 'chkpercepcion', 'txtfechapercepcion', 'cboClaseClienteJ'];
+    for (var i = 0; i < ids.length; i++) {
+        $("#" + ids[i] + "").removeAttr("disabled", false);
     }
     $("#divBotones").hide();
 }

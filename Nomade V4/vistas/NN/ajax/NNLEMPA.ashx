@@ -8,14 +8,14 @@ Public Class NNLEMPA : Implements IHttpHandler
     Dim OPCION As String
     Dim ANHO, MES, SCSL_CODE, CTLG_CODE, PIDM As String
     Dim dt As DataTable
-    
-    
+
+
     Dim res As String
     Dim resb As New StringBuilder
-    
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         OPCION = context.Request("OPCION")
-        
+
         ANHO = context.Request("ANHO")
         MES = context.Request("MES")
         PIDM = context.Request("PIDM")
@@ -23,7 +23,7 @@ Public Class NNLEMPA : Implements IHttpHandler
         SCSL_CODE = context.Request("SCSL_CODE")
 
         Select Case OPCION
-                
+
             Case "1" ' 
                 context.Response.ContentType = "application/json; charset=utf-8"
                 Dim dtFalta As New DataTable
@@ -38,18 +38,19 @@ Public Class NNLEMPA : Implements IHttpHandler
                 Dim array As New ArrayList
                 Dim array2 As New ArrayList
                 dt = New Nomade.NN.NNPlanilla("Bn").Listar_calculo_Tardanzas(ANHO, MES, PIDM, "N", "0001", "2")
-                dtFalta = New Nomade.NN.NNPlanilla("Bn").Listar_Faltas_Empleado(ANHO, MES, PIDM, "N", "0001", "3")
+                'dtFalta = New Nomade.NN.NNPlanilla("Bn").Listar_Faltas_Empleado(ANHO, MES, PIDM, "N", "0001", "3")
+                dtFalta = New Nomade.NN.NNPlanilla("Bn").Listar_Faltas_Empleado(ANHO, MES, PIDM, "N", "0001", "6") 'DPORTA - FALTAS POR TODO EL DÍA
                 dtFaltaHoras = New Nomade.NN.NNPlanilla("Bn").Listar_Faltas_Empleado(ANHO, MES, PIDM, "N", "0001", "4") 'MIN EN CONTRA PERMISOS POR HORAS
                 dtHoraSubsanada = New Nomade.NN.NNPlanilla("Bn").Listar_Faltas_Empleado(ANHO, MES, PIDM, "N", "0001", "5") 'MIN SUBSANADOS PERMISOS POR HORAS
                 dt_horas_extras = New Nomade.NN.NNPlanilla("Bn").Listar_calculo_horas_extras(ANHO, MES, PIDM, "N", "0001", "2")
-              
+
                 'dt = Nothing
                 'dtFalta = Nothing
                 'dt_horas_extras = Nothing 
-                
-                 resb.Append("[")
+
+                resb.Append("[")
                 If Not (dt Is Nothing) Then
-                   
+
                     For i As Integer = 0 To dt.Rows.Count - 1
                         bool = False
                         bool3 = False
@@ -64,7 +65,7 @@ Public Class NNLEMPA : Implements IHttpHandler
                         resb.Append("""TARDANZA"" :" & """" & dt(i)("TARDANZA").ToString & """,")
                         resb.Append("""FALTA"" :" & """" & "" & """,")
 
-                        
+
                         If Not (dtFaltaHoras Is Nothing) Then
                             For k As Integer = 0 To dtFaltaHoras.Rows.Count - 1
                                 If dtFaltaHoras(k)("DIA").ToString = dt(i)("DIA").ToString Then
@@ -77,7 +78,7 @@ Public Class NNLEMPA : Implements IHttpHandler
                         If bool3 = False Then
                             resb.Append("""MIN_NO_SUBSANADOS"" :" & """" & "" & """,")
                         End If
-                        
+
                         If Not (dtHoraSubsanada Is Nothing) Then
                             For k As Integer = 0 To dtHoraSubsanada.Rows.Count - 1
                                 If dtHoraSubsanada(k)("DIA").ToString = dt(i)("DIA").ToString Then
@@ -90,8 +91,8 @@ Public Class NNLEMPA : Implements IHttpHandler
                         If bool4 = False Then
                             resb.Append("""MIN_SUBSANADOS"" :" & """" & "" & """,")
                         End If
-                        
-                      
+
+
                         If Not (dt_horas_extras Is Nothing) Then
                             For j As Integer = 0 To dt_horas_extras.Rows.Count - 1
                                 If dt_horas_extras(j)("DIA").ToString = dt(i)("DIA").ToString Then
@@ -105,14 +106,14 @@ Public Class NNLEMPA : Implements IHttpHandler
                         If bool = False Then
                             resb.Append("""EXTRA"" :" & """" & "" & """")
                         End If
-                       
-                      
+
+
                         resb.Append("}")
                         resb.Append(",")
-                               
+
                     Next
                 End If
-                   
+
                 'extras
                 If Not (dt_horas_extras Is Nothing) Then
                     If Not (dt Is Nothing) Then
@@ -125,11 +126,11 @@ Public Class NNLEMPA : Implements IHttpHandler
                             array2.Add(dtFalta(j)("DIA").ToString)
                         Next
                     End If
-                
+
                     For j As Integer = 0 To dt_horas_extras.Rows.Count - 1
                         If array.Contains(dt_horas_extras(j)("DIA").ToString) = False And array2.Contains(dt_horas_extras(j)("DIA").ToString) = False Then
-                           
-                            
+
+
                             Dim a = dt_horas_extras(j)("DIA").ToString
                             Dim lll = ""
                             resb.Append("{")
@@ -147,14 +148,14 @@ Public Class NNLEMPA : Implements IHttpHandler
                             resb.Append("}")
                             resb.Append(",")
                         End If
-                    
+
                     Next
-                      
-                        
+
+
                     'resb.Append("{}")
                     'resb = resb.Replace(",{}", String.Empty)
-                    
-                        
+
+
                 End If
 
                 'faltas
@@ -181,41 +182,41 @@ Public Class NNLEMPA : Implements IHttpHandler
                                 End If
                             Next
                         End If
-                           
+
                         If bool2 = False Then
                             resb.Append("""EXTRA"" :" & """" & "-" & """")
                         End If
-                           
-                      
+
+
                         resb.Append("}")
                         resb.Append(",")
-                          
+
                     Next
-                        
-                        
-                        
-                        
-                        
+
+
+
+
+
                     resb.Append("{}")
                     resb = resb.Replace(",{}", String.Empty)
-                  
+
                 End If
-                    
+
                 resb.Append("{}")
                 resb = resb.Replace(",{}", String.Empty)
                 resb = resb.Replace("{}", String.Empty)
-                    
+
                 resb.Append("]")
-              
+
                 res = resb.ToString()
-     
+
             Case Else
         End Select
         context.Response.Write(res)
-        
-        
+
+
     End Sub
- 
+
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False

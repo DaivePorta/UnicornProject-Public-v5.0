@@ -367,6 +367,26 @@
         End Try
     End Function
 
+    Public Function verificar_Existencia_Nro_Dcto_Persona(p_PPBDOID_DOID_CODE As String, p_PPBDOID_NRO As String, p_PPBDOID_ESTADO_IND As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFC_VERIFICAR_NRO_DOCUMENTO_PERSONA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PPBDOID_DOID_CODE", p_PPBDOID_DOID_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PPBDOID_NRO", p_PPBDOID_NRO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PPBDOID_ESTADO_IND", p_PPBDOID_ESTADO_IND, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
     Public Function crear_Persona_Natural(ByVal p_PPBIDEN_APELL_PATE As String, ByVal p_PPBIDEN_APELL_MATE As String, ByVal p_PPBIDEN_NOMBRE As String, ByVal p_PPBIDEN_FECHA As String, ByVal p_PPBIDEN_AGENTE_RETEN_IND As String,
                                                               ByVal p_PPBIDEN_ENTIDAD_IND As String, ByVal p_PPBIDEN_TINO_CODE As String, ByVal p_PPBIDEN_USUA_ID As String,
                                   ByVal p_PPBPEBA_SEXO As String, ByVal p_PPBPEBA_ESCI_CODE As String, ByVal p_PPBDOID_DOID_CODE As String,

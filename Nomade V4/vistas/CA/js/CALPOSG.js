@@ -756,7 +756,8 @@ function CargarDatosAlmacen(datos, subtipo, nivel) {
         //POBLAR DATA
         $("#tblAlmacen_" + nivel + " tbody tr").remove();
         for (var i = 0; i < datos.length; i++) {
-            $("#tblAlmacen_" + nivel + " tbody").append('<tr><td>' + datos[i].DESCRIPCION + '</td><td>' + datos[i].RESPONSABLE + '</td><td class="right">' + simbolo + formatoMiles(datos[i].MONTO) + '</td></tr>');
+            //$("#tblAlmacen_" + nivel + " tbody").append('<tr><td>' + datos[i].DESCRIPCION + '</td><td>' + datos[i].RESPONSABLE + '</td><td class="right">' + simbolo + formatoMiles(datos[i].MONTO) + '</td></tr>');
+            $("#tblAlmacen_" + nivel + " tbody").append('<tr><td>' + datos[i].DESCRIPCION + '</td><td class="right">' + simbolo + formatoMiles(datos[i].MONTO) + '</td></tr>');
             var obj = {};
             obj.name = datos[i].DESCRIPCION;
             obj.y = parseFloat(datos[i].MONTO);
@@ -850,7 +851,8 @@ function CargarDatosCliente(datos, subtipo, nivel) {
                 //POBLAR DATA
                 $("#tblCliente_" + nivel + " tbody tr").remove();
                 for (var i = 0; i < datos.length; i++) {
-                    $("#tblCliente_" + nivel + " tbody").append('<tr><td>' + datos[i].DESCRIPCION + '</td><td>' + datos[i].TELEFONO + '</td><td class="right">' + simbolo + formatoMiles(datos[i].MONTO) + '</td></tr>');
+                    //$("#tblCliente_" + nivel + " tbody").append('<tr><td>' + datos[i].DESCRIPCION + '</td><td>' + datos[i].TELEFONO + '</td><td class="right">' + simbolo + formatoMiles(datos[i].MONTO) + '</td></tr>');
+                    $("#tblCliente_" + nivel + " tbody").append('<tr><td>' + datos[i].DESCRIPCION + '</td><td class="right">' + simbolo + formatoMiles(datos[i].MONTO) + '</td></tr>');
                     var obj = {};
                     obj.name = datos[i].DESCRIPCION;
                     obj.y = parseFloat(datos[i].MONTO);
@@ -984,7 +986,8 @@ function CargarDatosProveedor(datos, subtipo, nivel) {
                 //POBLAR DATA
                 $("#tblProveedor_" + nivel + " tbody tr").remove();
                 for (var i = 0; i < datos.length; i++) {
-                    $("#tblProveedor_" + nivel + " tbody").append('<tr><td>' + datos[i].DESCRIPCION + '</td><td>' + datos[i].TELEFONO + '</td><td class="right">' + simbolo + formatoMiles(datos[i].MONTO) + '</td></tr>');
+                    //$("#tblProveedor_" + nivel + " tbody").append('<tr><td>' + datos[i].DESCRIPCION + '</td><td>' + datos[i].TELEFONO + '</td><td class="right">' + simbolo + formatoMiles(datos[i].MONTO) + '</td></tr>');
+                    $("#tblProveedor_" + nivel + " tbody").append('<tr><td>' + datos[i].DESCRIPCION + '</td><td class="right">' + simbolo + formatoMiles(datos[i].MONTO) + '</td></tr>');
                     var obj = {};
                     obj.name = datos[i].DESCRIPCION;
                     obj.y = parseFloat(datos[i].MONTO);

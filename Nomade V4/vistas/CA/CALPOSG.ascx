@@ -267,7 +267,7 @@
                                 <thead>
                                     <tr>
                                         <th class="center">ALMACEN</th>
-                                        <th class="center">RESPONSABLE</th>
+                                        <%--<th class="center">RESPONSABLE</th>--%>
                                         <th class="center">MONTO</th>
                                     </tr>
                                 </thead>
@@ -317,7 +317,7 @@
                                 <thead>
                                     <tr>
                                         <th class="center" style="width: 40%;">CLIENTE</th>
-                                        <th class="center" style="width: 20%;">TELEFONO</th>
+                                        <%--<th class="center" style="width: 20%;">TELEFONO</th>--%>
                                         <th class="center" style="width: 20%;">MONTO</th>
                                     </tr>
                                 </thead>
@@ -381,7 +381,7 @@
                                 <thead>
                                     <tr>
                                         <th class="center" style="width: 40%;">PROVEEDOR</th>
-                                        <th class="center" style="width: 20%;">TELEFONO</th>
+                                        <%--<th class="center" style="width: 20%;">TELEFONO</th>--%>
                                         <th class="center" style="width: 20%;">MONTO</th>
                                     </tr>
                                 </thead>

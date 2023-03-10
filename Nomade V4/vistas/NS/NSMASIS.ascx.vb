@@ -1,6 +1,7 @@
 ﻿Imports System.IO
-Imports System.Data.OleDb
+'Imports System.Data.OleDb
 Imports System.Data
+Imports ExcelDataReader
 
 Partial Class vistas_NS_NSMASIST
     Inherits Nomade.N.Cub
@@ -65,39 +66,48 @@ Partial Class vistas_NS_NSMASIST
     Dim ListaConfiguracionAsistencia As New List(Of eConfiguracionAsistencia)
     Dim ListaAsistencia As New List(Of eAsistencia)
     Public Sub extraedatosX(ByVal FilePath As String, ByVal Extension As String, ByVal isHDR As String)
-        Dim conStr As String = ""
-        Select Case Extension
-            Case ".xls"
-                'Excel 97-03
-                'conStr = ConfigurationManager.ConnectionStrings("Excel03ConString").ConnectionString()
-                conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties='Excel 8.0;HDR={1}'"
-                Exit Select
-            Case ".xlsx"
-                'Excel 07
-                'conStr = ConfigurationManager.ConnectionStrings("Excel07ConString").ConnectionString
-                conStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties='Excel 8.0;HDR={1}'"
-                Exit Select
-        End Select
-        conStr = String.Format(conStr, FilePath, isHDR)
-        Dim connExcel As New OleDbConnection(conStr)
-        Dim cmdExcel As New OleDbCommand()
-        Dim oda As New OleDbDataAdapter()
+        'Dim conStr As String = ""
+        'Select Case Extension
+        '    Case ".xls"
+        '        'Excel 97-03
+        '        'conStr = ConfigurationManager.ConnectionStrings("Excel03ConString").ConnectionString()
+        '        conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties='Excel 8.0;HDR={1}'"
+        '        Exit Select
+        '    Case ".xlsx"
+        '        'Excel 07
+        '        'conStr = ConfigurationManager.ConnectionStrings("Excel07ConString").ConnectionString
+        '        conStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties='Excel 8.0;HDR={1}'"
+        '        Exit Select
+        'End Select
+        'conStr = String.Format(conStr, FilePath, isHDR)
+        'Dim connExcel As New OleDbConnection(conStr)
+        'Dim cmdExcel As New OleDbCommand()
+        'Dim oda As New OleDbDataAdapter()
         Dim dt As New DataTable()
-        cmdExcel.Connection = connExcel
-        'Get the name of First Sheet
-        connExcel.Open()
-        Dim dtExcelSchema As DataTable
-        dtExcelSchema = connExcel.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, Nothing)
-        'dtExcelSchema.Rows.C()
-        Dim SheetName As String = dtExcelSchema.Rows(0)("TABLE_NAME").ToString()
-        connExcel.Close()
-        'Read Data from First Sheet
-        connExcel.Open()
-        cmdExcel.CommandText = "SELECT * From [" & SheetName & "]"
-        oda.SelectCommand = cmdExcel
-        oda.Fill(dt)
-        connExcel.Close()
+        'Dim table As New DataTable()
+        'cmdExcel.Connection = connExcel
+        ''Get the name of First Sheet
+        'connExcel.Open()
+        'Dim dtExcelSchema As DataTable
+        'dtExcelSchema = connExcel.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, Nothing)
+        ''dtExcelSchema.Rows.C()
+        'Dim SheetName As String = dtExcelSchema.Rows(0)("TABLE_NAME").ToString()
+        'connExcel.Close()
+        ''Read Data from First Sheet
+        'connExcel.Open()
+        'cmdExcel.CommandText = "SELECT * From [" & SheetName & "]"
+        'oda.SelectCommand = cmdExcel
+        'oda.Fill(dt)
+        'connExcel.Close()
 
+        Dim stream = File.Open(FilePath, FileMode.Open, FileAccess.Read) 'DPORTA 09/03/2023
+        Dim reader = ExcelReaderFactory.CreateReader(stream)
+        Dim result = reader.AsDataSet()
+        Dim tables = result.Tables.Cast(Of DataTable)
+
+        For Each table As DataTable In tables
+            dt = table
+        Next
 
         data = Asistencia.Listar_Configuracion(hfEmpresa.Value, hfSucursal.Value)
 
@@ -112,6 +122,10 @@ Partial Class vistas_NS_NSMASIST
             eConfiguracionAsistencia.p_RHCONAS_HOR_ENT_TRAB = data.Rows(0)("RHCONAS_HOR_ENT_TRAB").ToString()
             eConfiguracionAsistencia.p_RHCONAS_HOR_SAL_TRAB = data.Rows(0)("RHCONAS_HOR_SAL_TRAB").ToString()
             eConfiguracionAsistencia.p_RHCONAS_USUA_ID = data.Rows(0)("RHCONAS_USUA_ID").ToString()
+
+            eConfiguracionAsistencia.p_RHMANAS_FALTA_TRABAJADOR = "12"
+            eConfiguracionAsistencia.p_RHMANAS_HORA_EXTRA_TRABAJADOR = "13"
+
             ListaConfiguracionAsistencia.Add(eConfiguracionAsistencia)
         End If
 
@@ -126,7 +140,32 @@ Partial Class vistas_NS_NSMASIST
 
         If Not data Is Nothing Then
 
-            For i = 0 To data.Rows.Count - 1
+            'For i = 0 To data.Rows.Count - 1
+            '    Dim eAsistencia As New eAsistencia()
+            '    eAsistencia.RHMANAS_CODE_BIO = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO) - 1).ToString()
+            '    eAsistencia.RHMANAS_FECHA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_FECHA) - 1).ToString()
+            '    eAsistencia.RHMANAS_HORA_ENTRADA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT) - 1).ToString()
+            '    eAsistencia.RHMANAS_HORA_SALIDA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL) - 1).ToString()
+            '    eAsistencia.RHMANAS_HORA_ENTRADA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT_TRAB) - 1).ToString()
+            '    eAsistencia.RHMANAS_HORA_SALIDA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL_TRAB) - 1).ToString()
+            '    'eAsistencia.RHMANAS_CODE_BIO = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO)).ToString()
+            '    'eAsistencia.RHMANAS_FECHA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_FECHA)).ToString()
+            '    'eAsistencia.RHMANAS_HORA_ENTRADA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT)).ToString()
+            '    'eAsistencia.RHMANAS_HORA_SALIDA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL)).ToString()
+            '    'eAsistencia.RHMANAS_HORA_ENTRADA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT_TRAB)).ToString()
+            '    'eAsistencia.RHMANAS_HORA_SALIDA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL_TRAB)).ToString()
+            '    eAsistencia.RHMANAS_USUA_ID = hfUsuario.Value()
+
+            '    eAsistencia.RHMANAS_FALTA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_FALTA_TRABAJADOR) - 1).ToString()
+            '    eAsistencia.RHMANAS_HORA_EXTRA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_HORA_EXTRA_TRABAJADOR) - 1).ToString()
+
+            '    ListaAsistencia.Add(eAsistencia)
+            'Next
+            'gvAsistencia.Caption = Path.GetFileName(FilePath)
+            'gvAsistencia.DataSource = ListaAsistencia
+            'gvAsistencia.DataBind()
+
+            For i = 1 To data.Rows.Count - 1 'DPORTA 09/03/2023
                 Dim eAsistencia As New eAsistencia()
                 eAsistencia.RHMANAS_CODE_BIO = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO) - 1).ToString()
                 eAsistencia.RHMANAS_FECHA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_FECHA) - 1).ToString()
@@ -134,18 +173,13 @@ Partial Class vistas_NS_NSMASIST
                 eAsistencia.RHMANAS_HORA_SALIDA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL) - 1).ToString()
                 eAsistencia.RHMANAS_HORA_ENTRADA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT_TRAB) - 1).ToString()
                 eAsistencia.RHMANAS_HORA_SALIDA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL_TRAB) - 1).ToString()
-                'eAsistencia.RHMANAS_CODE_BIO = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO)).ToString()
-                'eAsistencia.RHMANAS_FECHA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_FECHA)).ToString()
-                'eAsistencia.RHMANAS_HORA_ENTRADA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT)).ToString()
-                'eAsistencia.RHMANAS_HORA_SALIDA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL)).ToString()
-                'eAsistencia.RHMANAS_HORA_ENTRADA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT_TRAB)).ToString()
-                'eAsistencia.RHMANAS_HORA_SALIDA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL_TRAB)).ToString()
                 eAsistencia.RHMANAS_USUA_ID = hfUsuario.Value()
+
+                eAsistencia.RHMANAS_FALTA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_FALTA_TRABAJADOR) - 1).ToString()
+                eAsistencia.RHMANAS_HORA_EXTRA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_HORA_EXTRA_TRABAJADOR) - 1).ToString()
+
                 ListaAsistencia.Add(eAsistencia)
             Next
-            'gvAsistencia.Caption = Path.GetFileName(FilePath)
-            'gvAsistencia.DataSource = ListaAsistencia
-            'gvAsistencia.DataBind()
 
             Dim bError As Boolean = False
             Dim html As String = ""
@@ -266,8 +300,8 @@ Partial Class vistas_NS_NSMASIST
 
 
                     Else
-                        Convert.ToDateTime(ListaAsistencia(i).RHMANAS_FECHA).ToString("dd/MM/yyyy")
-                        html = html & "<td>" & ListaAsistencia(i).RHMANAS_FECHA.Substring(0, 10) & "</td>"
+                        'Convert.ToDateTime(ListaAsistencia(i).RHMANAS_FECHA).ToString("dd/MM/yyyy")
+                        html = html & "<td>" & ListaAsistencia(i).RHMANAS_FECHA & "</td>"
 
                     End If
 
@@ -311,15 +345,14 @@ Partial Class vistas_NS_NSMASIST
                                     ListaAsistencia(i).RHMANAS_HORA_SALIDA_TRABAJADOR.Equals("") Then
 
 
-
                     Else
 
 
-                        Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value,
-                                             hfPeriodo.Value,
-                                        ListaAsistencia(i).RHMANAS_CODE_BIO, Nombre, ListaAsistencia(i).RHMANAS_FECHA.Substring(0, 10),
-                                        ListaAsistencia(i).RHMANAS_HORA_ENTRADA, ListaAsistencia(i).RHMANAS_HORA_SALIDA,
-                                        HoraEntradaTrabajador, HoraSalidaTrabajador, ListaAsistencia(i).RHMANAS_USUA_ID, "", 1)
+                        Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value, hfPeriodo.Value,
+                                                    ListaAsistencia(i).RHMANAS_CODE_BIO, Nombre, ListaAsistencia(i).RHMANAS_FECHA,
+                                                    ListaAsistencia(i).RHMANAS_HORA_ENTRADA, ListaAsistencia(i).RHMANAS_HORA_SALIDA,
+                                                    HoraEntradaTrabajador, HoraSalidaTrabajador, ListaAsistencia(i).RHMANAS_USUA_ID, "", 1,
+                                                    ListaAsistencia(i).RHMANAS_FALTA_TRABAJADOR, ListaAsistencia(i).RHMANAS_HORA_EXTRA_TRABAJADOR)
                     End If
 
 
@@ -332,15 +365,14 @@ Partial Class vistas_NS_NSMASIST
                             ListaAsistencia(i).RHMANAS_HORA_SALIDA_TRABAJADOR.Equals("") Then
 
 
-
                     Else
 
 
-                        Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value,
-                                         hfPeriodo.Value,
-                                    ListaAsistencia(i).RHMANAS_CODE_BIO, Nombre, ListaAsistencia(i).RHMANAS_FECHA.Substring(0, 10),
-                                    ListaAsistencia(i).RHMANAS_HORA_ENTRADA, ListaAsistencia(i).RHMANAS_HORA_SALIDA,
-                                    HoraEntradaTrabajador, HoraSalidaTrabajador, ListaAsistencia(i).RHMANAS_USUA_ID, "", 0)
+                        Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value, hfPeriodo.Value,
+                                                    ListaAsistencia(i).RHMANAS_CODE_BIO, Nombre, ListaAsistencia(i).RHMANAS_FECHA,
+                                                    ListaAsistencia(i).RHMANAS_HORA_ENTRADA, ListaAsistencia(i).RHMANAS_HORA_SALIDA,
+                                                    HoraEntradaTrabajador, HoraSalidaTrabajador, ListaAsistencia(i).RHMANAS_USUA_ID, "", 0,
+                                                    ListaAsistencia(i).RHMANAS_FALTA_TRABAJADOR, ListaAsistencia(i).RHMANAS_HORA_EXTRA_TRABAJADOR)
                     End If
 
 
@@ -350,8 +382,6 @@ Partial Class vistas_NS_NSMASIST
             Next
 
             html = html & "</tbody>"
-
-
 
             html = html & "</table>"
             html = html & "</div>"
@@ -394,13 +424,13 @@ Partial Class vistas_NS_NSMASIST
                                   ByVal p_RHMANAS_FECHA As String, ByVal p_RHMANAS_HORA_ENTRADA As String,
                                   ByVal p_RHMANAS_HORA_SALIDA As String, ByVal p_RHMANAS_HORA_ENTRADA_TRABAJADOR As String,
                                   ByVal p_RHMANAS_HORA_SALIDA_TRABAJADOR As String, ByVal p_RHMANAS_USUA_ID As String,
-                                  ByVal p_SALIDA As String, ByVal p_TIPO As String) As String
+                                  ByVal p_SALIDA As String, ByVal p_TIPO As String, ByVal p_RHMANAS_FALTA_TRABAJADOR As String, ByVal p_RHMANAS_HORA_EXTRA_TRABAJADOR As String) As String
 
         Try
             Dim cResultado As String = ""
             cResultado = Asistencia.Crear_Asistencia(p_RHMANAS_CODE, p_RHMANAS_CTLG_CODE, p_RHMANAS_FTVSCSL_CODE, p_RHMANAS_FCOPERI_CODE,
                                        p_RHMANAS_CODE_BIO, p_RHMANAS_NOMBRE, p_RHMANAS_FECHA, p_RHMANAS_HORA_ENTRADA, p_RHMANAS_HORA_SALIDA,
-                                       p_RHMANAS_HORA_ENTRADA_TRABAJADOR, p_RHMANAS_HORA_SALIDA_TRABAJADOR, p_RHMANAS_USUA_ID, p_SALIDA, p_TIPO)
+                                       p_RHMANAS_HORA_ENTRADA_TRABAJADOR, p_RHMANAS_HORA_SALIDA_TRABAJADOR, p_RHMANAS_USUA_ID, p_SALIDA, p_TIPO, p_RHMANAS_FALTA_TRABAJADOR, p_RHMANAS_HORA_EXTRA_TRABAJADOR)
             Return cResultado
 
         Catch ex As Exception
@@ -424,6 +454,9 @@ Public Class eAsistencia
     Private _RHMANAS_ESTADO_IND As String
     Private _RHMANAS_USUA_ID As String
     Private _RHMANAS_FECHA_ACTV As String
+
+    Private _RHMANAS_FALTA_TRABAJADOR As String
+    Private _RHMANAS_HORA_EXTRA_TRABAJADOR As String
     Public Property RHMANAS_CODE() As String
         Get
             Return _RHMANAS_CODE
@@ -528,6 +561,24 @@ Public Class eAsistencia
             _RHMANAS_FECHA_ACTV = Value
         End Set
     End Property
+
+    Public Property RHMANAS_FALTA_TRABAJADOR() As String
+        Get
+            Return _RHMANAS_FALTA_TRABAJADOR
+        End Get
+        Set(ByVal Value As String)
+            _RHMANAS_FALTA_TRABAJADOR = Value
+        End Set
+    End Property
+
+    Public Property RHMANAS_HORA_EXTRA_TRABAJADOR() As String
+        Get
+            Return _RHMANAS_HORA_EXTRA_TRABAJADOR
+        End Get
+        Set(ByVal Value As String)
+            _RHMANAS_HORA_EXTRA_TRABAJADOR = Value
+        End Set
+    End Property
 End Class
 Public Class eConfiguracionAsistencia
     Private _p_RHCONAS_CODE As String
@@ -538,6 +589,9 @@ Public Class eConfiguracionAsistencia
     Private _p_RHCONAS_HOR_ENT_TRAB As String
     Private _p_RHCONAS_HOR_SAL_TRAB As String
     Private _p_RHCONAS_USUA_ID As String
+
+    Private _p_RHMANAS_FALTA_TRABAJADOR As String
+    Private _p_RHMANAS_HORA_EXTRA_TRABAJADOR As String
     Public Property p_RHCONAS_CODE() As String
         Get
             Return _p_RHCONAS_CODE
@@ -600,6 +654,24 @@ Public Class eConfiguracionAsistencia
         End Get
         Set(ByVal Value As String)
             _p_RHCONAS_USUA_ID = Value
+        End Set
+    End Property
+
+    Public Property p_RHMANAS_FALTA_TRABAJADOR() As String
+        Get
+            Return _p_RHMANAS_FALTA_TRABAJADOR
+        End Get
+        Set(ByVal Value As String)
+            _p_RHMANAS_FALTA_TRABAJADOR = Value
+        End Set
+    End Property
+
+    Public Property p_RHMANAS_HORA_EXTRA_TRABAJADOR() As String
+        Get
+            Return _p_RHMANAS_HORA_EXTRA_TRABAJADOR
+        End Get
+        Set(ByVal Value As String)
+            _p_RHMANAS_HORA_EXTRA_TRABAJADOR = Value
         End Set
     End Property
 End Class

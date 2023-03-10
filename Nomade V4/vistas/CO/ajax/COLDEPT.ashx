@@ -105,7 +105,7 @@ Public Class COLDEPT : Implements IHttpHandler
                     context.Response.ContentType = "text/plain"
                     Dim sCOLUMNA As String = context.Request("columnName")
                     Dim nCOLUMNA As String = context.Request("columnId")
-                    If (nCOLUMNA = "0") Then
+                    If (nCOLUMNA = "0" Or nCOLUMNA = "13") Then
                         res = coRegistroCompras.actualizar_detalle_registro_compras(p_DOC_CODE, nCOLUMNA, value)
                     ElseIf (nCOLUMNA = "12") Then
                         res = coRegistroCompras.actualizar_detalle_codigo_opera(p_DOC_CODE, nCOLUMNA, value)

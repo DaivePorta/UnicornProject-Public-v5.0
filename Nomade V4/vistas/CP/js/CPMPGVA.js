@@ -2,7 +2,7 @@
 eventoModalHide = false;
 var cade_pagar = "";
 StringMediosPago = "";
-
+var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
 let json_nota_dcto = new Array(); //array que contiene la relacion entre nota y dcto
 let ArrObjectValidacionNota = new Array();
 let ArrObjectValidacionDocu = new Array();
@@ -1623,6 +1623,7 @@ var CPMPGVA = function () {
 
     return {
         init: function () {
+            cargarParametrosSistema();
             eventos();
             plugins();
             cargarCombos();
@@ -1634,6 +1635,25 @@ var CPMPGVA = function () {
     };
 }();
 
+function cargarParametrosSistema() {
+    //QUE SE GENERE O NO EL ASIENTO CONTABLE
+    $.ajax({
+        type: "post",
+        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: true,
+        success: function (datos) {
+            if (datos != null) {
+                prmtACON = datos[0].VALOR;
+            }
+            else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
+        },
+        error: function (msg) {
+            alertCustom("No se recuperó correctamente el parámetro ACON!");
+        }
+    });
+}
 
 function filltxtproveedor() {
     $.ajax({
@@ -2350,6 +2370,7 @@ function pagar() {
             data.append('monto_total', $("#txtMonto").val().split(",").join(""));
             data.append('notacredito', cade_pagoConNotacredito.substring(1));
             data.append('tipo_cambio', $("#txt_TC").val());
+            data.append('asiento_contable', prmtACON);
             data.append('RUTA_IMAGEN', $("#imgSustento").attr("src"));
             //Bloquear("ventana");
             var jqxhr = $.ajax({

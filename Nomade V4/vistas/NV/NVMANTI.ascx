@@ -280,6 +280,13 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="span2" style="display: none;">
+                                                <div class="control-group">
+                                                    <div class="controls">
+                                                        <input type="text" class="span12 date-picker" placeholder="dd/mm/yyyy" id="txt_fec_transaccion" data-date-format="dd/mm/yyyy" disabled="disabled" />
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                         </div>
 

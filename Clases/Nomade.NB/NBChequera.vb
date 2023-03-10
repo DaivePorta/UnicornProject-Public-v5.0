@@ -226,18 +226,20 @@
         End Try
     End Function
 
-    Public Function ListarMovimientosCuentasBancarias(ByVal p_CHK_DETALLE As String, ByVal p_MONE_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_CTA_BANCARIA As String, ByVal p_DESDE As String, p_HASTA As String) As DataTable
+    Public Function ListarMovimientosCuentasBancarias(ByVal p_CTLG_CODE As String, ByVal p_CHK_DETALLE As String, ByVal p_MONE_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_CTA_BANCARIA As String,
+                                                      ByVal p_DESC_CTA_BANCARIA As String, ByVal p_DESDE As String, p_HASTA As String) As DataTable
 
         Try
             Dim dt As DataTable
             Dim cmd As IDbCommand
 
             cmd = cn.GetNewCommand("PFB_LISTAR_MOVIMIENTOS_CTAS_BANCARIAS", CommandType.StoredProcedure)
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CHK_DETALLE", p_CHK_DETALLE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_MONE_CODE", p_MONE_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTA_BANCARIA", p_CTA_BANCARIA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DESC_CTA_BANCARIA", p_DESC_CTA_BANCARIA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
 

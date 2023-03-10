@@ -21,6 +21,7 @@ var equivalencias = [];
 //DPORTA
 var prmtDIGP = 0;
 var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
+var prmtBFDV = "NO";//BLOQUEA FECHA DE EMISIÓN
 var total_boni = 0;
 carga_ini_ind = false;
 var token_migo = '';//dporta
@@ -28,7 +29,6 @@ const sCodModulo = "0001";
 var agregarDetalle = "";//AGREGAR DETALLE VALIDADO
 var prmtCURS = "";
 var desc_producto = '';
-
 var fillcboMoneda = function () {
     $('#cbo_moneda').select2('destroy');
     $.ajax({
@@ -470,6 +470,7 @@ var NVMDOVS = function () {
             $('#cboSerieDocVenta').empty().append('<option></option>').select2("val", "");
             $("#txtNroDocVenta").val("");
             cargarCorrelativo();
+            $("#txt_fec_emision").change();
         });
         //Agregado (Al cambiar de almacen, se cargan los productos correspondientes)
         //$('#cboAlmacen').on('change', function () {
@@ -557,27 +558,33 @@ var NVMDOVS = function () {
         });
 
         $("#txt_fec_emision").on("change", function () {
-            if ($("#txt_fec_emision").val() != fechaEmisionAnterior) {
-                //CargarFactorImpuestoRentaVenta();
-                if ($("#cbo_modo_pago").val() == "0001") {
-                    $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
-                } else {
-                    if ($("#txt_plazo_pago").val() > 0) {
-                        var fechita = $("#txt_fec_emision").val();
-                        let dia = fechita.split("/")[0];
-                        let mes = fechita.split("/")[1] - 1; // -1 porque el mes empieza en 0 que viene a ser enero y diciembre sería 11
-                        let anio = fechita.split("/")[2];
-                        var fecha = new Date(anio, mes, dia);
-                        var plazo = parseInt($("#txt_plazo_pago").val());
-                        fecha.setDate(fecha.getDate() + plazo);
-                        var fecha_vencimiento = (fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()) + '/' + ((fecha.getMonth() + 1) < 10 ? '0' + (fecha.getMonth() + 1) : (fecha.getMonth() + 1)) + '/' + fecha.getFullYear();
-                        $("#txt_fec_vencimiento").val(fecha_vencimiento);
-                    } else {
-                        $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
-                    }
+            if ($('#cboDocumentoVenta').val() == '0001' || $('#cboDocumentoVenta').val() == '0003') {
+                if ($("#txt_fec_emision").val() != $("#txt_fec_transaccion").val()) { //DPORTA 31/01/2023
+                    validarFechaEmision($("#txt_fec_emision").val(), $("#txt_fec_transaccion").val());
                 }
-                fechaEmisionAnterior = $("#txt_fec_emision").val();
-            }
+            } else {
+                if ($("#txt_fec_emision").val() != fechaEmisionAnterior) {
+                    CargarFactorImpuestoRentaVenta();
+                    if ($("#cbo_modo_pago").val() == "0001") {
+                        $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
+                    } else {
+                        if ($("#txt_plazo_pago").val() > 0) {
+                            var fechita = $("#txt_fec_emision").val();
+                            let dia = fechita.split("/")[0];
+                            let mes = fechita.split("/")[1] - 1; // -1 porque el mes empieza en 0 que viene a ser enero y diciembre sería 11
+                            let anio = fechita.split("/")[2];
+                            var fecha = new Date(anio, mes, dia);
+                            var plazo = parseInt($("#txt_plazo_pago").val());
+                            fecha.setDate(fecha.getDate() + plazo);
+                            var fecha_vencimiento = (fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()) + '/' + ((fecha.getMonth() + 1) < 10 ? '0' + (fecha.getMonth() + 1) : (fecha.getMonth() + 1)) + '/' + fecha.getFullYear();
+                            $("#txt_fec_vencimiento").val(fecha_vencimiento);
+                        } else {
+                            $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
+                        }
+                    }
+                    fechaEmisionAnterior = $("#txt_fec_emision").val();
+                }
+            }          
         });
 
         //Actualiza el plazo de pago al presionar "Enter"
@@ -1251,9 +1258,9 @@ var NVMDOVS = function () {
             sHtml += "<th style='text-align:center;font-weight: 600;'>F. Emisión</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Doc Id</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Persona</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Cuenta</th>";
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";            
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>HaberMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeME</th>";
@@ -1273,9 +1280,9 @@ var NVMDOVS = function () {
                     var sFEmision = value.FECHA_DCTO;
                     var sCodIdent = value.DOC_IDENT;
                     var sPersona = value.PERSONA;
-                    var sDescripcionItem = value.CTAS;
-                    var sCCosto = value.CCOSTO_DET;
                     var sCuenta = value.CTAS_CODE;
+                    var sDescripcionItem = value.CTAS;
+                    var sCCosto = value.CCOSTO_DET;                    
                     var nDebeMN = value.DEBE_MN;
                     var nHaberMN = value.HABER_MN;
                     var nDebeME = value.DEBE_ME;
@@ -1287,9 +1294,9 @@ var NVMDOVS = function () {
                     sHtml += ("<td style='text-align:center;'>" + sFEmision + "</td>");
                     sHtml += ("<td style='text-align:center;'>" + sCodIdent + "</td>");
                     sHtml += ("<td>" + sPersona + "</td>");
-                    sHtml += ("<td>" + sDescripcionItem + "</td>");
-                    sHtml += ("<td>" + sCCosto + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + sCuenta + "</td>");
+                    sHtml += ("<td>" + sDescripcionItem + "</td>");
+                    sHtml += ("<td>" + sCCosto + "</td>");                    
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nHaberMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeME) + "</td>");
@@ -1714,7 +1721,6 @@ var NVMDOVS = function () {
                         }
                     });
                     //FIN LISTAR DETALLES
-
                     if (prmtACON == "SI") {
                         var sCodVenta = ObtenerQueryString("codigo");//AVENGER
 
@@ -1726,6 +1732,21 @@ var NVMDOVS = function () {
                             fnGetMovContable(sCodVenta);
                         }
                     }
+
+                    //if (prmtACON == "SI") {
+                    //    var sCodVenta = ObtenerQueryString("codigo");//AVENGER
+
+                    //    let sCodMovContab = datos[0].MOVCONT_CODE;
+                    //    let sCodMovContabCobro = datos[0].ASIENTO_COBRO;
+                    //    sCodMovContab = (sCodMovContab === null ? "" : sCodMovContab);
+                    //    if (sCodMovContab !== "" || sCodMovContabCobro == 'SI') {
+                    //        if (sCodMovContab !== "") {
+                    //            $("#divGenAsiento").hide();
+                    //        }                            
+                    //        //fnGetMovContable(sCodMovContab); //AVENGER
+                    //        fnGetMovContable(sCodVenta);
+                    //    }
+                    //}
                 },
                 error: function (msg) {
                     alertCustom(msg);
@@ -1735,6 +1756,10 @@ var NVMDOVS = function () {
         } else {
             $('#modificar').attr('disabled', true);
             $('#modificar').hide();
+
+            if (prmtACON == "NO") {
+                $("#asientos_contables").hide();
+            }
         }
     }
 
@@ -1767,8 +1792,17 @@ var NVMDOVS = function () {
                     return;
                 }
 
-                $("#divGenAsiento").hide();
+                if (response == "SIN_CTA_CONTABLE_ORIGEN_COBRO") {
+                    infoCustom2("No se pudo generar el asiento. El origen de cobro no tiene asociada una cuenta contable.");
+                    return;
+                }
 
+                if (response == "NO_GENERA_ASIENTO_VENTA") {
+                    infoCustom2("Solo se genera asiento de cobro para este tipo de documento.");
+                    return;
+                }
+
+                $("#divGenAsiento").hide();
                 fnGetMovContable(sCodVenta); //AVENGER
 
                 exito();
@@ -2339,6 +2373,7 @@ function cargarParametrosSistema() {
                                 $("#txt_fec_emision").attr('disabled', false);
                                 $("#txtFechaPago").attr('disabled', false);//20/02
                             }
+                            prmtBFDV = datos[i].VALOR;
                             break;
                         case "ODON":
                             if (datos[i].VALOR == "SI") {
@@ -3025,6 +3060,45 @@ function filltxtdescproducto(seriado) {
     }
 }
 
+function validarFechaEmision(fechaInicio, fechaFin) { //DPORTA 31/01/2023
+
+    let dia = fechaInicio.split("/")[0];
+    let mes = fechaInicio.split("/")[1];
+    let anio = fechaInicio.split("/")[2];
+
+    var fecha_ini = new Date(anio + '/' + mes + '/' + dia).getTime();
+
+    let diaFin = fechaFin.split("/")[0];
+    let mesFin = fechaFin.split("/")[1];
+    let anioFin = fechaFin.split("/")[2];
+
+    var fecha_fin = new Date(anioFin + '/' + mesFin + '/' + diaFin).getTime();
+
+    var diff = (fecha_fin - fecha_ini) / (1000 * 60 * 60 * 24);
+
+    if (diff > 1) {
+        $('#txt_fec_emision, #txt_fec_vencimiento').datepicker('setDate', 'now');
+        infoCustom2("Los documentos electrónicos, solo se pueden emitir con 1 día de antelación.");
+    } else {
+        CargarFactorImpuestoRentaVenta();
+        if ($("#cbo_modo_pago").val() == "0001") {
+            $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
+        } else {
+            if ($("#txt_plazo_pago").val() > 0) {
+                var fechita = $("#txt_fec_emision").val();
+                let dia = fechita.split("/")[0];
+                let mes = fechita.split("/")[1] - 1; // -1 porque el mes empieza en 0 que viene a ser enero y diciembre sería 11
+                let anio = fechita.split("/")[2];
+                var fecha = new Date(anio, mes, dia);
+                var plazo = parseInt($("#txt_plazo_pago").val());
+                fecha.setDate(fecha.getDate() + plazo);
+                var fecha_vencimiento = (fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()) + '/' + ((fecha.getMonth() + 1) < 10 ? '0' + (fecha.getMonth() + 1) : (fecha.getMonth() + 1)) + '/' + fecha.getFullYear();
+                $("#txt_fec_vencimiento").val(fecha_vencimiento);
+            }
+        }
+    }
+}
+
 //Actualiza campos para precios 
 function ActualizarCamposPrecios() {
     if (prodActual != null && prodActual.length != 0) {
@@ -3280,7 +3354,7 @@ function fillTxtCliente(v_ID, v_value) {
                             if ($("#txt_fec_transaccion").val() != $("#txt_fec_vig_Oficial").val()) {//DPORTA
                                 InsertarValorCambioOficial($('#cbo_moneda').val());
                             }
-
+                            prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
                             if (jsonPredeterminado.RUC != "") {
                                 $('#cboTipoDoc').select2("val", "6").change();
                                 $("#txtNroDctoCliente").val(jsonPredeterminado.RUC);
@@ -3402,7 +3476,7 @@ function fillTxtCliente(v_ID, v_value) {
                         if ($("#txt_fec_transaccion").val() != $("#txt_fec_vig_Oficial").val()) {//DPORTA
                             InsertarValorCambioOficial($('#cbo_moneda').val());
                         }
-
+                        prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
                         if (map[item].RUC != "") {
                             $('#cboTipoDoc').select2("val", "6").change();
                             $("#txtNroDctoCliente").val(map[item].RUC);
@@ -3467,16 +3541,19 @@ function fillTxtCliente(v_ID, v_value) {
                         $('#cbo_modo_pago option:first-child').prop('selected', true);
                         $('#cbo_modo_pago').change();
                         $('#txt_plazo_pago').val('0');
-                        if ($("#txt_fec_emision").val() != "") {
-                            $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
-                        } else {
-                            $('#txt_fec_vencimiento').datepicker('setDate', 'now');
-                        }
+                        //if ($("#txt_fec_emision").val() != "") {
+                        //    $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
+                        //} else {
+                        //    $('#txt_fec_vencimiento').datepicker('setDate', 'now');
+                        //}
                         if ($("#txtNroDctoCliente").val() != "" && $("#txtClientes").val() != "") {
                             $('#cboTipoDoc').val('1').change();
                         }
 
                         $("#txtNroDctoCliente, #txt_id_proveedor, #txt_Retencion").val("");
+
+                        prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
+                        $('#txt_fec_emision, #txt_fec_vencimiento').datepicker('setDate', 'now');
 
                         //Limpiar valores   
                         $("#txtResponsablePago").val("").attr("disabled", "disabled");
@@ -3610,7 +3687,7 @@ function fillTxtCliente2(v_ID, v_value) {
                             if ($("#txt_fec_transaccion").val() != $("#txt_fec_vig_Oficial").val()) {//DPORTA
                                 InsertarValorCambioOficial($('#cbo_moneda').val());
                             }
-
+                            prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
                             if (jsonPredeterminado.RUC != "") {
                                 $('#cboTipoDoc').select2("val", "6").change();
                                 $("#txtNroDctoCliente").val(jsonPredeterminado.RUC);
@@ -3731,7 +3808,7 @@ function fillTxtCliente2(v_ID, v_value) {
                         if ($("#txt_fec_transaccion").val() != $("#txt_fec_vig_Oficial").val()) {//DPORTA
                             InsertarValorCambioOficial($('#cbo_moneda').val());
                         }
-
+                        prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
                         if (map[item].PPBIDEN_CONDICION_SUNAT != "") {
                             $("#lblHabido").html("CONDICIÓN: " + "<b>" + map[item].PPBIDEN_CONDICION_SUNAT + "</b>");
                         }
@@ -3796,16 +3873,19 @@ function fillTxtCliente2(v_ID, v_value) {
                         $('#cbo_modo_pago option:first-child').prop('selected', true);
                         $('#cbo_modo_pago').change();
                         $('#txt_plazo_pago').val('0');
-                        if ($("#txt_fec_emision").val() != "") {
-                            $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
-                        } else {
-                            $('#txt_fec_vencimiento').datepicker('setDate', 'now');
-                        }
+                        //if ($("#txt_fec_emision").val() != "") {
+                        //    $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
+                        //} else {
+                        //    $('#txt_fec_vencimiento').datepicker('setDate', 'now');
+                        //}
                         if ($("#txtNroDctoCliente").val() != "" && $("#txtClientes").val() != "") {
                             $('#cboTipoDoc').val('1').change();
                         }
 
                         $("#txtNroDctoCliente, #txt_id_proveedor, #txt_Retencion").val("");
+
+                        prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
+                        $('#txt_fec_emision, #txt_fec_vencimiento').datepicker('setDate', 'now');
 
                         //Limpiar valores   
                         $("#txtResponsablePago").val("").attr("disabled", "disabled");
@@ -6289,7 +6369,7 @@ function ImprimirDctoVenta() {
             });
         //ImprimirDctoVentaTicket();
     } else {
-        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101') {
+        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101' || $("#cboDocumentoVenta").val() == '0001' || $("#cboDocumentoVenta").val() == '0003') {
             var data = new FormData();
             data.append('p_CODE', $("#txtNumDctoComp").val());
             data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")

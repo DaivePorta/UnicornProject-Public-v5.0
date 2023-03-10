@@ -170,6 +170,8 @@ Public Class Handler : Implements IHttpHandler
 
             Case "1"
                 res = VerificarPersona(DOID_CODE, NRO, String.Empty)
+            Case "1.5"
+                res = VerificarNroDctoPersona(DOID_CODE, NRO, String.Empty)
             Case "2"
                 context.Response.ContentType = "application/json; charset=utf-8"
                 dt = e.listar_EstadoCivil(String.Empty, "A")
@@ -1037,6 +1039,17 @@ Public Class Handler : Implements IHttpHandler
     Public Function VerificarPersona(ByVal p_DOID_CODE As String, ByVal p_NRO As String, ByVal p_ESTADO_IND As String) As String
         Dim existe As String
         dt = q.verificar_Existencia_Persona(p_DOID_CODE, p_NRO, p_ESTADO_IND)
+        If Not (dt Is Nothing) Then
+            existe = (dt.Rows(0)("VERIFICADO"))
+        Else
+            existe = "NOEXISTE"
+        End If
+        Return existe
+    End Function
+
+    Public Function VerificarNroDctoPersona(ByVal p_DOID_CODE As String, ByVal p_NRO As String, ByVal p_ESTADO_IND As String) As String
+        Dim existe As String
+        dt = q.verificar_Existencia_Nro_Dcto_Persona(p_DOID_CODE, p_NRO, p_ESTADO_IND)
         If Not (dt Is Nothing) Then
             existe = (dt.Rows(0)("VERIFICADO"))
         Else

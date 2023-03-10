@@ -23,8 +23,8 @@ Public Class CTGeneracionAsientos
                 Throw New System.Exception("[Advertencia]: La empresa no tiene la opción contable activada.")
             End If
 
-            Dim oDT_ConfigAsientoDocVenta As New DataTable
-            oDT_ConfigAsientoDocVenta = oCTMovimientoContable.fnGetConfigAsientoDocVenta(p_CodDocVenta)
+            'Dim oDT_ConfigAsientoDocVenta As New DataTable
+            'oDT_ConfigAsientoDocVenta = oCTMovimientoContable.fnGetConfigAsientoDocVenta(p_CodDocVenta)
             Dim oDT_Asiento As New DataTable
             oDT_Asiento = oCTMovimientoContable.fnGetAsientoContDocVenta(p_CodDocVenta)
 
@@ -278,8 +278,7 @@ Public Class CTGeneracionAsientos
         End Try
         Return ""
     End Function
-
-    Public Function GenerarAsientoCobroDocVenta(ByVal p_CodDocVenta As String) As String
+    Public Function GenerarAsientoAnticipo(ByVal p_CodAnticipo As String, ByVal p_CodModulo As String, ByVal p_Usuario As String) As String
         Dim oTransaction As New Nomade.DataAccess.Transaccion()
         Try
             Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
@@ -288,7 +287,119 @@ Public Class CTGeneracionAsientos
 
             oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
 
-            sCodMovCont = oCTMovimientoContable.fnGenerarAsientoCobroDocVenta(p_CodDocVenta, oTransaction)
+            sCodMovCont = oCTMovimientoContable.fnGenerarAsientoAnticipo(p_CodAnticipo, p_CodModulo, p_Usuario, oTransaction)
+
+            oTransaction.fnCommitTransaction()
+
+            Return sCodMovCont
+            'FIN ASIENTO DE GASTO
+        Catch ex As Exception
+            If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
+                oTransaction.fnRollBackTransaction()
+            End If
+        End Try
+        Return ""
+    End Function
+    Public Function GenerarAsientoCobroAnticipo(ByVal p_CodAnticipo As String, ByVal p_AsientoCobro As String, ByVal p_PagadoInd As String) As String
+        Dim oTransaction As New Nomade.DataAccess.Transaccion()
+        Try
+            Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+
+            Dim sCodMovCont As String = ""
+
+            oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+
+            sCodMovCont = oCTMovimientoContable.fnGenerarAsientoCobroAnticipo(p_CodAnticipo, p_AsientoCobro, p_PagadoInd, oTransaction)
+
+            oTransaction.fnCommitTransaction()
+
+            Return sCodMovCont
+            'FIN ASIENTO DE VENTA
+        Catch ex As Exception
+            If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
+                oTransaction.fnRollBackTransaction()
+            End If
+        End Try
+        Return ""
+    End Function
+    Public Function GenerarAsientoGasto(ByVal p_CodDocGasto As String, ByVal p_CodModulo As String, ByVal p_Usuario As String) As String
+        Dim oTransaction As New Nomade.DataAccess.Transaccion()
+        Try
+            Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+
+            Dim sCodMovCont As String = ""
+
+            oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+
+            sCodMovCont = oCTMovimientoContable.fnGenerarAsientoGasto(p_CodDocGasto, p_CodModulo, p_Usuario, oTransaction)
+
+            oTransaction.fnCommitTransaction()
+
+            Return sCodMovCont
+            'FIN ASIENTO DE GASTO
+        Catch ex As Exception
+            If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
+                oTransaction.fnRollBackTransaction()
+            End If
+        End Try
+        Return ""
+    End Function
+    Public Function GenerarAsientoGastoDestino(ByVal p_CodDocGasto As String, ByVal p_CodModulo As String, ByVal p_Usuario As String) As String
+        Dim oTransaction As New Nomade.DataAccess.Transaccion()
+        Try
+            Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+
+            Dim sCodMovCont As String = ""
+
+            oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+
+            sCodMovCont = oCTMovimientoContable.fnGenerarAsientoGastoDestino(p_CodDocGasto, p_CodModulo, p_Usuario, oTransaction)
+
+            oTransaction.fnCommitTransaction()
+
+            Return sCodMovCont
+            'FIN ASIENTO DE GASTO
+        Catch ex As Exception
+            If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
+                oTransaction.fnRollBackTransaction()
+            End If
+        End Try
+        Return ""
+    End Function
+
+    Public Function GenerarAsientoVenta(ByVal p_CodDocVenta As String, ByVal p_CodModulo As String, ByVal p_Usuario As String) As String
+        Dim oTransaction As New Nomade.DataAccess.Transaccion()
+        Try
+            Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+
+            Dim sCodMovCont As String = ""
+
+            oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+
+            sCodMovCont = oCTMovimientoContable.fnGenerarAsientoVenta(p_CodDocVenta, p_CodModulo, p_Usuario, oTransaction)
+
+            oTransaction.fnCommitTransaction()
+
+            Return sCodMovCont
+            'FIN ASIENTO DE VENTA
+        Catch ex As Exception
+            If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
+                oTransaction.fnRollBackTransaction()
+            End If
+        End Try
+        Return ""
+    End Function
+
+    Public Function GenerarAsientoCobroDocVenta(ByVal p_CodDocVenta As String, ByVal p_AsientoCobro As String, ByVal p_PagadoInd As String) As String
+        Dim oTransaction As New Nomade.DataAccess.Transaccion()
+        Try
+            Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+
+            Dim sCodMovCont As String = ""
+
+            oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+
+            sCodMovCont = oCTMovimientoContable.fnGenerarAsientoCobroDocVenta(p_CodDocVenta, p_AsientoCobro, p_PagadoInd, oTransaction)
 
             oTransaction.fnCommitTransaction()
 
@@ -455,6 +566,82 @@ Public Class CTGeneracionAsientos
 
             Return sCodMovCont
             'FIN ASIENTO DE PAGO COMPRA
+        Catch ex As Exception
+            If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
+                oTransaction.fnRollBackTransaction()
+            End If
+        End Try
+        Return ""
+    End Function
+
+    Public Function GenerarAsientoMovBancario(ByVal p_CodMovBanc As String, ByVal p_CTLG As String, ByVal p_Usuario As String, ByVal p_tope As String, ByVal p_CTA10 As String,
+                                              ByVal p_PIDM As String) As String
+        Dim oTransaction As New Nomade.DataAccess.Transaccion()
+
+        Try
+            Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+            Dim movBanc As New Nomade.NV.NVVenta("Bn")
+
+            Dim sCodMovCont As String = ""
+
+            oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+
+            sCodMovCont = oCTMovimientoContable.GenerarAsientoMovBancario(p_CodMovBanc, p_CTLG, p_Usuario, p_tope, p_CTA10, p_PIDM, oTransaction)
+
+            oTransaction.fnCommitTransaction()
+
+            Return sCodMovCont
+            'FIN ASIENTO DE VENTA
+        Catch ex As Exception
+            If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
+                oTransaction.fnRollBackTransaction()
+            End If
+        End Try
+        Return ""
+    End Function
+
+    Public Function GenerarAsientoCierrePos(ByVal p_CodMovBanc As String, ByVal p_CodMovPos As String) As String
+        Dim oTransaction As New Nomade.DataAccess.Transaccion()
+
+        Try
+            Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+            Dim movBanc As New Nomade.NV.NVVenta("Bn")
+
+            Dim sCodMovCont As String = ""
+
+            oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+
+            sCodMovCont = oCTMovimientoContable.GenerarAsientoCierrePos(p_CodMovBanc, p_CodMovPos, oTransaction)
+
+            oTransaction.fnCommitTransaction()
+
+            Return sCodMovCont
+            'FIN ASIENTO DE VENTA
+        Catch ex As Exception
+            If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
+                oTransaction.fnRollBackTransaction()
+            End If
+        End Try
+        Return ""
+    End Function
+    Public Function GenerarAsientoITF(Optional ByVal p_CodMovBanc As String = "", Optional ByVal p_CodMovPos As String = "",
+                                      Optional ByVal p_CodDoc As String = "") As String
+        Dim oTransaction As New Nomade.DataAccess.Transaccion()
+
+        Try
+            Dim oCTMovimientoContable As New Nomade.CT.CTMovimientoContable("Bn")
+            Dim movBanc As New Nomade.NV.NVVenta("Bn")
+
+            Dim sCodMovCont As String = ""
+
+            oTransaction.fnBeginTransaction(Nomade.DataAccess.Transaccion.eIsolationLevel.READ_UNCOMMITTED)
+
+            sCodMovCont = oCTMovimientoContable.GenerarAsientoITF(p_CodMovBanc, p_CodMovPos, p_CodDoc, oTransaction)
+
+            oTransaction.fnCommitTransaction()
+
+            Return sCodMovCont
+            'FIN ASIENTO DE VENTA
         Catch ex As Exception
             If oTransaction.iTransactionState = Nomade.DataAccess.Transaccion.eTransactionState._ON Then
                 oTransaction.fnRollBackTransaction()

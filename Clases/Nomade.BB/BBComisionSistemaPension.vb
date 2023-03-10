@@ -344,7 +344,7 @@ Public Class BBComisionSistemaPension
             Throw (ex)
         End Try
     End Function
-    Public Function Listar_Concepto(ByVal p_RHCNPL_DEPEND_CODE As String, ByVal p_CODE As String,ByVal p_TIPO As String) As DataTable
+    Public Function Listar_Concepto(ByVal p_RHCNPL_DEPEND_CODE As String, ByVal p_CODE As String, ByVal p_TIPO As String, ByVal p_PERIODO As String) As DataTable
         Try
 
 
@@ -364,7 +364,15 @@ Public Class BBComisionSistemaPension
             Else
                 cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
             End If
+
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO", p_TIPO, ParameterDirection.Input, 253))
+
+            If p_PERIODO = "" Then
+                cmd.Parameters.Add(cn.GetNewParameter("@p_PERIODO", Nothing, ParameterDirection.Input, 253))
+            Else
+                cmd.Parameters.Add(cn.GetNewParameter("@p_PERIODO", p_PERIODO.ToUpper, ParameterDirection.Input, 253))
+            End If
+
             dt = cn.Consulta(cmd)
 
             If Not (dt Is Nothing) Then

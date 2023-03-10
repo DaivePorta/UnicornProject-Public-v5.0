@@ -11,22 +11,18 @@ Public Class BBLCONF : Implements IHttpHandler
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         'context.Response.ContentType = "text/plain"
         'context.Response.Write("Hello World")
-        Dim Opcion, Codigo, Emp, cm As String
+        Dim Opcion, Emp As String
         Dim Comision As New Nomade.BB.BBComisionSistemaPension("Bn")
         Dim Periodo As New Nomade.NF.NFPeriodo("Bn")
-       
+
         Opcion = context.Request("Opcion")
         Emp = context.Request("Emp")
         Dim cFecha As String = context.Request("fe")
-        
+
         Try
-              Select opcion
+            Select opcion
                 Case "0"
-                    
-                    
-                    
-                    
-                    
+
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = New DataTable
                     dt = Periodo.Listar_Periodo("", "", "N")
@@ -46,18 +42,18 @@ Public Class BBLCONF : Implements IHttpHandler
                         resb.Append("]")
                     End If
                     res = resb.ToString()
-                    
+
                 Case "O"
-                    
-                    
-                    
+
+
+
 
                     Dim dia = Now()
                     Dim Fecha = Devuelve_Nombre_Mes(dia.Month().ToString) + " " + dia.Year().ToString
-                    
+
                     res = Fecha
-                    
-                    
+
+
                 Case "L"
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = New DataTable
@@ -70,22 +66,22 @@ Public Class BBLCONF : Implements IHttpHandler
                             resb.Append("""CODIGO"" :" & """" & MiDataRow("FTCONFI_CODE").ToString & """,")
                             resb.Append("""COLUMNA"" :" & """" & MiDataRow("FTCONFI_COLUMNA").ToString & """,")
                             resb.Append("""DESCRIPCION"" :" & """" & MiDataRow("NOMBRE").ToString & """,")
-                            resb.Append("""NESTADO"" :" & """" & MiDataRow("NESTADO").ToString & """,")    
-                            resb.Append("""PADRE"" :" & """" & MiDataRow("FTCONFI_PADRE").ToString & """,")                            
+                            resb.Append("""NESTADO"" :" & """" & MiDataRow("NESTADO").ToString & """,")
+                            resb.Append("""PADRE"" :" & """" & MiDataRow("FTCONFI_PADRE").ToString & """,")
                             If MiDataRow("FTCONFI_bAFP").ToString.Equals("1") Then
                                 cSino = "SÍ"
                             Else
                                 cSino = "NO"
                             End If
                             resb.Append("""AFP"" :" & """" & cSino & """,")
-                            
+
                             If MiDataRow("FTCONFI_bONP").ToString.Equals("1") Then
                                 cSino = "SÍ"
                             Else
                                 cSino = "NO"
                             End If
                             resb.Append("""ONP"" :" & """" & cSino & """,")
-                            
+
                             If MiDataRow("FTCONFI_bOTROS").ToString.Equals("1") Then
                                 cSino = "SÍ"
                             Else
@@ -102,31 +98,31 @@ Public Class BBLCONF : Implements IHttpHandler
                     Else
                         res = "[]"
                     End If
-                   
-                    
-                    
-                    
-                    
-                    
-               
-                   
+
+
+
+
+
+
+
+
             End Select
             context.Response.Write(res)
         Catch ex As Exception
             context.Response.Write(ex.Message)
         End Try
     End Sub
- 
+
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False
         End Get
     End Property
-    
+
     Public Function Devuelve_Nombre_Mes(omes As String) As String
-        
+
         Dim cMes As String = ""
-        
+
         If omes = "1" Then
             cMes = "ENERO"
         ElseIf omes = "2" Then
@@ -152,7 +148,7 @@ Public Class BBLCONF : Implements IHttpHandler
         ElseIf omes = "12" Then
             cMes = "DICIEMBRE"
         End If
-        
+
         Return cMes
     End Function
 

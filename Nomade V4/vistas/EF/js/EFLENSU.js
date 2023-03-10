@@ -1705,12 +1705,12 @@
                 if (isEmpty(datos)) {
                     return;
                 }
-                $('#cboDocumento').append('<option Value="TODOS">TODOS</option>');//se comenta esta línea y se oculta la opción de todos
+                //$('#cboDocumento').append('<option Value="TODOS">TODOS</option>');//se comenta esta línea y se oculta la opción de todos
                 for (var i = 0; i < datos.length; i++) {
                     $('#cboDocumento').append('<option value="' + datos[i].TIPO_DOC_CODE + '">' + datos[i].TIPO_DOC + '</option>');
                 }
-                //$('#cboDocumento').select2('val', datos[0].TIPO_DOC_CODE);
-                $('#cboDocumento').select2('val', 'TODOS');
+                $('#cboDocumento').select2('val', datos[0].TIPO_DOC_CODE);
+                //$('#cboDocumento').select2('val', 'TODOS');
             },
             complete: function () {                             
                 fillCliente();

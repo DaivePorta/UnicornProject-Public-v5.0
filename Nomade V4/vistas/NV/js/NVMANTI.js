@@ -8,7 +8,7 @@ var stockReal = 0;
 var vAsientoContable = null;
 const sCodModulo = "0009";
 var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
-
+var prmtBFDV = "NO";//BLOQUEA FECHA DE EMISIÓN
 var NVMANTI = function () {
 
     var fnFillBandejaCtas = function () {
@@ -125,9 +125,9 @@ var NVMANTI = function () {
             sHtml += "<th style='text-align:center;font-weight: 600;'>F. Emisión</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Doc Id</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Persona</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Cuenta</th>";
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";            
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>HaberMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeME</th>";
@@ -147,9 +147,9 @@ var NVMANTI = function () {
                     var sFEmision = value.FECHA_DCTO;
                     var sCodIdent = value.DOC_IDENT;
                     var sPersona = value.PERSONA;
-                    var sDescripcionItem = value.CTAS;
-                    var sCCosto = value.CCOSTO_DET;
                     var sCuenta = value.CTAS_CODE;
+                    var sDescripcionItem = value.CTAS;
+                    var sCCosto = value.CCOSTO_DET;                    
                     var nDebeMN = value.DEBE_MN;
                     var nHaberMN = value.HABER_MN;
                     var nDebeME = value.DEBE_ME;
@@ -161,9 +161,9 @@ var NVMANTI = function () {
                     sHtml += ("<td style='text-align:center;'>" + sFEmision + "</td>");
                     sHtml += ("<td style='text-align:center;'>" + sCodIdent + "</td>");
                     sHtml += ("<td>" + sPersona + "</td>");
-                    sHtml += ("<td>" + sDescripcionItem + "</td>");
-                    sHtml += ("<td>" + sCCosto + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + sCuenta + "</td>");
+                    sHtml += ("<td>" + sDescripcionItem + "</td>");
+                    sHtml += ("<td>" + sCCosto + "</td>");                    
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nHaberMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeME) + "</td>");
@@ -231,7 +231,7 @@ var NVMANTI = function () {
                             $(select).append('<option value="' + datos[i].CODIGO + '" agente-reten-ind="' + datos[i].AGENTE_RETEN_IND + '" data-pidm="' + datos[i].PIDM + '" direccion="' + datos[i].DIRECCION + '" ruc="' + datos[i].RUC + '" ruta="' + datos[i].RUTA_IMAGEN + '">' + datos[i].DESCRIPCION + '</option>');
                         }
                     }
-                    $(select).val($('#ctl00_hddctlg').val());
+                    $(select).val($('#ctl00_hddctlg').val()).change();
                 },
                 error: function (msg) {
                     alertCustom("Empresas no se listaron correctamente.");
@@ -244,7 +244,7 @@ var NVMANTI = function () {
             for (var i = 0; i < dPermanente.length; i++) {
                 $(select).append('<option value="' + dPermanente[i].CODIGO + '" agente-reten-ind="' + dPermanente[i].AGENTE_RETEN_IND + '" data-pidm="' + dPermanente[i].PIDM + '" direccion="' + dPermanente[i].DIRECCION + '" ruc="' + dPermanente[i].RUC + '" ruta="' + dPermanente[i].RUTA_IMAGEN + '">' + dPermanente[i].DESCRIPCION + '</option>');
             }
-            $(select).val($('#ctl00_hddctlg').val());
+            $(select).val($('#ctl00_hddctlg').val()).change();
         }
         $(select).select2();
     }
@@ -330,7 +330,7 @@ var NVMANTI = function () {
                         }
                     }
                 }
-                $('#cbo_modo_pago').val(datos[0].CODIGO);
+                $('#cbo_modo_pago').val(datos[0].CODIGO).change();
             },
             error: function (msg) {
                 alertCustom("Modos de pago no se listaron correctamente.");
@@ -363,7 +363,7 @@ var NVMANTI = function () {
     }
     //DocumentosIdentidad
     var fillCboTipoDoc = function () {
-        Bloquear("divCboTipoDoc");
+        //Bloquear("divCboTipoDoc");
         $.ajax({
             type: "post",
             url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=DOID",
@@ -371,7 +371,7 @@ var NVMANTI = function () {
             datatype: "json",
             async: true,
             success: function (datos) {
-                Desbloquear("divCboTipoDoc");
+                //Desbloquear("divCboTipoDoc");
                 $('#cboTipoDoc').empty();
                 $('#cboTipoDoc').append('<option></option>');
                 var codigo = "";
@@ -385,49 +385,51 @@ var NVMANTI = function () {
                 $('#cboTipoDoc').change();
             },
             error: function (msg) {
-                Desbloquear("divCboTipoDoc");
+                //Desbloquear("divCboTipoDoc");
                 alertCustom("Documentos de Identidad no se listaron correctamente.");
             }
         });
     }
 
     var cargarCorrelativo = function () {
-        var select = $('#cboSerieDocVenta');
-        $.ajax({
-            type: "post",
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CORR&CTLG=" + $('#cbo_Empresa').val() + "&SCSL=" + $('#cbo_Sucursal').val() + "&TIPO_DCTO=" + $("#cboDocumentoVenta").val(),
-            contenttype: "application/json;",
-            async: false,
-            datatype: "json",
-            success: function (datos) {
-                limpiarCorrelativo();
-                $(select).empty();
-                $(select).append('<option></option>');
-                if (datos != null && datos != "" && typeof datos[0].SERIE != "undefined") {
-                    for (var i = 0; i < datos.length; i++) {
-                        $(select).append('<option value="' + datos[i].CODIGO + '" data-formato="' + datos[i].FORMATO + '"   data-actual="' + datos[i].VALOR_ACTUAL + '"  data-fin="' + datos[i].VALOR_FIN + '"  data-ind="' + datos[i].CORRELATIVO + '">' + datos[i].SERIE + '</option>');
-                    }
-                    $(select).removeAttr("disabled");
-                    $(select).select2("val", "");
-                }
-                else {
+        if ($("#cboDocumentoVenta").val() != "") {
+            var select = $('#cboSerieDocVenta');
+            $.ajax({
+                type: "post",
+                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CORR&CTLG=" + $('#cbo_Empresa').val() + "&SCSL=" + $('#cbo_Sucursal').val() + "&TIPO_DCTO=" + $("#cboDocumentoVenta").val(),
+                contenttype: "application/json;",
+                async: false,
+                datatype: "json",
+                success: function (datos) {
                     limpiarCorrelativo();
-                }
-                //CARGA POR DEFECTO
-                if ($('#cboSerieDocVenta option').length > 0) {
-                    var cbo = $('#cboSerieDocVenta option');
-                    for (var i = 0; i < cbo.length; i++) {
-                        if ($(cbo[i]).attr("data-ind") == "S") {
-                            $('#cboSerieDocVenta').select2("val", $(cbo[i]).val()).change();
-                            break;
+                    $(select).empty();
+                    $(select).append('<option></option>');
+                    if (datos != null && datos != "" && typeof datos[0].SERIE != "undefined") {
+                        for (var i = 0; i < datos.length; i++) {
+                            $(select).append('<option value="' + datos[i].CODIGO + '" data-formato="' + datos[i].FORMATO + '"   data-actual="' + datos[i].VALOR_ACTUAL + '"  data-fin="' + datos[i].VALOR_FIN + '"  data-ind="' + datos[i].CORRELATIVO + '">' + datos[i].SERIE + '</option>');
+                        }
+                        $(select).removeAttr("disabled");
+                        $(select).select2("val", "");
+                    }
+                    else {
+                        limpiarCorrelativo();
+                    }
+                    //CARGA POR DEFECTO
+                    if ($('#cboSerieDocVenta option').length > 0) {
+                        var cbo = $('#cboSerieDocVenta option');
+                        for (var i = 0; i < cbo.length; i++) {
+                            if ($(cbo[i]).attr("data-ind") == "S") {
+                                $('#cboSerieDocVenta').select2("val", $(cbo[i]).val()).change();
+                                break;
+                            }
                         }
                     }
+                },
+                error: function (msg) {
+                    alertCustom("La Serie y Número correlativos no se obtuvieron correctamente.");
                 }
-            },
-            error: function (msg) {
-                alertCustom("La Serie y Número correlativos no se obtuvieron correctamente.");
-            }
-        });
+            });
+        }        
     }
 
     var limpiarCorrelativo = function () {
@@ -634,6 +636,7 @@ var NVMANTI = function () {
             $('#cboSerieDocVenta').empty().append('<option></option>').select2("val", "");
             $("#txtNroDocVenta").val("");
             cargarCorrelativo();
+            $("#txt_fec_emision").change();
         });
 
         $("#chkResponsablePago").on('change', function () {
@@ -675,14 +678,32 @@ var NVMANTI = function () {
         });
 
         $("#txt_fec_emision").on("change", function () {
-            if ($("#txt_fec_emision").val() != fechaEmisionAnterior) {
-                CargarFactorImpuestoRentaVenta();
-                if ($("#cbo_modo_pago").val() == "0001") {
-                    $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
-                } else {
-                    calcularFechaVencimiento();
+            if ($('#cboDocumentoVenta').val() == '0001' || $('#cboDocumentoVenta').val() == '0003') {
+                if ($("#txt_fec_emision").val() != $("#txt_fec_transaccion").val()) { //DPORTA 31/01/2023
+                    validarFechaEmision($("#txt_fec_emision").val(), $("#txt_fec_transaccion").val());
                 }
-                fechaEmisionAnterior = $("#txt_fec_emision").val();
+            } else {
+                if ($("#txt_fec_emision").val() != fechaEmisionAnterior) {
+                    CargarFactorImpuestoRentaVenta();
+                    if ($("#cbo_modo_pago").val() == "0001") {
+                        $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
+                    } else {
+                        if ($("#txt_plazo_pago").val() > 0) {
+                            var fechita = $("#txt_fec_emision").val();
+                            let dia = fechita.split("/")[0];
+                            let mes = fechita.split("/")[1] - 1; // -1 porque el mes empieza en 0 que viene a ser enero y diciembre sería 11
+                            let anio = fechita.split("/")[2];
+                            var fecha = new Date(anio, mes, dia);
+                            var plazo = parseInt($("#txt_plazo_pago").val());
+                            fecha.setDate(fecha.getDate() + plazo);
+                            var fecha_vencimiento = (fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()) + '/' + ((fecha.getMonth() + 1) < 10 ? '0' + (fecha.getMonth() + 1) : (fecha.getMonth() + 1)) + '/' + fecha.getFullYear();
+                            $("#txt_fec_vencimiento").val(fecha_vencimiento);
+                        } else {
+                            $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
+                        }
+                    }
+                    fechaEmisionAnterior = $("#txt_fec_emision").val();
+                }
             }
         });
 
@@ -1409,12 +1430,14 @@ var NVMANTI = function () {
                         }
                     });
 
-                    sCodVenta = $("#txtNumDctoComp").val();
-                    sCodVenta = $.trim(sCodVenta);
-                    oDocVta = fnGetDocAnti(sCodVenta);
+                    if (prmtACON == "SI") {
+                        sCodVenta = $("#txtNumDctoComp").val();
+                        sCodVenta = $.trim(sCodVenta);
+                        oDocVta = fnGetDocAnti(sCodVenta);
 
-                    //fnCargaTablaCuentasC(sCodVenta, oDocVta, datos[0].MOVCONT_CODE);
-                    fnCargaTablaCuentasC(sCodVenta, oDocVta, sCodVenta); //AVENGER
+                        //fnCargaTablaCuentasC(sCodVenta, oDocVta, datos[0].MOVCONT_CODE);
+                        fnCargaTablaCuentasC(sCodVenta, oDocVta, sCodVenta); //AVENGER
+                    }                    
                 },
                 error: function (msg) {
                     alertCustom(msg);
@@ -1422,12 +1445,16 @@ var NVMANTI = function () {
             });
             //Desbloquear("ventana");
         } else {
-            fnCargaTablaCuentasC();
+            if (prmtACON == "SI") {
+                fnCargaTablaCuentasC();
+            }
+            if (prmtACON == "NO") {
+                $("#asientos_contables").hide();
+            }
         }
     };   
 
     var fnCargaTablaCuentasC = function (sCodVenta, oDocVta, sCodAsiento) {
-
         $("#asientos_contables").load('../../vistas/CT/abstract/LAsientoContable.html', function (html) {
             $.getScript("../../vistas/CT/abstract/js/LAsientoContable.js")
                 .done(function (script, textStatus) {
@@ -1438,7 +1465,6 @@ var NVMANTI = function () {
                     vAsientoContable.init(sCodAsiento);
                 });
         });
-
     }
 
     // MANTENIMIENTO DE DOCUMENTO VENTA
@@ -1447,17 +1473,16 @@ var NVMANTI = function () {
             //No usan CTLG
             cargarParametrosSistema();
             plugins();
-            eventoControles();
-            fnFillBandejaCtas();
+            eventoControles();            
             fillCboModoPago();
             fillcboUniMedida();
             fillCboTipoDoc();
             //Usan CTLG            
             fillCboEmpresa();
             //fillcboRegistroEspecifico('VENT');
-            if (ObtenerQueryString("codigo") == undefined) {
-                fillCboVendedor($('#cbo_Empresa').val(), $('#cbo_Sucursal').val(), "A", true);
-            }
+            //if (ObtenerQueryString("codigo") == undefined) {
+            //    fillCboVendedor($('#cbo_Empresa').val(), $('#cbo_Sucursal').val(), "A", true);
+            //}
             
             fillcboMoneda();
             $("#cboSerieDocVenta").select2("val", "");
@@ -1468,6 +1493,7 @@ var NVMANTI = function () {
             //ListarTablaAnteriores("");
             $('#div_anteriores').html("");
             cargaInicial();
+            fnFillBandejaCtas();
         }
     };    
 
@@ -1605,7 +1631,7 @@ function cargarParametrosSistema() {
         url: "vistas/no/ajax/nomdocc.ashx?OPCION=3.5&FILTRO=" + filtro,
         contenttype: "application/json;",
         datatype: "json",
-        async: true,
+        async: false,
         success: function (datos) {
             if (datos != null) {
                 for (var i = 0; i < datos.length; i++) {
@@ -1664,6 +1690,7 @@ function cargarParametrosSistema() {
                                 $("#txt_fec_emision").attr('disabled', false);
                                 $("#txtFechaPago").attr('disabled', false);//20/02
                             }
+                            prmtBFDV = datos[i].VALOR;
                             break;
                         //case "ODON":
                         //    if (datos[i].VALOR == "SI") {
@@ -2228,6 +2255,46 @@ var ajaxProducto = null;
 //        }
 //    });
 //}
+
+function validarFechaEmision(fechaInicio, fechaFin) { //DPORTA 31/01/2023
+
+    let dia = fechaInicio.split("/")[0];
+    let mes = fechaInicio.split("/")[1];
+    let anio = fechaInicio.split("/")[2];
+
+    var fecha_ini = new Date(anio + '/' + mes + '/' + dia).getTime();
+
+    let diaFin = fechaFin.split("/")[0];
+    let mesFin = fechaFin.split("/")[1];
+    let anioFin = fechaFin.split("/")[2];
+
+    var fecha_fin = new Date(anioFin + '/' + mesFin + '/' + diaFin).getTime();
+
+    var diff = (fecha_fin - fecha_ini) / (1000 * 60 * 60 * 24);
+
+    if (diff > 1) {
+        $('#txt_fec_emision, #txt_fec_vencimiento').datepicker('setDate', 'now');
+        infoCustom2("Los documentos electrónicos, solo se pueden emitir con 1 día de antelación.");
+    } else {
+        CargarFactorImpuestoRentaVenta();
+        if ($("#cbo_modo_pago").val() == "0001") {
+            $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
+        } else {
+            if ($("#txt_plazo_pago").val() > 0) {
+                var fechita = $("#txt_fec_emision").val();
+                let dia = fechita.split("/")[0];
+                let mes = fechita.split("/")[1] - 1; // -1 porque el mes empieza en 0 que viene a ser enero y diciembre sería 11
+                let anio = fechita.split("/")[2];
+                var fecha = new Date(anio, mes, dia);
+                var plazo = parseInt($("#txt_plazo_pago").val());
+                fecha.setDate(fecha.getDate() + plazo);
+                var fecha_vencimiento = (fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()) + '/' + ((fecha.getMonth() + 1) < 10 ? '0' + (fecha.getMonth() + 1) : (fecha.getMonth() + 1)) + '/' + fecha.getFullYear();
+                $("#txt_fec_vencimiento").val(fecha_vencimiento);
+            }
+        }
+    }
+}
+
 function ValidaMostrarStock(stockAcumulado) {
     //if (!isNaN(paramStock)) {
     //    if (paramStock >= 0) {
@@ -2426,7 +2493,7 @@ function fillTxtCliente(v_ID, v_value) {
                         //} else {
                         //    $('#cboTipoDoc').prop('disabled', false);
                         //}
-
+                        prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
 
                         if ($('#cboTipoDoc').val() == '6') {
                             $("#cboDocumentoVenta option[value=0001]").removeAttr("disabled");
@@ -2483,16 +2550,19 @@ function fillTxtCliente(v_ID, v_value) {
                         $('#cbo_modo_pago option:first-child').prop('selected', true);
                         $('#cbo_modo_pago').change();
                         $('#txt_plazo_pago').val('0');
-                        if ($("#txt_fec_emision").val() != "") {
-                            $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
-                        } else {
-                            $('#txt_fec_vencimiento').datepicker('setDate', 'now');
-                        }
+                        //if ($("#txt_fec_emision").val() != "") {
+                        //    $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
+                        //} else {
+                        //    $('#txt_fec_vencimiento').datepicker('setDate', 'now');
+                        //}
                         if ($("#txtNroDctoCliente").val() != "" && $("#txtClientes").val() != "") {
                             $('#cboTipoDoc').val('1').change();
                         }
                         //$('#cboTipoDoc').prop('disabled', true);
                         $("#txtNroDctoCliente, #txt_id_proveedor, #txt_Retencion").val("");
+
+                        prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
+                        $('#txt_fec_emision, #txt_fec_vencimiento').datepicker('setDate', 'now');
 
                         //Limpiar valores   
                         $("#txtResponsablePago").val("").attr("disabled", "disabled");

@@ -107,14 +107,12 @@
                                        ByVal p_RHMANAS_FECHA As String, ByVal p_RHMANAS_HORA_ENTRADA As String,
                                        ByVal p_RHMANAS_HORA_SALIDA As String, ByVal p_RHMANAS_HORA_ENTRADA_TRABAJADOR As String,
                                        ByVal p_RHMANAS_HORA_SALIDA_TRABAJADOR As String, ByVal p_RHMANAS_USUA_ID As String,
-                                       ByVal p_SALIDA As String, ByVal p_TIPO As String) As String
+                                       ByVal p_SALIDA As String, ByVal p_TIPO As String, ByVal p_RHMANAS_FALTA_TRABAJADOR As String, ByVal p_RHMANAS_HORA_EXTRA_TRABAJADOR As String) As String
 
         Try
             Dim msg As String
             Dim cmd As IDbCommand
             Dim cmd1 As IDbCommand
-
-
 
             cmd = cn.GetNewCommand("PRH_CREAR_ASISTENCIA", CommandType.StoredProcedure)
 
@@ -133,6 +131,10 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_USUA_ID", p_RHMANAS_USUA_ID, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SALIDA", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO", p_TIPO, ParameterDirection.Input, 253))
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_FALTA_TRABAJADOR", p_RHMANAS_FALTA_TRABAJADOR, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_HORA_EXTRA_TRABAJADOR", p_RHMANAS_HORA_EXTRA_TRABAJADOR, ParameterDirection.Input, 253))
+
             cmd1 = cn.Ejecuta_parms(cmd)
             msg = cmd1.Parameters("@p_SALIDA").Value
             'msg = "OK"
