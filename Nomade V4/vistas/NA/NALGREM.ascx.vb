@@ -69,9 +69,10 @@ Partial Class vistas_NA_NALGREM
     Protected Sub btnXML_Click(sender As Object, e As EventArgs) Handles btnDescXML.Click
         Dim filep As String
         Dim filen, ruta, ruc As String
-        Dim rutaServer, rutaServer1, rutaServer2, rutaServer3, rutaServer4, rutaServer5, rutaServer6,
-            rutaServer7, rutaServer8, rutaServer9, rutaServer10, rutaServer11, rutaServer12, rutaServer13,
-            rutaServerGR1 As String
+        Dim rutaServer, rutaServerGR1 As String
+        'rutaServer1, rutaServer2, rutaServer3, rutaServer4, rutaServer5, rutaServer6,
+        'rutaServer7, rutaServer8, rutaServer9, rutaServer10, rutaServer11, rutaServer12, rutaServer13,
+        'rutaServerGR1 As String
 
         ruc = Me.hddRuc.Value
         'rutaServer1 = ConfigurationManager.AppSettings("path_fac_empresa1").ToString()

@@ -1,14 +1,12 @@
 ﻿var NNMREHO = function () {
 
     var plugins = function () {
-        var date = new Date();
-        var dd = date.getDate() - (date.getDate() - 1);
-        var mm = date.getMonth() + 1;
-        var yyyy = date.getFullYear();
+        var d = new Date(); // today!
+        var x = 1; // go back 5 days!
+        d.setDate(d.getDate() - x);
+        var m = d.getMonth() + 1;
+        var y = d.getFullYear();
 
-        
-
-       
         $('#slcEmpresa').select2();
         $('#slcSucural').select2();
         $('#txt_fecha').daterangepicker({
@@ -19,7 +17,7 @@
                 "fromLabel": "Desde",
                 "toLabel": "Hasta"
             },
-            startDate: mm +"/"+dd+"/" + yyyy,
+            startDate: m + "/" + d.getDate() + "/" + y,
             endDate: new Date(),
 
         });
@@ -56,16 +54,16 @@
                     data: "PIDM",
                     createdCell: function (td, cellData, rowData, row, col) {
 
-                        $(td).attr('style', 'display:none')
-
+                        //$(td).attr('style', 'display:none')
+                        $(td).attr('align', 'center')
                     }
                 },
                 {
                     data: "CODIGO_HORARIO",
                     createdCell: function (td, cellData, rowData, row, col) {
 
-                        $(td).attr('style', 'display:none')
-
+                        //$(td).attr('style', 'display:none')
+                        $(td).attr('align', 'center')
                     }
                 } 
                 
@@ -116,7 +114,7 @@
                              Get_Horas_Regularizar(PIDM, FECHA),
                              Get_Marcacion_Real_Biometrico(PIDM, FECHA)
 
-                }, 1000);
+                }, 500);
 
 
             }
@@ -136,7 +134,13 @@
             "info": false,
             columns: [
                 {
-                    data: "MARCACION",
+                    data: "MARCACION_ENTRADA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center')
+                    }
+                },
+                {
+                    data: "MARCACION_SALIDA",
                     createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr('align', 'center')
                     }
@@ -147,9 +151,9 @@
 
                         $(td).attr('align', 'center')
 
-                    }
-                }
-               
+                    },
+                    type: "fecha"
+                }             
 
 
             ]
@@ -181,15 +185,15 @@
         $('#btn_filtrar').on('click', function () {
 
             if (vErrors(["slcEmpresa", "slcSucural", "txt_fecha"])) {
-                var fecha_desde = $("#txt_fecha").val().split("-")[0];
-                var fecha_hasta = $("#txt_fecha").val().split("-")[1];
+                var fecha_desde = $.trim($("#txt_fecha").val().split("-")[0]);
+                var fecha_hasta = $.trim($("#txt_fecha").val().split("-")[1]);
 
                 Bloquear("ventana");
                 setTimeout(function () {
 
                     Lista_Regularizacion_X_horas_Emp($("#slcEmpresa").val(), $("#slcSucural").val(), fecha_desde, fecha_hasta);
 
-                }, 1000);
+                }, 500);
 
             }
 
@@ -338,8 +342,9 @@
 
                     oTable.fnClearTable();
                     oTableMarcacion.fnClearTable();
-                    
+                    infoCustom2("No existen horas por regularizar en el rango de fechas seleccionado o el empleado no tiene registrado un horario.");
                 }
+                
                 $('#body_horario').empty();
                 $('#body_horario').append('<tr><td style="text-align: center;">----</td><td style="text-align: center;">--:--</td></tr>');
                 $('#body_horas_re').empty();
@@ -556,21 +561,35 @@
     var cargaInicial = function () {
         Bloquear("ventana");
         var date = new Date();
-        var dd = date.getDate() ;
+        var dd = date.getDate();
         var mm = date.getMonth() + 1;
         var yyyy = date.getFullYear();
+
+
+        var d = new Date(); // today!
+        var x = 1; // go back 5 days!
+        d.setDate(d.getDate() - x);
+        var m = d.getMonth() + 1;
+        var dia = d.getDate();
 
         if (mm.toString().length == 1) {
             mm = "0" + mm;
         }
 
+        if (m.toString().length == 1) {
+            m = "0" + m;
+        }
 
         if (dd.toString().length == 1) {
             dd = "0" + dd;
         }
 
-        var fecha_desde = "01" + "/" + mm + "/"+ yyyy
-        var fecha_hasta = dd  + "/" + mm + "/" + yyyy
+        if (dia.toString().length == 1) {
+            dia = "0" + dia;
+        }
+
+        var fecha_desde = dia + "/" + m + "/" + yyyy
+        var fecha_hasta = dd + "/" + mm + "/" + yyyy
         $("#txt_fecha").val(fecha_desde + " - " + fecha_hasta);
 
         
@@ -622,10 +641,7 @@
                 }
             });
 
-        }, 1000);
-
-
-      
+        }, 500);      
 
     }
 
@@ -763,7 +779,7 @@ var HideAceptar = function () {
 
         Regularizar();
 
-    }, 1000);
+    }, 500);
 
 }
 
@@ -806,7 +822,7 @@ var Procesar_warning = function () {
             }
         });
 
-    }, 1000);
+    }, 500);
 
 }
 
@@ -843,5 +859,5 @@ var procesar = function () {
             }
         });
 
-    }, 1000);
+    }, 500);
 }

@@ -44,6 +44,8 @@ Public Class CCMCBDT : Implements IHttpHandler
     Dim estado As String '25/02/2021
     Dim quitarCtaDetraccion As String
     Dim esCliente As String
+    Dim asiento_contable As String
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         context.Response.ContentType = "text/plain"
 
@@ -77,6 +79,7 @@ Public Class CCMCBDT : Implements IHttpHandler
         estado = context.Request("estado")
         quitarCtaDetraccion = context.Request("quitarCtaDetraccion")
         esCliente = context.Request("esCliente")
+        asiento_contable = context.Request("asiento_contable")
 
         Try
 
@@ -85,7 +88,7 @@ Public Class CCMCBDT : Implements IHttpHandler
                 Case "1" 'crear pago x banco
                     res = DetraccionCliente.CobrarDetraccionCliente(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, origen, origen_pidm, origen_codigo_banco)
 
-                    If res.Equals("TC") Then
+                    If res.Equals("TC") And asiento_contable = "SI" Then
                         Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
                         Dim strCodAsientoCobroDetracDocVenta As String
                         For Each item As String In detalle.Split("|")

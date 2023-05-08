@@ -64,7 +64,7 @@ Public Class NSLAPHO : Implements IHttpHandler
                             If FecDos = "" Then
                                 resb.Append("""FECHA_ACT"" :" & """" & "" & """,")
                             Else
-                                resb.Append("""FECHA_ACT"" :" & """" & (Utilities.fechaLocal(FecDos.Substring(0, 10))) & """,")
+                                resb.Append("""FECHA_ACT"" :" & """" & FecDos & """,")
                             End If
                             resb.Append("""INICIO"" :" & """" & MiDataRow("RHAPRHO_HOR_NI").ToString & """,")
                             resb.Append("""FIN"" :" & """" & MiDataRow("RHAPRHO_HOR_FIN").ToString & """,")
@@ -117,7 +117,7 @@ Public Class NSLAPHO : Implements IHttpHandler
                             If FecDos = "" Then
                                 resb.Append("""FECHA_ACT"" :" & """" & "" & """,")
                             Else
-                                resb.Append("""FECHA_ACT"" :" & """" & (Utilities.fechaLocal(FecDos.Substring(0, 10))) & """,")
+                                resb.Append("""FECHA_ACT"" :" & """" & FecDos & """,")
                             End If
                             resb.Append("""INICIO"" :" & """" & MiDataRow("RHAPRHO_HOR_NI").ToString & """,")
                             resb.Append("""FIN"" :" & """" & MiDataRow("RHAPRHO_HOR_FIN").ToString & """,")
@@ -236,7 +236,7 @@ Public Class NSLAPHO : Implements IHttpHandler
                                             resb.Append("""FALTAS"" :" & """" & dt_faltas_dia(k)("TOTAL_FALTAS").ToString & """,")
                                             resb.Append("""DSCTO_FAL_INJUST"" :" & """" & dt_faltas_dia(k)("DESCUENTO_X_FALTA").ToString & """,")
                                             'dscto_fal_injust = CDbl(dt_faltas_dia(k)("DESCUENTO_X_FALTA").ToString)
-                                            dscto_fal_injust = -Math.Round(CDbl(dt_faltas_dia(k)("REM_EMPLEADO_DIA").ToString()) * Int(dt_faltas_dia(k)("DIAS_NO_LABORADOS").ToString()), 2)
+                                            dscto_fal_injust = -Math.Round(CDbl(dt_faltas_dia(k)("REM_EMPLEADO_DIA").ToString()) * dt_faltas_dia(k)("DIAS_NO_LABORADOS").ToString(), 2)
                                             bool2 = True
                                             Exit For
 
@@ -294,12 +294,12 @@ Public Class NSLAPHO : Implements IHttpHandler
                                 End If
                                 If bool2 = False Then
                                     resb.Append("""FALTAS"" :" & """" & "0" & """,")
-                                    resb.Append("""DSCTO_FAL_INJUST"" :" & """" & "-0.00" & """,")
+                                    resb.Append("""DSCTO_FAL_INJUST"" :" & """" & "0.00" & """,")
                                     dscto_fal_injust = 0
                                 End If
                                 If bool = False Then
-                                    resb.Append("""TOTAL_MINUTOS_TARDANZAS"" :" & """" & "-0" & """,")
-                                    resb.Append("""REDONDEO_TOTAL_DESC_X_MINUTOS_TARDANZA"" :" & """" & "-0.00" & """,")
+                                    resb.Append("""TOTAL_MINUTOS_TARDANZAS"" :" & """" & "0" & """,")
+                                    resb.Append("""REDONDEO_TOTAL_DESC_X_MINUTOS_TARDANZA"" :" & """" & "0.00" & """,")
                                 End If
 
 

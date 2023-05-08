@@ -2047,7 +2047,7 @@ var CPMPGAS = function () {
                 objAux = jQuery.parseJSON(JSON.stringify(objProd));
                 detallesGasto.push(objAux);
 
-                console.log(detallesGasto);
+                //console.log(detallesGasto);
 
                 oTable.fnClearTable();
                 oTable.fnAddData(detallesGasto);
@@ -2165,10 +2165,10 @@ var CPMPGAS = function () {
 
                 $('.div_documentos').slideDown();
 
-                var permiso_ind = $("#hf_permiso").val();
+                //var permiso_ind = $("#hf_permiso").val();
 
                 //AGREGA BOTON SI SE TIENE PERMISO
-                if (permiso_ind != "" && permiso_ind != "0") {
+                if ($("#hf_permiso").val() != 0) {
                     $("#acciones_generales").html("<a id='btn_aprobar' class='btn green div_documentos' href='javascript:ConfirmarAprobacion();'><i class='icon-ok-circle'></i>&nbsp;Guardar y Aprobar</a>&nbsp;&nbsp;" +
                         "<a id='cancelar' class='btn' href='?f=CPMPGAS'><i class='icon-remove'></i>&nbsp;Cancelar</a>"
                     );
@@ -2256,7 +2256,7 @@ var CPMPGAS = function () {
         });
 
         $("#cbo_documento").change(function () {
-            console.log(rucSeleccionado);
+            //console.log(rucSeleccionado);
             $("#txt_serie").removeAttr("disabled");
             $("#txt_dcto_ref").removeAttr("disabled");
             $("#txt_serie").val("");
@@ -2408,8 +2408,8 @@ var CPMPGAS = function () {
         $('#simbMoneda,#simbMoneda2,#simbMoneda3').text($("#cbo_moneda :selected").attr("simbolo"));
         $("#txt_usua").val($("#ctl00_txtus").val())
         var CODE = ObtenerQueryString("codigo");
-        var permiso_ind = $("#hf_permiso").val();
-        if (permiso_ind == "" || permiso_ind == "0") {
+        //var permiso_ind = $("#hf_permiso").val();
+        if ($("#hf_permiso").val() == 0) {
             $("#btn_aprobar").remove();
             if (typeof (CODE) == "undefined") {
                 $("#div_per_tri").remove();
@@ -2590,7 +2590,7 @@ var CPMPGAS = function () {
                     async: false,
                     success: function (datos) {
 
-                        console.log(datos);
+                        //console.log(datos);
                         if (datos != null) {
 
                             $("#estado").slideDown();
@@ -2640,7 +2640,9 @@ var CPMPGAS = function () {
                                 $('#uniform-chk_compras span').removeClass().addClass("checked");
                                 $('#chk_compras').attr('checked', true);
                                 $(".divDestinoTipo").show();
-                                MuestraPeriodo("display");
+                                if ($("#hf_permiso").val() != 0) {
+                                    MuestraPeriodo("display");
+                                }                                
                                 //llenar combo
                                 if (datos[0].MES_TRIB != "") {
                                     var oMes = Devuelve_Desc_MES(datos[0].MES_TRIB);
@@ -2668,8 +2670,9 @@ var CPMPGAS = function () {
                             if (datos[0].DEDUCIBLE == 'S') {
                                 $('#uniform-chkDeducible span').removeClass().addClass("checked");
                                 $('#chkDeducible').attr('checked', true);
-
-                                MuestraPeriodo("display");
+                                if ($("#hf_permiso").val() != 0) {
+                                    MuestraPeriodo("display");
+                                }
                                 //llenar combo
                                 if (datos[0].MES_TRIB != "") {
                                     var oMes = Devuelve_Desc_MES(datos[0].MES_TRIB);
@@ -2754,6 +2757,11 @@ var CPMPGAS = function () {
                                 $("#div_per_tri").remove();
                                 $("#acciones_generales").html("<a id='guardar' class='btn blue' href='javascript:Modificar();'><i class='icon-pencil'></i> Modificar</a>&nbsp;&nbsp;<a id='cancelar' class='btn' href='?f=CPMPGAS'><i class='icon-remove'></i>&nbsp;Cancelar</a>")
                                 filltxtBeneficiario('#txt_beneficiario', '');
+                                if ($("#hf_permiso").val() != 0) {
+                                    MuestraPeriodo("display");
+                                } else {
+                                    MuestraPeriodo("none");
+                                }
                                 $("#btnGenerarAsiento").attr("style", "display:none");
                             }
                             $('#txt_beneficiario').val(datos[0].NOMBRES);
@@ -3050,11 +3058,15 @@ var listarDetallesGasto = function (CODE) {
                     detallesGasto.push(objAux);
                 }
 
-                console.log(detallesGasto);
+                //console.log(detallesGasto);
                 oTable.fnClearTable();
                 oTable.fnAddData(detallesGasto);
                 oTable.fnAdjustColumnSizing();
 
+                CalcularDetraccion();
+
+                parseFloat($("#txt_monto").val(dTotal)).toFixed(2);
+                parseFloat($("#txt_importePagar").val(dTotal - parseFloat($("#txt_detraccion").val()))).toFixed(2);
             }
             else { noexito(); }
         },

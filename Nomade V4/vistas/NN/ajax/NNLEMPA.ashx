@@ -170,7 +170,7 @@ Public Class NNLEMPA : Implements IHttpHandler
                         resb.Append("""ENTRADA_T"" :" & """" & "-" & """,")
                         resb.Append("""SALIDA_T"" :" & """" & "-" & """,")
                         resb.Append("""TARDANZA"" :" & """" & "-" & """,")
-                        resb.Append("""FALTA"" :" & """" & "1" & """,")
+                        resb.Append("""FALTA"" :" & """" & dtFalta(x)("FALTA_DIA").ToString & """,")
                         resb.Append("""MIN_NO_SUBSANADOS"" :" & """" & "-" & """,")
                         resb.Append("""MIN_SUBSANADOS"" :" & """" & "-" & """,")
                         If Not (dt_horas_extras Is Nothing) Then

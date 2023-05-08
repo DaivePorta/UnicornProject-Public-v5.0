@@ -217,67 +217,63 @@
 
                     </div>
                     <div class="span5">
-                         <div class="span6">
-                            
-                      
-                   
-                        <div id="div_horario" style="display: none;">
-                              <div class="span12" style="text-align: center;">
-                            <h3><b>HORARIO&nbsp;&nbsp;<i class="icon-time"></i></b></h3>
-                            <p></p>
-                        </div>
-                            <table id="tbl_horario" class="display table-bordered" style="height: 154px; border-collapse: collapse;">
-                                <thead style="background-color: rgb(52, 112, 160); color: aliceblue;">
-                                    <tr>
-                                        <th style="width: 5%;">HORA INICIO (HORARIO)
-                                        </th>
-                                        <th style="width: 5%;">HORA FIN (HORARIO)
-                                        </th>
-                                        <th style="display: none; width: 90%;">SEQ
-                                        </th>
-                                    </tr>
-                                </thead>
-
-                            </table>
-                        </div>
-                    </div>
-                        <div class="span2"></div>
-                    <div class="span4">
-                        
-                        <div id="div_marcacion" style="display: none;">
-                             <div class="span12" style="text-align: center;">
-                            <h3><b>MARC.&nbsp;&nbsp;<i class="icon-time"></i></b></h3>
-                            <p></p>
-                        </div>
-                            <table id="tbl_marcaciones" class="display table-bordered" style="height: 154px; font-family: serif;">
-                                <thead style="background-color: rgb(52, 112, 160); color: aliceblue;">
-                                    <tr>
-                                        <th style="width: 5%;">MARCACION BIOMETRICO
-                                        </th>
-                                        <th style="width: 95%; display: none;">PIDM
-                                        </th>
-
-                                    </tr>
-                                </thead>
-
-                            </table>
-                            <div>
-                               
-                                <div class="span12" id="boton" style="text-align:center;display:block;">
-                                    <a class="btn purple2" id="brn_get_Marcaciones" style="border-radius: 4px!important; height: 62px;">OBTENER<BR />MARCACIONES<br>
-                                        <p></p>
-                                        <i class="icon-download"></i></a>
-
-
+                         <div class="span6">    
+                            <div id="div_horario" style="display: none;">
+                                <div class="span12" style="text-align: center;">
+                                    <h3><b>HORARIO&nbsp;&nbsp;<i class="icon-time"></i></b></h3>
+                                    <p></p>
                                 </div>
+                                <table id="tbl_horario" class="display table-bordered" style="height: 154px; border-collapse: collapse;">
+                                    <thead style="background-color: rgb(52, 112, 160); color: aliceblue;">
+                                        <tr>
+                                            <th style="width: 5%;">HORA INICIO (HORARIO)
+                                            </th>
+                                            <th style="width: 5%;">HORA FIN (HORARIO)
+                                            </th>
+                                            <%--<th style="display: none; width: 90%;">SEQ
+                                            </th>--%>
+                                        </tr>
+                                    </thead>
+
+                                </table>
                             </div>
-                            
+                        </div>
+                        <div class="span2"></div>
+                        <div class="span4">                        
+                            <div id="div_marcacion" style="display: none;">
+                                <div class="span12" style="text-align: center;">
+                                    <h3><b>MARCACIÓN&nbsp;&nbsp;<i class="icon-time"></i></b></h3>
+                                    <p></p>
+                                </div>
+                                <table id="tbl_marcaciones" class="display table-bordered" style="height: 154px; border-collapse: collapse;">
+                                    <thead style="background-color: rgb(52, 112, 160); color: aliceblue;">
+                                        <%--<tr>
+                                            <th style="width: 5%;">MARCACION BIOMETRICO
+                                            </th>
+                                            <th style="width: 95%; display: none;">PIDM
+                                            </th>
+
+                                        </tr>--%>
+                                        <tr>
+                                            <th style="width: 5px; text-align:center" class="sorting_disabled" rowspan="1" colspan="1">Marcación Entrada
+                                            </th>
+                                            <%--  <th style="width: 95%; display: none;" rowspan="1" colspan="1">PIDM</th>--%>
+                                            <th style="width: 5px; text-align:center" class="sorting_disabled" rowspan="1" colspan="1">Marcación Salida
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div>                               
+                                    <div class="span12" id="boton" style="text-align:center;display:block;">
+                                        <a class="btn purple2" id="brn_get_Marcaciones" style="border-radius: 4px!important; height: 45px;">Obtener<BR />Marcaciones<br>
+                                            <p></p>
+                                            <i class="icon-download"></i></a>
+                                    </div>
+                                </div>                            
+                            </div>
                         </div>
                     </div>
-                    </div>
-
-                </div>
-              
+                </div>             
 
         <%--        <div class="row-fluid">
                     <div class="span2">

@@ -1,7 +1,7 @@
 ﻿obj = null;
 errorSaldoInsuf = false;
 indCargaInicial = false;
-
+var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
 var CCMCBDT = function () {
     var cargarCombos = function () {
         $.ajaxSetup({ async: false });
@@ -611,6 +611,7 @@ var CCMCBDT = function () {
 
     return {
         init: function () {
+            cargarParametrosSistema();
             cargarCombos();
             datatable();
             funcionalidadTabla();
@@ -624,6 +625,26 @@ var CCMCBDT = function () {
     };
 }();
 
+function cargarParametrosSistema() {
+    //QUE SE GENERE O NO EL ASIENTO CONTABLE
+    $.ajax({
+        type: "post",
+        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: false,
+        success: function (datos) {
+            if (datos != null) {
+                prmtACON = datos[0].VALOR;
+            }
+            else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
+        },
+        error: function (msg) {
+            alertCustom("No se recuperó correctamente el parámetro ACON!");
+        }
+    });
+
+}
 function filltxtrazsocial(v_ID, v_value) {
 
     var selectRazonSocial = $(v_ID);
@@ -782,7 +803,7 @@ function pagar() {
         switch ($("#cboMedioPago").val()) {
             case "0003": //transferencia
 
-                det_desc = "*" + objData.CLIENTE.NOMBRE;
+                det_desc = "TRANSFERENCIA DETRACCION*" + "/" + objData.CLIENTE.NOMBRE;
 
                 break;
 
@@ -791,7 +812,7 @@ function pagar() {
             case "0001": // DEPOSITO
 
                 //det_desc = "*a/DEPOSITO";
-                det_desc = "Pago Detracción: " +  objData.CLIENTE.NOMBRE;
+                det_desc = "DEPOSITO DETRACCION*" + "/" +  objData.CLIENTE.NOMBRE;
 
                 break;
         }
@@ -821,9 +842,10 @@ function pagar() {
             completo: compl,
             adicional: adicional,
             monto_total: objData.MONTO,
-                origen: p_origen,
-                origen_pidm: p_origen_pidm,
-                origen_codigo_banco: p_origen_codigo_banco
+            origen: p_origen,
+            origen_pidm: p_origen_pidm,
+            origen_codigo_banco: p_origen_codigo_banco,
+            asiento_contable: prmtACON
         },
         contenttype: "application/json;",
         datatype: "json",

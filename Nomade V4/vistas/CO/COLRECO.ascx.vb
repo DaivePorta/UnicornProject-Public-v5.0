@@ -10,8 +10,8 @@ Partial Class vistas_CO_COLRECO
     Dim p_MES As String = ""
     Dim p_MES_DES As String = ""
     Dim p_ANIO As String = ""
-
-
+    Dim p_RUC As String = ""
+    Dim p_DESC_EMPRESA As String = ""
 
     Protected Sub btnPdf_Click(sender As Object, e As EventArgs) Handles btnLibroPDF.Click
 
@@ -43,7 +43,6 @@ Partial Class vistas_CO_COLRECO
         Else
             Exit Sub
         End If
-
 
     End Sub
 
@@ -85,12 +84,20 @@ Partial Class vistas_CO_COLRECO
         p_MES = Me.hddMes.Value
         p_MES_DES = Me.hddDescMes.Value
         p_CTLG_CODE = Me.hddCtlg.Value
+        p_RUC = Me.hddRuc.Value
+        p_DESC_EMPRESA = Me.hddDescEmpresa.Value
 
         Dim dt As New System.Data.DataTable
         dt = coRegistroCompras.ListarRegistroCompras_Libro8(p_ANIO, p_MES, p_CTLG_CODE, "")
         resb = GenerarTablaRegistroCompras(dt)
 
-        Dim nombreArch As String = "LE" + hddRuc.Value + hddAnio.Value + hddMes.Value + "00080100" + "00" + "1" + "0" + "1" + "1" + ""
+        Dim nombreArch As String
+        If hfind_vacio.Value = "N" Then
+            nombreArch = "LE" + hddRuc.Value + hddAnio.Value + p_MES + "00080100" + "00" + "1" + "1" + "1" + "1" + ""
+        Else
+            nombreArch = "LE" + hddRuc.Value + hddAnio.Value + p_MES + "00080100" + "00" + "1" + "0" + "1" + "1" + ""
+        End If
+
 
         HttpContext.Current.Response.Clear()
         HttpContext.Current.Response.AddHeader("Content-type", "")
@@ -106,14 +113,13 @@ Partial Class vistas_CO_COLRECO
     End Sub
 
     Public Function GenerarTablaRegistroCompras(ByVal dt As System.Data.DataTable) As StringBuilder
-
         Dim total As Decimal = 0
         Dim res = ""
         resb.Clear()
         '------
-
-        Dim dtEmpresa As New System.Data.DataTable
-        dtEmpresa = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "")
+        'Cambios : buscar '**'
+        'Dim dtEmpresa As New System.Data.DataTable
+        'dtEmpresa = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "")
         resb.AppendFormat("<table border=""0"" width=""100%"" >")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "PERIODO:")
@@ -121,11 +127,11 @@ Partial Class vistas_CO_COLRECO
         resb.AppendFormat("</tr>")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "RUC:")
-        resb.AppendFormat("<td id='ruc' width='75%'>{0}</td>", dtEmpresa.Rows(0)("RUC").ToString())
+        resb.AppendFormat("<td id='ruc' width='75%'>{0}</td>", p_RUC)
         resb.AppendFormat("</tr>")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "APELLIDOS Y NOMBRES, DENOMINACIÓN O RAZÓN SOCIAL:")
-        resb.AppendFormat("<td width='75%'>{0}</td>", dtEmpresa.Rows(0)("DESCRIPCION").ToString())
+        resb.AppendFormat("<td width='75%'>{0}</td>", p_DESC_EMPRESA)
         resb.AppendFormat("</tr>")
         resb.AppendFormat("</table>")
         resb.AppendFormat("<br/>")
@@ -192,8 +198,9 @@ Partial Class vistas_CO_COLRECO
         resb.AppendFormat("<th style='width:60px;'>DEPENDENCIA ADUANERA</th>") '**        
         resb.AppendFormat("<th style='width:55px;'>NÚMERO</th>")
 
-        resb.AppendFormat("<th style='width:85px;'>FECHA</th>")
+        resb.AppendFormat("<th style='width:85px;'>  FECHA   </th>")
         resb.AppendFormat("<th style='width:60px;'>N° DEL COMPROBANTE</th>")
+
         resb.AppendFormat("</tr>")
 
         resb.AppendFormat("</thead>")
@@ -202,9 +209,11 @@ Partial Class vistas_CO_COLRECO
         Dim tipoAdquisicion As String = ""
         Dim nroCorrelativo As Integer = 0
         Dim totalBaseImponible1 As Decimal = 0
+        Dim totalBaseImponible1_esp As Decimal = 0
         Dim totalBaseImponible2 As Decimal = 0
         Dim totalBaseImponible3 As Decimal = 0
         Dim totalIGV1 As Decimal = 0
+        Dim totalIGV1_esp As Decimal = 0
         Dim totalIGV2 As Decimal = 0
         Dim totalIGV3 As Decimal = 0
         Dim totalValorNoGravadas As Decimal = 0
@@ -221,6 +230,22 @@ Partial Class vistas_CO_COLRECO
                 'PERIODO , CUO, CORRELATIVO ASIENTO CONTABLE
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("PERIODO").ToString()) '**
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CUO").ToString()) '**
+                'DPORTA
+                'Dim oNCParametros As New Nomade.NC.NCParametros("Bn")
+                'Dim oDT_Param As New DataTable()
+                'oDT_Param = oNCParametros.ListarParametros("CMOV", "")
+                'If oDT_Param Is Nothing Then
+                '    Throw New System.Exception("No se encontró el parámetro CMOV: Correlativo Movimiento en libro.")
+                'End If
+                'If oDT_Param.Rows.Count = 0 Then
+                '    Throw New System.Exception("No se encontró el parámetro CMOV: Correlativo Movimiento en libro.")
+                'End If
+                'Dim sUsaCorrelativo As String = oDT_Param.Rows(0)("VALOR")
+                'If Not sUsaCorrelativo.Equals("S") Then
+                '    resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("FILA").ToString())
+                'Else
+                '    resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CAC").ToString())
+                'End If
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CAC").ToString()) '**
                 'FECHA DE EMISIÓN DEL COMPROBANTE DE PAGO O DOCUMENTO,	FECHA DE VENCIMIENTO O FECHA DE PAGO(1)      
                 resb.AppendFormat("<td align='center' >{0}</td>", If(dt.Rows(i)("EMISION").ToString() = "", "", dt.Rows(i)("EMISION").ToString().Substring(0, 10)))
@@ -235,24 +260,33 @@ Partial Class vistas_CO_COLRECO
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_FINAL").ToString()) '**
                 'INFORMACIÓN DEL PROVEEDOR
                 If (dt.Rows(i)("DNI").ToString() = "" Or dt.Rows(i)("RUC").ToString() <> "") Then 'TO DO: VALIDAR CORRECTAMENTE
-                    resb.AppendFormat("<td align='center' >{0}</td>", "06")
+                    resb.AppendFormat("<td align='center' >{0}</td>", "6")
                     resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("RUC").ToString())
                 Else
-                    resb.AppendFormat("<td align='center' >{0}</td>", "01")
+                    resb.AppendFormat("<td align='center' >{0}</td>", "1")
                     resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("DNI").ToString())
                 End If
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("RAZON_SOCIAL").ToString())
                 'Adquisiones
                 If (tipoAdquisicion = "S") Then
-                    resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_DSTGRA").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_DSTGRA").ToString()))))
-                    resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("IGV_DSTGRA").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV_DSTGRA").ToString()))))
+                    If dt.Rows(i)("MONTO_DSTGRA").ToString() <> 0 Then
+                        resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_DSTGRA").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_DSTGRA").ToString()))))
+                        resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("IGV_DSTGRA").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV_DSTGRA").ToString()))))
+                    ElseIf dt.Rows(i)("MONTO_DGRAES").ToString() <> 0 Then
+                        resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_DGRAES").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_DGRAES").ToString()))))
+                        resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("IGV_DGRAES").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV_DGRAES").ToString()))))
+                    Else
+                        resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_DSTGRA").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_DSTGRA").ToString()))))
+                        resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("IGV_DSTGRA").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV_DSTGRA").ToString()))))
+                    End If
+
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_DSTMIX").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_DSTMIX").ToString()))))
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("IGV_DSTMIX").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV_DSTMIX").ToString()))))
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_DSTNGR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_DSTNGR").ToString()))))
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("IGV_DSTNGR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV_DSTNGR").ToString()))))
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_ORGNGR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_ORGNGR").ToString()))))
 
-                    'ISC      
+                    'ISC               
                     If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
                         resb.AppendFormat("<td align='center' >{0}</td>", "")
                     Else
@@ -262,18 +296,19 @@ Partial Class vistas_CO_COLRECO
                     'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
                     resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
 
-                    'OTROS TRIBUTOS
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("MONTO_OTRTRI").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_OTRTRI").ToString()))))
 
                     totalBaseImponible1 += Decimal.Parse(dt.Rows(i)("MONTO_DSTGRA").ToString())
                     totalIGV1 += Decimal.Parse(dt.Rows(i)("IGV_DSTGRA").ToString())
+                    totalBaseImponible1_esp += Decimal.Parse(dt.Rows(i)("MONTO_DGRAES").ToString())
+                    totalIGV1_esp += Decimal.Parse(dt.Rows(i)("IGV_DGRAES").ToString())
                     totalBaseImponible2 += Decimal.Parse(dt.Rows(i)("MONTO_DSTMIX").ToString())
                     totalIGV2 += Decimal.Parse(dt.Rows(i)("IGV_DSTMIX").ToString())
                     totalBaseImponible3 += Decimal.Parse(dt.Rows(i)("MONTO_DSTNGR").ToString())
                     totalIGV3 += Decimal.Parse(dt.Rows(i)("IGV_DSTNGR").ToString())
                     totalValorNoGravadas += Decimal.Parse(dt.Rows(i)("MONTO_ORGNGR").ToString())
                     totalValorOtrosTributos += Decimal.Parse(dt.Rows(i)("MONTO_OTRTRI").ToString())
-                ElseIf (tipoAdquisicion = "DSTGRA") Then
+                ElseIf (tipoAdquisicion = "DSTGRA" Or tipoAdquisicion = "DGRAES") Then
                     ' ADQUISICIONES GRAVADAS DESTINADAS A OPERACIONES GRAVADAS Y/O DE EXPORTACIÓN                    
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("VALOR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString()))))
                     resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV").ToString())))
@@ -283,7 +318,7 @@ Partial Class vistas_CO_COLRECO
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
 
-                    'ISC      
+                    'ISC              
                     If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
                         resb.AppendFormat("<td align='center' >{0}</td>", "")
                     Else
@@ -293,12 +328,12 @@ Partial Class vistas_CO_COLRECO
                     'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
                     resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
 
-                    'OTROS TRIBUTOS
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
-
                     'Suma para el total
                     totalBaseImponible1 += Decimal.Parse(dt.Rows(i)("VALOR").ToString())
                     totalIGV1 += Decimal.Parse(dt.Rows(i)("IGV").ToString())
+                    totalBaseImponible1_esp += Decimal.Parse(dt.Rows(i)("MONTO_DGRAES").ToString())
+                    totalIGV1_esp += Decimal.Parse(dt.Rows(i)("IGV_DGRAES").ToString())
                 ElseIf (tipoAdquisicion = "DSTMIX") Then
                     ' ADQUISICIONES GRAVADAS DESTINADAS A OPERACIONES GRAVADAS Y/O DE EXPORTACIÓN Y A OPERACIONES NO GRAVADAS
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
@@ -309,7 +344,7 @@ Partial Class vistas_CO_COLRECO
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
 
-                    'ISC      
+                    'ISC              
                     If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
                         resb.AppendFormat("<td align='center' >{0}</td>", "")
                     Else
@@ -319,9 +354,7 @@ Partial Class vistas_CO_COLRECO
                     'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
                     resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
 
-                    'OTROS TRIBUTOS
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
-
                     '--Suma para el total
                     totalBaseImponible2 += Decimal.Parse(dt.Rows(i)("VALOR").ToString())
                     totalIGV2 += Decimal.Parse(dt.Rows(i)("IGV").ToString())
@@ -335,7 +368,7 @@ Partial Class vistas_CO_COLRECO
                     resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV").ToString())))
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
 
-                    'ISC      
+                    'ISC              
                     If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
                         resb.AppendFormat("<td align='center' >{0}</td>", "")
                     Else
@@ -345,9 +378,7 @@ Partial Class vistas_CO_COLRECO
                     'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
                     resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
 
-                    'OTROS TRIBUTOS
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
-
                     '--Suma para el total
                     totalBaseImponible3 += Decimal.Parse(dt.Rows(i)("VALOR").ToString())
                     totalIGV3 += Decimal.Parse(dt.Rows(i)("IGV").ToString())
@@ -360,7 +391,7 @@ Partial Class vistas_CO_COLRECO
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("VALOR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString()))))
 
-                    'ISC      
+                    'ISC              
                     If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
                         resb.AppendFormat("<td align='center' >{0}</td>", "")
                     Else
@@ -370,7 +401,6 @@ Partial Class vistas_CO_COLRECO
                     'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
                     resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
 
-                    'OTROS TRIBUTOS
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
 
                     '--Suma para el total
@@ -384,7 +414,7 @@ Partial Class vistas_CO_COLRECO
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
                     resb.AppendFormat("<td align='center' >{0}</td>", " ")
 
-                    'ISC      
+                    'ISC              
                     If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
                         resb.AppendFormat("<td align='center' >{0}</td>", "")
                     Else
@@ -394,7 +424,6 @@ Partial Class vistas_CO_COLRECO
                     'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO
                     resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse("0.00")))
 
-                    'OTROS TRIBUTOS
                     resb.AppendFormat("<td align='center' >{0}</td>", If(Decimal.Parse(dt.Rows(i)("VALOR").ToString()) = 0, "", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR").ToString()))))
                     '--Suma para el total
                     totalValorOtrosTributos += Decimal.Parse(dt.Rows(i)("VALOR").ToString())
@@ -402,11 +431,13 @@ Partial Class vistas_CO_COLRECO
 
                 'resb.AppendFormat("<td align='center' >{0}</td>", "") 'OTROS TRIBUTOS Y CARGOS
                 resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IMPORTE").ToString())))
+
                 'CODIGO MONEDA
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("MONEDA").ToString()) '**                
                 'TIPO DE CAMBIO
                 If Decimal.Parse(dt.Rows(i)("VALOR_CAMBIO").ToString()) = 0 Then
-                    resb.AppendFormat("<td align='center' >{0}</td>", " ") '
+                    'resb.AppendFormat("<td align='center' >{0}</td>", " ") '
+                    resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:#0.000}", Decimal.Parse(dt.Rows(i)("VALOR_CAMBIO").ToString()))) '
                 Else
                     resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:#0.000}", Decimal.Parse(dt.Rows(i)("VALOR_CAMBIO").ToString()))) '
                 End If
@@ -431,11 +462,11 @@ Partial Class vistas_CO_COLRECO
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("INC_PROV_RENUNCIANTE").ToString()) '**                
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("INC_DNI").ToString()) '**                
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("INDICADOR_COMPROBANTE").ToString()) '**
-
-                If dt.Rows(i)("IGV_DSTGRA").ToString() = "0.00" AndAlso dt.Rows(i)("IGV_DSTMIX").ToString() = "0.00" AndAlso dt.Rows(i)("IGV_DSTNGR").ToString() = "0.00" Then
+                If dt.Rows(i)("IGV_DSTGRA").ToString() = "0.00" AndAlso dt.Rows(i)("IGV_DSTMIX").ToString() = "0.00" AndAlso dt.Rows(i)("IGV_DSTNGR").ToString() = "0.00" AndAlso dt.Rows(i)("IGV_DGRAES").ToString() = "0.00" Then
                     dt.Rows(i)("ESTADO_AJUSTE") = 0
                 End If
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("ESTADO_AJUSTE").ToString()) '**                
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("ESTADO_AJUSTE").ToString())
+
 
                 resb.AppendFormat("</tr>")
                 '---Suma de totales
@@ -449,15 +480,15 @@ Partial Class vistas_CO_COLRECO
             resb.AppendFormat("<tr style='font-size:9px;font-weight:700'>")
             resb.AppendFormat("<td colspan='12' align='center' style='border-bottom:1px solid white;border-left:1px solid white;' >{0}</td>", "") '**
             resb.AppendFormat("<td colspan='1' align='center' >TOTALES</td>")
-            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalBaseImponible1)) 'Total BASE IMPONIBLE 1
-            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalIGV1)) 'Total IGV 1 
+            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalBaseImponible1 + totalBaseImponible1_esp)) 'Total BASE IMPONIBLE 1
+            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalIGV1 + totalIGV1_esp)) 'Total IGV 1 
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalBaseImponible2)) 'Total BASE IMPONIBLE 2
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalIGV2)) 'Total IGV 2
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalBaseImponible3)) 'Total BASE IMPONIBLE 3
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalIGV3)) 'Total IGV 3
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalValorNoGravadas)) 'Total Valor Ad. No Gravadas
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalISC)) 'Total ISC
-            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", Decimal.Parse("0.00"))) 'IMPUESTO AL CONSUMO DE BOLSAS DE PLASTICO
+            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", "0.00")) 'Impuesto al consumo de bolsas de plastico
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalValorOtrosTributos)) 'Total Otros Tributos y Cargos
             resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalImporte)) 'Total Importes Total
             resb.AppendFormat("<td colspan='1' align='center' ></td>")
@@ -492,7 +523,5 @@ Partial Class vistas_CO_COLRECO
         'Return res
         Return resb
     End Function
-
-
 
 End Class

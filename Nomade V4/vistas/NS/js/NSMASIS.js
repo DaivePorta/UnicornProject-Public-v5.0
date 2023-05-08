@@ -18,10 +18,7 @@
 
             $('#Tabla').append($('#ctl00_cph_ctl00_PCONGEN1_ctl00_hfTable').val());
 
-           
-
-           
-            ListarAsistencia();
+            //ListarAsistencia();
             $('#tblAsistencia').dataTable();
             
         }
@@ -112,8 +109,6 @@ function CargaConfiguracion() {
 
     //$('#Tabla').append($('#ctl00_cph_ctl00_PCONGEN1_ctl00_hfTable').val());
 
-
-
     if (Emp != null) {
 
         //$("#grabar").html("<i class='icon-pencil'></i>Modificar");
@@ -136,8 +131,7 @@ function CargaConfiguracion() {
                     $("#cboBiometrico, #cboFecha, #cboHoraEntrada, #cboHoraSalida, #cboHoraEntradaTrabajador, #cboHoraSalidaTrabajador").change();
                     $('#lblTitulo').text(" CONFIGURACIÓN DE COLUMNAS " + $('#cboSucursal :selected').text());
                     ListarAsistencia();
-                //}
-                
+                //}                
             },
             error: function (msg) {
                 alert(msg);

@@ -31,7 +31,7 @@ Public Class NNMREHO : Implements IHttpHandler
 
             Case "1" ' lista empleados
                 context.Response.ContentType = "application/json; charset=utf-8"
-                dt = New Nomade.NN.NNPlanilla("Bn").Listar_Empleados_Regularizar_horas(CTLG_CODE, IIf(SCSL_CODE = "T", "", SCSL_CODE), FECHA_DESDE, FECHA_HASTA)
+                dt = New Nomade.NN.NNPlanilla("Bn").Listar_Empleados_Regularizar_horas(CTLG_CODE, IIf(SCSL_CODE = "T", "", SCSL_CODE), Utilities.fechaLocal(FECHA_DESDE), Utilities.fechaLocal(FECHA_HASTA))
                 If Not (dt Is Nothing) Then
                     resb.Append("[")
                     For Each MiDataRow As DataRow In dt.Rows
@@ -52,7 +52,7 @@ Public Class NNMREHO : Implements IHttpHandler
             Case "2"
                 context.Response.ContentType = "application/json; charset=utf-8"
                 Dim dh As New Nomade.NN.NNPlanilla("Bn")
-                dt = dh.Listar_Horario_Detalle_X_Dia(FECHA, PIDM, CTLG_CODE)
+                dt = dh.Listar_Horario_Detalle_X_Dia(Utilities.fechaLocal(FECHA), PIDM, CTLG_CODE)
                 If Not (dt Is Nothing) Then
                     resb.Append("[")
                     For Each MiDataRow As DataRow In dt.Rows
@@ -74,7 +74,7 @@ Public Class NNMREHO : Implements IHttpHandler
             Case "3"
                 context.Response.ContentType = "application/json; charset=utf-8"
                 Dim dh As New Nomade.NN.NNPlanilla("Bn")
-                dt = dh.Listar_Horas_X_Regularizar_Empleado(PIDM, FECHA)
+                dt = dh.Listar_Horas_X_Regularizar_Empleado(PIDM, Utilities.fechaLocal(FECHA))
                 If Not (dt Is Nothing) Then
                     resb.Append("[")
                     For Each MiDataRow As DataRow In dt.Rows
@@ -96,14 +96,15 @@ Public Class NNMREHO : Implements IHttpHandler
             Case "4"
                 context.Response.ContentType = "application/json; charset=utf-8"
                 Dim dh As New Nomade.NN.NNPlanilla("Bn")
-                dt = dh.Listar_Marcaciones_Biometricos_reales(PIDM, FECHA)
+                dt = dh.Listar_Marcaciones_Biometricos_reales(PIDM, Utilities.fechaLocal(FECHA))
                 If Not (dt Is Nothing) Then
                     resb.Append("[")
                     For Each MiDataRow As DataRow In dt.Rows
                         resb.Append("{")
 
-                        resb.Append("""MARCACION"" :" & """" & MiDataRow("MARCACION") & """,")
-                        resb.Append("""FECHA"" :" & """" & MiDataRow("FECHA") & """")
+                        resb.Append("""FECHA"" :" & """" & MiDataRow("FECHA") & """,")
+                        resb.Append("""MARCACION_ENTRADA"" :" & """" & MiDataRow("MARCACION_ENTRADA") & """,")
+                        resb.Append("""MARCACION_SALIDA"" :" & """" & MiDataRow("MARCACION_SALIDA") & """")
                         resb.Append("}")
                         resb.Append(",")
                     Next
@@ -137,7 +138,7 @@ Public Class NNMREHO : Implements IHttpHandler
                 dh = Nothing
             Case "AT" 'aCTUALIZA 
                 context.Response.ContentType = "text/html"
-                res = Actualizar_Horas_Regularizacion(PIDM, p_HORAS, FECHA, p_Ids)
+                res = Actualizar_Horas_Regularizacion(PIDM, p_HORAS, Utilities.fechaLocal(FECHA), p_Ids)
             Case "C" 'CACLULA 
                 context.Response.ContentType = "text/html"
                 res = Calcula_Asistencias(p_AUTOMATICO, CTLG_CODE)

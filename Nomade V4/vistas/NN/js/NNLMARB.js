@@ -33,19 +33,21 @@
 
         var parms = {
             data: null,
-            ordering: false,
+            //ordering: false,
             iDisplayLength: -1,
             //"sDom": "t",
             //"paging": false,
             //"scrollY": "380px",
             //"searching": false,
             //"info": false,
+            order: [[0, 'asc']],
             columns: [
                 {
                     data: "FECHA",
                     createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr('align', 'center')
-                    }
+                    },
+                    type: "fecha"
                 },
                 {
                     data: "NOMBRES",
@@ -54,16 +56,37 @@
                     }
                 },
                 {
-                    data: "MARCACION",
+                    data: "HORA_ENTRADA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+
+                        $(td).attr('align', 'center')
+
+                    }
+                },
+                {
+                    data: "HORA_SALIDA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+
+                        $(td).attr('align', 'center')
+
+                    }
+                },
+                {
+                    data: "MARCACION_ENTRADA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+
+                        $(td).attr('align', 'center')
+
+                    }
+                },
+                {
+                    data: "MARCACION_SALIDA",
                     createdCell: function (td, cellData, rowData, row, col) {
 
                         $(td).attr('align', 'center')
 
                     }
                 }
-
-
-
             ],
 
             drawCallback: function (settings) {
@@ -202,7 +225,7 @@
 
                     Lista_Marcaciones(pidm, ind_activo, fecha_desde, fecha_hasta, ctlg, scsl);
 
-                }, 1000);
+                }, 500);
 
             }
 

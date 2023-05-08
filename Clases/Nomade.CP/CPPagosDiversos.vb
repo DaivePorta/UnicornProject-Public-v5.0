@@ -411,6 +411,26 @@
         End Try
     End Function
 
+    Public Function ReprocesarDeudasGastosAprobados() As String
+        Try
+            Dim msg As String
+
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_JOB_CREAR_REGISTRO_EN_FABCRED_DE_GASTO_APROBADO", CommandType.StoredProcedure)
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+
+            msg = "OK"
+
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
     'Procedimiento para listar deudas por pagar diversas en calendar
     Public Function ListarDeudasPagarDiversas(ByVal p_CTLG_CODE As String, ByVal p_PAGADO_IND As String, ByVal p_ESTADO_IND As String, ByVal p_PIDM As String) As DataTable
         Try

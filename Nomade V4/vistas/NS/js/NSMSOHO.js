@@ -384,7 +384,7 @@ var NSMSOHO = function () {
 
                 Get_Marcaciones();
 
-            }, 1000);
+            }, 300);
 
 
         });
@@ -498,7 +498,7 @@ var NSMSOHO = function () {
 
     var Get_Marcaciones = function () {
         var oFecha = $("#txtFechaAutorizada").val();
-        var ctlg_code = $("#cboEmpresa").val();
+        //var ctlg_code = $("#cboEmpresa").val();
         var vPidm = $("#cboEmpleado").val();
         var v_Errors = true;
         var v_message = '';
@@ -521,45 +521,46 @@ var NSMSOHO = function () {
         }
 
         if (v_Errors) {
-            $.ajax({
-                type: "post",
-                url: "vistas/nn/ajax/nnmrefe.ashx?OPCION=2&p_FECHA=" + oFecha + "&p_CTLG_CODE=" + ctlg_code,
-                contenttype: "application/json;",
-                datatype: "json",
-                async: false,
-                success: function (datos) {
-                    if (datos == "OK") {
-                        //LISTA MARCACIONES
-                        Get_Marcacion_Real_Biometrico(vPidm, oFecha);
+            //$.ajax({
+            //    type: "post",
+            //    url: "vistas/nn/ajax/nnmrefe.ashx?OPCION=2&p_FECHA=" + oFecha + "&p_CTLG_CODE=" + ctlg_code,
+            //    contenttype: "application/json;",
+            //    datatype: "json",
+            //    async: false,
+            //    success: function (datos) {
+            //        if (datos == "OK") {
+            //            //LISTA MARCACIONES
+            //            Get_Marcacion_Real_Biometrico(vPidm, oFecha);
 
-                    }
-                    if (datos != "E" && datos != "OK") {
+            //        }
+            //        if (datos != "E" && datos != "OK") {
 
-                        infoCustom(datos);
+            //            infoCustom(datos);
 
-                    }
-                    if (datos == "E") {
-
-
-                        alertCustom("Error al obtener marcaciones");
-
-                    }
-
-                    if (datos == "") {
+            //        }
+            //        if (datos == "E") {
 
 
-                        alertCustom("Error al obtener marcaciones");
+            //            alertCustom("Error al obtener marcaciones");
 
-                    }
-                    Desbloquear("ventana");
+            //        }
 
-                },
-                error: function (msg) {
-                    alertCustom("Error al obtener marcaciones");
-                    Desbloquear("ventana");
-                }
+            //        if (datos == "") {
 
-            });
+
+            //            alertCustom("Error al obtener marcaciones");
+
+            //        }
+            //        Desbloquear("ventana");
+
+            //    },
+            //    error: function (msg) {
+            //        alertCustom("Error al obtener marcaciones");
+            //        Desbloquear("ventana");
+            //    }
+
+            //});
+            Get_Marcacion_Real_Biometrico(vPidm, oFecha);
         }
         else {
             Desbloquear("ventana");
@@ -594,7 +595,15 @@ var NSMSOHO = function () {
                         columns: [
 
                             {
-                                data: "MARCACION",
+                                data: "MARCACION_ENTRADA",
+                                createdCell: function (td, cellData, rowData, row, col) {
+                                    $(td).attr('align', 'center');
+                                    $(td).css('text-align', 'center');
+                                }
+
+                            },
+                            {
+                                data: "MARCACION_SALIDA",
                                 createdCell: function (td, cellData, rowData, row, col) {
                                     $(td).attr('align', 'center');
                                     $(td).css('text-align', 'center');
@@ -616,7 +625,7 @@ var NSMSOHO = function () {
 
 
                     //$('#tbl_marcaciones .odd').remove()
-                    oTable_marcaciones = $('#tbl_marcaciones').dataTable();
+                    //oTable_marcaciones = $('#tbl_marcaciones').dataTable();
                     $('#tbl_marcaciones_filter').remove()
                     $('#tbl_marcaciones_length').remove()
                     $('#tbl_marcaciones_paginate').remove()
@@ -782,81 +791,83 @@ var NSMSOHO = function () {
             oTableHorario.fnClearTable();
         }
 
-        $.ajax({
-            type: "post",
-            url: "vistas/nn/ajax/nnmreho.ashx?OPCION=2&FECHA=" + fecha + "&PIDM=" + empleado + "&CTLG_CODE=" + ctlg_code,
-            contenttype: "application/json;",
-            datatype: "json",
-            async: false,
-            success: function (datos) {
-                if (datos != null) {
-                    $('#tbl_Horario .odd').remove()
+        if (empleado != "") {
+            $.ajax({
+                type: "post",
+                url: "vistas/nn/ajax/nnmreho.ashx?OPCION=2&FECHA=" + fecha + "&PIDM=" + empleado + "&CTLG_CODE=" + ctlg_code,
+                contenttype: "application/json;",
+                datatype: "json",
+                async: false,
+                success: function (datos) {
+                    if (datos != null) {
+                        $('#tbl_Horario .odd').remove()
 
-                    var json = datos;
-                    var parms = {
-                        data: json,
-                        //order: [[2, 'asc']],
-                        //iDisplayLength: 25,
-                        paging: false,
-                        searching: false,
-                        info: false,
-                        columns: [
+                        var json = datos;
+                        var parms = {
+                            data: json,
+                            //order: [[2, 'asc']],
+                            //iDisplayLength: 25,
+                            paging: false,
+                            searching: false,
+                            info: false,
+                            columns: [
 
-                            {
-                                data: "SEQ",
-                                createdCell: function (td, cellData, rowData, row, col) {
-                                    $(td).attr('align', 'center');
-                                    $(td).css('text-align', 'center');
-                                    $(td).attr('style', 'display:none');
+                                //{
+                                //    data: "SEQ",
+                                //    createdCell: function (td, cellData, rowData, row, col) {
+                                //        $(td).attr('align', 'center');
+                                //        $(td).css('text-align', 'center');
+                                //        $(td).attr('style', 'display:none');
+                                //    },
+                                //    visible: false
+
+                                //},
+                                {
+                                    data: "HORA_INICIO",
+                                    createdCell: function (td, cellData, rowData, row, col) {
+                                        $(td).css('text-align', 'center');
+                                    }
+
                                 },
-                                visible: false
 
-                            },
-                            {
-                                data: "HORA_INICIO",
-                                createdCell: function (td, cellData, rowData, row, col) {
-                                    $(td).css('text-align', 'center');
+                                {
+                                    data: "HORA_FIN",
+                                    createdCell: function (td, cellData, rowData, row, col) {
+                                        $(td).css('text-align', 'center');
+                                    }
                                 }
 
-                            },
-
-                            {
-                                data: "HORA_FIN",
-                                createdCell: function (td, cellData, rowData, row, col) {
-                                    $(td).css('text-align', 'center');
-                                }
-                            }
 
 
 
+                            ]
 
-                        ]
+                        }
+
+                        $('#tbl_Horario').dataTable().fnDestroy();
+                        oTableHorario = iniciaTabla("tbl_Horario", parms);
+                        $('#tbl_Horario_wrapper').children().first().html('');
 
                     }
+                    else {
+                        $('#tbl_Horario .odd').remove()
+                        oTableHorario = $('#tbl_Horario').dataTable();
+                        $('#tbl_Horario_filter').remove()
+                        $('#tbl_Horario_length').remove()
+                        $('#tbl_Horario_paginate').remove()
+                        $('#tbl_Horario_info').remove()
+                        $('#tbl_Horario_wrapper').children().first().html('');
 
-                    $('#tbl_Horario').dataTable().fnDestroy();
-                    oTableHorario = iniciaTabla("tbl_Horario", parms);
-                    $('#tbl_Horario_wrapper').children().first().html('');
+                        infoCustom2("El empleado no tiene registrado un horario. Debe registrarlo por favor.");
+                    }
 
+                },
+                error: function (msg) {
+
+                    alert(msg);
                 }
-                else {
-                    $('#tbl_Horario .odd').remove()
-                    oTableHorario = $('#tbl_Horario').dataTable();
-                    $('#tbl_Horario_filter').remove()
-                    $('#tbl_Horario_length').remove()
-                    $('#tbl_Horario_paginate').remove()
-                    $('#tbl_Horario_info').remove()
-                    $('#tbl_Horario_wrapper').children().first().html('');
-
-
-                }
-
-            },
-            error: function (msg) {
-
-                alert(msg);
-            }
-        });
+            });
+        }        
     }
 
     return {

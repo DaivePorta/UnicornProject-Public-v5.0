@@ -137,7 +137,7 @@ Public Class BBComisionSistemaPension
 
             cmd = cn.GetNewCommand("PCO_ACTUALIZA_COMSION_SISTEMA_PENSION", CommandType.StoredProcedure)
 
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FCOSIPE_CODE", p_FCOSIPE_CODE, ParameterDirection.Output, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FCOSIPE_CODE", p_FCOSIPE_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_FCOSIPE_COLUMNA", p_FCOSIPE_COLUMNA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_FCOSIPE_DATO", p_FCOSIPE_DATO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_FCOSIPE_USUA_ID", p_FCOSIPE_USUA_ID, ParameterDirection.Input, 253))

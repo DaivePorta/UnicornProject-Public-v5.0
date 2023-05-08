@@ -603,7 +603,7 @@ Public Class NVMDOVS : Implements IHttpHandler
                             tabla.AppendFormat("<td valign='TOP' style='text-align: left;'>{0}</td>", Math.Round(Decimal.Parse(row("CANTIDAD")), 2).ToString())
                             tabla.AppendFormat("<td valign='TOP' style='text-align: left;'>{0}</td>", row("DESC_UNIDAD_CORTA").ToString())
                             tabla.AppendFormat("<td style='text-align: left;padding-right:10px;padding-left:5px;' colspan='2'><span style='word-break:break-all;'>{0}</span> x {1}</td>", row("NOMBRE_IMPRESION"), IIf(Decimal.Parse(row("PU")) < 0, (Decimal.Parse(row("PU")) * (-1)), row("PU")))
-                            tabla.AppendFormat("<td valign='TOP' style='text-align: right;'>{0}<br/><span style='display: inline-block;position: relative;left: 6px' >{1}</span></td>", IIf(totalSinDscto < 0, ("(" & totalSinDscto * (-1) & ")"), totalSinDscto), vDesc(row("DESCUENTO")))
+                            tabla.AppendFormat("<td valign='TOP' style='text-align: right;'>{0}<br/><span style='display: inline-block;position: relative;left: 6px' >{1}</span></td>", IIf(totalSinDscto < 0, IIf(totalSinDscto < 0, "- " & totalSinDscto * (-1), totalSinDscto), totalSinDscto), vDesc(row("DESCUENTO")))
                             tabla.Append("</tr>")
                         Next
                     Else

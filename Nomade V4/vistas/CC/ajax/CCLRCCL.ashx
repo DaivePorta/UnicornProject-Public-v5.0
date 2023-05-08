@@ -5,30 +5,31 @@ Imports System.Web
 Imports System.Data
 
 Public Class CCLRCCL : Implements IHttpHandler
-  
-    Dim OPCION, p_CTLG_CODE, p_USUA_ID, p_CLIE_PIDM, p_DESDE, p_HASTA As String
+
+    Dim OPCION, p_CTLG_CODE, p_SCSL_CODE, p_USUA_ID, p_CLIE_PIDM, p_DESDE, p_HASTA As String
     Dim dt As DataTable
     Dim res, cod, msg As String
     Dim resb As New StringBuilder
     Dim resArray As Array
-    
+
     Dim ccCuentaPorCobrar As New NOMADE.CC.CCCuentaPorCobrar("Bn")
     Dim ncEmpresa As New NOMADE.NC.NCEmpresa("Bn")
     Dim glLetras As New NOMADE.GL.GLLetras("Bn")
-    
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
-        
+
         OPCION = context.Request("OPCION")
         p_CTLG_CODE = context.Request("p_CTLG_CODE")
+        p_SCSL_CODE = context.Request("p_SCSL_CODE")
         p_USUA_ID = context.Request("p_USUA_ID")
         p_CLIE_PIDM = context.Request("p_CLIE_PIDM")
 
 
         p_DESDE = context.Request("p_DESDE")
         p_HASTA = context.Request("p_HASTA")
-        
+
         Try
-        
+
             Select Case OPCION
                 Case "0" 'lista empresas
                     context.Response.ContentType = "application/json; charset=utf-8"
@@ -50,24 +51,24 @@ Public Class CCLRCCL : Implements IHttpHandler
                     res = resb.ToString()
                 Case "1" 'reporte de cuentas por cobrar
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = ccCuentaPorCobrar.ListarCuentasPorCobrarPorCliente(p_CTLG_CODE, p_CLIE_PIDM, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), "N")
+                    dt = ccCuentaPorCobrar.ListarCuentasPorCobrarPorCliente(p_CTLG_CODE, p_SCSL_CODE, p_CLIE_PIDM, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), "N")
                     res = GenerarTablaCuentaPorCobrar(dt)
-                    
+
             End Select
             context.Response.Write(res)
-            
+
         Catch ex As Exception
             context.Response.Write("error" & ex.ToString)
         End Try
     End Sub
-    
+
     Public Function GenerarTablaCuentaPorCobrar(ByVal dt As DataTable) As String
-        
+
         Dim totalBase As Decimal = 0
         Dim totalAlterna As Decimal = 0
         res = ""
         resb.Clear()
-        
+
         Dim fechaTipoCambio As String = ""
         Dim valorTipoCambio As String = ""
         Dim dtMonedas As New DataTable
@@ -91,6 +92,8 @@ Public Class CCLRCCL : Implements IHttpHandler
         resb.AppendFormat("<th>TABLA</th>")
         resb.AppendFormat("<th>CODIGO_REF</th>")
         resb.AppendFormat("<th>DOCUMENTO</th>")
+        resb.AppendFormat("<th>RAZON SOCIAL</th>")
+        resb.AppendFormat("<th>DOC. ID</th>")
         resb.AppendFormat("<th>FECHA<br/>EMISIÓN</th>")
         resb.AppendFormat("<th>FECHA<br/>VENCIMIENTO</th>")
         resb.AppendFormat("<th>MONTO {0}</th>", descMonedaBase)
@@ -98,7 +101,7 @@ Public Class CCLRCCL : Implements IHttpHandler
         resb.AppendFormat("<th>GLOSA</th>")
         resb.AppendFormat("</thead>")
         resb.AppendFormat("<tbody>")
-                                 
+
         If (dt Is Nothing) Then
             'No hay datos
             fechaTipoCambio = "-"
@@ -111,6 +114,8 @@ Public Class CCLRCCL : Implements IHttpHandler
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TABLA").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CODIGO_REF").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("DOCUMENTO").ToString())
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("RAZON_SOCIAL").ToString())
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("DOCUMENTO_ID").ToString())
                 resb.AppendFormat("<td align='center' data-order='{1}'>{0}</td>", If(dt.Rows(i)("EMISION").ToString() = "", "", dt.Rows(i)("EMISION").ToString().Substring(0, 10)), ObtenerFecha(dt.Rows(i)("EMISION").ToString()))
                 resb.AppendFormat("<td align='center' data-order='{1}'>{0}</td>", If(dt.Rows(i)("VENCIMIENTO").ToString() = "", "", dt.Rows(i)("VENCIMIENTO").ToString().Substring(0, 10)), ObtenerFecha(dt.Rows(i)("VENCIMIENTO").ToString()))
                 resb.AppendFormat("<td align='center' >{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_SOLES").ToString())))
@@ -121,7 +126,7 @@ Public Class CCLRCCL : Implements IHttpHandler
                 totalAlterna += Decimal.Parse(dt.Rows(i)("MONTO_DOLARES").ToString())
             Next
         End If
-        
+
         resb.AppendFormat("</tbody>")
         resb.AppendFormat("</table>")
         'TotalCuentasPorPagar
@@ -138,13 +143,13 @@ Public Class CCLRCCL : Implements IHttpHandler
         res = resb.ToString()
         Return res
     End Function
-    
+
     Private Function SortDataTableColumn(ByVal dt As DataTable, ByVal column As String, ByVal sort As String) As DataTable
         Dim dtv As New DataView(dt)
         dtv.Sort = column & " " & sort
         Return dtv.ToTable()
     End Function
-    
+
     Function ObtenerFecha(ByVal fecha As String) As String
         If fecha <> "" Then
             Dim dia = fecha.Split(" ")(0).Split("/")(0)
@@ -173,7 +178,7 @@ Public Class CCLRCCL : Implements IHttpHandler
         End If
         Return fecha
     End Function
-    
+
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False

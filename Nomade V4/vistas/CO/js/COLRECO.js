@@ -169,7 +169,7 @@
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddMes").val($('#cboMes').val());
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddDescMes").val($('#cboMes :selected').html());
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddCtlg").val($('#cboEmpresa').val());            
-
+            $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddDescEmpresa").val($('#cboEmpresa :selected').html());
             //$('.btnLibroPDF').attr('disabled', true);
             //$('.btnLibroTXT').attr('disabled', true);
             //$('.btnLibroXls').attr('disabled', true);
@@ -180,7 +180,7 @@
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddMes").val($('#cboMes').val());
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddDescMes").val($('#cboMes :selected').html());
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddCtlg").val($('#cboEmpresa').val());
-
+            $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddDescEmpresa").val($('#cboEmpresa :selected').html());
             //$('.btnLibroPDF').attr('disabled', true);
             //$('.btnLibroTXT').attr('disabled', true);
             //$('.btnLibroXls').attr('disabled', true);

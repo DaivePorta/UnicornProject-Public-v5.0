@@ -116,9 +116,15 @@
                             <tr>
                                 <th style="width: 20%;">FECHA
                                 </th>
-                                <th style="width: 20%;">NOMBRES
+                                <th style="width: 40%;">NOMBRES
                                 </th>
-                                <th style="width: 20%;">MARCACION
+                                <th style="width: 10%;">HORA ENTRADA
+                                </th>
+                                <th style="width: 10%;">HORA SALIDA
+                                </th>
+                                <th style="width: 10%;">MARCACIÓN ENTRADA
+                                </th>
+                                <th style="width: 10%;">MARCACIÓN SALIDA
                                 </th>
                             </tr>
                         </thead>

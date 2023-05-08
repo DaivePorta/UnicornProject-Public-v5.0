@@ -48,7 +48,7 @@
                     </div>
                     <div class="span1">
 
-                        <label>Estableci.</label>
+                        <label>Establecimiento</label>
 
                     </div>
                     <div class="span2">
@@ -88,11 +88,17 @@
                         </div>
                     </div>
 
-
                     <div class="span1">
                         <div class="control-group">
                             <div class="controls">
-                                <button type="button" class="btn blue span6 refreshData"><i class="icon-chevron-right"></i></button>
+                                <button type="button" class="btn blue span12 tooltips refreshData" data-original-title="Filtrar."><i class="icon-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span1">
+                        <div class="control-group">
+                            <div class="controls">                                
+                                <button type="button" class="btn black span12 tooltips refreshProcess" data-original-title="Reprocesar la deuda que no se muestra en pantalla de un gasto ya aprobado."><i class="icon-cogs"></i></button>
                             </div>
                         </div>
                     </div>
@@ -130,9 +136,8 @@
                     </div>
                 </div>
                 <div class="row-fluid" align="right">
-
-                    <i class="icon-stop" style="color: rgb(255, 255, 216);"></i><small>Valor original con que se registro el Monto</small>
-
+                    <%--<i class="icon-stop" style="color: rgb(255, 255, 216);"></i><small>Valor original con que se registro el Monto</small>--%>
+                    <i class="icon-stop" style="color: #FFF9B3;"></i>&nbsp;<small style="margin-right: 5px;">Valor original con el que se registró el Monto.</small>
                 </div>
             </div>
         </div>

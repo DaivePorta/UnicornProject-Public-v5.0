@@ -2142,7 +2142,7 @@ Public Class NVMDOCV : Implements IHttpHandler
                             tabla.AppendFormat("<td valign='TOP' style='text-align: left;'>{0}</td>", row("DESC_UNIDAD_CORTA").ToString())
                             tabla.AppendFormat("<td style='text-align: left;padding-right:10px;padding-left:5px;' colspan='2'><span style='word-break:break-all;'>{0}</span></td>", row("NOMBRE_IMPRESION"))
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("PU").ToString())
-                            tabla.AppendFormat("<td valign='TOP' style='text-align: right;'>{0}<br/><span style='display: inline-block;position: relative;left: 6px' >{1}</span></td>", IIf(totalSinDscto < 0, ("(" & totalSinDscto * (-1) & ")"), totalSinDscto), vDesc(row("DESCUENTO")))
+                            tabla.AppendFormat("<td valign='TOP' style='text-align: right;'>{0}<br/><span style='display: inline-block;position: relative;left: 6px' >{1}</span></td>", IIf(totalSinDscto < 0, "- " & totalSinDscto * (-1), totalSinDscto), vDesc(row("DESCUENTO")))
                             tabla.Append("</tr>")
                         Next
                     Else
@@ -2497,6 +2497,8 @@ Public Class NVMDOCV : Implements IHttpHandler
         Dim dtDetalles As New DataTable
         Dim dtDetallesBonificacion As New DataTable
         Dim dtDetallesMuestra As New DataTable
+        Dim dtDetracciones As New DataTable
+
         'Dim dtPago As New DataTable
         'Dim dtEmpresas As New DataTable
         'Dim dtParametroLogo As New DataTable
@@ -2649,7 +2651,7 @@ Public Class NVMDOCV : Implements IHttpHandler
                             tabla.AppendFormat("<td valign='TOP' style='text-align: left;'>{0}</td>", Math.Round(Decimal.Parse(row("CANTIDAD")), 2).ToString())
                             tabla.AppendFormat("<td valign='TOP' style='text-align: left;'>{0}</td>", row("DESC_UNIDAD_CORTA").ToString())
                             tabla.AppendFormat("<td style='text-align: left;padding-right:10px;padding-left:5px;' colspan='2'><span style='word-break:break-all;'>{0}</span> x {1}</td>", row("NOMBRE_IMPRESION"), IIf(Decimal.Parse(row("PU")) < 0, (Decimal.Parse(row("PU")) * (-1)), row("PU")))
-                            tabla.AppendFormat("<td valign='TOP' style='text-align: right;'>{0}<br/><span style='display: inline-block;position: relative;left: 6px' >{1}</span></td>", IIf(totalSinDscto < 0, ("(" & totalSinDscto * (-1) & ")"), totalSinDscto), vDesc(row("DESCUENTO")))
+                            tabla.AppendFormat("<td valign='TOP' style='text-align: right;'>{0}<br/><span style='display: inline-block;position: relative;left: 6px' >{1}</span></td>", IIf(totalSinDscto < 0, IIf(totalSinDscto < 0, "- " & totalSinDscto * (-1), totalSinDscto), totalSinDscto), vDesc(row("DESCUENTO")))
                             tabla.Append("</tr>")
                         Next
                     Else
@@ -2966,7 +2968,7 @@ Public Class NVMDOCV : Implements IHttpHandler
 
             If dtCabecera.Rows(0)("DETRACCION_IND") = "S" Then
                 tabla.Append("<div>&nbsp;</div>")
-                tabla.AppendFormat("<div style='text-align: left'><strong>Cuenta de detracciones: {0}</strong></div>", dtCabecera.Rows(0)("NRO_CUENTA_DETRACCION"))
+                tabla.AppendFormat("<div style='text-align: center'><strong>Cuenta de detracciones: {0}</strong></div>", dtCabecera.Rows(0)("NRO_CUENTA_DETRACCION"))
                 'tabla.Append("<div>&nbsp;</div>")
             End If
 

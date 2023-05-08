@@ -333,7 +333,7 @@ var CPLAGAS = function () {
             var pos = oTableGST.api(true).row($(this).parents("tr")[0]).index();
             var row = oTableGST.fnGetData(pos);
 
-            console.log(row);
+            //console.log(row);
 
             //console.log(row);
 
@@ -357,9 +357,9 @@ var CPLAGAS = function () {
             $("#txt_importePagar").html(formatoMiles(row.IMPORTE_PAGAR) + "&nbsp;(" + row.MONEDA + ")");
             $("#lbl_proveedor").html(row.BENEFICIARIO)
 
-            var permiso_ind = $("#hf_permiso").val();
+            //var permiso_ind = $("#hf_permiso").val();
 
-            if (permiso_ind == "" || permiso_ind == "0") {
+            if ($("#hf_permiso").val() == 0) {
                 $(".denegar").show();
                 $(".permitir").hide();
             } else {
@@ -457,13 +457,13 @@ var CPLAGAS = function () {
 
             $("#titulo_gasto").html("<i class='icon-warning-sign'></i>&nbsp RECHAZAR " + row.GASTO_DESC);
 
-            var permiso_ind = $("#hf_permiso").val();
+            //var permiso_ind = $("#hf_permiso").val();
 
             $("#txt_glosa").val('');
             $("#txt_serie_int").val('');
             $("#txt_dcto_ref_int").val('');
 
-            if (permiso_ind == "" || permiso_ind == "0") {
+            if ($("#hf_permiso").val() == 0) {
                 $(".denegar").show();
                 $(".permitir").hide();
             } else {
@@ -1131,6 +1131,11 @@ var CPLAGAS = function () {
                     }
                 }, {
                     data: "DES_CUENTA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'left')
+                    }
+                }, {
+                    data: "DES_OPERACION",
                     createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr('align', 'left')
                     }
@@ -2217,7 +2222,7 @@ var CPMAGAS = function () {
                 objAux = jQuery.parseJSON(JSON.stringify(objProd));
                 detallesGasto.push(objAux);
 
-                console.log(detallesGasto);
+                //console.log(detallesGasto);
 
                 oTableGasto.fnClearTable();
                 oTableGasto.fnAddData(detallesGasto);
@@ -2575,7 +2580,7 @@ var CPMAGAS = function () {
                             setTimeout(function () {                                
                                 fillCboDcto_Emite();
                                 $("#cbo_documento").val(TIPO_DCTO).change();
-                            }, 1000);
+                            }, 500);
                             
                         }
                     }
@@ -2831,7 +2836,7 @@ var CPMAGAS = function () {
                         detallesGasto.push(objAux);
                     }
 
-                    console.log(detallesGasto);
+                    //console.log(detallesGasto);
 
                     //console.log(detallesGasto);
                     oTableGasto.fnClearTable();
@@ -3797,17 +3802,17 @@ var Aprobar1 = function () {
 
     data.append("p_PIDM", obj_actual.PIDM_BENEF);
     var p_TIPO_BIEN = "";
-    var p_OPERACION = "";
+    //var p_OPERACION = "";
     if ($("#chk_compras").is(':checked')) {
         p_TIPO_BIEN = $("#cboTipoBien").val();
-        p_OPERACION = $("#cbx_destino").val();
+        //p_OPERACION = $("#cbx_destino").val();
     } else {
         p_TIPO_BIEN = "0001";
-        p_OPERACION = "DSTGRA";
+        //p_OPERACION = "DSTGRA";
     }
     data.append("p_HABIDO_IND", HABIDO_IND);
     data.append("p_TIPO_BIEN", p_TIPO_BIEN);
-    data.append("p_OPERACION", p_OPERACION);
+    //data.append("p_OPERACION", p_OPERACION);
 
     //VerificaExiste(obj_actual.PIDM_BENEF, p_DCTO_CODE, p_SERIE, p_NRO_DCTO_REF);
     arr = ["txt_centro_costo"];
@@ -3885,7 +3890,7 @@ var Aprobar1 = function () {
 
                             CrearPagoDiverso1(); 
                             //Para generar el asiento contable de manera automática.
-                            console.log(obj_actual);
+                            //console.log(obj_actual);
                             if (prmtACON == "SI") {
                                 btnGenerarAsiento(obj_actual.CODIGO);
                             }
@@ -4092,7 +4097,7 @@ let VerificaFechaPeriodo = function () {
 var CrearPagoDiverso1 = function () {
 
 
-    console.log(obj_actual);
+    //console.log(obj_actual);
     var data = new FormData();
 
     data.append("OPCION", "4");

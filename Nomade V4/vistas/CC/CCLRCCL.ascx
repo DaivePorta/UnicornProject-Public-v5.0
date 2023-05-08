@@ -38,6 +38,19 @@
                 </div>
 
                 <div class="row-fluid">
+                    <div class="span1">
+                        <label>Establecimiento</label>
+                    </div>
+                    <div class="span5">
+                        <div class="control-group">
+                            <div class="controls">
+                                <select id="slcEstablec" class="span12 estable" data-placeholder="TODOS LOS ESTABLECIMIENTOS" multiple="multiple"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
 
                     <div class="span1">
                         <div class="control-group">

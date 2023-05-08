@@ -474,7 +474,7 @@ var NCLTCAM = function () {
                 oTable.fnClearTable();
                 if (datos.length > 0) {
                     oTable.fnAddData(datos);
-                    //oTable.fnSort([[0, 'desc']]);
+                    oTable.fnSort([[0, 'desc']]);
                 } else {
                     infoCustom2("No se encontraron datos!");
                 }

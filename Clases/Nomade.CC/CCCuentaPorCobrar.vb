@@ -71,14 +71,15 @@
             Throw (ex)
         End Try
     End Function
-    Public Function ListarCuentasPorCobrarPorCliente(ByVal p_CTLG_CODE As String, ByVal p_CLIE_PIDM As String, ByVal p_DESDE As String,
-                                                     ByVal p_HASTA As String, ByVal p_PAGADO_IND As String) As DataTable
+    Public Function ListarCuentasPorCobrarPorCliente(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_CLIE_PIDM As String,
+                                                     ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_PAGADO_IND As String) As DataTable
         Try
             Dim dt As DataTable
             Dim cmd As IDbCommand
 
             cmd = cn.GetNewCommand("PFA_LISTAR_CUENTAS_COBRAR_POR_CLIENTE", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CLIE_PIDM", p_CLIE_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))

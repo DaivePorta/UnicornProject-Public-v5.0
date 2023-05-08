@@ -443,7 +443,7 @@ var NSMAPHO = function () {
 
                 Get_Marcaciones();
 
-            }, 1000);
+            }, 500);
 
 
         });

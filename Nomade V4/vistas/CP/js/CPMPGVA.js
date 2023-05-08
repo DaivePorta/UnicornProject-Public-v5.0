@@ -609,6 +609,21 @@ var CPMPGVA = function () {
                 consultaDeudas();
                 //consultaNotaCredito();
             } else {
+                infoCustom2("No se ha seleccionado un cliente o proveedor!");
+                $($("#cboProveedores").siblings("div")[0]).pulsate({
+                    color: "#33AECD",
+                    reach: 20,
+                    repeat: 3,
+                    glow: true
+                });
+            }
+        });
+
+        $("#btnReprocesar").click(function () {
+            if (!isEmpty($("#cboProveedores").val()) && !isEmpty($("#slcEmpresa").val())) {
+                ReprocesarDeudasGastosAprobados();
+            } else {
+                infoCustom2("Seleccione un cliente o proveedor para reprocesar!");
                 $($("#cboProveedores").siblings("div")[0]).pulsate({
                     color: "#33AECD",
                     reach: 20,
@@ -1642,7 +1657,7 @@ function cargarParametrosSistema() {
         url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
         contenttype: "application/json;",
         datatype: "json",
-        async: true,
+        async: false,
         success: function (datos) {
             if (datos != null) {
                 prmtACON = datos[0].VALOR;
@@ -1739,7 +1754,7 @@ function consultaDeudas() {
         });
     } else {
         llenarTablaDeudas(null);
-        infoCustom2("No se ha seleccionado un proveedor!");
+        infoCustom2("No se ha seleccionado un cliente o proveedor!");
         $("#s2id_cboProveedores").pulsate({
             color: "#33AECD",
             reach: 20,
@@ -1750,6 +1765,23 @@ function consultaDeudas() {
     json_selec = new Array();
     $(".monto_sele").attr("monto", "0");
     $(".monto_sele").val("").change();
+}
+
+function ReprocesarDeudasGastosAprobados() {
+
+    $.ajax({
+        type: "post",
+        url: "vistas/CP/ajax/CPMPGDI.ASHX",
+        data: { flag: 4.2 },
+        success: function (res) {
+            if (res == "OK") {
+                consultaDeudas();
+            }
+        },
+        error: function (msg) {
+            alert(msg);
+        }
+    });
 }
 
 function cargatablavacia() {

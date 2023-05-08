@@ -1,7 +1,8 @@
 ﻿obj = null;
 errorSaldoInsuf = false;
 indCargaInicial = false;
-
+jsonPersonas = null;
+var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
 var CPLPGDI = function () {
     var cargarCombos = function () {
         $("#cboEmpresa, #cboAfp").select2();
@@ -329,7 +330,7 @@ var CPMPGDI = function () {
                     data: "MONTO_MONE_BASE", createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr('align', 'right').html(formatoMiles(cellData));
                         if (rowData.ES_MONEDA_BASE == "S") {
-                            $(td).css("background-color", "rgb(255, 255, 216)");
+                            $(td).css("background-color", "#FFF9B3");
                         }
                     }
                 },
@@ -338,7 +339,7 @@ var CPMPGDI = function () {
                         $(td).attr('align', 'right').html(formatoMiles(cellData));
 
                         if (rowData.ES_MONEDA_BASE != "S") {
-                            $(td).css("background-color", "rgb(255, 255, 216)");
+                            $(td).css("background-color", "#FFF9B3");
                         }
                     }
                 },
@@ -448,14 +449,13 @@ var CPMPGDI = function () {
 
         $('#tblBandeja').removeAttr('style').attr("style", "border-collapse: collapse;");
 
-        $($("#tblBandeja_wrapper div.span6")[0]).html(`<button type="button" class="btn green refreshData">
-                                                            <i class="icon-refresh"></i></button>
-                                                       <button class="btn green" id="btnLibroXls" type="button" style="padding: 2px 10px; margin-left:10px;">
+        $($("#tblBandeja_wrapper div.span6")[0]).html(`<button class="btn green" id="btnLibroXls" type="button" style="padding: 2px 10px; margin-left:1px;">
                                                             <i class="fa fa-file-excel-o"></i>&nbsp;Exportar a Excel</button>`);
 
         $("#tblBandeja_info").css("display", "none");
 
         $(".refreshData").click(function () { consultaDeudas(); });
+        $(".refreshProcess").click(function () { ReprocesarDeudasGastosAprobados(); });
         $("#btnLibroXls").on("click", function () {
             exportTable2Excel("tblBandeja", "PAGOS DIVERSOS " + $("#slcSucural :selected").text() + " al " + new Date().format("dd.MM.yyyy"));
         });
@@ -517,8 +517,6 @@ var CPMPGDI = function () {
             $(this).val(formatoMiles($(this).val()))
                 .attr("monto", $(this).val());
         });
-
-
 
         function cargarJson() {
             $.ajax({
@@ -975,10 +973,7 @@ var CPMPGDI = function () {
 
     function cargarInputsPersona() {
 
-
         var arrayPersonas = new Array();
-
-
 
         function cargaAutoCompleteInputs() {
 
@@ -1008,11 +1003,7 @@ var CPMPGDI = function () {
                 });
                 if (actual.val() == "") { actual.removeAttr("valor"); }
             });
-
-
         }
-
-
         cargaAutoCompleteInputs();
     }
 
@@ -1048,13 +1039,12 @@ var CPMPGDI = function () {
                 emp_ant = $(this).val();
             } else { emp_ant = ""; }
         });
-
-
     }
 
 
     return {
         init: function () {
+            cargarParametrosSistema();
             cargarCombos();
             ListarSucursales($('#slcEmpresa').val());
             eventos();
@@ -1081,9 +1071,30 @@ $("#btnGrabar").click(function () {
 
 });
 
+function cargarParametrosSistema() {
+    //QUE SE GENERE O NO EL ASIENTO CONTABLE
+    $.ajax({
+        type: "post",
+        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: false,
+        success: function (datos) {
+            if (datos != null) {
+                prmtACON = datos[0].VALOR;
+            }
+            else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
+        },
+        error: function (msg) {
+            alertCustom("No se recuperó correctamente el parámetro ACON!");
+        }
+    });
+}
+
 var persona_selec_nombre = [];
 objData = null;
 function CrearPago(data) {
+    //cargarJson();
 
     objData = data;
     $("#PgDvDesc").html(CapFirsLetter(data.DESCRIPCION))
@@ -1230,7 +1241,8 @@ function pagar() {
                 monto_total: p_moneda == 0002 ? objData.MONTO_MONE_BASE : objData.MONTO_MONE_ALTER,
                 tipo_cambio: $("#txtTC").val(),
                 estable: $("#slcSucural").val(),
-                codModulo: codModulo
+                codModulo: codModulo,
+                asiento_contable: prmtACON
             },
             contenttype: "application/json;",
             datatype: "json",
@@ -1294,7 +1306,6 @@ function CapFirsLetter(frase) {
 
 function cargaMediosDePago() {
 
-
     $.ajaxSetup({ async: false });
     $.post("vistas/CP/ajax/CPMPGDI.ASHX", { flag: 2 },
       function (res) {
@@ -1307,12 +1318,25 @@ function cargaMediosDePago() {
 
       });
     $.ajaxSetup({ async: true });
-
-
-
 }
 
+//function cargarJson() {
+//    $.ajax({
+//        type: "post",
+//        url: "vistas/GL/ajax/GLMLETR.ashx?flag=L-2",
+//        contenttype: "application/json;",
+//        datatype: "json",
+//        async: false,
 
+//        success: function (datos) {
+//            if (datos != null && datos != "") {
+
+//                jsonPersonas = $.parseJSON(datos);
+
+//            }
+//        }
+//    });
+//}
 
 function limpiaCampos() {
     $("#cbDestino").html("<option></option>");
@@ -1344,6 +1368,24 @@ function consultaDeudas() {
         },
         complete: function () {
             Desbloquear($($("#tblBandeja").parents("div")[0]));
+        }
+    });
+
+}
+
+function ReprocesarDeudasGastosAprobados() {
+
+    $.ajax({
+        type: "post",
+        url: "vistas/CP/ajax/CPMPGDI.ASHX",
+        data: { flag: 4.2 },
+        success: function (res) {
+            if (res == "OK") {
+                consultaDeudas();
+            }
+        },
+        error: function (msg) {
+            alert(msg);
         }
     });
 

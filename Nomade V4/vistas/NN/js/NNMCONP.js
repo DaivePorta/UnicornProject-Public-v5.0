@@ -908,11 +908,12 @@ var GrabarModalSubGrupo = function () {
     p_DEPEND_CODE = $.trim($('#hfCOD_GRUPO').val());
     p_CODE_PLAME = $.trim($('#txtcod_plame').val());
     p_ABREVIATRUA = $("#txtAbreviaturaSubGrupo").val();
-    p_IND_ING_EGR = $.trim($("#hfIND_ING_GRUPO").val());
+    //p_IND_ING_EGR = $.trim($("#hfIND_ING_GRUPO").val());
+    p_IND_ING_EGR = $("#chktipo_ingreso_subgrupo").is(':checked') ? 'I' : 'E';
 
-
-    if ($("#rbAdicional").is(':checked')) { p_IND_NO_ADICIONAL = 'SI' }
-    if ($("#rbnoadicional").is(':checked')) { p_IND_NO_ADICIONAL = 'NO' }
+    //if ($("#rbAdicional").is(':checked')) { p_IND_NO_ADICIONAL = 'SI' }
+    //if ($("#rbnoadicional").is(':checked')) { p_IND_NO_ADICIONAL = 'NO' }
+    p_IND_NO_ADICIONAL = $("#chktipo_fijo").is(':checked') ? 'NO' : 'SI';
 
     var data = new FormData();
 

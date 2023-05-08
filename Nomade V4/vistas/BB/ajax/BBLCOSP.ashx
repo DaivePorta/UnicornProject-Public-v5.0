@@ -100,7 +100,7 @@ Public Class BBLCOSP : Implements IHttpHandler
                     res = CrearComisionSistemaPension(p_FCOSIPE_USUA_ID, Plame, p_FCOSIPE_COLUMNA, p_FCOSIPE_DATO, p_FCOSIPE_FTVREPE_CODE, p_SALIDA, p_FCOSIPE_CTLG_CODE, p_FCOPERI_COD, padres_codgigo)
                 Case "M"
                     res = ActualizarComisionSistemaPension(p_FCOSIPE_CODE, p_FCOSIPE_COLUMNA, p_FCOSIPE_DATO, p_FCOSIPE_USUA_ID, p_FCOSIPE_FTVREPE_CODE, p_SALIDA)
-                Case "M"
+                'Case "M"
 
                 Case "CBO"
                     res = ListarComboNuevo(IFiLajs, p_FCOSIPE_FTVREPE_CODE, p_FCOPERI_COD, p_FCOSIPE_CTLG_CODE, idCod)

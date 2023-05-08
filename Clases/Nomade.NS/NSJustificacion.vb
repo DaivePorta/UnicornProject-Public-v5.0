@@ -30,8 +30,8 @@
             cmd = cn.GetNewCommand("PRH_INSERTAR_FAL_TAR", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE_HORA", p_DESDE_HORA, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_DIA_FIN", IIf(p_DIA_FIN = Nothing, Nothing, Convert.ToDateTime(p_DIA_FIN).ToString("yyyy/MM/dd")), ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_DIA_INICIO", IIf(p_DIA_INICIO = Nothing, Nothing, Convert.ToDateTime(p_DIA_INICIO).ToString("yyyy/MM/dd")), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DIA_FIN", IIf(p_DIA_FIN = Nothing, Nothing, p_DIA_FIN), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DIA_INICIO", IIf(p_DIA_INICIO = Nothing, Nothing, p_DIA_INICIO), ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_EST_IND", p_EST_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA_HORA", p_HASTA_HORA, ParameterDirection.Input, 253))
@@ -70,8 +70,8 @@
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE_HORA", p_DESDE_HORA, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_DIA_FIN", IIf(p_DIA_FIN = Nothing, Nothing, Convert.ToDateTime(p_DIA_FIN).ToString("yyyy/MM/dd")), ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_DIA_INICIO", IIf(p_DIA_INICIO = Nothing, Nothing, Convert.ToDateTime(p_DIA_INICIO).ToString("yyyy/MM/dd")), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DIA_FIN", IIf(p_DIA_FIN = Nothing, Nothing, p_DIA_FIN), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DIA_INICIO", IIf(p_DIA_INICIO = Nothing, Nothing, p_DIA_INICIO), ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_EST_IND", p_EST_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA_HORA", p_HASTA_HORA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_MIN_REFRIGERIO", p_MIN_REFRIGERIO, ParameterDirection.Input, 253))
@@ -215,9 +215,8 @@
 
             cmd = cn.GetNewCommand("PCS_DEVULVE_CANTIDAD_DIAS_FERIADOS", CommandType.StoredProcedure)
 
-
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_INI", Convert.ToDateTime(p_FECHA_INI).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_FIN", Convert.ToDateTime(p_FECHA_FIN).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_INI", p_FECHA_INI, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_FIN", p_FECHA_FIN, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_FER", p_TIPO_FER, ParameterDirection.Input, 253))

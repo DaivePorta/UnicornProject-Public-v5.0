@@ -134,39 +134,28 @@ var NBLMOCB = function () {
 
                 $.ajaxSetup({ async: true });
 
-                if (_CERRADO_IND == "SI") {
-                    $('#tblBandeja').removeClass("DTTT_selectable");
-                    $('#tblBandeja tbody').off('click', 'tr');
-                } else {
-                    $('#tblBandeja').addClass("DTTT_selectable");
+                //if (_CERRADO_IND == "SI") {
+                //    $('#tblBandeja').removeClass("DTTT_selectable");
+                //    $('#tblBandeja tbody').off('click', 'tr');
+                //} else {
+                $('#tblBandeja').addClass("DTTT_selectable");
+                $('#tblBandeja tbody').on('click', 'tr', function () {
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                    }
+                    else {
+                        oTable.$('tr.selected').removeClass('selected');
+                        $(this).addClass('selected');
 
+                        var pos = oTable.fnGetPosition(this);
+                        var row = oTable.fnGetData(pos);
 
-
-                    $('#tblBandeja tbody').on('click', 'tr', function () {
-
-                        if ($(this).hasClass('selected')) {
-                            $(this).removeClass('selected');
-                        }
-                        else {
-                            oTable.$('tr.selected').removeClass('selected');
-                            $(this).addClass('selected');
-
-                            var pos = oTable.fnGetPosition(this);
-                            var row = oTable.fnGetData(pos);
-
-                            var codigo = row.CODIGO
-
-                            window.location.href = '?f=NBMMOCB&codigo=' + codigo;
-                        }
-
-
-                    });
-
-                }
+                        var codigo = row.CODIGO
+                        window.location.href = '?f=NBMMOCB&codigo=' + codigo;
+                    }
+                });
             }
-
         });
-
     }
 
     var plugins = function () {
@@ -466,8 +455,8 @@ var NBMMOCB = function () {
             checkOperacionValue();
             $("#slcOperacion").prop("disabled", false);
         });
-
-        $("#slcOperacion").on("change", function () {
+         
+        $("#slcOperacion, #slcCta").on("change", function () {
             checkOperacionValue();
         });
 
@@ -582,7 +571,6 @@ var NBMMOCB = function () {
                     $("#txtDescripcion").val(datos[0].DESCRIPCION);
                     $("#txtCanal").val(datos[0].CANAL);
                     $("#txtFeOp").val(datos[0].FECHA_OPERACION);
-
                     
 
                     if (datos[0].TIPO == "E") {
@@ -614,7 +602,8 @@ var NBMMOCB = function () {
                         $("#slcPersona").val(selectedClient.RAZON_SOCIAL);
                     }
 
-                    $("#slcPersona").prop("disabled", false);
+                    $("#slcPersona").prop("disabled", $("#slcOperacion").val() === '2');
+
 
                     if (datos[0].TIPO_REG != "M" && datos[0].TIPO_REG != "C") {
                         $(".bl").attr("disabled", true);
@@ -661,8 +650,17 @@ var NBMMOCB = function () {
 
 function checkOperacionValue() {
     if ($("#slcOperacion").val() === '2') {
+        //$("#slcPersona").prop("placeholder", "");
+        var pidm = $("#slcCta :selected").attr("pidm_banco");
+        var selectedClient = persona.find(function (client) {
+            return client.PIDM == pidm;
+        });
+
+        if (selectedClient) {
+            $("#slcPersona").val(selectedClient.RAZON_SOCIAL)
+            $("#hfPIDM").val(selectedClient.PIDM);
+        }
         $("#slcPersona").html('').prop("disabled", true);
-        $("#slcPersona").prop("placeholder", "");
     } else {
         $("#slcPersona").prop("disabled", false);
         $("#slcPersona").prop("placeholder", "CLIENTES VARIOS .");
@@ -766,57 +764,44 @@ $("#chkChqPag").click(function () {
 });
 
 function fillPersona(v_ID, v_value) {
-
     var selectRazonSocial = $(v_ID);
-    //Proveedores
     $.ajax({
         type: "post",
-        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2&p_CTLG_CODE=" + $("#slcEmpr").val(),
-        contenttype: "application/json;",
-        datatype: "json",
+        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.6&p_CTLG_CODE=" + $("#slcEmpr").val(),
+        contentType: "application/json;",
+        dataType: "json",
         async: false,
         success: function (datos) {
             if (datos != null) {
                 persona = datos;
+
+                var map = {};
+
                 selectRazonSocial.typeahead({
                     source: function (query, process) {
-                        arrayRazonSocial = [];
-                        map = {};
-                        var obj = "[";
-                        for (var i = 0; i < datos.length; i++) {
-                            arrayRazonSocial.push(datos[i].RAZON_SOCIAL);
-                            obj += '{';
-                            obj += '"DNI":"' + datos[i].DNI + '","RUC":"' + datos[i].RUC + '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL + '","PIDM":"' + datos[i].PIDM + '"';
-                            obj += '},';
-                        }
-                        obj += "{}";
-                        obj = obj.replace(",{}", "");
-                        obj += "]";
-                        var json = $.parseJSON(obj);
-                        $.each(json, function (i, objeto) {
+                        var arrayRazonSocial = [];
+
+                        datos.forEach(function (objeto) {
+                            arrayRazonSocial.push(objeto.RAZON_SOCIAL);
                             map[objeto.RAZON_SOCIAL] = objeto;
                         });
+
                         process(arrayRazonSocial);
                     },
-
                     updater: function (item) {
-                        $("#hfPIDM").val("");
-                        $("#hfPIDM").val(map[item].PIDM);
-                        $("#slcPersona").val(map[item].RAZON_SOCIAL);
-
+                        if (item) {
+                            $("#hfPIDM").val(map[item].PIDM);
+                            $("#slcPersona").val(map[item].RAZON_SOCIAL);
+                        } else {
+                            $("#hfPIDM").val("1");
+                        }
                         return item;
                     },
-
                 });
-                selectRazonSocial.keyup(function () {
-                    if ($(this).val().length === 0) {
-                        $("#hfPIDM").val("1");
-                    }
-                });
-
             } else {
                 persona = [];
             }
+
             if (datos != null && $.trim(v_value).length > 0) {
                 selectRazonSocial.val(v_value);
             }
@@ -825,7 +810,8 @@ function fillPersona(v_ID, v_value) {
             alert(msg);
         }
     });
- }
+}
+
 
 function cargarJsonEmpleado(empresa) {
     $.ajax({

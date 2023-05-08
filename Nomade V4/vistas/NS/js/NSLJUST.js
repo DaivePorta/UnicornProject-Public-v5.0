@@ -20,14 +20,13 @@ var NSLJUST = function () {
             if (emp_ant != $(this).val()) {
                 $("#input_empl").parent().attr("class", "control-group")
                 Bloquear("ventana");
-                setTimeout(function () {
+                //setTimeout(function () {
                     ListarSucursales($('#slcEmpresa').val());
-                }, 1000);
+                //}, 100);
 
                 emp_ant = $(this).val();
             } else { emp_ant = ""; }
         });
-
     
         var est_ant = ""
         $('#cbo_tip_just').on('change', function () {
@@ -44,22 +43,15 @@ var NSLJUST = function () {
             } else { est_ant = ""; }
         });
 
-
-
-
-
-
         $('#btn_imprime').on('click', function () {
             imprimirDiv("tblJustigicacion")
         });
-
-
         
         $('#btn_listar').on('click', function () {
            Bloquear("ventana")
-            setTimeout(function () {
+            //setTimeout(function () {
                 Listar();
-            }, 1000);
+            //}, 100);
 
 
         });
@@ -122,7 +114,7 @@ var NSLJUST = function () {
                                     Bloquear("ventana")
                                     setTimeout(function () {
                                         Listar();
-                                    }, 1000);
+                                    }, 300);
 
                                    
                                     $('#check_todos').parent().removeClass('checked');
@@ -143,7 +135,7 @@ var NSLJUST = function () {
                            })
 
 
-                }, 1000);
+                }, 200);
             }
            
 
@@ -382,6 +374,12 @@ var NSLJUST = function () {
                         $(td).attr('align', 'center')
                     }
                 },
+                {
+                    data: "NOMBRE_USUARIO",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center')
+                    }
+                },
                  {
                      //data: null,
                      //defaultContent: '<input type="checkbox" class="check_"  style="height:25px!important;width:25px!important;"/>',
@@ -589,36 +587,11 @@ var NSLJUST = function () {
             fillCboEmpresa();
             ListarSucursales($("#slcEmpresa").val());
           
-            Listar();
+            //Listar();
         
           
         }
     };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
 }();
 
 
@@ -748,15 +721,16 @@ var NSMJUST = function () {
                         $(td).attr('align', 'center')
 
                     }
-                },
-                {
-                    data: "SEQ",
-                    createdCell: function (td, cellData, rowData, row, col) {
-
-                        $(td).attr('style', 'display:none')
-
-                    }
                 }
+                //{
+                //    data: "SEQ",
+                //    createdCell: function (td, cellData, rowData, row, col) {
+
+                //        $(td).attr('style', 'display:none')
+
+                //    },
+                //    visible: false
+                //}
 
 
             ]
@@ -780,12 +754,12 @@ var NSMJUST = function () {
             "info": false,
             ordering: false,
             columns: [
-                {
-                    data: "MARCACION",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('align', 'center')
-                    }
-                }
+                //{
+                //    data: "MARCACION",
+                //    createdCell: function (td, cellData, rowData, row, col) {
+                //        $(td).attr('align', 'center')
+                //    }
+                //}
                 //,
                 //{
                 //    data: "PIDM",
@@ -795,7 +769,22 @@ var NSMJUST = function () {
 
                 //    }
                 //}
+                {
+                    data: "MARCACION_ENTRADA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+                        $(td).css('text-align', 'center');
+                    }
 
+                },
+                {
+                    data: "MARCACION_SALIDA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+                        $(td).css('text-align', 'center');
+                    }
+
+                }
 
             ]
 
@@ -814,9 +803,9 @@ var NSMJUST = function () {
             if (emp_ant != $(this).val()) {
                 $("#input_empl").parent().attr("class", "control-group")
                 Bloquear("ventana");
-                setTimeout(function () {
+                //setTimeout(function () {
                     ListarSucursales($('#slcEmpresa').val());
-                }, 1000);
+                //}, 100);
 
                 emp_ant = $(this).val();
             } else { emp_ant = ""; }
@@ -848,7 +837,7 @@ var NSMJUST = function () {
                     }
                     filltxtEmpleado('#txt_empleado', '', estado);
 
-                }, 1000);
+                }, 200);
 
 
 
@@ -923,9 +912,10 @@ var NSMJUST = function () {
             }
         });
 
+
         $("#txt_fec_inicio").datepicker().on("changeDate", function (e) {
-            Bloquear("ventana");
-            var fecha = $("#txt_fec_inicio").val();
+            //Bloquear("ventana");
+            //var fecha = $("#txt_fec_inicio").val();
             setTimeout(function () {
 
                 if ($("#txt_fec_inicio").val() != "" && $("#txt_fec_inicio").val().length == 10) {
@@ -953,14 +943,17 @@ var NSMJUST = function () {
                             $("#txt_hora_fin").attr("disabled", false);
                             $("#div_horario").attr("style", "display:block")
                             $("#div_marcacion").attr("style", "display:block")
-                            Get_Horarios($("#txt_fec_inicio").val(), $("#hfpidm").val());
+                            Get_Horarios($("#txt_fec_inicio").val(), $("#hfpidm").val(), $('#slcEmpresa').val());
                             // Lista_Marcaciones($("#hfpidm").val(), "A", $(this).val(), $(this).val(), $('#slcEmpresa').val(), $('#slcSucural').val())
+                            if (typeof oTable_marcaciones != "undefined") {
+                                oTable_marcaciones.fnClearTable();
+                            }
                         }
                     }
                     else {
                         $($("#txt_empleado").parent().parent()).attr("class", "control-group")
                         $("#msg").attr("style", "display:none");
-                        Desbloquear("ventana")
+                        //Desbloquear("ventana")
 
                     }
                     /*************HORAS******************/
@@ -972,14 +965,10 @@ var NSMJUST = function () {
                     $("#txt_hora_fin").attr("disabled", true);
                    $("#txt_hora_inicio").val("");
                     $("#txt_hora_fin").val("");
-                    Desbloquear("ventana")
+                    //Desbloquear("ventana")
                 }
 
-
-            }, 300);
-
-
-         
+            }, 200);         
 
         });
 
@@ -1005,11 +994,11 @@ var NSMJUST = function () {
         $('#brn_get_Marcaciones').on('click', function () {
 
             Bloquear("ventana")
-            setTimeout(function () {
+            //setTimeout(function () {
 
                 Crear_Marcaciones();
 
-            }, 1000);
+            //}, 100);
        
 
         });
@@ -1086,10 +1075,10 @@ var NSMJUST = function () {
         });
     }
 
-    var Get_Horarios = function (fecha, pidm) {
+    var Get_Horarios = function (fecha, pidm, ctlg_code) {
         $.ajax({
             type: "post",
-            url: "vistas/nn/ajax/nnmreho.ashx?OPCION=2&FECHA=" + fecha + "&PIDM=" + pidm,
+            url: "vistas/nn/ajax/nnmreho.ashx?OPCION=2&FECHA=" + fecha + "&PIDM=" + pidm + "&CTLG_CODE=" + ctlg_code,
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -1160,14 +1149,12 @@ var NSMJUST = function () {
                                     $("#div_horario").attr("style", "display:block")
                                     $("#div_marcacion").attr("style", "display:block")
                                     Bloquear("ventana")
-                                    setTimeout(function () {
+                                    //setTimeout(function () {
 
-                                        Get_Horarios($("#txt_fec_inicio").val(), $("#hfpidm").val());
-
-
-                                    }, 1000);
+                                        Get_Horarios($("#txt_fec_inicio").val(), $("#hfpidm").val(), $('#slcEmpresa').val());
 
 
+                                    //}, 100);
                                   
                                    // Lista_Marcaciones($("#hfpidm").val(), "A", $("#txt_fec_inicio").val(), $("#txt_fec_inicio").val(), $('#slcEmpresa').val(), $('#slcSucural').val())
                                     }
@@ -1330,16 +1317,17 @@ var NSMJUST = function () {
                         $("#rb_dias").click().click()
                         $("#rb_horas").attr("disabled", true);
 
-                        $("#txt_fec_inicio").datepicker("setDate", datos[0].RHFATAR_DIA_INICIO)
-                        $("#txt_fec_fin").datepicker("setDate", datos[0].RHFATAR_DIA_FIN)
-
+                        //$("#txt_fec_inicio").datepicker("setDate", datos[0].RHFATAR_DIA_INICIO)
+                        //$("#txt_fec_fin").datepicker("setDate", datos[0].RHFATAR_DIA_FIN)
+                        $("#txt_fec_inicio").val(datos[0].RHFATAR_DIA_INICIO);
+                        $("#txt_fec_fin").val(datos[0].RHFATAR_DIA_FIN);
                     }
 
                     if (datos[0].RHFATAR_TIPO_FALTA == "2") {
                         $("#rb_horas").click().click()
                         $("#rb_dias").attr("disabled", true);
-                        $("#txt_fec_inicio").datepicker("setDate", datos[0].RHFATAR_DIA_INICIO)
-
+                        //$("#txt_fec_inicio").datepicker("setDate", datos[0].RHFATAR_DIA_INICIO)
+                        $("#txt_fec_inicio").val(datos[0].RHFATAR_DIA_INICIO);
                     }
                  
 
@@ -2128,6 +2116,7 @@ function ModificarJustificacion() {
         var oFecha = $("#txt_fec_inicio").val();
         var v_Errors = true;
         var v_message = '';
+        var vPidm = $("#hfpidm").val();
 
         if ($('#txt_fec_inicio').val().length != 10) {
             $('#txt_fec_inicio').val('');
@@ -2139,80 +2128,123 @@ function ModificarJustificacion() {
         }
 
         if (v_Errors) {
-            $.ajax({
-                type: "post",
-                url: "vistas/nn/ajax/nnmrefe.ashx?OPCION=2&p_FECHA=" + oFecha,
-                contenttype: "application/json;",
-                datatype: "json",
-                async: false,
-                success: function (datos) {
-                    if (datos == "OK") {
+            //$.ajax({
+            //    type: "post",
+            //    url: "vistas/nn/ajax/nnmrefe.ashx?OPCION=2&p_FECHA=" + oFecha,
+            //    contenttype: "application/json;",
+            //    datatype: "json",
+            //    async: false,
+            //    success: function (datos) {
+            //        if (datos == "OK") {
 
-                        //LSITA MARCACIONES
-                        Get_Marcacion_Real_Biometrico($("#hfpidm").val(), oFecha);
+            //            //LSITA MARCACIONES
+            //            Get_Marcacion_Real_Biometrico($("#hfpidm").val(), oFecha);
 
-                    }
-                    if (datos != "E" && datos != "OK") {
+            //        }
+            //        if (datos != "E" && datos != "OK") {
 
-                        alertCustom(datos);
+            //            alertCustom(datos);
 
-                    }
-                    if (datos == "E") {
+            //        }
+            //        if (datos == "E") {
 
 
-                        alertCustom("Error crear marcaciones");
+            //            alertCustom("Error crear marcaciones");
                       
-                    }
+            //        }
 
-                    if (datos == "") {
+            //        if (datos == "") {
 
 
-                        alertCustom("Error crear marcaciones");
+            //            alertCustom("Error crear marcaciones");
                        
-                    }
-                    Desbloquear("ventana");
+            //        }
+            //        Desbloquear("ventana");
 
-                },
-                error: function (msg) {
-                    alertCustom("Error crear marcaciones");
-                    Desbloquear("ventana");
-                }
+            //    },
+            //    error: function (msg) {
+            //        alertCustom("Error crear marcaciones");
+            //        Desbloquear("ventana");
+            //    }
 
-            });
-        }
-     
-
+            //});
+            Get_Marcacion_Real_Biometrico(vPidm, oFecha);
+        }    
     }
 
 
-    var Get_Marcacion_Real_Biometrico = function (pidm, fecha) {
-        $.ajax({
-            type: "post",
-            url: "vistas/nn/ajax/nnmreho.ashx?OPCION=4&PIDM=" + pidm + "&FECHA=" + fecha,
-            contenttype: "application/json;",
-            datatype: "json",
-            async: false,
-            success: function (datos) {
-                if (datos != "" && datos != null) {
+var Get_Marcacion_Real_Biometrico = function (pidm, fecha) {
+    if (typeof oTable_marcaciones != "undefined") {
+        oTable_marcaciones.fnClearTable();
+    }
 
-                    oTable_marcaciones.fnClearTable();
-                    oTable_marcaciones.fnAddData(datos);
 
+    $.ajax({
+        type: "post",
+        url: "vistas/nn/ajax/nnmreho.ashx?OPCION=4&PIDM=" + pidm + "&FECHA=" + fecha,
+        contenttype: "application/json;",
+        datatype: "json",
+        async: false,
+        success: function (datos) {
+            if (datos != null) {
+
+                $('#tbl_marcaciones .odd').remove()
+
+                var json = datos;
+                var parms = {
+                    data: json,
+                    paging: false,
+                    searching: false,
+                    info: false,
+                    columns: [
+
+                        {
+                            data: "MARCACION_ENTRADA",
+                            createdCell: function (td, cellData, rowData, row, col) {
+                                $(td).attr('align', 'center');
+                                $(td).css('text-align', 'center');
+                            }
+
+                        },
+                        {
+                            data: "MARCACION_SALIDA",
+                            createdCell: function (td, cellData, rowData, row, col) {
+                                $(td).attr('align', 'center');
+                                $(td).css('text-align', 'center');
+                            }
+
+                        }
+
+                    ]
 
                 }
-                else {
 
-                    oTable_marcaciones.fnClearTable();
-
-                }
+                $('#tbl_marcaciones').dataTable().fnDestroy();
+                oTable_marcaciones = iniciaTabla("tbl_marcaciones", parms);
+                $('#tbl_marcaciones_wrapper').children().first().html('');
                 Desbloquear("ventana");
 
-            },
-            error: function (msg) {
-                alert(msg);
+            }
+            else {
+
+
+                //$('#tbl_marcaciones .odd').remove()
+                //oTable_marcaciones = $('#tbl_marcaciones').dataTable();
+                $('#tbl_marcaciones_filter').remove()
+                $('#tbl_marcaciones_length').remove()
+                $('#tbl_marcaciones_paginate').remove()
+                $('#tbl_marcaciones_info').remove()
+                $('#tbl_marcaciones_wrapper').children().first().html('');
                 Desbloquear("ventana");
+
             }
 
-        });
+        },
+        error: function (msg) {
+            alert(msg);
+            Desbloquear("ventana");
+        }
 
-    }
+    });
+
+}

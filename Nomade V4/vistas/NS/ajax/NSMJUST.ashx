@@ -92,7 +92,7 @@ Public Class NSMJUST : Implements IHttpHandler
                     If p_PIDM = Nothing Or p_PIDM = "" Then
                         res = "Elija un empleado porfavor."
                     Else
-                        Dthorario = New NOMADE.NN.NNPlanilla("Bn").Listar_Horario_Detalle_X_Dia(p_DIA_INICIO, p_PIDM, "N") 'no se encontro llamada a esta opcion "N" fijo
+                        Dthorario = New Nomade.NN.NNPlanilla("Bn").Listar_Horario_Detalle_X_Dia(Utilities.fechaLocal(p_DIA_INICIO), p_PIDM, "N") 'no se encontro llamada a esta opcion "N" fijo
                         If Not Dthorario Is Nothing Then
                             For i As Integer = 0 To Dthorario.Rows.Count - 1
                                 If Int(p_HORA_INICIO.Replace(":", "")) >= Int(Dthorario.Rows(i)("HORA_INICIO").ToString().Replace(":", "")) And
@@ -138,19 +138,19 @@ Public Class NSMJUST : Implements IHttpHandler
                             res = "No existe empleado para registrar la justificacion."
                         Else
                             If p_TIPO_X_DIA_HORA = "D" Then
-                                If CDate(p_DIA_INICIO) <= CDate(p_DIA_FIN) Then
+                                If CDate(Utilities.fechaLocal(p_DIA_INICIO)) <= CDate(Utilities.fechaLocal(p_DIA_FIN)) Then
                                     'FERIADO
                                     Dim DTferiados As New DataTable
                                     Dim bool_feriado As Boolean = True
                                     Dim NumDiasFeriados As Integer = 0
                                     Dim Dthorario As New DataTable
-                                    Dthorario = New NOMADE.NS.NSGestionhorarioempleado("Bn").ListarHorarioEmpleado("", p_PIDM, p_CTLG_CODE, "A")
+                                    Dthorario = New Nomade.NS.NSGestionhorarioempleado("Bn").ListarHorarioEmpleado("", p_PIDM, p_CTLG_CODE, "A")
                                     If Not Dthorario Is Nothing Then
                                         If Dthorario.Rows(0)("INC_FERIADOS_IND").ToString() = "NO" Then
-                                            DTferiados = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(p_DIA_INICIO, p_DIA_FIN, p_CTLG_CODE, p_SCSL_CODE, "D")
+                                            DTferiados = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_CTLG_CODE, p_SCSL_CODE, "D")
                                             If Not DTferiados Is Nothing Then
                                                 NumDiasFeriados = DTferiados.Rows.Count
-                                                If CDate(p_DIA_INICIO) = CDate(p_DIA_FIN) Then
+                                                If CDate(Utilities.fechaLocal(p_DIA_INICIO)) = CDate(Utilities.fechaLocal(p_DIA_FIN)) Then
 
                                                     If NumDiasFeriados > 0 Then
                                                         res = "La fecha seleccionada es considerada feriado no laborable < " + DTferiados.Rows(0)("PEVFERC_DESC").ToString() + " >, por favor seleccionar otra fecha"
@@ -180,82 +180,107 @@ Public Class NSMJUST : Implements IHttpHandler
                                             Dim DTjustificaciones_Dia As New DataTable
                                             Dim DTjustificaciones_Hora As New DataTable
                                             bool = True
-                                            DTjustificaciones_Dia = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(p_DIA_INICIO, p_DIA_INICIO, "1", p_PIDM, p_CTLG_CODE)
-                                            DTjustificaciones_Hora = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(p_DIA_INICIO, p_DIA_INICIO, "2", p_PIDM, p_CTLG_CODE)
+                                            DTjustificaciones_Dia = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), "1", p_PIDM, p_CTLG_CODE)
+                                            DTjustificaciones_Hora = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), "2", p_PIDM, p_CTLG_CODE)
+
+                                            'If Not DTjustificaciones_Dia Is Nothing Then
+                                            '    'JUSTIFICACIONES DIA
+                                            '    For j As Integer = 0 To DTjustificaciones_Dia.Rows.Count - 1
+                                            '        If CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                            '          CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
+                                            '          CDate(p_DIA_FIN) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                            '          CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
+                                            '            bool = False
+                                            '            res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
+                                            '            Exit Select
+                                            '        End If
+                                            '    Next
+
+                                            'End If
+
+                                            'If Not DTjustificaciones_Hora Is Nothing Then
+                                            '    'JUSTIFICACIONES HORA 
+                                            '    For j As Integer = 0 To DTjustificaciones_Hora.Rows.Count - 1
+                                            '        If CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                            '          CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
+                                            '          CDate(p_DIA_FIN) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                            '          CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
+                                            '            bool = False
+                                            '            res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
+                                            '            Exit Select
+                                            '        End If
+                                            '    Next
+                                            'End If
 
                                             If Not DTjustificaciones_Dia Is Nothing Then
                                                 'JUSTIFICACIONES DIA
                                                 For j As Integer = 0 To DTjustificaciones_Dia.Rows.Count - 1
-                                                    If CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                                      CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
-                                                      CDate(p_DIA_FIN) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                                      CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
-                                                        bool = False
-                                                        res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
-                                                        Exit Select
+                                                    If CDate(Utilities.fechaLocal(p_DIA_INICIO)) = CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) Then
+                                                        If CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                          CDate(Utilities.fechaLocal(p_DIA_FIN)) > CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
+                                                          CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                          CDate(Utilities.fechaLocal(p_DIA_FIN)) < CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
+                                                            bool = False
+                                                            res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
+                                                            Exit Select
+                                                        End If
                                                     End If
                                                 Next
-
                                             End If
 
                                             If Not DTjustificaciones_Hora Is Nothing Then
                                                 'JUSTIFICACIONES HORA 
                                                 For j As Integer = 0 To DTjustificaciones_Hora.Rows.Count - 1
-                                                    If CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                                      CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
-                                                      CDate(p_DIA_FIN) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                                      CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
-                                                        bool = False
-                                                        res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
-                                                        Exit Select
+                                                    If CDate(Utilities.fechaLocal(p_DIA_INICIO)) = CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) Then
+                                                        If CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                          CDate(Utilities.fechaLocal(p_DIA_FIN)) > CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
+                                                          CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                          CDate(Utilities.fechaLocal(p_DIA_FIN)) < CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
+                                                            bool = False
+                                                            res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
+                                                            Exit Select
+                                                        End If
                                                     End If
                                                 Next
                                             End If
 
-
-
-
-
                                             If bool Then
                                                 ' res = "OK"
                                                 Dim DTbreak As New DataTable
-                                                DTbreak = New NOMADE.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(p_DIA_INICIO, p_DIA_FIN, p_PIDM, "1", p_CTLG_CODE)
+                                                DTbreak = New Nomade.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_PIDM, "1", p_CTLG_CODE)
                                                 If Not DTbreak Is Nothing Then
                                                     Dim tiempo_total_break = DTbreak.Rows(0)("MINUTOS_BREAK")
                                                     p_MIN_REFRIGERIO = tiempo_total_break.ToString
                                                 End If
                                                 p_IND_COMPLETADO = "C"
 
-                                                Dim DiasLab = New NOMADE.NN.NNPlanilla("Bn").Listar_dias_laborados_x_empleado(p_DIA_INICIO, p_DIA_FIN, p_PIDM, p_CTLG_CODE)
+                                                Dim DiasLab = New Nomade.NN.NNPlanilla("Bn").Listar_dias_laborados_x_empleado(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_PIDM, p_CTLG_CODE)
                                                 p_NUM_DIAS_LABORADOS = DiasLab.ToString
                                                 p_NUM_DIAS_LABORADOS = Int(p_NUM_DIAS_LABORADOS) - Int(NumDiasFeriados)
-                                                If p_NUM_DIAS_LABORADOS <= 0 Then
+                                                'If p_NUM_DIAS_LABORADOS <= 0 Then
+                                                If p_NUM_DIAS_LABORADOS < 0 Then 'DPORTA 30/03/2023 - SE COLOCÓ ASÍ PORQUE CON LA LÍNEA ANTERIOR SALÍA ERROR
                                                     res = "No es posible registrar no son dias laborables , por favor seleccionar fechas correctas"
                                                 Else
 
                                                     res = Crea_Justificacion(p_CTLG_CODE,
-                                                                        p_SCSL_CODE,
-                                                                        p_PIDM,
-                                                                        p_TIPO_FALTA,
-                                                                        p_DIA_INICIO,
-                                                                        p_DIA_FIN,
-                                                                        p_HORA_INICIO,
-                                                                        p_HORA_FIN,
-                                                                        p_MOTIVO,
-                                                                        p_EST_IND,
-                                                                        p_MIN_REFRIGERIO,
-                                                                        p_IND_COMPLETADO,
-                                                                        p_NUM_DIAS_LABORADOS,
-                                                                        p_TIPO_JUST,
-                                                                        p_TIPO_MOTIVO,
-                                                                        p_USUA_ID)
+                                                                    p_SCSL_CODE,
+                                                                    p_PIDM,
+                                                                    p_TIPO_FALTA,
+                                                                    Utilities.fechaLocal(p_DIA_INICIO),
+                                                                    Utilities.fechaLocal(p_DIA_FIN),
+                                                                    p_HORA_INICIO,
+                                                                    p_HORA_FIN,
+                                                                    p_MOTIVO,
+                                                                    p_EST_IND,
+                                                                    p_MIN_REFRIGERIO,
+                                                                    p_IND_COMPLETADO,
+                                                                    p_NUM_DIAS_LABORADOS,
+                                                                    p_TIPO_JUST,
+                                                                    p_TIPO_MOTIVO,
+                                                                    p_USUA_ID)
                                                 End If
-
                                             End If
-
-
                                         Else
-
                                             ' res = "El rango de fechas seleccionada no se ecuentra dentro del periodo < " + dt.Rows(0)("FECHA_INI_PERIODO").ToString() + " - " + dt.Rows(0)("FECHA_FIN_PERIODO").ToString() + " >"
                                             res = "No es posible registrar dentro del mes seleccionado debido a que la planilla ha sido cerrada !!"
 
@@ -275,7 +300,7 @@ Public Class NSMJUST : Implements IHttpHandler
                                 Dim ind_completo As String = "C"
                                 If p_HORA_FIN = Nothing Or p_HORA_FIN = "" Then
                                     ind_completo = "I"
-                                    p_HORA_FIN = Devuelve_Hora_Cercana_Horario(p_DIA_INICIO, p_PIDM, p_CTLG_CODE)
+                                    p_HORA_FIN = Devuelve_Hora_Cercana_Horario(Utilities.fechaLocal(p_DIA_INICIO), p_PIDM, p_CTLG_CODE)
                                     If p_HORA_FIN.Split("/")(0).ToString <> "4" Then
                                         res = p_HORA_FIN.Split("/")(1).ToString
                                         Exit Select
@@ -314,9 +339,9 @@ Public Class NSMJUST : Implements IHttpHandler
                                         Dim DTfer_horas As New DataTable
                                         Dim boo = False
                                         Dthorario = New NOMADE.NS.NSGestionhorarioempleado("Bn").ListarHorarioEmpleado("", p_PIDM, p_CTLG_CODE, "A")
-                                        DTfer_dia = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(p_DIA_INICIO, p_DIA_FIN, p_CTLG_CODE, p_SCSL_CODE, "D")
-                                        DTfer_medio_dia = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(p_DIA_INICIO, p_DIA_FIN, p_CTLG_CODE, p_SCSL_CODE, "M")
-                                        DTfer_horas = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(p_DIA_INICIO, p_DIA_FIN, p_CTLG_CODE, p_SCSL_CODE, "H")
+                                        DTfer_dia = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_CTLG_CODE, p_SCSL_CODE, "D")
+                                        DTfer_medio_dia = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_CTLG_CODE, p_SCSL_CODE, "M")
+                                        DTfer_horas = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_CTLG_CODE, p_SCSL_CODE, "H")
 
 
                                         If Not Dthorario Is Nothing Then
@@ -367,7 +392,7 @@ Public Class NSMJUST : Implements IHttpHandler
 
                                         'HORARIO
                                         Dthorario = Nothing
-                                        Dthorario = New NOMADE.NN.NNPlanilla("Bn").Listar_Horario_Detalle_X_Dia(p_DIA_INICIO, p_PIDM, p_CTLG_CODE)
+                                        Dthorario = New Nomade.NN.NNPlanilla("Bn").Listar_Horario_Detalle_X_Dia(Utilities.fechaLocal(p_DIA_INICIO), p_PIDM, p_CTLG_CODE)
                                         If Not Dthorario Is Nothing Then
                                             Dim p_HORA As String = p_HORA_INICIO
                                             Dim bool_H_inicio As Boolean = False
@@ -397,15 +422,15 @@ Public Class NSMJUST : Implements IHttpHandler
                                                 Dim DTjustificaciones_Dia As New DataTable
                                                 Dim DTjustificaciones_Hora As New DataTable
                                                 bool = True
-                                                DTjustificaciones_Dia = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(p_DIA_INICIO, p_DIA_INICIO, "1", p_PIDM, p_CTLG_CODE)
-                                                DTjustificaciones_Hora = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(p_DIA_INICIO, p_DIA_INICIO, "2", p_PIDM, p_CTLG_CODE)
+                                                DTjustificaciones_Dia = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), "1", p_PIDM, p_CTLG_CODE)
+                                                DTjustificaciones_Hora = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), "2", p_PIDM, p_CTLG_CODE)
 
                                                 If Not DTjustificaciones_Dia Is Nothing Then
                                                     For j As Integer = 0 To DTjustificaciones_Dia.Rows.Count - 1
-                                                        If CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                                           CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
-                                                           CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                                           CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
+                                                        If CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                           CDate(Utilities.fechaLocal(p_DIA_INICIO)) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
+                                                           CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                           CDate(Utilities.fechaLocal(p_DIA_INICIO)) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
                                                             bool = False
                                                             res = "Horas no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
                                                             'Exit For
@@ -436,12 +461,12 @@ Public Class NSMJUST : Implements IHttpHandler
                                                     Dim DTbreak As New DataTable
                                                     Dim DTbreak_Min As New DataTable
                                                     Dim tiempo_total_break As String = "0"
-                                                    DTbreak = New NOMADE.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(p_DIA_INICIO, p_DIA_INICIO, p_PIDM, "2", p_CTLG_CODE)
+                                                    DTbreak = New Nomade.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), p_PIDM, "2", p_CTLG_CODE)
                                                     If Not DTbreak Is Nothing Then
 
                                                         If Int(DTbreak.Rows(0)("HORA_INICIO").ToString().Replace(":", "")) > Int(p_HORA_INICIO.Replace(":", "")) And
                                                            Int(DTbreak.Rows(0)("HORA_FIN").ToString().Replace(":", "")) < Int(p_HORA_FIN.Replace(":", "")) Then
-                                                            DTbreak_Min = New NOMADE.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(p_DIA_INICIO, p_DIA_INICIO, p_PIDM, "1", p_CTLG_CODE)
+                                                            DTbreak_Min = New Nomade.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), p_PIDM, "1", p_CTLG_CODE)
                                                             tiempo_total_break = DTbreak_Min.Rows(0)("MINUTOS_BREAK").ToString
                                                         End If
                                                     End If
@@ -455,8 +480,8 @@ Public Class NSMJUST : Implements IHttpHandler
                                                                    p_SCSL_CODE,
                                                                    p_PIDM,
                                                                    p_TIPO_FALTA,
-                                                                   p_DIA_INICIO,
-                                                                   p_DIA_FIN,
+                                                                   Utilities.fechaLocal(p_DIA_INICIO),
+                                                                   Utilities.fechaLocal(p_DIA_FIN),
                                                                    p_HORA_INICIO,
                                                                    p_HORA_FIN,
                                                                    p_MOTIVO,
@@ -512,19 +537,19 @@ Public Class NSMJUST : Implements IHttpHandler
                     dt = Nothing
 
                     If p_TIPO_X_DIA_HORA = "D" Then
-                        If CDate(p_DIA_INICIO) <= CDate(p_DIA_FIN) Then
+                        If CDate(Utilities.fechaLocal(p_DIA_INICIO)) <= CDate(Utilities.fechaLocal(p_DIA_FIN)) Then
                             'FERIADO
                             Dim DTferiados As New DataTable
                             Dim bool_feriado As Boolean = True
                             Dim NumDiasFeriados As Integer = 0
                             Dim Dthorario As New DataTable
-                            Dthorario = New NOMADE.NS.NSGestionhorarioempleado("Bn").ListarHorarioEmpleado("", p_PIDM, p_CTLG_CODE, "A")
+                            Dthorario = New Nomade.NS.NSGestionhorarioempleado("Bn").ListarHorarioEmpleado("", p_PIDM, p_CTLG_CODE, "A")
                             If Not Dthorario Is Nothing Then
                                 If Dthorario.Rows(0)("INC_FERIADOS_IND").ToString() = "NO" Then
-                                    DTferiados = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(p_DIA_INICIO, p_DIA_FIN, p_CTLG_CODE, p_SCSL_CODE, "D")
+                                    DTferiados = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_CTLG_CODE, p_SCSL_CODE, "D")
                                     If Not DTferiados Is Nothing Then
                                         NumDiasFeriados = DTferiados.Rows.Count
-                                        If CDate(p_DIA_INICIO) = CDate(p_DIA_FIN) Then
+                                        If CDate(Utilities.fechaLocal(p_DIA_INICIO)) = CDate(Utilities.fechaLocal(p_DIA_FIN)) Then
 
                                             If NumDiasFeriados > 0 Then
                                                 res = "La fecha seleccionada es considerado feriado no laborable < " + DTferiados.Rows(0)("PEVFERC_DESC").ToString() + " >, por favor seleccionar otra fecha"
@@ -556,8 +581,44 @@ Public Class NSMJUST : Implements IHttpHandler
                                     Dim DTjustificaciones_Dia As New DataTable
                                     Dim DTjustificaciones_Hora As New DataTable
                                     bool = True
-                                    DTjustificaciones_Dia = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(p_DIA_INICIO, p_DIA_INICIO, "1", p_PIDM, p_CTLG_CODE)
-                                    DTjustificaciones_Hora = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(p_DIA_INICIO, p_DIA_INICIO, "2", p_PIDM, p_CTLG_CODE)
+                                    DTjustificaciones_Dia = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), "1", p_PIDM, p_CTLG_CODE)
+                                    DTjustificaciones_Hora = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), "2", p_PIDM, p_CTLG_CODE)
+
+                                    'If Not DTjustificaciones_Dia Is Nothing Then
+                                    '    'elimino del dt el codigo del que voi a modificar para luego continuar con las validaciones
+                                    '    For j As Integer = 0 To DTjustificaciones_Dia.Rows.Count - 1
+                                    '        If DTjustificaciones_Dia.Rows(j)("RHFATAR_CODE").ToString().Equals(p_CODIGO) Then
+                                    '            DTjustificaciones_Dia.Rows.RemoveAt(j)
+                                    '            Exit For
+                                    '        End If
+                                    '    Next
+
+                                    '    For j As Integer = 0 To DTjustificaciones_Dia.Rows.Count - 1
+                                    '        If CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                    '          CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
+                                    '          CDate(p_DIA_FIN) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                    '          CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
+                                    '            bool = False
+                                    '            res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
+                                    '            'Exit For
+                                    '            Exit Select
+                                    '        End If
+                                    '    Next
+                                    'End If
+
+                                    'If Not DTjustificaciones_Hora Is Nothing Then
+                                    '    For j As Integer = 0 To DTjustificaciones_Hora.Rows.Count - 1
+                                    '        If CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                    '          CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
+                                    '          CDate(p_DIA_FIN) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                    '          CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
+                                    '            bool = False
+                                    '            res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
+                                    '            'Exit For
+                                    '            Exit Select
+                                    '        End If
+                                    '    Next
+                                    'End If
 
                                     If Not DTjustificaciones_Dia Is Nothing Then
                                         'elimino del dt el codigo del que voi a modificar para luego continuar con las validaciones
@@ -566,80 +627,71 @@ Public Class NSMJUST : Implements IHttpHandler
                                                 DTjustificaciones_Dia.Rows.RemoveAt(j)
                                                 Exit For
                                             End If
-
                                         Next
-
 
                                         For j As Integer = 0 To DTjustificaciones_Dia.Rows.Count - 1
-                                            If CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                              CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
-                                              CDate(p_DIA_FIN) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                              CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
-                                                bool = False
-                                                res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
-                                                'Exit For
-                                                Exit Select
+                                            If CDate(Utilities.fechaLocal(p_DIA_INICIO)) = CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) Then
+                                                If CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                  CDate(Utilities.fechaLocal(p_DIA_FIN)) > CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
+                                                  CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                  CDate(Utilities.fechaLocal(p_DIA_FIN)) < CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
+                                                    bool = False
+                                                    res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
+                                                    Exit Select
+                                                End If
                                             End If
                                         Next
-
                                     End If
 
                                     If Not DTjustificaciones_Hora Is Nothing Then
                                         For j As Integer = 0 To DTjustificaciones_Hora.Rows.Count - 1
-                                            If CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                              CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
-                                              CDate(p_DIA_FIN) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                              CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
-                                                bool = False
-                                                res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
-                                                'Exit For
-                                                Exit Select
+                                            If CDate(Utilities.fechaLocal(p_DIA_INICIO)) = CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) Then
+                                                If CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                  CDate(Utilities.fechaLocal(p_DIA_FIN)) > CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
+                                                  CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                  CDate(Utilities.fechaLocal(p_DIA_FIN)) < CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
+                                                    bool = False
+                                                    res = "Dias no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Hora.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
+                                                    Exit Select
+                                                End If
                                             End If
                                         Next
                                     End If
 
-
-
-
-
                                     If bool Then
                                         ' res = "OK"
                                         Dim DTbreak As New DataTable
-                                        DTbreak = New NOMADE.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(p_DIA_INICIO, p_DIA_FIN, p_PIDM, "1", p_CTLG_CODE)
+                                        DTbreak = New Nomade.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_PIDM, "1", p_CTLG_CODE)
                                         If Not DTbreak Is Nothing Then
                                             Dim tiempo_total_break = DTbreak.Rows(0)("MINUTOS_BREAK")
                                             p_MIN_REFRIGERIO = tiempo_total_break.ToString
                                         End If
                                         p_IND_COMPLETADO = "C"
 
-                                        Dim DiasLab = New NOMADE.NN.NNPlanilla("Bn").Listar_dias_laborados_x_empleado(p_DIA_INICIO, p_DIA_FIN, p_PIDM, p_CTLG_CODE)
+                                        Dim DiasLab = New Nomade.NN.NNPlanilla("Bn").Listar_dias_laborados_x_empleado(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_PIDM, p_CTLG_CODE)
                                         p_NUM_DIAS_LABORADOS = DiasLab.ToString
                                         p_NUM_DIAS_LABORADOS = Int(p_NUM_DIAS_LABORADOS) - Int(NumDiasFeriados)
-                                        If p_NUM_DIAS_LABORADOS <= 0 Then
+                                        'If p_NUM_DIAS_LABORADOS <= 0 Then
+                                        If p_NUM_DIAS_LABORADOS < 0 Then 'DPORTA 14/03/2023 - SE COLOCÓ ASÍ PORQUE CON LA LÍNEA ANTERIOR SALÍA ERROR 
                                             res = "No es posible registrar no son dias laborables , por favor seleccionar fechas correctas"
                                         Else
                                             'modifica
                                             res = Modificar_Justificacion(p_CODIGO,
-                                                                          Nothing,
-                                                                          p_DIA_FIN,
-                                                                          p_DIA_INICIO,
-                                                                          p_EST_IND,
-                                                                          Nothing,
-                                                                          p_MIN_REFRIGERIO,
-                                                                          "C",
-                                                                          p_MOTIVO,
-                                                                          p_NUM_DIAS_LABORADOS,
-                                                                          p_TIPO_FALTA,
-                                                                          p_TIPO_JUST,
-                                                                          p_TIPO_MOTIVO,
-                                                                          p_USUA_ID)
+                                                                      Nothing,
+                                                                      Utilities.fechaLocal(p_DIA_FIN),
+                                                                      Utilities.fechaLocal(p_DIA_INICIO),
+                                                                      p_EST_IND,
+                                                                      Nothing,
+                                                                      p_MIN_REFRIGERIO,
+                                                                      "C",
+                                                                      p_MOTIVO,
+                                                                      p_NUM_DIAS_LABORADOS,
+                                                                      p_TIPO_FALTA,
+                                                                      p_TIPO_JUST,
+                                                                      p_TIPO_MOTIVO,
+                                                                      p_USUA_ID)
                                         End If
-
-
-
                                     End If
-
-
                                 Else
 
                                     'res = "El rango de fechas seleccionada no se ecuentra dentro del periodo < " + dt.Rows(0)("FECHA_INI_PERIODO").ToString() + " - " + dt.Rows(0)("FECHA_FIN_PERIODO").ToString() + " >"
@@ -661,7 +713,7 @@ Public Class NSMJUST : Implements IHttpHandler
                         Dim ind_completo As String = "C"
                         If p_HORA_FIN = Nothing Or p_HORA_FIN = "" Then
                             ind_completo = "I"
-                            p_HORA_FIN = Devuelve_Hora_Cercana_Horario(p_DIA_INICIO, p_PIDM, p_CTLG_CODE)
+                            p_HORA_FIN = Devuelve_Hora_Cercana_Horario(Utilities.fechaLocal(p_DIA_INICIO), p_PIDM, p_CTLG_CODE)
                             If p_HORA_FIN.Split("/")(0).ToString <> "4" Then
                                 res = p_HORA_FIN.Split("/")(1).ToString
                                 Exit Select
@@ -700,9 +752,9 @@ Public Class NSMJUST : Implements IHttpHandler
                                 Dim DTfer_horas As New DataTable
                                 Dim boo = False
                                 Dthorario = New NOMADE.NS.NSGestionhorarioempleado("Bn").ListarHorarioEmpleado("", p_PIDM, p_CTLG_CODE, "A")
-                                DTfer_dia = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(p_DIA_INICIO, p_DIA_FIN, p_CTLG_CODE, p_SCSL_CODE, "D")
-                                DTfer_medio_dia = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(p_DIA_INICIO, p_DIA_FIN, p_CTLG_CODE, p_SCSL_CODE, "M")
-                                DTfer_horas = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(p_DIA_INICIO, p_DIA_FIN, p_CTLG_CODE, p_SCSL_CODE, "H")
+                                DTfer_dia = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_CTLG_CODE, p_SCSL_CODE, "D")
+                                DTfer_medio_dia = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_CTLG_CODE, p_SCSL_CODE, "M")
+                                DTfer_horas = New Nomade.NS.NSJustificacion("Bn").LISTAR_CANTIDAD_DIAS_FERIADOS(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_FIN), p_CTLG_CODE, p_SCSL_CODE, "H")
 
 
                                 If Not Dthorario Is Nothing Then
@@ -750,7 +802,7 @@ Public Class NSMJUST : Implements IHttpHandler
 
                                 'HORARIO
                                 Dthorario = Nothing
-                                Dthorario = New NOMADE.NN.NNPlanilla("Bn").Listar_Horario_Detalle_X_Dia(p_DIA_INICIO, p_PIDM, p_CTLG_CODE)
+                                Dthorario = New Nomade.NN.NNPlanilla("Bn").Listar_Horario_Detalle_X_Dia(Utilities.fechaLocal(p_DIA_INICIO), p_PIDM, p_CTLG_CODE)
                                 If Not Dthorario Is Nothing Then
                                     Dim p_HORA As String = p_HORA_INICIO
                                     Dim bool_H_inicio As Boolean = False
@@ -780,15 +832,15 @@ Public Class NSMJUST : Implements IHttpHandler
                                         Dim DTjustificaciones_Dia As New DataTable
                                         Dim DTjustificaciones_Hora As New DataTable
                                         bool = True
-                                        DTjustificaciones_Dia = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(p_DIA_INICIO, p_DIA_INICIO, "1", p_PIDM, p_CTLG_CODE)
-                                        DTjustificaciones_Hora = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(p_DIA_INICIO, p_DIA_INICIO, "2", p_PIDM, p_CTLG_CODE)
+                                        DTjustificaciones_Dia = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), "1", p_PIDM, p_CTLG_CODE)
+                                        DTjustificaciones_Hora = New Nomade.NN.NNPlanilla("Bn").Listar_Justificaciones_x_Periodo(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), "2", p_PIDM, p_CTLG_CODE)
 
                                         If Not DTjustificaciones_Dia Is Nothing Then
                                             For j As Integer = 0 To DTjustificaciones_Dia.Rows.Count - 1
-                                                If CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                                   CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
-                                                   CDate(p_DIA_INICIO) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
-                                                   CDate(p_DIA_INICIO) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
+                                                If CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                   CDate(Utilities.fechaLocal(p_DIA_INICIO)) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Or
+                                                   CDate(Utilities.fechaLocal(p_DIA_INICIO)) >= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) And
+                                                   CDate(Utilities.fechaLocal(p_DIA_INICIO)) <= CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) Then
                                                     bool = False
                                                     res = "Horas no disponibles porque existe un cruce con la fecha < " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_INICIO").ToString()) + " - " + CDate(DTjustificaciones_Dia.Rows(j)("RHFATAR_DIA_FIN").ToString()) + " >"
                                                     'Exit For
@@ -829,12 +881,12 @@ Public Class NSMJUST : Implements IHttpHandler
                                             Dim DTbreak As New DataTable
                                             Dim DTbreak_Min As New DataTable
                                             Dim tiempo_total_break As String = "0"
-                                            DTbreak = New NOMADE.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(p_DIA_INICIO, p_DIA_INICIO, p_PIDM, "2", p_CTLG_CODE)
+                                            DTbreak = New Nomade.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), p_PIDM, "2", p_CTLG_CODE)
                                             If Not DTbreak Is Nothing Then
 
                                                 If Int(DTbreak.Rows(0)("HORA_INICIO").ToString().Replace(":", "")) > Int(p_HORA_INICIO.Replace(":", "")) And
                                                    Int(DTbreak.Rows(0)("HORA_FIN").ToString().Replace(":", "")) < Int(p_HORA_FIN.Replace(":", "")) Then
-                                                    DTbreak_Min = New NOMADE.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(p_DIA_INICIO, p_DIA_INICIO, p_PIDM, "1", p_CTLG_CODE)
+                                                    DTbreak_Min = New Nomade.NN.NNPlanilla("Bn").Listar_Refrigerio_Detalle_X_Dia(Utilities.fechaLocal(p_DIA_INICIO), Utilities.fechaLocal(p_DIA_INICIO), p_PIDM, "1", p_CTLG_CODE)
                                                     tiempo_total_break = DTbreak_Min.Rows(0)("MINUTOS_BREAK").ToString
                                                 End If
                                             End If
@@ -847,8 +899,8 @@ Public Class NSMJUST : Implements IHttpHandler
                                             res = Modificar_Justificacion(p_CODIGO,
                                                                   p_HORA_INICIO,
                                                                   p_DIA_FIN,
-                                                                  p_DIA_INICIO,
-                                                                  p_EST_IND,
+                                                                  Utilities.fechaLocal(p_DIA_INICIO),
+                                                                  Utilities.fechaLocal(p_EST_IND),
                                                                   p_HORA_FIN,
                                                                   p_MIN_REFRIGERIO,
                                                                  ind_completo,

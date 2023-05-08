@@ -85,6 +85,9 @@
         text-shadow: none;
         background-color: #F7C94B;
     }
+    table tr td:nth-child(4), table tr th:nth-child(4){
+        display:none;
+    }   
 </style>
 <div class="row-fluid">
     <div class="span12">
@@ -131,7 +134,7 @@
                         <div class="control-group">
                             <label class="control-label" for="slcSucural">Fecha Rangos</label>
                             <div class="controls" id="Div1">
-                                <input type="text" id="txt_fecha" class="m-ctrl-medium date-range span9">
+                                 <input type="text" id="txt_fecha" class="m-wrap m-ctrl-medium date-range span9">
                             </div>
                         </div>
                     </div>
@@ -194,9 +197,9 @@
                                         </th>
                                         <th style="width: 10%;">FECHA
                                         </th>
-                                        <th style="display: none; width: 5%;">PIDM
+                                        <th style="width: 5%;">PIDM
                                         </th>
-                                        <th style="display: none; width: 5%;">CODIGO HORARIO
+                                        <th style="width: 5%;">CODIGO HORARIO
                                         </th>
                                     </tr>
                                 </thead>
@@ -271,7 +274,9 @@
                                     <table id="tbl_marcaciones" class="display" style="height: 54px; font-family: serif;">
                                         <thead style="background-color: rgb(52, 112, 160); color: aliceblue;">
                                             <tr>
-                                                <th style="width: 20%;">MARCACIONES BIOMETRICO
+                                                <th style="width: 20%;">MARCACIÓN ENTRADA
+                                                </th>
+                                                <th style="width: 20%;">MARCACIÓN SALIDA
                                                 </th>
                                                 <th style="width: 20%;">FECHA
                                                 </th>

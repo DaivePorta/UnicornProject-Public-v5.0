@@ -123,7 +123,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_FCOPERI_CODE", p_RHMANAS_FCOPERI_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_CODE_BIO", p_RHMANAS_CODE_BIO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_NOMBRE", p_RHMANAS_NOMBRE, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_FECHA", Convert.ToDateTime(p_RHMANAS_FECHA).ToString("yyyy-MM-dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_FECHA", p_RHMANAS_FECHA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_HORA_ENTRADA", p_RHMANAS_HORA_ENTRADA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_HORA_SALIDA", p_RHMANAS_HORA_SALIDA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RHMANAS_HORA_ENTRADA_TRABAJADOR", p_RHMANAS_HORA_ENTRADA_TRABAJADOR, ParameterDirection.Input, 253))

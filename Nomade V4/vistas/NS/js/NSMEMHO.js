@@ -754,7 +754,7 @@ var NSMEMHO = function () {
                     $('#tbl_Horario_info').remove()
                     $('#tbl_Horario_wrapper').children().first().html('');
 
-
+                    infoCustom2("El empleado no tiene registrado un horario. Debe registrarlo para poder continuar.");
                 }
 
             },

@@ -270,4 +270,35 @@ Public Class Utilities
 
     End Function
 
+    Public Shared Function fechaLocal_Excel(ByVal fecha As String) As String
+
+        If fecha <> String.Empty Then
+
+            Dim dia = fecha.Split("/")(0)
+            Dim mes = fecha.Split("/")(1)
+            Dim anio = fecha.Split("/")(2)
+
+            If dia.Length = 1 Then
+                dia = dia.PadLeft(2, "0")
+            End If
+
+            If mes.Length = 1 Then
+                mes = mes.PadLeft(2, "0")
+            End If
+
+            If anio.Length > 4 Then
+                anio = anio.Substring(0, 4)
+            End If
+
+            fecha = dia & "/" & mes & "/" & anio
+
+            Dim fechaConvertida As DateTime
+            DateTime.TryParseExact(fecha, "dd/MM/yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, fechaConvertida)
+            Return fechaConvertida.ToString("yyyy/MM/dd")
+        Else
+            Return "0000/00/00"
+        End If
+
+    End Function
+
 End Class

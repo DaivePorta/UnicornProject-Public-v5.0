@@ -369,7 +369,7 @@
                     <div class="span4">
                         <div class="control-group">
                             <div class="controls" id="inputPersona">
-                                <input id="slcPersona" class="span11" type="text" data-provide="typeahead" />
+                                <input id="slcPersona" class="span11" type="text" placeholder="Persona" />
                             </div>
                         </div>
                     </div>

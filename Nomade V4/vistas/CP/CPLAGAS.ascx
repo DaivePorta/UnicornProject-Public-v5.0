@@ -601,18 +601,19 @@
                             </select>
                         </div>
                     </div>                 
-                    <div class="span3 divDestinoTipo">
+                    <%--<div class="span3 divDestinoTipo">
                         <div class="control-group">
                                <label class="control-label" for="cbx_destino">
                                 Operación</label>
                             <select id="cbx_destino" class="b limpiar span12" data-placeholder="Operación">
                                 <option value="DSTGRA">DESTINO GRAVADO</option>
-                                <option value="DSTMIX">DESTINO MIXTO</option>
-                                <option value="DSTNGR">DESTINO NO GRAVADO</option>
+                                <option value="DGRAES">DEST. GRAVADO ESPECIAL</option>
+                                
                                 <option value="ORGNGR">ORIGEN NO GRAVADO</option>
+                                <option value="OTRTRI">OTROS TRIBUTOS</option>
                             </select>
                         </div>
-                    </div>
+                    </div>--%>
                     <div class="span9 espacio" style="display: none;">
 
                     </div>
@@ -659,6 +660,7 @@
                         <th>CENTRO DE COSTO</th>
                         <th>GLOSA</th>
                         <th>CUENTA</th>
+                        <th>OPERACIÓN</th>
                         <th>TOTAL BRUTO</th>
                         <th>DETRACCIÓN</th>  
                         <th>TOTAL NETO</th>  

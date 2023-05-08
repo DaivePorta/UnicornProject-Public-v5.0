@@ -263,11 +263,11 @@
 
                             <div id="divTabHorario" style="overflow: auto" class="span9">
                                 <table id="tbl_Horario" class="table display DTTT_selectable">
-                                    <thead style="background-color: rgb(9, 76, 180); color: white;">
+                                    <thead style="background-color: rgb(52, 112, 160); color: aliceblue;">
                                         <tr>
-                                            <th style="text-align: center; display: none;">Item</th>
-                                            <th style="text-align: center;">H. Inicio</th>
-                                            <th style="text-align: center;">H. Fin</th>
+                                            <%--<th style="text-align: center; display: none;">Item</th>--%>
+                                            <th style="text-align: center;">Hora Inicio</th>
+                                            <th style="text-align: center;">Hora Fin</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -288,9 +288,11 @@
                                         <table id="tbl_marcaciones" class="table display table-bordered DTTT_selectable" role="grid">
                                             <thead style="background-color: rgb(52, 112, 160); color: aliceblue;">
                                                 <tr role="row">
-                                                    <th style="width: 5px; text-align:center" class="sorting_disabled" rowspan="1" colspan="1">Marcaciones Biométrico
+                                                    <th style="width: 5px; text-align:center" class="sorting_disabled" rowspan="1" colspan="1">Marcación Entrada
                                                     </th>
                                                   <%--  <th style="width: 95%; display: none;" rowspan="1" colspan="1">PIDM</th>--%>
+                                                    <th style="width: 5px; text-align:center" class="sorting_disabled" rowspan="1" colspan="1">Marcación Salida
+                                                    </th>
                                                 </tr>
                                             </thead>
 
@@ -309,7 +311,7 @@
 
 
                         <div class="span2" id="boton" style="text-align: left; display: block;margin-left:3px">
-                            <a class="btn purple2" id="brn_get_Marcaciones" style="border-radius: 4px!important; height: 40px;">Obtener<br>
+                            <a class="btn purple2" id="brn_get_Marcaciones" style="border-radius: 4px!important; height: 43px;">Obtener<BR />Marcaciones<br>
                                 <p></p>
                                 <i class="icon-download"></i></a>
                         </div>

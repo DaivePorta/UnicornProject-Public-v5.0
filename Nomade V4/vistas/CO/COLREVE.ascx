@@ -108,7 +108,7 @@
                     <asp:HiddenField ID="hddDescMes" runat="server" />
                     <asp:HiddenField ID="hddAnio" runat="server" />
                     <asp:HiddenField ID="hddMes" runat="server" />
-
+                    <asp:HiddenField ID="hddDescEmpresa" runat="server" />
                     <asp:HiddenField ID="hddRuc" runat="server" />
                     <asp:HiddenField ID="hddDesca" runat="server" />
                     <asp:HiddenField ID="hfind_vacio" runat="server" />

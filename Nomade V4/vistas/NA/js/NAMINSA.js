@@ -54,7 +54,7 @@ var NALINSA = function () {
                 $('#txtHasta').datepicker('setStartDate', $('#txtDesde').val());
             }
         });
-        fnSetRangoDatePickerMesHoy('txtDesde', 'txtHasta', true);
+        /*fnSetRangoDatePickerMesHoy('txtDesde', 'txtHasta', true);*/
     }
 
     var crearTablaVacia = function () {
@@ -520,6 +520,29 @@ var NALINSA = function () {
             else
                 filtrar();
         });
+
+        $("#txtHasta").datepicker({
+            dateFormat: 'dd/mm/yy',
+            firstDay: 1
+        }).datepicker("setDate", new Date());
+
+        var fecha = new Date();
+        var ano = fecha.getFullYear();
+        var mes = fecha.getMonth() + 1;
+
+        if (mes == 1) {
+            mes = 12;
+            ano = ano - 1
+        } else {
+            //mes = mes - 1;
+        }
+
+        if (mes >= 10)
+            var fNueva = '01/' + mes + '/' + ano;
+        else
+            var fNueva = '01/0' + mes + '/' + ano;
+
+        $("#txtDesde").val(fNueva);
     }
 
     flagCargaPlugMaps = false;
@@ -4313,7 +4336,7 @@ var InsertarValorCambioOficial = function (monecode) {
 
         var request = new XMLHttpRequest();
 
-        request.open("POST", "https://api.migoperu.pe/api/v1/exchange/latest");
+        request.open("POST", "https://api.migo.pe/api/v1/exchange/latest");
         request.setRequestHeader("Accept", "application/json");
 
         request.send(formData);

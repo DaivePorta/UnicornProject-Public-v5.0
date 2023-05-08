@@ -671,7 +671,136 @@ Public Class NNLPLAN : Implements IHttpHandler
                                 ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0905", "0.00", "AF")
                             End If
                             'G A S T O S - E N - R E P R E S E N T A C I O N
+                        Case "0926"
+                            'G A S T O S - E N - M O V I L I D A D
+                            bool = False
+                            If Not dtValoresPlanilla Is Nothing Then
+                                Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
+                                Dim row() As DataRow = dtValoresPlanilla.Select(filtro)
 
+                                If row.Count > 0 Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", Decimal.Round(CDec(row(0)("MONTO").ToString), 2))
+                                    Total_no_afecto = Total_no_afecto + Decimal.Round(CDec(row(0)("MONTO").ToString), 2)
+                                    bool = True
+                                    'ARMA CADENA DETALLE
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0926", Decimal.Round(CDec(row(0)("MONTO").ToString), 2).ToString, "NA")
+                                End If
+
+                                If bool = False Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                    'ARMANDO CADENA DETALLE PLANILLA
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0926", "0.00", "NA")
+                                End If
+                            Else
+                                resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                'ARMANDO CADENA DETALLE PLANILLA
+                                ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0926", "0.00", "NA")
+                            End If
+                            'G A S T O S - E N - M O V I L I D A D
+                        Case "0927"
+                            'G A S T O S - E N - V E S T U A R I O
+                            bool = False
+                            If Not dtValoresPlanilla Is Nothing Then
+                                Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
+                                Dim row() As DataRow = dtValoresPlanilla.Select(filtro)
+
+                                If row.Count > 0 Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", Decimal.Round(CDec(row(0)("MONTO").ToString), 2))
+                                    Total_no_afecto = Total_no_afecto + Decimal.Round(CDec(row(0)("MONTO").ToString), 2)
+                                    bool = True
+                                    'ARMA CADENA DETALLE
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0927", Decimal.Round(CDec(row(0)("MONTO").ToString), 2).ToString, "NA")
+                                End If
+
+                                If bool = False Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                    'ARMANDO CADENA DETALLE PLANILLA
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0927", "0.00", "NA")
+                                End If
+                            Else
+                                resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                'ARMANDO CADENA DETALLE PLANILLA
+                                ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0927", "0.00", "NA")
+                            End If
+                            'G A S T O S - E N - V E S T U A R I O
+                        Case "0928"
+                            'G A S T O S - E N - V I Á T I C O S
+                            bool = False
+                            If Not dtValoresPlanilla Is Nothing Then
+                                Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
+                                Dim row() As DataRow = dtValoresPlanilla.Select(filtro)
+
+                                If row.Count > 0 Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", Decimal.Round(CDec(row(0)("MONTO").ToString), 2))
+                                    Total_no_afecto = Total_no_afecto + Decimal.Round(CDec(row(0)("MONTO").ToString), 2)
+                                    bool = True
+                                    'ARMA CADENA DETALLE
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0928", Decimal.Round(CDec(row(0)("MONTO").ToString), 2).ToString, "NA")
+                                End If
+
+                                If bool = False Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                    'ARMANDO CADENA DETALLE PLANILLA
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0928", "0.00", "NA")
+                                End If
+                            Else
+                                resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                'ARMANDO CADENA DETALLE PLANILLA
+                                ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0928", "0.00", "NA")
+                            End If
+                            'G A S T O S - E N - V I Á T I C O S
+                        Case "0929"
+                            'G A S T O S - L I B R E - D I S P O N I B I L I D A D
+                            bool = False
+                            If Not dtValoresPlanilla Is Nothing Then
+                                Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
+                                Dim row() As DataRow = dtValoresPlanilla.Select(filtro)
+
+                                If row.Count > 0 Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", Decimal.Round(CDec(row(0)("MONTO").ToString), 2))
+                                    Total_no_afecto = Total_no_afecto + Decimal.Round(CDec(row(0)("MONTO").ToString), 2)
+                                    bool = True
+                                    'ARMA CADENA DETALLE
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0929", Decimal.Round(CDec(row(0)("MONTO").ToString), 2).ToString, "NA")
+                                End If
+
+                                If bool = False Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                    'ARMANDO CADENA DETALLE PLANILLA
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0929", "0.00", "NA")
+                                End If
+                            Else
+                                resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                'ARMANDO CADENA DETALLE PLANILLA
+                                ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0929", "0.00", "NA")
+                            End If
+                            'G A S T O S - L I B R E - D I S P O N I B I L I D A D
+                        Case "0930"
+                            'G A S T O S - O T R O S - S I M I L A R E S
+                            bool = False
+                            If Not dtValoresPlanilla Is Nothing Then
+                                Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
+                                Dim row() As DataRow = dtValoresPlanilla.Select(filtro)
+
+                                If row.Count > 0 Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", Decimal.Round(CDec(row(0)("MONTO").ToString), 2))
+                                    Total_no_afecto = Total_no_afecto + Decimal.Round(CDec(row(0)("MONTO").ToString), 2)
+                                    bool = True
+                                    'ARMA CADENA DETALLE
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0930", Decimal.Round(CDec(row(0)("MONTO").ToString), 2).ToString, "NA")
+                                End If
+
+                                If bool = False Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                    'ARMANDO CADENA DETALLE PLANILLA
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0930", "0.00", "NA")
+                                End If
+                            Else
+                                resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                'ARMANDO CADENA DETALLE PLANILLA
+                                ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0930", "0.00", "NA")
+                            End If
+                            'G A S T O S - O T R O S - S I M I L A R E S
                         Case "0914"
                             'R E F R I G E R I O 
                             bool = False
@@ -847,7 +976,8 @@ Public Class NNLPLAN : Implements IHttpHandler
                             "0702", "0703", "0704", "0705", "0706", "0707",
                             "0801", "0802", "0803", "0804", "0805", "0806", "0807", "0808", "0809", "0810", "0811",
                             "0901", "0902", "0903", "0904", "0905", "0906", "0907", "0908", "0909", "0910", "0911", "0912", "0913",
-                            "0914", "0915", "0916", "0917", "0918", "0919", "0920", "0921", "0922", "0923", "0924", "0925"
+                            "0914", "0915", "0916", "0917", "0918", "0919", "0920", "0921", "0922", "0923", "0924", "0925", "0926",
+                            "0927", "0928", "0929", "0930"
 
                             Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_afectos.ElementAt(x).concepto + "'"
 
@@ -1002,7 +1132,136 @@ Public Class NNLPLAN : Implements IHttpHandler
                                 ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0905", "0.00", "NA")
                             End If
                             'G A S T O S - E N - R E P R E S E N T A C I O N
+                        Case "0926"
+                            'G A S T O S - E N - M O V I L I D A D
+                            bool = False
+                            If Not dtValoresPlanilla Is Nothing Then
+                                Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
+                                Dim row() As DataRow = dtValoresPlanilla.Select(filtro)
 
+                                If row.Count > 0 Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", Decimal.Round(CDec(row(0)("MONTO").ToString), 2))
+                                    Total_no_afecto = Total_no_afecto + Decimal.Round(CDec(row(0)("MONTO").ToString), 2)
+                                    bool = True
+                                    'ARMA CADENA DETALLE
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0926", Decimal.Round(CDec(row(0)("MONTO").ToString), 2).ToString, "NA")
+                                End If
+
+                                If bool = False Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                    'ARMANDO CADENA DETALLE PLANILLA
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0926", "0.00", "NA")
+                                End If
+                            Else
+                                resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                'ARMANDO CADENA DETALLE PLANILLA
+                                ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0926", "0.00", "NA")
+                            End If
+                            'G A S T O S - E N - M O V I L I D A D
+                        Case "0927"
+                            'G A S T O S - E N - V E S T U A R I O
+                            bool = False
+                            If Not dtValoresPlanilla Is Nothing Then
+                                Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
+                                Dim row() As DataRow = dtValoresPlanilla.Select(filtro)
+
+                                If row.Count > 0 Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", Decimal.Round(CDec(row(0)("MONTO").ToString), 2))
+                                    Total_no_afecto = Total_no_afecto + Decimal.Round(CDec(row(0)("MONTO").ToString), 2)
+                                    bool = True
+                                    'ARMA CADENA DETALLE
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0927", Decimal.Round(CDec(row(0)("MONTO").ToString), 2).ToString, "NA")
+                                End If
+
+                                If bool = False Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                    'ARMANDO CADENA DETALLE PLANILLA
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0927", "0.00", "NA")
+                                End If
+                            Else
+                                resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                'ARMANDO CADENA DETALLE PLANILLA
+                                ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0927", "0.00", "NA")
+                            End If
+                            'G A S T O S - E N - V E S T U A R I O
+                        Case "0928"
+                            'G A S T O S - E N - V I Á T I C O S
+                            bool = False
+                            If Not dtValoresPlanilla Is Nothing Then
+                                Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
+                                Dim row() As DataRow = dtValoresPlanilla.Select(filtro)
+
+                                If row.Count > 0 Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", Decimal.Round(CDec(row(0)("MONTO").ToString), 2))
+                                    Total_no_afecto = Total_no_afecto + Decimal.Round(CDec(row(0)("MONTO").ToString), 2)
+                                    bool = True
+                                    'ARMA CADENA DETALLE
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0928", Decimal.Round(CDec(row(0)("MONTO").ToString), 2).ToString, "NA")
+                                End If
+
+                                If bool = False Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                    'ARMANDO CADENA DETALLE PLANILLA
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0928", "0.00", "NA")
+                                End If
+                            Else
+                                resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                'ARMANDO CADENA DETALLE PLANILLA
+                                ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0928", "0.00", "NA")
+                            End If
+                            'G A S T O S - E N - V I Á T I C O S
+                        Case "0929"
+                            'G A S T O S - L I B R E - D I S P O N I B I L I D A D
+                            bool = False
+                            If Not dtValoresPlanilla Is Nothing Then
+                                Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
+                                Dim row() As DataRow = dtValoresPlanilla.Select(filtro)
+
+                                If row.Count > 0 Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", Decimal.Round(CDec(row(0)("MONTO").ToString), 2))
+                                    Total_no_afecto = Total_no_afecto + Decimal.Round(CDec(row(0)("MONTO").ToString), 2)
+                                    bool = True
+                                    'ARMA CADENA DETALLE
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0929", Decimal.Round(CDec(row(0)("MONTO").ToString), 2).ToString, "NA")
+                                End If
+
+                                If bool = False Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                    'ARMANDO CADENA DETALLE PLANILLA
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0929", "0.00", "NA")
+                                End If
+                            Else
+                                resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                'ARMANDO CADENA DETALLE PLANILLA
+                                ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0929", "0.00", "NA")
+                            End If
+                            'G A S T O S - L I B R E - D I S P O N I B I L I D A D
+                        Case "0930"
+                            'G A S T O S - O T R O S - S I M I L A R E S
+                            bool = False
+                            If Not dtValoresPlanilla Is Nothing Then
+                                Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
+                                Dim row() As DataRow = dtValoresPlanilla.Select(filtro)
+
+                                If row.Count > 0 Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", Decimal.Round(CDec(row(0)("MONTO").ToString), 2))
+                                    Total_no_afecto = Total_no_afecto + Decimal.Round(CDec(row(0)("MONTO").ToString), 2)
+                                    bool = True
+                                    'ARMA CADENA DETALLE
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0930", Decimal.Round(CDec(row(0)("MONTO").ToString), 2).ToString, "NA")
+                                End If
+
+                                If bool = False Then
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                    'ARMANDO CADENA DETALLE PLANILLA
+                                    ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0930", "0.00", "NA")
+                                End If
+                            Else
+                                resb.AppendFormat("<td align='center' >{0}</td>", "0.00")
+                                'ARMANDO CADENA DETALLE PLANILLA
+                                ArmaCadena_Detalle_Planilla(CAD_DET_PLANILLA, dtDatosBasicos.Rows(i)("PIDM").ToString, "0930", "0.00", "NA")
+                            End If
+                            'G A S T O S - O T R O S - S I M I L A R E S
                         Case "0914"
                             'R E F R I G E R I O 
                             bool = False
@@ -1179,7 +1438,8 @@ Public Class NNLPLAN : Implements IHttpHandler
                             "0702", "0703", "0704", "0705", "0706", "0707",
                             "0801", "0802", "0803", "0804", "0805", "0806", "0807", "0808", "0809", "0810", "0811",
                             "0901", "0902", "0903", "0904", "0905", "0906", "0907", "0908", "0909", "0910", "0911", "0912", "0913",
-                            "0914", "0915", "0916", "0917", "0918", "0919", "0920", "0921", "0922", "0923", "0924", "0925"
+                            "0914", "0915", "0916", "0917", "0918", "0919", "0920", "0921", "0922", "0923", "0924", "0925", "0926",
+                            "0927", "0928", "0929", "0930"
 
                             Dim filtro = "PIDM = '" + dtDatosBasicos.Rows(i)("PIDM").ToString + "'  AND CONCEPTO_CODE = '" + lst_no_afectos.ElementAt(x).concepto + "'"
 
@@ -1472,8 +1732,8 @@ Public Class NNLPLAN : Implements IHttpHandler
             Next
 
 
-            Dim com_mixta As String = ""
-            Dim com_flujo As String = ""
+            Dim com_mixta As Decimal = 0.0
+            Dim com_flujo As Decimal = 0.0
             Dim bool As Boolean = False
             Dim bool2 As Boolean = False
             For i As Integer = 0 To grupos.Length - 1
@@ -1847,7 +2107,8 @@ Public Class NNLPLAN : Implements IHttpHandler
                             "0601", "0602", "0603", "0604", "0605", "0606", "0607", "0608", "0609", "0610", "0611", "0612", "0613",
                             "0801", "0802", "0803", "0804", "0805", "0806", "0807", "0808", "0809", "0810", "0811",
                             "0901", "0902", "0903", "0904", "0905", "0906", "0907", "0908", "0909", "0910", "0911", "0912", "0913",
-                            "0914", "0915", "0916", "0917", "0918", "0919", "0920", "0921", "0922", "0923", "0924", "0925"
+                            "0914", "0915", "0916", "0917", "0918", "0919", "0920", "0921", "0922", "0923", "0924", "0925", "0926",
+                            "0927", "0928", "0929", "0930"
                             Dim filtro = "CONCEPTO_CODE = '" + lst_AF.ElementAt(x).concepto + "'"
                             Dim row() As DataRow = dtConceptosAfectos.Select(filtro)
 
@@ -1875,14 +2136,15 @@ Public Class NNLPLAN : Implements IHttpHandler
                         Case "0105", "0121", "0106", "0201", "0704", "0705", "0905", "0909", "0914",
                             "0101", "0102", "0103", "0104", "0107", "0108", "0109", "0110", "0111", "0112", "0113", "0114", "0115", "0116", "0117", "0119", "0120",
                             "0122", "0123", "0124", "0125", "0126", "0127",
-                            "0201","0202", "0203", "0204", "0206", "0207", "0208", "0209", "0210", "0211", "0212", "0213", "0214",
+                            "0201", "0202", "0203", "0204", "0206", "0207", "0208", "0209", "0210", "0211", "0212", "0213", "0214",
                             "0301", "0302", "0303", "0304", "0305", "0306", "0307", "0308", "0309", "0310", "0311", "0312", "0313",
                             "0401", "0402", "0403", "0404", "0405", "0406", "0407",
                             "0501", "0502", "0503", "0504", "0505", "0506", "0507",
                             "0601", "0602", "0603", "0604", "0605", "0606", "0607", "0608", "0609", "0610", "0611", "0612", "0613",
                             "0801", "0802", "0803", "0804", "0805", "0806", "0807", "0808", "0809", "0810", "0811",
                             "0901", "0902", "0903", "0904", "0905", "0906", "0907", "0908", "0909", "0910", "0911", "0912", "0913",
-                            "0914", "0915", "0916", "0917", "0918", "0919", "0920", "0921", "0922", "0923", "0924", "0925"
+                            "0914", "0915", "0916", "0917", "0918", "0919", "0920", "0921", "0922", "0923", "0924", "0925", "0926",
+                            "0927", "0928", "0929", "0930"
                             Dim filtro = "CONCEPTO_CODE = '" + lst_NA.ElementAt(x).concepto + "'"
                             Dim row() As DataRow = dtConceptosAfectos.Select(filtro)
 

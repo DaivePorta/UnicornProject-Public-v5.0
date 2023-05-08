@@ -20,7 +20,7 @@
                 <h4><i class="icon-reorder"></i>LISTA DE ASISTENCIAS DE  LOS EMPLEADOS</h4>
                 <div class="actions">
                     <a id="btnMail" class="btn purple" style="margin-top: -10px;"><i class="icon-envelope"></i>&nbsp; Enviar Mail</a>
-
+                    <a class="btn red" style="margin-top: -10px;" href="?f=NNLASIE"><i class="icon-list"></i>&nbsp;Listar</a>                    
                 </div>
 
             </div>

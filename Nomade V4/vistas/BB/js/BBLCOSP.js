@@ -471,7 +471,7 @@ var CrearSistemaPension = function (fila) {
     for (var i = 1; i <= Limit; i++) {
         var txtid = "txtColummna" + fila + "_" + i;
 
-            var valor = $('#' + txtid).val();
+        var valor = $('#' + txtid).val() == "" ? "0" : $('#' + txtid).val();
             bSi = true;
             if (cTexto == "") {
                 if (valor == "") {
@@ -516,18 +516,8 @@ var CrearSistemaPension = function (fila) {
             }
         });
        
-    }
-   
+    }   
 }
-
-
-
-
-
-
-
-
-
 
 function Modificar(fila, Codigo) {
     var emp = $("#ctl00_hddctlg").val();
@@ -535,8 +525,6 @@ function Modificar(fila, Codigo) {
     var aa = $("#optanho").val();
     var mm = $("#optmes").val();
     var Peri = mm + " " + aa;
-
-
    
     var Limit = $('#hf').val();
     var Column = $('#hfC').val();
@@ -552,7 +540,7 @@ function Modificar(fila, Codigo) {
         var txtid = "txtColummna" + fila + "_" + i;
 
         ////////    if (vErrors(txtid)) {
-        var valor = $('#' + txtid).val();
+        var valor = $('#' + txtid).val() == "" ? "0" : $('#' + txtid).val();
         bSi = true;
         if (cTexto == "") {
             if (valor == "") {

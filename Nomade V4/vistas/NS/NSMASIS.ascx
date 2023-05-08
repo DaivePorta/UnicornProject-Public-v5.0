@@ -22,7 +22,7 @@
                         <h4><i class="icon-reorder"></i>MATENEDOR DE ASISTENCIAS</h4>
                         <div class="actions">
                             <a class="btn green" href="?f=nsmasis"><i class="icon-plus"></i>Nuevo</a>
-                            <a class="btn red" href="?f=nslform"><i class="icon-list"></i>Listar</a>
+                            <a class="btn red" href="?f=NNLASIE"><i class="icon-list"></i>Listar</a>
                         </div>
 
                     </div>
@@ -137,10 +137,10 @@
                                                     <%--<input id="txtBiometrico" class="span12" type="number" min="0" max="7"/>--%>
                                                     <select id="cboFecha" style="width: 200px;">
                                                         <option value="1">1</option>
-                                                        <option value="2">2</option>
+                                                        <option selected="selected" value="2">2</option>
                                                         <option value="3">3</option>
                                                         <option value="4">4</option>
-                                                        <option selected="selected" value="5">5</option>
+                                                        <option value="5">5</option>
                                                         <option value="6">6</option>
                                                         <option value="7">7</option>
                                                         <option value="8">8</option>
@@ -179,14 +179,13 @@
                                                     <%--<input id="txtBiometrico" class="span12" type="number" min="0" max="7"/>--%>
                                                     <select id="cboHoraEntrada" style="width: 200px;">
                                                         <option value="1">1</option>
-                                                        <option value="1">1</option>
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
-                                                        <option value="4">4</option>
+                                                        <option selected="selected" value="4">4</option>
                                                         <option value="5">5</option>
                                                         <option value="6">6</option>
                                                         <option value="7">7</option>
-                                                        <option selected="selected" value="8">8</option>
+                                                        <option value="8">8</option>
                                                         <option value="9">9</option>
                                                         <option value="10">10</option>
                                                         <option value="11">11</option>
@@ -222,11 +221,11 @@
                                                     <option value="2">2</option>
                                                     <option value="3">3</option>
                                                     <option value="4">4</option>
-                                                    <option value="5">5</option>
+                                                    <option selected="selected" value="5">5</option>
                                                     <option value="6">6</option>
                                                     <option value="7">7</option>
                                                     <option value="8">8</option>
-                                                    <option selected="selected" value="9">9</option>
+                                                    <option value="9">9</option>
                                                     <option value="10">10</option>
                                                     <option value="11">11</option>
                                                     <option value="12">12</option>
@@ -265,11 +264,11 @@
                                                         <option value="3">3</option>
                                                         <option value="4">4</option>
                                                         <option value="5">5</option>
-                                                        <option value="6">6</option>
+                                                        <option selected="selected" value="6">6</option>
                                                         <option value="7">7</option>
                                                         <option value="8">8</option>
                                                         <option value="9">9</option>
-                                                        <option selected="selected" value="10">10</option>
+                                                        <option value="10">10</option>
                                                         <option value="11">11</option>
                                                         <option value="12">12</option>
                                                         <option value="13">13</option>
@@ -305,11 +304,11 @@
                                                     <option value="4">4</option>
                                                     <option value="5">5</option>
                                                     <option value="6">6</option>
-                                                    <option value="7">7</option>
+                                                    <option selected="selected" value="7">7</option>
                                                     <option value="8">8</option>
                                                     <option value="9">9</option>
                                                     <option value="10">10</option>
-                                                    <option selected="selected" value="11">11</option>
+                                                    <option value="11">11</option>
                                                     <option value="12">12</option>
                                                     <option value="13">13</option>
                                                     <option value="14">14</option>
@@ -385,7 +384,7 @@
                                     <div class="span8">
                                         <div class="control-group">
                                             <div class="controls">
-                                                <asp:FileUpload ID="fuDocumento" runat="server" />
+                                                <asp:FileUpload ID="fuDocumento" runat="server" AllowMultiple="true"/>
                                             &nbsp;</div>
                                         </div>
                                     </div>

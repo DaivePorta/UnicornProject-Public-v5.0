@@ -121,7 +121,13 @@
 
                     <div class="span1">
 
-                        <button type="button" class="btn blue" id="btnConsultar"><i class="icon-search"></i>&nbsp;Buscar</button>
+                        <button type="button" class="btn span12 blue" id="btnConsultar"><i class="icon-search"></i>&nbsp;Buscar</button>
+
+                    </div>
+
+                    <div class="span1">
+
+                        <button type="button" class="btn black span12 tooltips" id="btnReprocesar" data-original-title="Reprocesar la deuda que no se muestra en pantalla de un gasto ya aprobado."><i class="icon-cogs"></i></button>
 
                     </div>
 

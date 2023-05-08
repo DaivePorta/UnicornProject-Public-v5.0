@@ -37,7 +37,7 @@ Public Class NNMREFE : Implements IHttpHandler
                 res = Evalua_Marcaciones_Biometrico(p_FECHA, p_CTLG_CODE)
             Case "4"
                 context.Response.ContentType = "text/html"
-                res = Reprocesa_Marcadas_Biometrico(p_FECHA, p_CTLG_CODE, p_SCSL_CODE)
+                res = Reprocesa_Marcadas_Biometrico(Utilities.fechaLocal(p_FECHA), p_CTLG_CODE, p_SCSL_CODE)
             Case Else
         End Select
         context.Response.Write(res)

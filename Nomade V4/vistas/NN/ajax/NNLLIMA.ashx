@@ -8,14 +8,14 @@ Public Class NNMLIMA : Implements IHttpHandler
     Dim OPCION As String
     Dim FECHA_DESDE, SCSL_CODE, filtrotypeahead, CTLG_CODE, FECHA_HASTA, IND_ACTIVO, PIDM As String
     Dim dt As DataTable
-    
-    
+
+
     Dim res As String
     Dim resb As New StringBuilder
-    
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         OPCION = context.Request("OPCION")
-        
+
         FECHA_DESDE = context.Request("FECHA_DESDE")
         FECHA_HASTA = context.Request("FECHA_HASTA")
         IND_ACTIVO = context.Request("IND_ACTIVO")
@@ -23,10 +23,10 @@ Public Class NNMLIMA : Implements IHttpHandler
         CTLG_CODE = context.Request("CTLG_CODE")
         SCSL_CODE = context.Request("SCSL_CODE")
         filtrotypeahead = context.Request("filtrotypeahead")
-        
-        
+
+
         Select Case OPCION
-                
+
             Case "1" ' 
                 context.Response.ContentType = "application/json; charset=utf-8"
                 dt = New Nomade.NN.NNPlanilla("Bn").Listar_Marcaciones(FECHA_DESDE, FECHA_HASTA, IIf(IND_ACTIVO = Nothing, "", IND_ACTIVO), IIf(PIDM = Nothing, "", PIDM), IIf(SCSL_CODE = "T", "", SCSL_CODE),CTLG_CODE )
@@ -39,7 +39,7 @@ Public Class NNMLIMA : Implements IHttpHandler
                         resb.Append("""HORA_FIN"" :" & """" & MiDataRow("HORA_FIN").ToString & """,")
                         resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
                         resb.Append("""FECHA"" :" & """" & MiDataRow("FECHA").ToString & """")
-                      
+
                         resb.Append("}")
                         resb.Append(",")
                     Next
@@ -50,16 +50,19 @@ Public Class NNMLIMA : Implements IHttpHandler
                 res = resb.ToString()
             Case "3" ' 
                 context.Response.ContentType = "application/json; charset=utf-8"
-                dt = New Nomade.NN.NNPlanilla("Bn").Listar_Marcaciones_Brutas(FECHA_DESDE, FECHA_HASTA, IIf(IND_ACTIVO = Nothing, "", IND_ACTIVO), IIf(PIDM = Nothing, "", PIDM), IIf(SCSL_CODE = "T", "", SCSL_CODE), CTLG_CODE)
+                dt = New Nomade.NN.NNPlanilla("Bn").Listar_Marcaciones_Brutas(Utilities.fechaLocal(FECHA_DESDE), Utilities.fechaLocal(FECHA_HASTA), IIf(IND_ACTIVO = Nothing, "", IND_ACTIVO), IIf(PIDM = Nothing, "", PIDM), IIf(SCSL_CODE = "T", "", SCSL_CODE), CTLG_CODE)
                 If Not (dt Is Nothing) Then
                     resb.Append("[")
                     For Each MiDataRow As DataRow In dt.Rows
                         resb.Append("{")
                         resb.Append("""NOMBRES"" :" & """" & MiDataRow("NOMBRES").ToString & """,")
-                        resb.Append("""MARCACION"" :" & """" & MiDataRow("MARCACION").ToString & """,")
+                        resb.Append("""HORA_ENTRADA"" :" & """" & MiDataRow("HORA_ENTRADA").ToString & """,")
+                        resb.Append("""HORA_SALIDA"" :" & """" & MiDataRow("HORA_SALIDA").ToString & """,")
+                        resb.Append("""MARCACION_ENTRADA"" :" & """" & MiDataRow("MARCACION_ENTRADA").ToString & """,")
+                        resb.Append("""MARCACION_SALIDA"" :" & """" & MiDataRow("MARCACION_SALIDA").ToString & """,")
                         resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
                         resb.Append("""FECHA"" :" & """" & MiDataRow("FECHA").ToString & """")
-                      
+
                         resb.Append("}")
                         resb.Append(",")
                     Next
@@ -96,33 +99,33 @@ Public Class NNMLIMA : Implements IHttpHandler
         End Select
         context.Response.Write(res)
     End Sub
- 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False

@@ -38,69 +38,48 @@ Partial Class vistas_NS_NSMASIST
     Public Sub CargarArchivoX()
         If fuDocumento.HasFile Then
             Try
+                For Each uploadedFile As HttpPostedFile In fuDocumento.PostedFiles
+                    If uploadedFile.FileName.Contains(".xls") = False Then
+                        Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "Script", "<script language='javascript'>alertCustom('Seleccione un archivo válido.');</script>", False)
+                        Exit Sub
+                    End If
+                    Dim FileName As String = Path.GetFileName(uploadedFile.FileName)
+                    Dim Extension As String = Path.GetExtension(uploadedFile.FileName)
+                    'Dim FilePath As String = Server.MapPath("~/Archivos/") & fuDocumento.FileName
+                    'fuDocumento.SaveAs(Server.MapPath("~/Archivos/") & fuDocumento.FileName)
 
-                If fuDocumento.PostedFile.FileName.Contains(".xls") = False Then
-                    Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "El nómade", "window.alertCustom('Seleccione un archivo válido.');", True)
-                    Exit Sub
-                End If
-                Dim FileName As String = Path.GetFileName(fuDocumento.PostedFile.FileName)
-                Dim Extension As String = Path.GetExtension(fuDocumento.PostedFile.FileName)
-                'Dim FilePath As String = Server.MapPath("~/Archivos/") & fuDocumento.FileName
-                'fuDocumento.SaveAs(Server.MapPath("~/Archivos/") & fuDocumento.FileName)
+                    'Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & resArray(0).ToString & ".pdf"
 
-                'Dim datoAj As String = HttpContext.Current.Server.MapPath("~") & "Archivos\" & resArray(0).ToString & ".pdf"
+                    'Dim FilePath As String = Server.MapPath("~") & "Archivos\Asistencia_" & hfEmpresa.Value & "_" & hfSucursal.Value & ".xls"
+                    'fuDocumento.SaveAs(Server.MapPath("~") & "Archivos\Asistencia_" & hfEmpresa.Value & "_" & hfSucursal.Value & ".xls")
 
-                Dim FilePath As String = Server.MapPath("~") & "Archivos\Asistencia_" & hfEmpresa.Value & "_" & hfSucursal.Value & ".xls"
-                'Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "El nómade", "window.alertCustom('" & Server.MapPath("~") & "Archivos\Asistencia_" & hfEmpresa.Value & "_" & hfSucursal.Value & ".xls" & "');", True)
-                fuDocumento.SaveAs(Server.MapPath("~") & "Archivos\Asistencia_" & hfEmpresa.Value & "_" & hfSucursal.Value & ".xls")
-                extraedatosX(FilePath, Extension, "Yes")
+                    Dim FilePath As String = Server.MapPath("~") & "Archivos\Asistencia_" & hfEmpresa.Value & "_" & hfSucursal.Value & "_" & hfPeriodo.Value.Split(" ")(0) & "_" & hfPeriodo.Value.Split(" ")(1) & "_" & FileName.Split(".")(0) & ".xls"
+
+                    If My.Computer.FileSystem.FileExists(FilePath) Then
+                        Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "Script", "<script language='javascript'>infoCustom2('La asistencia de " & FileName.Split(".")(0) & " para el periodo " & hfPeriodo.Value & " ya ha sido cargada en UNICORN ERP.');</script>", False)
+                        Exit Sub
+                    Else
+                        uploadedFile.SaveAs(FilePath)
+                        extraedatosX(FilePath, Extension, "Yes")
+                    End If
+                Next
             Catch ex As Exception
                 'Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "El nómade", "window.alertCustom('" & ex.Message & "');", True)
-                Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "El nómade", "window.alertCustom('Ocurrió un error, verifique que el archivo es el correcto.');", True)
+                Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "Script", "<script language='javascript'>alertCustom('" & ex.Message & "');</script>", False)
+                Exit Sub
             End Try
         Else
-            Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "El nómade", "window.alertCustom('Seleccione un archivo válido.');", True)
+            Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "Script", "<script language='javascript'>alertCustom('Seleccione un archivo válido.');</script>", False)
             Exit Sub
         End If
     End Sub
     Dim ListaConfiguracionAsistencia As New List(Of eConfiguracionAsistencia)
     Dim ListaAsistencia As New List(Of eAsistencia)
     Public Sub extraedatosX(ByVal FilePath As String, ByVal Extension As String, ByVal isHDR As String)
-        'Dim conStr As String = ""
-        'Select Case Extension
-        '    Case ".xls"
-        '        'Excel 97-03
-        '        'conStr = ConfigurationManager.ConnectionStrings("Excel03ConString").ConnectionString()
-        '        conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties='Excel 8.0;HDR={1}'"
-        '        Exit Select
-        '    Case ".xlsx"
-        '        'Excel 07
-        '        'conStr = ConfigurationManager.ConnectionStrings("Excel07ConString").ConnectionString
-        '        conStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties='Excel 8.0;HDR={1}'"
-        '        Exit Select
-        'End Select
-        'conStr = String.Format(conStr, FilePath, isHDR)
-        'Dim connExcel As New OleDbConnection(conStr)
-        'Dim cmdExcel As New OleDbCommand()
-        'Dim oda As New OleDbDataAdapter()
-        Dim dt As New DataTable()
-        'Dim table As New DataTable()
-        'cmdExcel.Connection = connExcel
-        ''Get the name of First Sheet
-        'connExcel.Open()
-        'Dim dtExcelSchema As DataTable
-        'dtExcelSchema = connExcel.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, Nothing)
-        ''dtExcelSchema.Rows.C()
-        'Dim SheetName As String = dtExcelSchema.Rows(0)("TABLE_NAME").ToString()
-        'connExcel.Close()
-        ''Read Data from First Sheet
-        'connExcel.Open()
-        'cmdExcel.CommandText = "SELECT * From [" & SheetName & "]"
-        'oda.SelectCommand = cmdExcel
-        'oda.Fill(dt)
-        'connExcel.Close()
 
-        Dim stream = File.Open(FilePath, FileMode.Open, FileAccess.Read) 'DPORTA 09/03/2023
+        Dim dt As New DataTable()
+
+        Dim stream = File.Open(FilePath, FileMode.Open, FileAccess.Read) 'DPORTA 29/03/2023
         Dim reader = ExcelReaderFactory.CreateReader(stream)
         Dim result = reader.AsDataSet()
         Dim tables = result.Tables.Cast(Of DataTable)
@@ -112,6 +91,10 @@ Partial Class vistas_NS_NSMASIST
         data = Asistencia.Listar_Configuracion(hfEmpresa.Value, hfSucursal.Value)
 
         Dim eConfiguracionAsistencia = New eConfiguracionAsistencia()
+
+        ListaConfiguracionAsistencia.Clear()
+        ListaAsistencia.Clear()
+
         If Not data Is Nothing Then
 
             eConfiguracionAsistencia.p_RHCONAS_CODE = data.Rows(0)("RHCONAS_CODE").ToString()
@@ -129,64 +112,54 @@ Partial Class vistas_NS_NSMASIST
             ListaConfiguracionAsistencia.Add(eConfiguracionAsistencia)
         End If
 
-        'eAsistencia.p_RHCONAS_FECHA_ACTV = dt.Rows(0)("p_RHCONAS_CODE").ToString()
-
-        'grdgenerico.Caption = Path.GetFileName(FilePath)
-        'grdgenerico.DataSource = Lista
-        'grdgenerico.DataBind()
-
-
         data = dt
 
         If Not data Is Nothing Then
+            If dt.Rows(0)(0).ToString() = "Nombre" Or dt.Rows(0)(0).ToString() = "" Then 'DPORTA 29/03/2023
+                For i = 1 To data.Rows.Count - 1
+                    If dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO) - 1).ToString() = "Nombre" Or dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO) - 1).ToString() = "" Then
+                    Else
+                        Dim eAsistencia As New eAsistencia()
+                        eAsistencia.RHMANAS_CODE_BIO = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO) - 1).ToString()
+                        eAsistencia.RHMANAS_FECHA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_FECHA) - 1).ToString()
+                        eAsistencia.RHMANAS_HORA_ENTRADA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT) - 1).ToString()
+                        eAsistencia.RHMANAS_HORA_SALIDA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL) - 1).ToString()
+                        eAsistencia.RHMANAS_HORA_ENTRADA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT_TRAB) - 1).ToString()
+                        eAsistencia.RHMANAS_HORA_SALIDA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL_TRAB) - 1).ToString()
+                        eAsistencia.RHMANAS_USUA_ID = hfUsuario.Value()
 
-            'For i = 0 To data.Rows.Count - 1
-            '    Dim eAsistencia As New eAsistencia()
-            '    eAsistencia.RHMANAS_CODE_BIO = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO) - 1).ToString()
-            '    eAsistencia.RHMANAS_FECHA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_FECHA) - 1).ToString()
-            '    eAsistencia.RHMANAS_HORA_ENTRADA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT) - 1).ToString()
-            '    eAsistencia.RHMANAS_HORA_SALIDA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL) - 1).ToString()
-            '    eAsistencia.RHMANAS_HORA_ENTRADA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT_TRAB) - 1).ToString()
-            '    eAsistencia.RHMANAS_HORA_SALIDA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL_TRAB) - 1).ToString()
-            '    'eAsistencia.RHMANAS_CODE_BIO = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO)).ToString()
-            '    'eAsistencia.RHMANAS_FECHA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_FECHA)).ToString()
-            '    'eAsistencia.RHMANAS_HORA_ENTRADA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT)).ToString()
-            '    'eAsistencia.RHMANAS_HORA_SALIDA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL)).ToString()
-            '    'eAsistencia.RHMANAS_HORA_ENTRADA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT_TRAB)).ToString()
-            '    'eAsistencia.RHMANAS_HORA_SALIDA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL_TRAB)).ToString()
-            '    eAsistencia.RHMANAS_USUA_ID = hfUsuario.Value()
+                        eAsistencia.RHMANAS_FALTA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_FALTA_TRABAJADOR) - 1).ToString()
+                        eAsistencia.RHMANAS_HORA_EXTRA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_HORA_EXTRA_TRABAJADOR) - 1).ToString()
 
-            '    eAsistencia.RHMANAS_FALTA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_FALTA_TRABAJADOR) - 1).ToString()
-            '    eAsistencia.RHMANAS_HORA_EXTRA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_HORA_EXTRA_TRABAJADOR) - 1).ToString()
+                        ListaAsistencia.Add(eAsistencia)
+                    End If
+                Next
+            Else
+                For i = 0 To data.Rows.Count - 1
+                    If dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO) - 1).ToString() = "Nombre" Or dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO) - 1).ToString() = "" Then
+                    Else
+                        Dim eAsistencia As New eAsistencia()
+                        eAsistencia.RHMANAS_CODE_BIO = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO) - 1).ToString()
+                        eAsistencia.RHMANAS_FECHA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_FECHA) - 1).ToString()
+                        eAsistencia.RHMANAS_HORA_ENTRADA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT) - 1).ToString()
+                        eAsistencia.RHMANAS_HORA_SALIDA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL) - 1).ToString()
+                        eAsistencia.RHMANAS_HORA_ENTRADA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT_TRAB) - 1).ToString()
+                        eAsistencia.RHMANAS_HORA_SALIDA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL_TRAB) - 1).ToString()
+                        eAsistencia.RHMANAS_USUA_ID = hfUsuario.Value()
 
-            '    ListaAsistencia.Add(eAsistencia)
-            'Next
-            'gvAsistencia.Caption = Path.GetFileName(FilePath)
-            'gvAsistencia.DataSource = ListaAsistencia
-            'gvAsistencia.DataBind()
+                        eAsistencia.RHMANAS_FALTA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_FALTA_TRABAJADOR) - 1).ToString()
+                        eAsistencia.RHMANAS_HORA_EXTRA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_HORA_EXTRA_TRABAJADOR) - 1).ToString()
 
-            For i = 1 To data.Rows.Count - 1 'DPORTA 09/03/2023
-                Dim eAsistencia As New eAsistencia()
-                eAsistencia.RHMANAS_CODE_BIO = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_COD_BIO) - 1).ToString()
-                eAsistencia.RHMANAS_FECHA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_FECHA) - 1).ToString()
-                eAsistencia.RHMANAS_HORA_ENTRADA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT) - 1).ToString()
-                eAsistencia.RHMANAS_HORA_SALIDA = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL) - 1).ToString()
-                eAsistencia.RHMANAS_HORA_ENTRADA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_ENT_TRAB) - 1).ToString()
-                eAsistencia.RHMANAS_HORA_SALIDA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHCONAS_HOR_SAL_TRAB) - 1).ToString()
-                eAsistencia.RHMANAS_USUA_ID = hfUsuario.Value()
-
-                eAsistencia.RHMANAS_FALTA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_FALTA_TRABAJADOR) - 1).ToString()
-                eAsistencia.RHMANAS_HORA_EXTRA_TRABAJADOR = dt.Rows(i)(Convert.ToInt16(eConfiguracionAsistencia.p_RHMANAS_HORA_EXTRA_TRABAJADOR) - 1).ToString()
-
-                ListaAsistencia.Add(eAsistencia)
-            Next
+                        ListaAsistencia.Add(eAsistencia)
+                    End If
+                Next
+            End If
 
             Dim bError As Boolean = False
             Dim html As String = ""
             html = html & "<div id='DIVTABLA' class='portlet-body'>"
             html = html & "<div id='UNO' class='row-fluid'>"
             html = html & "<div id='DOS'  class='span12'>"
-            'html = html & "<table id='tblAsistencia' border='0' class='display DTTT_selectable' style='display: block;'>"
             html = html & "<table id='tblAsistencia' border='0' class='display DTTT_selectable'>"
             html = html & "<thead>"
             html = html & "<tr>"
@@ -202,7 +175,6 @@ Partial Class vistas_NS_NSMASIST
 
             html = html & "</tr>"
             html = html & "</thead>"
-
 
             html = html & "<tbody>"
 
@@ -230,19 +202,14 @@ Partial Class vistas_NS_NSMASIST
                     'End If
                     Tabla = New DataTable
                     If ListaAsistencia(i).RHMANAS_CODE_BIO.Equals("") Then
-
-
                         If ListaAsistencia(i).RHMANAS_CODE_BIO.Equals("") And
                              ListaAsistencia(i).RHMANAS_FECHA.Equals("") And
                             ListaAsistencia(i).RHMANAS_HORA_ENTRADA.Equals("") And
                             ListaAsistencia(i).RHMANAS_HORA_SALIDA.Equals("") And
                             ListaAsistencia(i).RHMANAS_HORA_ENTRADA_TRABAJADOR.Equals("") And
                             ListaAsistencia(i).RHMANAS_HORA_SALIDA_TRABAJADOR.Equals("") Then
-
-
-
                         Else
-                            Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "El nómade", "window.alertCustom('El código biométrico en la fila número" & (i - 1) & " no es válido, vuelva a carga el archivo.');", True)
+                            Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "Script", "<script language='javascript'>alertCustom('El código biométrico en la fila número " & (i - 1) & " no es válido, vuelva a carga el archivo.');</script>", False)
                             'Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "El nómade", "El código biométrico en la fila número" & (i - 1) & " no es válido.") 'es para escribir
                             'Exit Sub
                             bError = True
@@ -254,39 +221,34 @@ Partial Class vistas_NS_NSMASIST
                             ListaAsistencia(i).RHMANAS_HORA_SALIDA.Equals("") And
                             ListaAsistencia(i).RHMANAS_HORA_ENTRADA_TRABAJADOR.Equals("") And
                             ListaAsistencia(i).RHMANAS_HORA_SALIDA_TRABAJADOR.Equals("") Then
-
-
                         Else
-                            Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "El nómade", "window.alertCustom('El código biométrico en la fila número" & (i - 1) & " no es válido, vuelva a carga el archivo.');", True)
+                            Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "Script", "<script language='javascript'>alertCustom('El código biométrico en la fila número " & (i - 1) & " no es válido, vuelva a carga el archivo.');</script>", False)
                             'Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "El nómade", "El código biométrico en la fila número" & (i - 1) & " no es válido.") 'es para escribir
                             'Exit Sub
                             bError = True
-
                         End If
-
-
-
-
                     End If
-                    Tabla = Empleado.Listar_Empleados(0, 0, "", "", "", "", "", ListaAsistencia(i).RHMANAS_CODE_BIO)
-                    If Not Tabla Is Nothing Then
-                        Nombre = Tabla.Rows(0)("NOMBRE_EMPLEADO").ToString()
-                    Else
-                        'no existe
+                    If Nombre = "" Or Codigo = "" Then
+                        Tabla = Empleado.Listar_Empleados(0, 0, "", "", "", "", "", ListaAsistencia(i).RHMANAS_CODE_BIO)
+                        If Not Tabla Is Nothing Then
+                            Nombre = Tabla.Rows(0)("NOMBRE_EMPLEADO").ToString()
+                            Codigo = Tabla.Rows(0)("CODIGO_EMPLEADO").ToString()
+                        Else
+                            'no existe
+                        End If
                     End If
-
-                End If
-                If Codigo = "" Then
-                    Codigo = ListaAsistencia(i).RHMANAS_CODE_BIO
-                End If
-                If Nombre = "" Then
-                    Nombre = Tabla.Rows(0)("NOMBRE_EMPLEADO").ToString()
                 End If
 
+                'If Codigo = "" Then
+                '    'Codigo = ListaAsistencia(i).RHMANAS_CODE_BIO
+                '    Codigo = Tabla.Rows(0)("CODIGO_EMPLEADO").ToString()
+                'End If
+
+                'If Nombre = "" Then
+                '    Nombre = Tabla.Rows(0)("NOMBRE_EMPLEADO").ToString()
+                'End If
 
                 html = html & "<td>" & Nombre & "</td>"
-
-
 
                 Try
                     If ListaAsistencia(i).RHMANAS_CODE_BIO.Equals("") And
@@ -295,23 +257,16 @@ Partial Class vistas_NS_NSMASIST
                           ListaAsistencia(i).RHMANAS_HORA_SALIDA.Equals("") And
                           ListaAsistencia(i).RHMANAS_HORA_ENTRADA_TRABAJADOR.Equals("") And
                           ListaAsistencia(i).RHMANAS_HORA_SALIDA_TRABAJADOR.Equals("") Then
-
-
-
-
                     Else
                         'Convert.ToDateTime(ListaAsistencia(i).RHMANAS_FECHA).ToString("dd/MM/yyyy")
                         html = html & "<td>" & ListaAsistencia(i).RHMANAS_FECHA & "</td>"
 
                     End If
-
-
                 Catch ex As Exception
-                    Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "El nómade", " window.alertCustom('El formato fecha en la fila número " & (i - 1) & " no es válido, vuelva a carga el archivo.');", True)
+                    Me.Page.ClientScript.RegisterStartupScript(Me.GetType(), "Script", "<script language='javascript'>alertCustom('El formato fecha en la fila número " & (i - 1) & " no es válido, vuelva a carga el archivo.');</script>", False)
                     bError = True
-
-                    'ClientScriptManager(Me.GetType(), "Alter", "dasd")
                 End Try
+
                 html = html & "<td>" & ListaAsistencia(i).RHMANAS_HORA_ENTRADA & "</td>"
                 html = html & "<td>" & ListaAsistencia(i).RHMANAS_HORA_SALIDA & "</td>"
                 Dim HoraEntradaTrabajador As String = ""
@@ -334,51 +289,54 @@ Partial Class vistas_NS_NSMASIST
 
                 html = html & "<td>" & hfUsuario.Value() & "</td>"
                 html = html & "</tr>"
-                If i = 0 Then
 
-
-                    If ListaAsistencia(i).RHMANAS_CODE_BIO.Equals("") And
-                                     ListaAsistencia(i).RHMANAS_FECHA.Equals("") And
-                                    ListaAsistencia(i).RHMANAS_HORA_ENTRADA.Equals("") And
-                                    ListaAsistencia(i).RHMANAS_HORA_SALIDA.Equals("") And
-                                    ListaAsistencia(i).RHMANAS_HORA_ENTRADA_TRABAJADOR.Equals("") And
-                                    ListaAsistencia(i).RHMANAS_HORA_SALIDA_TRABAJADOR.Equals("") Then
-
-
-                    Else
-
-
-                        Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value, hfPeriodo.Value,
-                                                    ListaAsistencia(i).RHMANAS_CODE_BIO, Nombre, ListaAsistencia(i).RHMANAS_FECHA,
-                                                    ListaAsistencia(i).RHMANAS_HORA_ENTRADA, ListaAsistencia(i).RHMANAS_HORA_SALIDA,
-                                                    HoraEntradaTrabajador, HoraSalidaTrabajador, ListaAsistencia(i).RHMANAS_USUA_ID, "", 1,
-                                                    ListaAsistencia(i).RHMANAS_FALTA_TRABAJADOR, ListaAsistencia(i).RHMANAS_HORA_EXTRA_TRABAJADOR)
-                    End If
-
-
-                Else
-                    If ListaAsistencia(i).RHMANAS_CODE_BIO.Equals("") And
-                             ListaAsistencia(i).RHMANAS_FECHA.Equals("") And
-                            ListaAsistencia(i).RHMANAS_HORA_ENTRADA.Equals("") And
-                            ListaAsistencia(i).RHMANAS_HORA_SALIDA.Equals("") And
-                            ListaAsistencia(i).RHMANAS_HORA_ENTRADA_TRABAJADOR.Equals("") And
-                            ListaAsistencia(i).RHMANAS_HORA_SALIDA_TRABAJADOR.Equals("") Then
-
-
-                    Else
-
-
-                        Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value, hfPeriodo.Value,
-                                                    ListaAsistencia(i).RHMANAS_CODE_BIO, Nombre, ListaAsistencia(i).RHMANAS_FECHA,
+                Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value, hfPeriodo.Value,
+                                                    Codigo, Nombre, Utilities.fechaLocal_Excel(ListaAsistencia(i).RHMANAS_FECHA),
                                                     ListaAsistencia(i).RHMANAS_HORA_ENTRADA, ListaAsistencia(i).RHMANAS_HORA_SALIDA,
                                                     HoraEntradaTrabajador, HoraSalidaTrabajador, ListaAsistencia(i).RHMANAS_USUA_ID, "", 0,
                                                     ListaAsistencia(i).RHMANAS_FALTA_TRABAJADOR, ListaAsistencia(i).RHMANAS_HORA_EXTRA_TRABAJADOR)
-                    End If
+                'If i = 0 Then
 
+                '    If ListaAsistencia(i).RHMANAS_CODE_BIO.Equals("") And
+                '                     ListaAsistencia(i).RHMANAS_FECHA.Equals("") And
+                '                    ListaAsistencia(i).RHMANAS_HORA_ENTRADA.Equals("") And
+                '                    ListaAsistencia(i).RHMANAS_HORA_SALIDA.Equals("") And
+                '                    ListaAsistencia(i).RHMANAS_HORA_ENTRADA_TRABAJADOR.Equals("") And
+                '                    ListaAsistencia(i).RHMANAS_HORA_SALIDA_TRABAJADOR.Equals("") Then
 
+                '    Else
+                '        'Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value, hfPeriodo.Value,
+                '        '                            ListaAsistencia(i).RHMANAS_CODE_BIO, Nombre, Utilities.fechaLocal_Excel(ListaAsistencia(i).RHMANAS_FECHA),
+                '        '                            ListaAsistencia(i).RHMANAS_HORA_ENTRADA, ListaAsistencia(i).RHMANAS_HORA_SALIDA,
+                '        '                            HoraEntradaTrabajador, HoraSalidaTrabajador, ListaAsistencia(i).RHMANAS_USUA_ID, "", 1,
+                '        '                            ListaAsistencia(i).RHMANAS_FALTA_TRABAJADOR, ListaAsistencia(i).RHMANAS_HORA_EXTRA_TRABAJADOR)
+                '        Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value, hfPeriodo.Value,
+                '                                    Codigo, Nombre, Utilities.fechaLocal_Excel(ListaAsistencia(i).RHMANAS_FECHA),
+                '                                    ListaAsistencia(i).RHMANAS_HORA_ENTRADA, ListaAsistencia(i).RHMANAS_HORA_SALIDA,
+                '                                    HoraEntradaTrabajador, HoraSalidaTrabajador, ListaAsistencia(i).RHMANAS_USUA_ID, "", 1,
+                '                                    ListaAsistencia(i).RHMANAS_FALTA_TRABAJADOR, ListaAsistencia(i).RHMANAS_HORA_EXTRA_TRABAJADOR)
+                '    End If
+                'Else
+                '    If ListaAsistencia(i).RHMANAS_CODE_BIO.Equals("") And
+                '             ListaAsistencia(i).RHMANAS_FECHA.Equals("") And
+                '            ListaAsistencia(i).RHMANAS_HORA_ENTRADA.Equals("") And
+                '            ListaAsistencia(i).RHMANAS_HORA_SALIDA.Equals("") And
+                '            ListaAsistencia(i).RHMANAS_HORA_ENTRADA_TRABAJADOR.Equals("") And
+                '            ListaAsistencia(i).RHMANAS_HORA_SALIDA_TRABAJADOR.Equals("") Then
 
-                End If
-
+                '    Else
+                '        'Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value, hfPeriodo.Value,
+                '        '                            ListaAsistencia(i).RHMANAS_CODE_BIO, Nombre, Utilities.fechaLocal_Excel(ListaAsistencia(i).RHMANAS_FECHA),
+                '        '                            ListaAsistencia(i).RHMANAS_HORA_ENTRADA, ListaAsistencia(i).RHMANAS_HORA_SALIDA,
+                '        '                            HoraEntradaTrabajador, HoraSalidaTrabajador, ListaAsistencia(i).RHMANAS_USUA_ID, "", 0,
+                '        '                            ListaAsistencia(i).RHMANAS_FALTA_TRABAJADOR, ListaAsistencia(i).RHMANAS_HORA_EXTRA_TRABAJADOR)
+                '        Asistencia.Crear_Asistencia(ListaAsistencia(i).RHMANAS_CODE, hfEmpresa.Value, hfSucursal.Value, hfPeriodo.Value,
+                '                                    Codigo, Nombre, Utilities.fechaLocal_Excel(ListaAsistencia(i).RHMANAS_FECHA),
+                '                                    ListaAsistencia(i).RHMANAS_HORA_ENTRADA, ListaAsistencia(i).RHMANAS_HORA_SALIDA,
+                '                                    HoraEntradaTrabajador, HoraSalidaTrabajador, ListaAsistencia(i).RHMANAS_USUA_ID, "", 0,
+                '                                    ListaAsistencia(i).RHMANAS_FALTA_TRABAJADOR, ListaAsistencia(i).RHMANAS_HORA_EXTRA_TRABAJADOR)
+                '    End If
+                'End If
             Next
 
             html = html & "</tbody>"

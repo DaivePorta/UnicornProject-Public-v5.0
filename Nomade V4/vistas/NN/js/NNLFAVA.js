@@ -378,16 +378,14 @@
 
         $('#btn_listar').on('click', function () {
 
-
             if (vErrors(["optanho", "optmes", "slcEmpresa", "slcSucural"])) {
 
                 Bloquear("ventana")
                 setTimeout(function () {
                     Lista_Valorizado_Tardanzas();
-                }, 1000);
+                }, 500);
+                cargarCorreos();
             }
-
-
 
         });
 
@@ -463,13 +461,13 @@
 
     return {
         init: function () {
-            cargarCorreos();
+            //cargarCorreos();
             plugins();
             eventos();
             fillCboEmpresa();
             ListarSucursales($("#slcEmpresa").val());
             fillBandeja();
-            Lista_Valorizado_Tardanzas();
+            //Lista_Valorizado_Tardanzas();
 
         }
     };
@@ -544,12 +542,12 @@ var ArmaCadena = function () {
             cadena += array[i]["DESC_CARGO"] + "/"
             cadena += array[i]["REM_TOTAL"] + "/"
             cadena += array[i]["FALTAS"] + "/"
-            cadena += parseFloat(array[i]["DSCTO_FAL_INJUST"]) + "/"
+            cadena += parseFloat(array[i]["DSCTO_FAL_INJUST"].replace(",",".")) + "/"
             cadena += array[i]["TOTAL_MINUTOS_TARDANZAS"] + "/"
-            cadena += parseFloat(array[i]["REDONDEO_TOTAL_DESC_X_MINUTOS_TARDANZA"]) + "/"
+            cadena += parseFloat(array[i]["REDONDEO_TOTAL_DESC_X_MINUTOS_TARDANZA"].replace(",",".")) + "/"
             cadena += array[i]["TOTAL_MINUTOS_EXTRAS"] + "/"
-            cadena += parseFloat(array[i]["REDONDEO_TOTAL_PAGAR_HORAS_EXTRAS"]) + "/"
-            cadena += parseFloat(array[i]["SALDO"]) + "/"
+            cadena += parseFloat(array[i]["REDONDEO_TOTAL_PAGAR_HORAS_EXTRAS"].replace(",",'.')) + "/"
+            cadena += parseFloat(array[i]["SALDO"].replace(",",".")) + "/"
             cadena += $("#hfctlg").val() + "/"
             cadena += $("#hfscsl").val() + "/"
             cadena += $("#hf_anio").val() + "/"

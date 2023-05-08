@@ -135,14 +135,14 @@ var NNLPESR = function () {
     }
 
     var fillMotivos = function () {
-
- 
         $("#cbo_motivo").append('<option value="T">' + "TODOS" + '</option>');
         $("#cbo_motivo").append('<option value="' + 1 + '">' + "LICENCIAS SIN GOCE DE HABER" + '</option>');
         $("#cbo_motivo").append('<option value="' + 2 + '">' + "SUBSIDIADO POR ESSALUD" + '</option>');
-        $("#cbo_motivo").append('<option value="' + 3 + '">' + "OTROS" + '</option>');
+        $("#cbo_motivo").append('<option value="' + 3 + '">' + "SUBSIDIO POR MATERNIDAD" + '</option>');
+        $("#cbo_motivo").append('<option value="' + 4 + '">' + "OTROS" + '</option>');
         $("#cbo_motivo").select2("val", "T").change();
     }
+
     var fillCboEmpresa = function () {
         $.ajax({
             type: "post",
@@ -363,7 +363,8 @@ var NNMPESR = function () {
 
         $("#cbo_motivo").append('<option value="' + 1 + '">' + "LICENCIAS SIN GOCE DE HABER" + '</option>');
         $("#cbo_motivo").append('<option value="' + 2 + '">' + "SUBSIDIADO POR ESSALUD" + '</option>');
-        $("#cbo_motivo").append('<option value="' + 3 + '">' + "OTROS" + '</option>');
+        $("#cbo_motivo").append('<option value="' + 3 + '">' + "SUBSIDIO POR MATERNIDAD" + '</option>');
+        $("#cbo_motivo").append('<option value="' + 4 + '">' + "OTROS" + '</option>');
 
     }
     var fillCboEmpresa = function () {

@@ -4014,7 +4014,7 @@ var InsertarValorCambioOficial = function (monecode) {
 
         var request = new XMLHttpRequest();
 
-        request.open("POST", "https://api.migoperu.pe/api/v1/exchange/latest");
+        request.open("POST", "https://api.migo.pe/api/v1/exchange/latest");
         request.setRequestHeader("Accept", "application/json");
 
         request.send(formData);

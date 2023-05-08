@@ -178,15 +178,16 @@ table.dataTable tbody tr.selected2 {
                         <table id="tblJustigicacion" border="0" class="table DTTT_selectable" style="display: block;">
                             <thead>
                                 <tr>
-                                    <th>CÓDIGO</th>
-                                    <th>TIPO</th>
-                                     <th>MOTIVO</th>
-                                    <th>NOMBRE</th>
-                                    <th>D. INICIO</th>
-                                    <th>D. FIN</th>
-                                    <th>H. INI</th>
-                                    <th>H. FIN</th>
-                                        <th style="text-align:center;"><input type="checkbox" id="check_todos"  style="height:25px!important;width:25px!important;"/></th>
+                                    <th style="text-align:center;">CÓDIGO</th>
+                                    <th style="text-align:center;">TIPO</th>
+                                    <th style="text-align:center;">MOTIVO</th>
+                                    <th style="text-align:center;">EMPLEADO</th>
+                                    <th style="text-align:center;">D. INICIO</th>
+                                    <th style="text-align:center;">D. FIN</th>
+                                    <th style="text-align:center;">H. INI</th>
+                                    <th style="text-align:center;">H. FIN</th>
+                                    <th style="text-align:center;">AUTORIZA</th>
+                                    <th style="text-align:center;"><input type="checkbox" id="check_todos"  style="height:25px!important;width:25px!important;"/></th>
                                 </tr>
                             </thead>
                         </table>

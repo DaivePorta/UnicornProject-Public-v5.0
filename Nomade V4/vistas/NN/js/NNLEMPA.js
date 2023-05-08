@@ -21,8 +21,83 @@ var NNLEMPA = function () {
     var fillBandeja = function () {
 
         var parms = {
-            data: null,
-            ordering: false,
+            data: null,          
+            columns: [
+                {
+                    data: "FECHA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+                      
+                    },
+                    type: "fecha"
+                },
+                {
+                    data: "ENTRADA_M",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+                        
+                    }
+                },
+                {
+                    data: "SALIDA_M",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+                         
+                    }
+                },
+                {
+                    data: "ENTRADA_T",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+                          
+                    }
+                },
+                {
+                    data: "SALIDA_T",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+                            
+                    }
+                },
+                {
+                    data: "TARDANZA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+                            
+                    }
+                },
+                {
+                    data: "FALTA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+
+                         
+                    }
+                },
+                       
+                {
+                    data: "EXTRA",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+
+                    }
+                },
+                {
+                    data: "MIN_NO_SUBSANADOS",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+
+                    }
+                }, 
+                {
+                    data: "MIN_SUBSANADOS",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center');
+
+                    }
+                },
+            ],
+            //ordering: false,
             responsive: true,
             iDisplayLength: -1,
             //"sDom": "t",
@@ -39,85 +114,7 @@ var NNLEMPA = function () {
             "scrollY": "280px",
             "searching": false,
             "info": false,
-            
-            columns: [
-                {
-                    data: "FECHA",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('align', 'center');
-                      
-                    }
-                },
-                 {
-                     data: "ENTRADA_M",
-                     createdCell: function (td, cellData, rowData, row, col) {
-                         $(td).attr('align', 'center');
-                        
-                     }
-                 },
-                  {
-                      data: "SALIDA_M",
-                      createdCell: function (td, cellData, rowData, row, col) {
-                          $(td).attr('align', 'center');
-                         
-                      }
-                  },
-                   {
-                       data: "ENTRADA_T",
-                       createdCell: function (td, cellData, rowData, row, col) {
-                           $(td).attr('align', 'center');
-                          
-                       }
-                   },
-                    {
-                        data: "SALIDA_T",
-                        createdCell: function (td, cellData, rowData, row, col) {
-                            $(td).attr('align', 'center');
-                            
-                        }
-                    },
-                     {
-                         data: "TARDANZA",
-                         createdCell: function (td, cellData, rowData, row, col) {
-                             $(td).attr('align', 'center');
-                            
-                         }
-                     },
-                      {
-                          data: "FALTA",
-                          createdCell: function (td, cellData, rowData, row, col) {
-                              $(td).attr('align', 'center');
-
-                         
-                          }
-                      },
-                       
-                        {
-                            data: "EXTRA",
-                            createdCell: function (td, cellData, rowData, row, col) {
-                                $(td).attr('align', 'center');
-
-                            }
-                        },
-            {
-            data: "MIN_NO_SUBSANADOS",
-            createdCell: function (td, cellData, rowData, row, col) {
-                $(td).attr('align', 'center');
-
-            }
-            }, 
-            {
-                data: "MIN_SUBSANADOS",
-                createdCell: function (td, cellData, rowData, row, col) {
-                    $(td).attr('align', 'center');
-
-                }
-            },
-                
-
-
-
-            ],
+            order: [[0, 'asc']],
             drawCallback: function (settings) {
                 var api = this.api();
                 var rows = api.rows({ page: 'current' }).nodes();

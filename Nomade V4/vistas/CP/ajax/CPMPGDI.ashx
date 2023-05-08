@@ -40,6 +40,7 @@ Public Class CPMPGDI : Implements IHttpHandler
     Dim monto_total As String
     Dim tipo_cambio As String
     Dim codModulo As String
+    Dim asiento_contable As String
 
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         context.Response.ContentType = "text/plain"
@@ -70,6 +71,8 @@ Public Class CPMPGDI : Implements IHttpHandler
         estable = context.Request("estable")
         tipo_cambio = context.Request("tipo_cambio")
         codModulo = context.Request("codModulo")
+        asiento_contable = context.Request("asiento_contable")
+
         Try
 
             Select Case flag.ToString()
@@ -77,29 +80,32 @@ Public Class CPMPGDI : Implements IHttpHandler
                 Case "1" 'crear pago x caja
                     res = PagoDiverso.PagoDiversoCaja(detalle, caja, usuario, codigo_apertura, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, tipo_cambio, "CAJ", "", "", "", "", "", "", monto_total)
 
-                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
-                    If Not String.IsNullOrEmpty(codModulo) Then
-                        If codModulo.Equals("0003") Then
-                            Dim strCodAsientoPagoGasto As String
-                            For Each item As String In detalle.Split("|")
-                                Dim strCodGasto As String = item.Split(",")(0)
-                                strCodAsientoPagoGasto = oCTGeneracionAsientos.GenerarAsientoPagoGasto(strCodGasto)
-                            Next
+                    If asiento_contable = "SI" Then
+                        Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                        If Not String.IsNullOrEmpty(codModulo) Then
+                            If codModulo.Equals("0003") Then
+                                Dim strCodAsientoPagoGasto As String
+                                For Each item As String In detalle.Split("|")
+                                    Dim strCodGasto As String = item.Split(",")(0)
+                                    strCodAsientoPagoGasto = oCTGeneracionAsientos.GenerarAsientoPagoGasto(strCodGasto)
+                                Next
+                            End If
                         End If
                     End If
-
 
                 Case "1.5" 'crear pago x banco
                     res = PagoDiverso.PagoDiversoBanco(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, tipo_cambio, estable, adicional, caja)
 
-                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
-                    If Not String.IsNullOrEmpty(codModulo) Then
-                        If codModulo.Equals("0003") Then
-                            Dim strCodAsientoPagoGasto As String
-                            For Each item As String In detalle.Split("|")
-                                Dim strCodGasto As String = item.Split(",")(0)
-                                strCodAsientoPagoGasto = oCTGeneracionAsientos.GenerarAsientoPagoGasto(strCodGasto)
-                            Next
+                    If asiento_contable = "SI" Then
+                        Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                        If Not String.IsNullOrEmpty(codModulo) Then
+                            If codModulo.Equals("0003") Then
+                                Dim strCodAsientoPagoGasto As String
+                                For Each item As String In detalle.Split("|")
+                                    Dim strCodGasto As String = item.Split(",")(0)
+                                    strCodAsientoPagoGasto = oCTGeneracionAsientos.GenerarAsientoPagoGasto(strCodGasto)
+                                Next
+                            End If
                         End If
                     End If
 
@@ -201,6 +207,12 @@ Public Class CPMPGDI : Implements IHttpHandler
                     Else
                         res = ""
                     End If
+
+                Case "4.2" 'DPORTA 17/04/2023
+                    context.Response.ContentType = "text/html"
+                    Dim DeudasPagoDiversos As New Nomade.CP.CPPagosDiversos("Bn")
+
+                    res = DeudasPagoDiversos.ReprocesarDeudasGastosAprobados()
 
                 Case "4.5" 'lista amortizaciones (detalles de filas de tabla) DESDE fabampr
 

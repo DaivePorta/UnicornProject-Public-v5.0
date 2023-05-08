@@ -137,6 +137,25 @@ Public Class CCLRFVA : Implements IHttpHandler
                         resb.Append("]")
                     End If
                     res = resb.ToString()
+                Case "2.6" 'listar persona
+                    Dim p As New Nomade.NC.NCPersona("Bn")
+                    dt = p.listar_Persona("X")
+                    If Not (dt Is Nothing) Then
+                        'dt = SortDataTableColumn(dt, "RAZON_SOCIAL", "ASC")
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            'resb.Append("""ID"" :" & """" & MiDataRow("ID").ToString & """,")
+                            resb.Append("""RAZON_SOCIAL"" :" & """" & MiDataRow("NOMBRE").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
                 Case "3" 'lista facturas de venta
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = ccCuentaPorCobrar.ListarCreditoClienteFechas("", p_CTLG_CODE, p_SCSL_CODE, "", "CR", p_PERS_PIDM, "C", Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), "", "", "")

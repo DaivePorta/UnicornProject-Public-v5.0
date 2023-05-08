@@ -50,6 +50,35 @@ var CCLRCCL = function () {
         });
     }
 
+    var cargarSucursales = function (empresa) {
+        var select = $('#slcEstablec');
+        select.multiselect('destroy');
+        select.multiselect();
+        $.ajax({
+            type: "post",
+            url: 'vistas/NC/ajax/NCMCAJA.ashx?OPCION=7&CTLG_CODE=' + empresa,
+            beforesend: function () { select.hide(); Bloquear($(select.parents("div")[0])); },
+            contenttype: "application/json",
+            datatype: "json",
+            async: true,
+            success: function (data) {
+                select.empty();
+                for (var i = 0; i < data.length; i++) {
+                    select.append('<option value="' + data[i].CODIGO + '">' + data[i].DESCRIPCION + '</option>');
+                }
+            },
+            error: function (msg) {
+                alertCustom('Error al cargar Sucursales.');
+            },
+            complete: function () {
+
+                select.multiselect('destroy');
+                select.multiselect();
+
+                Desbloquear($(select.parents("div")[0]));
+            }
+        });
+    };
 
     function filltxtrazsocial(v_ID, v_value) {
         var selectRazonSocial = $(v_ID);
@@ -138,7 +167,7 @@ var CCLRCCL = function () {
         });
 
         $('#buscar').on('click', function () {
-            if (vErrors(["cboEmpresa", "txtRuc"])) {
+            if (vErrors(["cboEmpresa"])) {
                 if ($("#txtDesde").val().trim() == "" && $("#txtHasta").val().trim() == "") {
                     obtenerReporteCuentasPorCobrar();
                 } else if ($("#txtDesde").val().trim() != "" && $("#txtHasta").val().trim() != "") {
@@ -160,6 +189,7 @@ var CCLRCCL = function () {
         data.append('p_CLIE_PIDM', $("#hfPIDM").val());
         data.append('p_DESDE', $("#txtDesde").val());
         data.append('p_HASTA', $("#txtHasta").val());
+        data.append('p_SCSL_CODE', $("#slcEstablec").val() == null ? "" : $('#slcEstablec').val().toString())
 
         Bloquear("ventana");
         var jqxhr = $.ajax({
@@ -273,6 +303,7 @@ var CCLRCCL = function () {
         init: function () {
             plugins();
             fillCboEmpresa();
+            cargarSucursales($("#ctl00_hddctlg").val());
             filltxtrazsocial('#txtrazsocial', '');
             eventoComtroles();
             cargaInicial();

@@ -692,7 +692,7 @@ var CCMCBCL = function () {
             if (!isEmpty($("#cboClientes").val()) && !isEmpty($("#slcEmpresa").val())) {
                 consultaDeudas();
                 consultaNotaCredito();
-                consultaAnticiposCompensar();
+                /*consultaAnticiposCompensar();*/
                 $("#ind_retencion").remove();
                 if ($("#cboClientes option:selected").attr("data-retencion") == "S") {
                     $("#cboClientes").after('<span id="ind_retencion" class="is-agente">Agente de Retención</span>')
@@ -1819,7 +1819,7 @@ function cargarParametrosSistema() {
         url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
         contenttype: "application/json;",
         datatype: "json",
-        async: true,
+        async: false,
         success: function (datos) {
             if (datos != null) {
                 prmtACON = datos[0].VALOR;

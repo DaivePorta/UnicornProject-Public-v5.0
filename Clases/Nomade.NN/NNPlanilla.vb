@@ -559,7 +559,6 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPLA_CODE", p_TIPLA_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_IND", p_ESTADO_IND, ParameterDirection.Input, 253))
 
-
             dt = cn.Consulta(cmd)
 
             If Not (dt Is Nothing) Then
@@ -585,9 +584,6 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_DEPEND_CODE", p_DEPEND_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RHCNPL_IND_NO_ADICIONAL", p_RHCNPL_IND_NO_ADICIONAL, ParameterDirection.Input, 253))
 
-
-
-
             dt = cn.Consulta(cmd)
 
             If Not (dt Is Nothing) Then
@@ -610,10 +606,6 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PERIODO", p_PERIODO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_COD_AFP", p_COD_AFP, ParameterDirection.Input, 253))
-
-
-
-
 
             dt = cn.Consulta(cmd)
 
@@ -822,8 +814,8 @@
             cmd = cn.GetNewCommand("PFS_LISTAR_EMPLEADOS_REGULARIZAR_HORAS", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_DESDE", IIf(p_FECHA_DESDE Is Nothing, Nothing, Convert.ToDateTime(p_FECHA_DESDE).ToString("yyyy/MM/dd")), ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_HASTA", IIf(p_FECHA_HASTA Is Nothing, Nothing, Convert.ToDateTime(p_FECHA_HASTA).ToString("yyyy/MM/dd")), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_DESDE", IIf(p_FECHA_DESDE Is Nothing, Nothing, p_FECHA_DESDE), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_HASTA", IIf(p_FECHA_HASTA Is Nothing, Nothing, p_FECHA_HASTA), ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 
@@ -844,7 +836,7 @@
 
             cmd = cn.GetNewCommand("PFS_LISTAR_HORAS_EMPLEADO_REGULARIZAR", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", Convert.ToDateTime(p_FECHA).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", p_FECHA, ParameterDirection.Input, 253))
 
 
             dt = cn.Consulta(cmd)
@@ -866,7 +858,7 @@
 
             cmd = cn.GetNewCommand("PFS_LISTAR_MARACIONES_BIOMETRICO_REALES", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", Convert.ToDateTime(p_FECHA).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", p_FECHA, ParameterDirection.Input, 253))
 
 
             dt = cn.Consulta(cmd)
@@ -892,7 +884,7 @@
             cmd = cn.GetNewCommand("PFC_ACTUALIZAR_HORAS_REGULARIZAR", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLE", p_DETALLE, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", Convert.ToDateTime(p_FECHA).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", p_FECHA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_IDS", p_IDS, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESP", String.Empty, ParameterDirection.Output, 253))
             cmd1 = cn.Ejecuta_parms(cmd)
@@ -1077,7 +1069,7 @@
             Dim cmd As IDbCommand
 
             cmd = cn.GetNewCommand("PFS_LISTAR_HORARIO_DETALLE_EMPLEADO_X_DIA", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", Convert.ToDateTime(p_FECHA).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", p_FECHA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
 
@@ -1103,7 +1095,7 @@
             Dim msg As String
 
             cmd = cn.GetNewCommand("PFS_REPROCESAR_MARCACIONES_BIOMETRICO", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", Convert.ToDateTime(p_FECHA).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", p_FECHA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
 
@@ -1166,8 +1158,6 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO", p_TIPO, ParameterDirection.Input, 253))
 
-
-
             dt = cn.Consulta(cmd)
 
             If Not (dt Is Nothing) Then
@@ -1186,12 +1176,10 @@
             Dim cmd As IDbCommand
 
             cmd = cn.GetNewCommand("PFS_LISTAR_DIAS_LABORADOS_X_EMPLEADO", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_DESDE", Convert.ToDateTime(p_FECHA_DESDE).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_HASTA", Convert.ToDateTime(p_FECHA_HASTA).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_DESDE", p_FECHA_DESDE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_HASTA", p_FECHA_HASTA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
-
-
 
             dt = cn.Consulta(cmd)
 
@@ -1214,9 +1202,6 @@
             cmd = cn.GetNewCommand("PFS_LISTAR_PERIODO_CORTE_X_CLTG", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
 
-
-
-
             dt = cn.Consulta(cmd)
 
             If Not (dt Is Nothing) Then
@@ -1236,8 +1221,8 @@
             Dim cmd As IDbCommand
 
             cmd = cn.GetNewCommand("PFR_LISTAR_JUSTIFICACIONES_X_PERIODO", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_INI", Convert.ToDateTime(p_FECHA_INI).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_FIN", Convert.ToDateTime(p_FECHA_FIN).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_INI", p_FECHA_INI, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_FIN", p_FECHA_FIN, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_JUSTIFICACION", p_TIPO_JUSTIFICACION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
@@ -1262,8 +1247,8 @@
             Dim cmd As IDbCommand
 
             cmd = cn.GetNewCommand("PFS_LISTAR_REFRIGERIO_DETALLE_EMPLEADO_X_DIA", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_INICIO", Convert.ToDateTime(p_FECHA_INICIO).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_FIN", Convert.ToDateTime(p_FECHA_FIN).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_INICIO", p_FECHA_INICIO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_FIN", p_FECHA_FIN, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@TIPO", TIPO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
@@ -1388,8 +1373,8 @@
             Dim cmd As IDbCommand
 
             cmd = cn.GetNewCommand("PFS_LISTAR_MARCACIONES_BRUTAS", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_DESDE", Convert.ToDateTime(p_FECHA_DESDE).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_HASTA", Convert.ToDateTime(p_FECHA_HASTA).ToString("yyyy/MM/dd"), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_DESDE", p_FECHA_DESDE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_HASTA", p_FECHA_HASTA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_IND", p_ESTADO_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))

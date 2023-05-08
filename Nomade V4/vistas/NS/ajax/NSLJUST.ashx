@@ -23,19 +23,19 @@ Public Class NSLJUST : Implements IHttpHandler
         p_TIPO_JUST = context.Request("p_TIPO_JUST")
         p_TIPO_MOTIVO = context.Request("p_TIPO_MOTIVO")
         p_DETALLE = context.Request("p_DETALLE")
-        
+
         Try
             Select Case Opcion
                 Case "0"
                     'context.Response.ContentType = "application/json; charset=utf-8"
                     dt = New DataTable
-                 '   dt = Periodo.Listar_Periodo("", "")
+                    '   dt = Periodo.Listar_Periodo("", "")
                     Dim Fecha As String = ""
                     If Not (dt Is Nothing) Then
                         For i = 0 To dt.Rows.Count - 1
                             Fecha = dt.Rows(0)("CODIGO").ToString()
                         Next
-                       
+
                     End If
                     res = Fecha
                 Case "99"
@@ -50,8 +50,8 @@ Public Class NSLJUST : Implements IHttpHandler
                         For Each MiDataRow As DataRow In dt.Rows
                             resb.Append("{")
                             resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
-                            resb.Append("""FECHA_INI_PERIODO"" :" & """" & MiDataRow("FECHA_INI_PERIODO").ToString & """,")
-                            resb.Append("""FECHA_FIN_PERIODO"" :" & """" & MiDataRow("FECHA_FIN_PERIODO").ToString & """,")
+                            'resb.Append("""FECHA_INI_PERIODO"" :" & """" & MiDataRow("FECHA_INI_PERIODO").ToString & """,")
+                            'resb.Append("""FECHA_FIN_PERIODO"" :" & """" & MiDataRow("FECHA_FIN_PERIODO").ToString & """,")
                             resb.Append("""FECHA_HOY"" :" & """" & MiDataRow("FECHA_HOY").ToString & """,")
                             resb.Append("""CTLG_CODE"" :" & """" & MiDataRow("CTLG_CODE").ToString & """,")
                             resb.Append("""SCSL_CODE"" :" & """" & MiDataRow("SCSL_CODE").ToString & """,")
@@ -63,28 +63,28 @@ Public Class NSLJUST : Implements IHttpHandler
                             resb.Append("""RHFATAR_DIA_FIN"" :" & """" & MiDataRow("RHFATAR_DIA_FIN").ToString & """,")
                             resb.Append("""TIPO_MOTIVO"" :" & """" & MiDataRow("TIPO_MOTIVO").ToString & """,")
                             resb.Append("""RHFATAR_ESTADO_IND"" :" & """" & MiDataRow("RHFATAR_ESTADO_IND").ToString & """,")
-                            
-                            If CDate(MiDataRow("FECHA_CREACION").ToString) >= CDate(MiDataRow("FECHA_INI_PERIODO").ToString) And
-                                CDate(MiDataRow("FECHA_CREACION").ToString) <= CDate(MiDataRow("FECHA_FIN_PERIODO").ToString) Then
-                                resb.Append("""IND_MODIFICACION"" :" & """" & "S" & """,")
-                            Else
-                                resb.Append("""IND_MODIFICACION"" :" & """" & "N" & """,")
-                            End If
-                            
+
+                            'If CDate(MiDataRow("FECHA_CREACION").ToString) >= CDate(MiDataRow("FECHA_INI_PERIODO").ToString) And
+                            '    CDate(MiDataRow("FECHA_CREACION").ToString) <= CDate(MiDataRow("FECHA_FIN_PERIODO").ToString) Then
+                            '    resb.Append("""IND_MODIFICACION"" :" & """" & "S" & """,")
+                            'Else
+                            '    resb.Append("""IND_MODIFICACION"" :" & """" & "N" & """,")
+                            'End If
+
                             resb.Append("""IND_COMPLETADO"" :" & """" & MiDataRow("IND_COMPLETADO").ToString & """,")
                             resb.Append("""IND_PLANILLA"" :" & """" & MiDataRow("IND_PLANILLA").ToString & """,")
                             resb.Append("""RHFATAR_DESDE_HORA"" :" & """" & MiDataRow("RHFATAR_DESDE_HORA").ToString & """,")
                             resb.Append("""RHFATAR_HASTA_HORA"" :" & """" & MiDataRow("RHFATAR_HASTA_HORA").ToString & """,")
                             resb.Append("""NOMBRE"" :" & """" & MiDataRow("NOMBRE").ToString & """")
-                            
-                            
+
+
                             resb.Append("}")
                             resb.Append(",")
                         Next
                         resb.Append("{}")
                         resb = resb.Replace(",{}", String.Empty)
                         resb.Append("]")
-                    
+
                     End If
                     res = resb.ToString()
                 Case "L"
@@ -103,28 +103,25 @@ Public Class NSLJUST : Implements IHttpHandler
                             resb.Append("""CODIGO"" :" & """" & MiDataRow("RHFATAR_CODE").ToString & """,")
                             resb.Append("""TIPO"" :" & """" & MiDataRow("TP").ToString & """,")
                             resb.Append("""NOMBRE"" :" & """" & MiDataRow("RHFATAR_NOMBRE").ToString & """,")
-                            
-                                If Not MiDataRow("RHFATAR_DIA_INICIO").ToString.Equals("") Then
-                                    resb.Append("""DINICIO"" :" & """" & MiDataRow("RHFATAR_DIA_INICIO").ToString.Substring(0, 10) & """,")
-                                End If
-                            
-                                If Not MiDataRow("RHFATAR_DIA_FIN").ToString.Equals("") Then
-                                    resb.Append("""DFIN"" :" & """" & MiDataRow("RHFATAR_DIA_FIN").ToString.Substring(0, 10) & """,")
-                                Else
-                                    resb.Append("""DFIN"" :" & """" & "" & """,")
-                                End If
-                            
-                            
-                            
-                                resb.Append("""HINCIO"" :" & """" & MiDataRow("RHFATAR_DESDE_HORA").ToString & """,")    
+                            If Not MiDataRow("RHFATAR_DIA_INICIO").ToString.Equals("") Then
+                                resb.Append("""DINICIO"" :" & """" & MiDataRow("RHFATAR_DIA_INICIO").ToString.Substring(0, 10) & """,")
+                            End If
+
+                            If Not MiDataRow("RHFATAR_DIA_FIN").ToString.Equals("") Then
+                                resb.Append("""DFIN"" :" & """" & MiDataRow("RHFATAR_DIA_FIN").ToString.Substring(0, 10) & """,")
+                            Else
+                                resb.Append("""DFIN"" :" & """" & "" & """,")
+                            End If
+                            resb.Append("""NOMBRE_USUARIO"" :" & """" & MiDataRow("NOMBRE_USUARIO").ToString & """,")
+                            resb.Append("""HINCIO"" :" & """" & MiDataRow("RHFATAR_DESDE_HORA").ToString & """,")
                             resb.Append("""ESTADO"" :" & """" & MiDataRow("RHFATAR_ESTADO_IND").ToString & """,")
                             resb.Append("""IND_PLANILLA"" :" & """" & MiDataRow("IND_PLANILLA").ToString & """,")
                             resb.Append("""CTLG_CODE"" :" & """" & MiDataRow("CTLG_CODE").ToString & """,")
                             resb.Append("""DESC_MOTIVO"" :" & """" & MiDataRow("DESC_MOTIVO").ToString & """,")
                             resb.Append("""SCSL_CODE"" :" & """" & MiDataRow("SCSL_CODE").ToString & """,")
-                                resb.Append("""HFIN"" :" & """" & MiDataRow("RHFATAR_HASTA_HORA").ToString & """")
-                                resb.Append("}")
-                                resb.Append(",")
+                            resb.Append("""HFIN"" :" & """" & MiDataRow("RHFATAR_HASTA_HORA").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
                         Next
                         resb.Append("{}")
                         resb = resb.Replace(",{}", String.Empty)
@@ -157,19 +154,19 @@ Public Class NSLJUST : Implements IHttpHandler
             context.Response.Write(ex.Message)
 
         End Try
-          
+
     End Sub
- 
-    
-    
+
+
+
     Public Function Modificar_Justificacion_bloque(p_DETALLE As String, ByVal p_MOTIVO As String,
                                        ByVal p_TIPO_JUST As String, ByVal p_TIPO_MOTIVO As String) As String
         Dim cResultado As String = ""
         cResultado = Justificacion.Actualizar_Justificacion_bloque(p_DETALLE, p_MOTIVO, p_TIPO_JUST, p_TIPO_MOTIVO)
         Return cResultado
     End Function
-    
-    
+
+
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False

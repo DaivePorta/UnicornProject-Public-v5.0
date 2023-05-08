@@ -127,8 +127,8 @@
             cmd = cn.GetNewCommand("PRH_APO_REC_APRHO", CommandType.StoredProcedure)
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_RHAPRHO_CODE", p_RHAPRHO_CODE, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_RHAPRHO_ESTADO", p_RHAPRHO_ESTADO_IND, ParameterDirection.Output, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_RHAPRHO_USUA_ID", p_RHAPRHO_USUA_ID, ParameterDirection.Output, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RHAPRHO_ESTADO", p_RHAPRHO_ESTADO_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RHAPRHO_USUA_ID", p_RHAPRHO_USUA_ID, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SALIDA", p_SALIDA, ParameterDirection.Output, 253))
             'cmd.Parameters.Add(cn.GetNewParameter("@p_NOMBRE_SOL", p_NOMBRE_SOL, ParameterDirection.Output, 253))
 

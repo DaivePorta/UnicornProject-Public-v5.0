@@ -307,6 +307,7 @@ Public Class NBMMOCB : Implements IHttpHandler
                         res += " moneda=""" & dt.Rows(i)("MONEDA_CODE").ToString()
                         res += """ value=""" & dt.Rows(i)(cvalue).ToString()
                         res += """monto=""" & dt.Rows(i)("SALDO")
+                        res += """pidm_banco=""" & dt.Rows(i)("PIDM_BANCO")
                         res += """>" & dt.Rows(i)(chtml).ToString() & " SD:" & dt.Rows(i)("SALDO") & "</option>"
                     Else
                         res += "<option  value=""" & dt.Rows(i)(cvalue).ToString() & """>" & dt.Rows(i)(chtml).ToString() & "</option>"
