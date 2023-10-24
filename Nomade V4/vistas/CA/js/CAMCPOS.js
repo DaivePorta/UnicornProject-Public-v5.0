@@ -36,25 +36,24 @@ var CALCPOS = function () {
                     if (datos != null) {
                         for (var i = 0; i < datos.length; i++) {
                             select.append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
-                        }
+                        }                        
                     }
                 },
                 error: function (msg) {
                     alert(msg.d);
                 }
             });
-            select.select2('val', $('#ctl00_hddestablecimiento').val()).change(function () { $("#slcPOS").select2("val", ""); cargarPOS(); });;
+            select.select2('val', $('#ctl00_hddestablecimiento').val()).change(function () { $("#slcPOS").select2("val", ""); cargarPOS(); });
         }
         
-        function cargarMoneda() {
+        function cargarMoneda(codMoneda) {
             var select = $('#slcMoneda');
             $.ajax({
                 type: "post",
                 url: "vistas/ca/ajax/camcpos.ashx?flag=MO&empresa=" + $('#slcEmpr').val(),
-                // async: false,
                 success: function (datos) {
                     select.empty();
-                    select.html(datos);
+                    select.html(datos);                    
                 },
                 error: function (msg) {
                     alert(msg);
@@ -65,11 +64,20 @@ var CALCPOS = function () {
                 $("#slcMoneda option").filter(function (e, d) {
                     var val0r = $(d).val();
                     if (v_monedas.indexOf(val0r) < 0)
-                    { $("#slcMoneda option[value=" + val0r + "]").remove(); }
+                    {
+                        $("#slcMoneda option[value=" + val0r + "]").remove();
+                        select.select2('val', codMoneda);
+                        cargarSimboloMoneda()
+                        //select.change();
+                    }
 
                 });
 
-                select.change(function () { cargarSimboloMoneda(); });
+                if ($('#slcEstb').val() == "") {
+                    $("#slcEstb").select2('val', $("#slcPOS option:selected").attr("scslCode"))
+                }
+
+                //select.change(function () { cargarSimboloMoneda(); });
             });
         }
 
@@ -77,14 +85,26 @@ var CALCPOS = function () {
             $('#slcMoneda').attr("disabled", true);
             var select = $('#slcPOS');
             select.attr("disabled", true);
+            let codigoPOS = "";
+            let monedaPOS = "";
             $.ajax({
                 type: "post",
-                url: "vistas/ca/ajax/camcpos.ashx?flag=4&empresa=" + $('#slcEmpr').val() + "&establecimiento=" + $('#slcEstb').val(),
-                //async: false,
-                success: function (datos) {
-
+                url: "vistas/ca/ajax/camcpos.ashx?flag=4.5&empresa=" + $('#slcEmpr').val() + "&establecimiento=" + $('#slcEstb').val(),
+                success: function (datos) { 
                     select.empty();
-                    select.html(datos);
+                    if (datos != null) {
+                        for (var i = 0; i < datos.length; i++) {
+                            select.append('<option value="' + datos[i].CODIGO + '" codOpe="' + datos[i].CODIGO_OPERADOR + '" moneda="' + datos[i].MONEDA + '" scslCode="' + datos[i].SCSL_CODE + '" >' + datos[i].DESCRIPCION + '</option>');
+                            codigoPOS = datos[i].CODIGO;
+                            monedaPOS = datos[i].MONEDA;
+                        }
+                        select.select2('val', codigoPOS);
+                        select.change();
+                    } else {
+                        select.select2('val', "");
+                        $('#slcMoneda').select2('val', "");
+                        select.change();
+                    }                    
                 },
                 error: function (msg) {
                     alert(msg);
@@ -95,8 +115,8 @@ var CALCPOS = function () {
             });
             select.change(function () {
 
-                cargarMoneda();
-                $('#slcMoneda').select2("val", "");
+                cargarMoneda(monedaPOS);
+                //$('#slcMoneda').select2("val", "");
                 table.fnClearTable();
             });
 
@@ -366,11 +386,10 @@ var CAMCPOS = function () {
                     alert(msg.d);
                 }
             });
-            select.select2('val', $('#ctl00_hddestablecimiento').val()).change(function () { $("#slcPOS").select2("val", ""); cargarPOS(); });;
+            select.select2('val', $('#ctl00_hddestablecimiento').val()).change(function () { $("#slcPOS").select2("val", ""); cargarPOS(); });
         }
 
-
-        function cargarMoneda() {
+        function cargarMoneda(codMoneda) {
             var select = $('#slcMoneda');
             $.ajax({
                 type: "post",
@@ -384,24 +403,54 @@ var CAMCPOS = function () {
                     alert(msg);
                 }
             }).done(function () {
-                select.change(function () { cargarSimboloMoneda(); });
+                select.attr("disabled", false);
+                var v_monedas = $('#slcPOS :selected').attr("moneda");
+                $("#slcMoneda option").filter(function (e, d) {
+                    var val0r = $(d).val();
+                    if (typeof v_monedas != "undefined") {
+                        if (val0r != "") {
+                            if (v_monedas.indexOf(val0r) < 0) {
+                                $("#slcMoneda option[value=" + val0r + "]").remove();
+                                select.select2('val', codMoneda);
+                                cargarSimboloMoneda()
+                                //select.change();
+                            }
+                        }
+                    }                                       
+                });
+
+                if ($('#slcEstb').val() == "") {
+                    $("#slcEstb").select2('val', $("#slcPOS option:selected").attr("scslCode"))
+                }
+
+                //select.change(function () { cargarSimboloMoneda(); });
             });
         }
-
-
-
 
         function cargarPOS() {
             var select = $('#slcPOS');
             select.attr("disabled", true);
+            let codigoPOS = "";
+            let monedaPOS = "";
             $.ajax({
                 type: "post",
-                url: "vistas/ca/ajax/camcpos.ashx?flag=4&empresa=" + $('#slcEmpr').val() + "&establecimiento=" + $('#slcEstb').val(),
+                url: "vistas/ca/ajax/camcpos.ashx?flag=4.5&empresa=" + $('#slcEmpr').val() + "&establecimiento=" + $('#slcEstb').val(),
                 //async: false,
                 success: function (datos) {
-
                     select.empty();
-                    select.html(datos);
+                    if (datos != null) {
+                        for (var i = 0; i < datos.length; i++) {
+                            select.append('<option value="' + datos[i].CODIGO + '" codOpe="' + datos[i].CODIGO_OPERADOR + '" moneda="' + datos[i].MONEDA + '" scslCode="' + datos[i].SCSL_CODE + '" >' + datos[i].DESCRIPCION + '</option>');
+                            codigoPOS = datos[i].CODIGO;
+                            monedaPOS = datos[i].MONEDA;
+                        }
+                        select.select2('val', codigoPOS);
+                        select.change();
+                    } else {
+                        select.select2('val', "");
+                        $('#slcMoneda').select2('val', "");
+                        select.change();
+                    }                   
                 },
                 error: function (msg) {
                     alert(msg);
@@ -409,13 +458,18 @@ var CAMCPOS = function () {
             }).done(function () {
                 select.attr("disabled", false);
             });
+            select.change(function () {
 
+                cargarMoneda(monedaPOS);
+                //$('#slcMoneda').select2("val", "");
+                //table.fnClearTable();
+            });
         }
 
         cargarEmpresas();
         cargarEstablecimientos();
         cargarPOS();
-        cargarMoneda();
+        //cargarMoneda();
     }
 
 
@@ -547,20 +601,21 @@ var CAMCPOS = function () {
 }();
 simbolo = "";
 function cargarSimboloMoneda() {
+    var v_monedas = $('#slcPOS :selected').attr("moneda");
+    if (typeof v_monedas != "undefined") {
+        $.ajax({
+            type: "post",
+            url: "vistas/ca/ajax/camcpos.ashx?flag=M&codigo=" + $('#slcPOS :selected').attr("moneda"),
+            //  async: false,
+            success: function (datos) {
+                simbolo = datos;
 
-    $.ajax({
-        type: "post",
-        url: "vistas/ca/ajax/camcpos.ashx?flag=M&codigo=" + $('#slcMoneda').val(),
-        //  async: false,
-        success: function (datos) {
-            simbolo = datos;
-
-        },
-        error: function (msg) {
-            alert(msg);
-        }
-    });
-
+            },
+            error: function (msg) {
+                alert(msg);
+            }
+        });
+    }   
 }
 
 function cargarTabla() {
@@ -692,6 +747,7 @@ function cerrarLote() {
                 Desbloquear("ventana");
                 if (res != "" && res != "ERROR") {
                     exito();
+                    $("#txtNroLote").val("");
                     $("#btnFiltrar").click();
                     json_selec = new Array();
                 } else {

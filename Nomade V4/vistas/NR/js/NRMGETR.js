@@ -13,6 +13,7 @@ DatosReniecCargados = new Array();
 tipo_doc = 1;
 NRORUC = "";
 var dire = "";//dporta
+//var city = '';//dporta
 var token_migo = '';//dporta
 var NRLGETR = function () {
 
@@ -284,6 +285,27 @@ function cargarParametrosSistema() {
             alertCustom("No se recuperó correctamente el parámetro MIGO!");
         }
     });
+
+    //DIRECCION(CIUDAD) POR DEFECTO
+    //$.ajax({
+    //    type: "post",
+    //    url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=CIDE",
+    //    contenttype: "application/json;",
+    //    datatype: "json",
+    //    async: true,
+    //    success: function (datos) {
+    //        if (datos != null) {
+    //            if (datos[0].VALOR == "SI") {
+    //                city = datos[0].DESCRIPCION_DETALLADA;
+
+    //            } else {
+    //                city = "TRUJILLO";
+    //            }
+    //        } else {
+    //            city = "TRUJILLO";
+    //        }
+    //    },
+    //});
 }
 
 function MuestraFormulario(v_Value, v_Datos) {
@@ -423,7 +445,7 @@ function cargarEstereotipos() {
             $.ajaxSetup({ async: true });
 
             ADICIONALES.init();
-            $("#txtdir").val(dire);//dporta
+            $("#txtdir").val(dire == '-' || dire == '' ? "TRUJILLO" : eliminarDiacriticos(dire));//dporta
 
             $("#tabAdicionales").on("click", function () {
                 if ($.trim($('#hfEstereotipoActivo').val()) != "ADICIONALES") {

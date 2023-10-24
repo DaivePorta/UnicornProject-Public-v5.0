@@ -197,18 +197,18 @@
                     data: "CENTRO_COSTO", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "center"); }
 
                 },
-                {
-                    data: "GRUPO", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); },
-                    visible: false
-                },
-                {
-                    data: "SUBGRUPO", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); },
-                    visible: false
-                },
-                {
-                    data: "MARCA", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); },
-                    visible: false
-                },
+                //{
+                //    data: "GRUPO", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); },
+                //    visible: false
+                //},
+                //{
+                //    data: "SUBGRUPO", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); },
+                //    visible: false
+                //},
+                //{
+                //    data: "MARCA", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); },
+                //    visible: false
+                //},
                 {
                     data: "DESC_ALMC", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "center"); }
 
@@ -387,9 +387,11 @@
             data: data,
             dataType: "json",
             processData: false,
+            beforeSend: function () { Bloquear($("#divDocumento"), "Cargando Datos ...") },
             cache: false,
             async: true,
-            success: function (datos) {                
+            success: function (datos) { 
+                Desbloquear("divDocumento");
                 oTable.fnClearTable();
                 if (datos.length > 0) {
                     arrTotalVentaNormal = new Array();

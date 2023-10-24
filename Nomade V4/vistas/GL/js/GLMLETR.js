@@ -19,7 +19,7 @@ var GLMLETR = function () {
 
         $.ajax({
             type: "post",
-            url: "vistas/GL/ajax/GLMLETR.ashx?flag=L",
+            url: "vistas/GL/ajax/GLMLETR.ashx?flag=L-2",
             contenttype: "application/json;",
             datatype: "json",
             async: true,
@@ -214,7 +214,7 @@ var GLMLETR = function () {
         arrayPersonasEmpleado = new Array();
         $.ajax({
             type: "post",
-            url: "vistas/GL/ajax/GLMLETR.ashx?flag=LE&empresa=" + empresa,
+            url: "vistas/GL/ajax/GLMLETR.ashx?flag=LE-2&empresa=" + empresa,
             contenttype: "application/json;",
             datatype: "json",
             beforeSend: function () { Bloquear($($(".personasEmpleado").parents("div")[0])); },

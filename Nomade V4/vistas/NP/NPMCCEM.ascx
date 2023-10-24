@@ -8,6 +8,7 @@
                 <h4><i class="icon-reorder"></i>EMPLEADOS CENTRO COSTO</h4>
                 <div class="actions">
                     <a class="btn black printlist" style="margin-top: -10px"><i class="icon-print"></i>&nbsp;Imprimir</a>
+                    <a class="btn red" style="margin-top: -10px" href="?f=NPLCCEM"><i class="icon-list"></i>&nbsp;Listar</a>
                 </div>
             </div>
 

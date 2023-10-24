@@ -277,7 +277,30 @@ Public Class NVMDOCV : Implements IHttpHandler
                         resb.Append("]")
                     End If
                     res = resb.ToString()
-
+                Case "CTLG_SHORT" 'Listar empresas
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = ncEmpresa.ListarEmpresaShort(String.Empty, "A", HttpContext.Current.User.Identity.Name)
+                    If Not (dt Is Nothing) Then
+                        dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
+                            resb.Append("""DESCRIPCION"" :" & """" & MiDataRow("DESCRIPCION").ToString & """,")
+                            resb.Append("""AGENTE_RETEN_IND"" :" & """" & MiDataRow("AGENTE_RETEN_IND").ToString & """,")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            resb.Append("""DIRECCION"" :" & """" & MiDataRow("DIRECCION").ToString & """,")
+                            resb.Append("""RUC"" :" & """" & MiDataRow("RUC").ToString & """,")
+                            resb.Append("""CORTO"" :" & """" & MiDataRow("CORTO").ToString & """,")
+                            resb.Append("""RUTA_IMAGEN"" :" & """" & MiDataRow("RUTA_IMAGEN").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
                 Case "0" 'lista sucursales
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = ncSucursal.ListarSucursal(CTLG_CODE, "", "A")
@@ -859,10 +882,126 @@ Public Class NVMDOCV : Implements IHttpHandler
                             resb.Append("""MOTIVO_EFECTIVO"":""" & row("MOTIVO_EFECTIVO").ToString & """,")
                             resb.Append("""MOTIVO_DESPACHO"":""" & row("MOTIVO_DESPACHO").ToString & """,")
                             resb.Append("""MOVCONT_CODE"":""" & row("MOVCONT_CODE").ToString & """,")
-                            'resb.Append("""FORMATO_TICKET_IND"":""" & row("FORMATO_TICKET_IND").ToString & """,")
+                            resb.Append("""FORMATO_TICKET_IND"":""" & row("FORMATO_TICKET_IND").ToString & """,")
                             resb.Append("""AUTODETRACCION"":""" & row("AUTODETRACCION").ToString & """,") 'DPORTA 25/02/2021
                             resb.Append("""FECHA_EMISION"":""" & row("FECHA_EMISION").ToString & """,") 'DPORTA 10/02/2022
                             'resb.Append("""ASIENTO_COBRO"":""" & row("ASIENTO_COBRO").ToString & """,") 'DPORTA 10/02/2022
+                            resb.Append("""ESTADO_DOC_ELECT"":""" & row("ESTADO_DOC_ELECT").ToString & """")
+                            resb.Append("},")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                        res = resb.ToString()
+                    Else
+                        res = "[]"
+                    End If
+                Case "LVU_CAB" ' Listar Cabecera Documento Venta FVBVTAC
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = nvVenta.ListarCabeceraVentaUnica(p_FVBVTAC_CODE)
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each row As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""CODIGO"":""" & row("CODIGO").ToString & """,")
+                            resb.Append("""SECUENCIA"":""" & row("SECUENCIA").ToString & """,")
+                            resb.Append("""EMPRESA"":""" & row("EMPRESA").ToString & """,")
+                            'resb.Append("""DESC_EMPRESA"":""" & row("DESC_EMPRESA").ToString & """,")
+                            resb.Append("""SUCURSAL"":""" & row("SUCURSAL").ToString & """,")
+                            'resb.Append("""DESC_SUCURSAL"":""" & row("DESC_SUCURSAL").ToString & """,")
+                            'resb.Append("""CAJA"":""" & row("CAJA").ToString & """,")
+                            'resb.Append("""DESC_CAJA"":""" & row("DESC_CAJA").ToString & """,")
+                            'resb.Append("""TIPO_DCTO"":""" & row("TIPO_DCTO").ToString & """,")
+                            'resb.Append("""TIPO_DCTO_SUNAT"":""" & row("TIPO_DCTO_SUNAT").ToString & """,")
+                            'resb.Append("""DOCUMENTO"":""" & row("DOCUMENTO").ToString & """,")
+                            resb.Append("""EMISION"":""" & row("EMISION").ToString & """,")
+                            resb.Append("""NUM_DCTO"":""" & row("NUM_DCTO").ToString & """,")
+                            resb.Append("""RAZON_SOCIAL"":""" & row("RAZON_SOCIAL").ToString & """,")
+                            resb.Append("""MONEDA"":""" & row("MONEDA").ToString & """,")
+                            'resb.Append("""SIMBOLO_MONEDA"":""" & row("SIMBOLO_MONEDA").ToString & """,")
+                            resb.Append("""COMPLETO"":""" & row("COMPLETO").ToString & """,")
+                            resb.Append("""PROVISIONADO"":""" & row("PROVISIONADO").ToString & """,")
+                            resb.Append("""ANULADO"":""" & row("ANULADO").ToString & """,")
+                            resb.Append("""PIDM"":""" & row("PIDM").ToString & """,")
+                            'resb.Append("""CLIE_DCTO_SUNAT"":""" & row("CLIE_DCTO_SUNAT").ToString & """,")
+                            'resb.Append("""CLIE_DCTO_DESC"":""" & row("CLIE_DCTO_DESC").ToString & """,")
+                            'resb.Append("""CLIE_DCTO_NRO"":""" & row("CLIE_DCTO_NRO").ToString & """,")
+                            resb.Append("""DCTO_SERIE"":""" & row("DCTO_SERIE").ToString & """,")
+                            resb.Append("""DCTO_NRO"":""" & row("DCTO_NRO").ToString & """,")
+                            resb.Append("""DCTO_CODE"":""" & row("DCTO_CODE").ToString & """,")
+                            resb.Append("""TRANSACCION"":""" & row("TRANSACCION").ToString & """,")
+                            resb.Append("""VENCIMIENTO"":""" & row("VENCIMIENTO").ToString & """,")
+                            resb.Append("""GLOSA"":""" & row("GLOSA").ToString & """,")
+                            resb.Append("""VENCIMIENTO"":""" & row("VENCIMIENTO").ToString & """,")
+                            resb.Append("""VALOR"":""" & row("VALOR").ToString & """,")
+                            resb.Append("""DESCUENTO"":""" & row("DESCUENTO").ToString & """,")
+                            resb.Append("""IGV"":""" & row("IGV").ToString & """,")
+                            resb.Append("""IMPORTE"":""" & row("IMPORTE").ToString & """,")
+                            resb.Append("""MOPA"":""" & row("MOPA").ToString & """,")
+                            resb.Append("""FOPA"":""" & row("FOPA").ToString & """,")
+                            resb.Append("""CLIE_PIDM"":""" & row("CLIE_PIDM").ToString & """,")
+                            resb.Append("""CLIE_DOID"":""" & row("CLIE_DOID").ToString & """,")
+                            resb.Append("""USVE_USUA_ID"":""" & row("USVE_USUA_ID").ToString & """,")
+                            resb.Append("""ANULAC_ID"":""" & row("ANULAC_ID").ToString & """,")
+                            resb.Append("""FECHA_ANULAC"":""" & row("FECHA_ANULAC").ToString & """,")
+                            resb.Append("""CMNT_ANULAC"":""" & row("CMNT_ANULAC").ToString & """,")
+                            resb.Append("""COMPLETO_IND"":""" & row("COMPLETO_IND").ToString & """,")
+                            resb.Append("""DCTO_CODE_REF"":""" & row("DCTO_CODE_REF").ToString & """,")
+                            resb.Append("""DCTO_TIPO_CODE_REF"":""" & row("DCTO_TIPO_CODE_REF").ToString & """,")
+                            resb.Append("""VALOR_CAMBIO"":""" & row("VALOR_CAMBIO").ToString & """,")
+                            resb.Append("""ISC"":""" & row("ISC").ToString & """,")
+                            resb.Append("""IMPORTE_EXO"":""" & row("IMPORTE_EXO").ToString & """,")
+                            resb.Append("""IMPORTE_INA"":""" & row("IMPORTE_INA").ToString & """,")
+                            resb.Append("""IMPORTE_GRA"":""" & row("IMPORTE_GRA").ToString & """,")
+                            resb.Append("""REDONDEO"":""" & row("REDONDEO").ToString & """,")
+                            resb.Append("""GRAN_REDONDEO"":""" & row("GRAN_REDONDEO").ToString & """,")
+                            resb.Append("""DONACION"":""" & row("DONACION").ToString & """,")
+                            resb.Append("""DETRACCION"":""" & row("DETRACCION").ToString & """,")
+                            resb.Append("""RETENCION"":""" & row("RETENCION").ToString & """,")
+                            resb.Append("""PERCEPCION"":""" & row("PERCEPCION").ToString & """,")
+                            resb.Append("""DETRACCION_IND"":""" & row("DETRACCION_IND").ToString & """,")
+                            resb.Append("""PERCEPCION_IND"":""" & row("PERCEPCION_IND").ToString & """,")
+                            resb.Append("""RETENCION_IND"":""" & row("RETENCION_IND").ToString & """,")
+                            resb.Append("""NUM_DCTO_PERCEP"":""" & row("NUM_DCTO_PERCEP").ToString & """,")
+                            resb.Append("""NUM_DCTO_DETRAC"":""" & row("NUM_DCTO_DETRAC").ToString & """,")
+                            resb.Append("""NUM_DCTO_RETEN"":""" & row("NUM_DCTO_RETEN").ToString & """,")
+                            resb.Append("""FECHA_PERCEP"":""" & row("FECHA_PERCEP").ToString & """,")
+                            resb.Append("""FECHA_DETRAC"":""" & row("FECHA_DETRAC").ToString & """,")
+                            resb.Append("""FECHA_RETEN"":""" & row("FECHA_RETEN").ToString & """,")
+                            resb.Append("""IMPR_PERCEP"":""" & row("IMPR_PERCEP").ToString & """,")
+                            resb.Append("""NRO_CUENTA_DETRAC"":""" & row("NRO_CUENTA_DETRAC").ToString & """,")
+                            resb.Append("""DCTO_REF_SERIE"":""" & row("DCTO_REF_SERIE").ToString & """,")
+                            resb.Append("""DCTO_REF_NRO"":""" & row("DCTO_REF_NRO").ToString & """,")
+                            resb.Append("""SCSL_EXONERADA_IND"":""" & row("SCSL_EXONERADA_IND").ToString & """,")
+                            resb.Append("""IGV_IMPR_IND"":""" & row("IGV_IMPR_IND").ToString & """,")
+                            resb.Append("""VALOR_CAMBIO_OFI"":""" & row("VALOR_CAMBIO_OFI").ToString & """,")
+                            resb.Append("""PCTJ_IGV"":""" & row("PCTJ_IGV").ToString & """,")
+                            resb.Append("""PAGADO_IND"":""" & row("PAGADO_IND").ToString & """,")
+                            resb.Append("""DESPACHADO_IND"":""" & row("DESPACHADO_IND").ToString & """,")
+                            resb.Append("""RESPONSABLE_PAGO_PIDM"":""" & row("RESPONSABLE_PAGO_PIDM").ToString & """,")
+                            resb.Append("""RESPONSABLE_PAGO"":""" & row("RESPONSABLE_PAGO").ToString & """,")
+                            resb.Append("""USUA_ID"":""" & row("USUA_ID").ToString & """,")
+                            resb.Append("""FECHA_ACTV"":""" & row("FECHA_ACTV").ToString & """,")
+                            resb.Append("""IMPRESORA_CODE"":""" & row("IMPRESORA_CODE").ToString & """,")
+                            'resb.Append("""IMPR_AUTORIZACION"":""" & row("IMPR_AUTORIZACION").ToString & """,")
+                            'resb.Append("""IMPR_SERIE"":""" & row("IMPR_SERIE").ToString & """,")
+                            resb.Append("""COD_AUT"":""" & row("COD_AUT").ToString & """,")
+                            resb.Append("""DIRECCION_VENTA"":""" & row("DIRECCION_VENTA").ToString & """,")
+                            resb.Append("""LATITUD_VENTA"":""" & row("LATITUD_VENTA").ToString & """,")
+                            resb.Append("""LONGITUD_VENTA"":""" & row("LONGITUD_VENTA").ToString & """,")
+                            resb.Append("""VENTA_RAPIDA_IND"":""" & row("VENTA_RAPIDA_IND").ToString & """,")
+                            'resb.Append("""MOTIVO_ANULAC"":""" & row("MOTIVO_ANULAC").ToString & """,")
+                            'resb.Append("""DESC_MOTIVO_ANULAC"":""" & row("DESC_MOTIVO_ANULAC").ToString & """,")
+                            'resb.Append("""MOTIVO_CODE"":""" & row("MOTIVO_CODE").ToString & """,")
+                            resb.Append("""CONTRAENTREGA_IND"":""" & row("CONTRAENTREGA_IND").ToString & """,")
+                            resb.Append("""MOTIVO_EFECTIVO"":""" & row("MOTIVO_EFECTIVO").ToString & """,")
+                            resb.Append("""MOTIVO_DESPACHO"":""" & row("MOTIVO_DESPACHO").ToString & """,")
+                            resb.Append("""MOVCONT_CODE"":""" & row("MOVCONT_CODE").ToString & """,")
+                            resb.Append("""FORMATO_TICKET_IND"":""" & row("FORMATO_TICKET_IND").ToString & """,")
+                            resb.Append("""AUTODETRACCION"":""" & row("AUTODETRACCION").ToString & """,") 'DPORTA 25/02/2021
+                            resb.Append("""FECHA_EMISION"":""" & row("FECHA_EMISION").ToString & """,") 'DPORTA 10/02/2022
+                            'resb.Append("""ASIENTO_COBRO"":""" & row("ASIENTO_COBRO").ToString & """,") 'DPORTA 10/02/2022
+                            resb.Append("""KARDEX"":""" & row("KARDEX").ToString & """,")
                             resb.Append("""ESTADO_DOC_ELECT"":""" & row("ESTADO_DOC_ELECT").ToString & """")
                             resb.Append("},")
                         Next
@@ -2011,7 +2150,7 @@ Public Class NVMDOCV : Implements IHttpHandler
             dtDetallesMuestra = nvVenta.ListarDetalleMuestraDocumentoVenta(p_CODE, "0", "")
         End If
 
-        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "")
+        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "XXX")
 
         If dtCabecera IsNot Nothing Then
             Dim decimalIGV As Decimal = Decimal.Parse(dtCabecera.Rows(0)("PCTJ_IGV")) / 100
@@ -2521,7 +2660,7 @@ Public Class NVMDOCV : Implements IHttpHandler
 
         'dtParametroLogo = New Nomade.NC.NCParametros("Bn").ListarParametros("LOVE", "")
 
-        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "")
+        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "XXX")
 
         If dtCabecera IsNot Nothing Then
             Dim decimalIGV As Decimal = Decimal.Parse(dtCabecera.Rows(0)("PCTJ_IGV")) / 100
@@ -2559,7 +2698,7 @@ Public Class NVMDOCV : Implements IHttpHandler
             'Cadena con la información del QR
             cadenaQR = "6" + "|" + dtCabecera(0)("RUC").ToString + "|" + dtCabecera(0)("CLIE_DOID").ToString + "|" + dtCabecera(0)("CLIE_DCTO_NRO").ToString + "|" + dtCabecera(0)("TIPO_DCTO_SUNAT").ToString + "|" + dtCabecera(0)("NUM_DCTO").ToString + "|" + dtCabecera(0)("FECHA_SUNAT").ToString + "|" + dtCabecera(0)("IGV").ToString + "|" + dtCabecera(0)("IMPORTE").ToString
             'LA RUTA QUE VA A TENER
-            'rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE, p_CTLG_CODE)
+            'rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(cadenaQR)
             rutaQr = "data:image/png;base64," + fnGetCodigoQR_fast(cadenaQR)
 
             tabla.Append("<table id='tblDctoImprimir' border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'>")
@@ -3299,7 +3438,7 @@ Public Class NVMDOCV : Implements IHttpHandler
         End If
 
 
-        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "")
+        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "XXX")
 
         If dtCabecera IsNot Nothing Then
             Dim decimalIGV As Decimal = Decimal.Parse(dtCabecera.Rows(0)("PCTJ_IGV")) / 100

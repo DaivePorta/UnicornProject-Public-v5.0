@@ -13,7 +13,7 @@ var CALDIFE = function () {
         var select = $('#cboCaja');
         $.ajax({
             type: "post",
-            url: "vistas/ca/ajax/CALVICA.ashx?OPCION=2&p_CTLG_CODE=" + $('#cboEmpresa').val() + "&p_SCSL_CODE=" + $('#cboEstablecimiento').val() + "&p_USUA_ID=" + $('#ctl00_txtus').val(),
+            url: "vistas/ca/ajax/CALVICA.ashx?OPCION=2.5&p_CTLG_CODE=" + $('#cboEmpresa').val() + "&p_SCSL_CODE=" + $('#cboEstablecimiento').val() + "&p_USUA_ID=" + $('#ctl00_txtus').val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -117,7 +117,7 @@ var CAMDIFE = function () {
         var select = $('#cboCaja');
         $.ajax({
             type: "post",
-            url: "vistas/ca/ajax/CALVICA.ashx?OPCION=2&p_CTLG_CODE=" + $('#cboEmpresa').val() + "&p_SCSL_CODE=" + $('#cboEstablecimiento').val() + "&p_USUA_ID=" + $('#ctl00_txtus').val(),
+            url: "vistas/ca/ajax/CALVICA.ashx?OPCION=2.5&p_CTLG_CODE=" + $('#cboEmpresa').val() + "&p_SCSL_CODE=" + $('#cboEstablecimiento').val() + "&p_USUA_ID=" + $('#ctl00_txtus').val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -140,6 +140,9 @@ var CAMDIFE = function () {
                     }
                 }
                 $('#cboCaja').select2('val', ini);
+                if ($('#cboCaja').val() === '') {
+                    $("#divDiferirEfectivo").slideUp();
+                }                
             },
             error: function (msg) {
                 alertCustom("Cajas no se listaron correctamente.");
@@ -227,10 +230,10 @@ var CAMDIFE = function () {
                 $("#cboDestinoMoba").attr("data-placeholder", "Caja");
                 $.ajax({
                     type: "post",
-                    url: "vistas/ca/ajax/CALVICA.ashx?OPCION=2" +
+                    url: "vistas/ca/ajax/CALVICA.ashx?OPCION=2.5" +
                         "&p_CTLG_CODE=" + $('#cboEmpresa').val() +
                         //"&p_SCSL_CODE=0" +
-                        "&p_FILTRO=CAJAS",
+                        "&p_FILTRO=CAJAS_FAST",
                     contenttype: "application/json;",
                     datatype: "json",
                     async: true,
@@ -305,10 +308,10 @@ var CAMDIFE = function () {
             if ($("#rbCajaMoal").is(":checked")) {
                 $.ajax({
                     type: "post",
-                    url: "vistas/ca/ajax/CALVICA.ashx?OPCION=2" +
+                    url: "vistas/ca/ajax/CALVICA.ashx?OPCION=2.5" +
                         "&p_CTLG_CODE=" + $('#cboEmpresa').val() +
                        
-                        "&p_FILTRO=CAJAS",
+                        "&p_FILTRO=CAJAS_FAST",
                     contenttype: "application/json;",
                     datatype: "json",
                     async: true,

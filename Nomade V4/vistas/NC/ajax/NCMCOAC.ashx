@@ -124,6 +124,7 @@ Public Class NCMCOAC : Implements IHttpHandler
                                 resb.Append("""CONCEPTO"":" & """" & row("CONCEPTO").ToString & """,")
                                 resb.Append("""ESTADO_GASTO"":" & """" & row("ESTADO_GASTO").ToString & """,")
                                 resb.Append("""FECHA_VENCIMIENTO"":" & """" & row("FECHA_VENCIMIENTO").ToString & """,")
+                                resb.Append("""NOTA_CREDITO_IND"":" & """" & row("NOTA_CREDITO_IND").ToString & """,")
                                 resb.Append("""FECHA_DETRA"":" & """" & row("FECHA_DETRA").ToString & """,")
                                 resb.Append("""NUMERO_DETRA"":" & """" & row("NUMERO_DETRA").ToString & """,")
                                 resb.Append("""ESTADO_GASTO_DESCRIPCION"":" & """" & row("ESTADO_GASTO_DESC").ToString & """")

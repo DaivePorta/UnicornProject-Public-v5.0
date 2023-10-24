@@ -296,7 +296,18 @@ Public Class NVLDOCT : Implements IHttpHandler
                         res = "[]"
 
                     End If
+                Case "3.5" ' Obtiene tabla con documentos de venta
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    'context.Response.ContentType = "application/text; charset=utf-8"
+                    Dim fecha = HASTA
+                    dt = nvVenta.ListarDocVenta_BusqFAST("", CLIENTE, NUM_DCTO, DCTO_CODE, VENDEDOR, ESTADO, PRODUCTO, SERIE_DCTO, Utilities.fechaLocal(DESDE),
+                                                 Utilities.fechaLocal(HASTA), CTLG_CODE, SCSL_CODE, "", GRUPO_PROD, , p_TIPO_VTA)
+                    If Not dt Is Nothing Then
+                        res = Utilities.Datatable2Json(dt) 'GenerarTablaDocumento(dt)
+                    Else
+                        res = "[]"
 
+                    End If
 
                 Case "4" ' Obtiene tabla con documentos de venta DETALLE POR PRODUCTO
                     context.Response.ContentType = "application/json; charset=utf-8"

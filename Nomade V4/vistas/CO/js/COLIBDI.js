@@ -12,14 +12,14 @@
             url: "vistas/cc/ajax/cclrfva.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
             contenttype: "application/json;",
             datatype: "json",
-            async: true,
+            async: false,
             success: function (datos) {
                 Desbloquear("divCboEmpresa");
                 $('#cboEmpresa').empty();
                 $('#cboEmpresa').append('<option></option>');
                 if (datos != null) {
                     for (var i = 0; i < datos.length; i++) {
-                        $('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+                        $('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '" ruc="' + datos[i].RUC + '">' + datos[i].DESCRIPCION + '</option>');
                     }
                     $("#cboEmpresa").select2("val", $("#ctl00_hddctlg").val());
                 } else {
@@ -33,54 +33,56 @@
         });
     }
 
-    var fillCboEstablecimiento = function (ctlg) {
-        $.ajax({
-            type: "post",
-            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=1&p_CTLG_CODE=" + ctlg,
-            contenttype: "application/json;",
-            datatype: "json",
-            async: false,
-            success: function (datos) {
-                $('#cboEstablecimiento').empty();
-                $('#cboEstablecimiento').append('<option></option>');
-                if (datos != null) {
-                    for (var i = 0; i < datos.length; i++) {
-                        $('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
-                    }
-                    $('#cboEstablecimiento').select2('val', $('#ctl00_hddestablecimiento').val());
-                } else {
-                    $('#cboEstablecimiento').select2('val', '');
+    //var fillCboEstablecimiento = function (ctlg) {
+    //    $.ajax({
+    //        type: "post",
+    //        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=1&p_CTLG_CODE=" + ctlg,
+    //        contenttype: "application/json;",
+    //        datatype: "json",
+    //        async: false,
+    //        success: function (datos) {
+    //            $('#cboEstablecimiento').empty();
+    //            $('#cboEstablecimiento').append('<option></option>');
+    //            if (datos != null) {
+    //                for (var i = 0; i < datos.length; i++) {
+    //                    $('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+    //                }
+    //                $('#cboEstablecimiento').select2('val', $('#ctl00_hddestablecimiento').val());
+    //            } else {
+    //                $('#cboEstablecimiento').select2('val', '');
 
-                }
-            },
-            error: function (msg) {
-                alert(msg);
-            }
-        });
+    //            }
+    //        },
+    //        error: function (msg) {
+    //            alert(msg);
+    //        }
+    //    });
 
-    }
+    //}
 
-    function listarANIO() {
-        $.ajax({
-            type: "post",
-            url: "vistas/co/ajax/colreco.ashx?OPCION=2",
-            contenttype: "application/json;",
-            datatype: "json",
-            async: false,
-            success: function (datos) {
-                $("#txtanio").empty();
-                if (datos != null) {
-                    $("#txtanio").html(datos);
-                }
-                $('#txtanio').select2('val', '');
-            },
-            error: function (msg) {
-                alert(msg);
-            }
-        });
-    }
+    //function listarANIO() {
+    //    $.ajax({
+    //        type: "post",
+    //        url: "vistas/co/ajax/colreco.ashx?OPCION=2",
+    //        contenttype: "application/json;",
+    //        datatype: "json",
+    //        async: false,
+    //        success: function (datos) {
+    //            $("#txtanio").empty();
+    //            if (datos != null) {
+    //                $("#txtanio").html(datos);
+    //            }
+    //            $('#txtanio').select2('val', '');
+    //        },
+    //        error: function (msg) {
+    //            alert(msg);
+    //        }
+    //    });
+    //}
 
     function listarMES() {
+        $('#cboMes').select2();
+        $('#cboMes').select2('val', '');
         /*
         $.ajax({
             type: "post",
@@ -104,13 +106,21 @@
 
 
     function listarLibroDiario() {
+        var mes = $('#cboMes').val();
 
+        if (mes.length == 1) {
+            mes = ("0" + mes).slice(-2);
+        } else {
+            mes;
+        }
         var data = new FormData();
-        data.append('OPCION', "1");
+        data.append('OPCION', "4");
         data.append('p_CTLG_CODE', $("#cboEmpresa").val());
         data.append('p_ANIO', $('#txtanio').val());
-        data.append('p_MES', $('#cboMes').val());
+        data.append('p_MES', mes);
+        data.append('p_RUC', $('#cboEmpresa option:selected').attr('ruc'));
         data.append('p_MES_DES', $('#cboMes option:selected').html());
+        data.append('p_DESC_EMPRESA', $('#cboEmpresa option:selected').html());
 
         Bloquear("ventana");
         var jqxhr = $.ajax({
@@ -120,6 +130,7 @@
             data: data,
             async: true,
             processData: false,
+            beforeSend: function () { Bloquear($("#ventana"), "Generando libro diario ...") },
             cache: false
         })
        .success(function (datos) {
@@ -127,8 +138,17 @@
            if (datos != null) {              
                $('#divLibroDiario').html(datos);
                $("#filtros_2 #correcto").parent().remove();
+               $('#btnDescargarLibroPDF, #btnDescargarLibroTXT').attr('disabled', false);
+               $('.btnLibroXls').attr('disabled', false);
+               $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hfind_vacio").val("N");
+               $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddRuc").val($('#ruc').html());
            } else {
-               noexito();
+               if (datos == "") {
+                   $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hfind_vacio").val("S");
+                   $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddRuc").val($('#ruc').html());
+               } else {
+                   noexito();
+               }
            }
        })
        .error(function () {
@@ -149,10 +169,10 @@
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddMes").val($('#cboMes').val());
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddDescMes").val($('#cboMes :selected').html());
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddCtlg").val($('#cboEmpresa').val());
-
-            $('.btnLibroPDF').attr('disabled', true);
-            $('.btnLibroTXT').attr('disabled', true);
-            $('.btnLibroXls').attr('disabled', true);
+            $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddDescEmpresa").val($('#cboEmpresa :selected').html());
+            //$('.btnLibroPDF').attr('disabled', true);
+            //$('.btnLibroTXT').attr('disabled', true);
+            //$('.btnLibroXls').attr('disabled', true);
         });
 
         $('#cboEmpresa').on('change', function () {
@@ -160,61 +180,91 @@
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddMes").val($('#cboMes').val());
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddDescMes").val($('#cboMes :selected').html());
             $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddCtlg").val($('#cboEmpresa').val());
-
-            $('.btnLibroPDF').attr('disabled', true);
-            $('.btnLibroTXT').attr('disabled', true);
-            $('.btnLibroXls').attr('disabled', true);
+            $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddDescEmpresa").val($('#cboEmpresa :selected').html());
+            //$('.btnLibroPDF').attr('disabled', true);
+            //$('.btnLibroTXT').attr('disabled', true);
+            //$('.btnLibroXls').attr('disabled', true);
         });
 
-        $('#btnGenerarLibro').on('click', function () {
+        //$('#btnGenerarLibro').on('click', function () {
+        //    if (vErrors(["cboEmpresa", "txtanio", "cboMes"])) {
+        //        $('.btnLibroPDF').attr('disabled', false);
+        //        $('.btnLibroTXT').attr('disabled', false);
+        //        $('.btnLibroXls').attr('disabled', false);
+        //        Exportar();
+        //    }
+        //});
+
+        $('#btnDescargarLibroPDF').on('click', function () {
             if (vErrors(["cboEmpresa", "txtanio", "cboMes"])) {
-                $('.btnLibroPDF').attr('disabled', false);
-                $('.btnLibroTXT').attr('disabled', false);
-                $('.btnLibroXls').attr('disabled', false);
-                Exportar();
+                fnGenerarPDF();
             }
         });
 
+        $('#btnDescargarLibroTXT').on('click', function () {
+            if (vErrors(["cboEmpresa", "txtanio", "cboMes"])) {
+                //fnGenerarTXT();
+                $("[id*=btnLibroTXT]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+            }
+        });
         $('#buscar').on('click', function () {
             if (vErrors(["cboEmpresa", "txtanio", "cboMes"])) {
-                $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddAnio").val($('#txtanio').val());
-                $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddMes").val($('#cboMes').val());
-                $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddDescMes").val($('#cboMes :selected').html());
-                $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddCtlg").val($('#cboEmpresa').val());
                 listarLibroDiario();
             }
         });
 
     }
 
-    function Exportar() {
+    function fnGenerarPDF() {
+        var mes = $('#cboMes').val();
+
+        if (mes.length == 1) {
+            mes = ("0" + mes).slice(-2);
+        } else {
+            mes;
+        }
+
         var data = new FormData;
         data.append('p_ANIO', $('#txtanio').val());
-        data.append('p_MES', $('#cboMes').val());
+        data.append('p_MES', mes);
         data.append('p_MES_DES', $('#cboMes option:selected').html());
         data.append('p_RUC', $('#ruc').html());
         data.append('p_CTLG_CODE', $('#cboEmpresa').val());
+        data.append('p_DESC_EMPRESA', $('#cboEmpresa option:selected').html());
 
         $.ajax({
             type: "POST",
-            url: "vistas/co/ajax/COLIBDI.ashx?OPCION=2",
+            url: "vistas/co/ajax/COLIBDI.ashx?OPCION=5",
             contentType: false,
             data: data,
             processData: false,
             cache: false,
+            beforeSend: function () { Bloquear($("#ventana"), "Generando archivo ...") },
             success: function (datos) {
                 if (datos == 'ok') {
                     exito();
                     $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hfind_vacio").val("N");
+                    $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddRuc").val($('#ruc').html());
+                    $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+                    //$('.btnLibroPDF').attr('disabled', false);
+                    //$('.btnLibroTXT').attr('disabled', false);
+                    //$('.btnLibroXls').attr('disabled', false);
                 }
                 else {
                     if (datos == 'vacio') {
                         exito();
                         $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hfind_vacio").val("S");
+                        $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddRuc").val($('#ruc').html());
+                        $("[id*=btnLibroPDF]").click();//DPORTA 21/05/2022 - Ejecuta el evento del botón que está en asp.net
+                        //$('.btnLibroPDF').attr('disabled', false);
+                        //$('.btnLibroTXT').attr('disabled', false);
+                        //$('.btnLibroXls').attr('disabled', false);
 
                     } else { noexito(); }
                 }
-                $("#ctl00_cph_ctl00_PCONGEN1_ctl00_hddRuc").val($('#ruc').html());
+            },
+            complete: function () {
+                Desbloquear("ventana");
             },
             error: function (msg) {
                 alert(msg);
@@ -224,8 +274,7 @@
 
 
     var cargaInicial = function () {
-        $('.btnLibroPDF').attr('disabled', true);
-        $('.btnLibroTXT').attr('disabled', true);
+        $('#btnDescargarLibroPDF, #btnDescargarLibroTXT').attr('disabled', true);
         $('.btnLibroXls').attr('disabled', true);
     }
 
@@ -242,4 +291,8 @@
     };
 
 }();
+var NuevaPantalla = function () {
+    window.location.href = '?f=COLIBDI';
+}
+
 

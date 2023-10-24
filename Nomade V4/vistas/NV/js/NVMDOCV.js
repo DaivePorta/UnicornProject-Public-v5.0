@@ -225,7 +225,7 @@ var NVMDOCV = function () {
         if (dPermanente == null) {
             $.ajax({
                 type: "post",
-                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CTLG&USUA_ID=" + $('#ctl00_txtus').val(),
+                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CTLG_SHORT&USUA_ID=" + $('#ctl00_txtus').val(),
                 contenttype: "application/json;",
                 datatype: "json",
                 async: false,
@@ -2477,7 +2477,7 @@ var NVMDOCV = function () {
             //Bloquear("ventana");
             $.ajax({
                 type: "POST",
-                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LDOCC&p_FVBVTAC_CODE=" + cod,
+                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LVU_CAB&p_FVBVTAC_CODE=" + cod,
                 contentType: "application/json;",
                 dataType: "json",
                 success: function (datos) {
@@ -2523,7 +2523,7 @@ var NVMDOCV = function () {
 
 
                     //F4 - Documento venta
-                    $("#cboDocumentoVenta").select2("val", datos[0].DCTO_CODE).change();
+                    //$("#cboDocumentoVenta").select2("val", datos[0].DCTO_CODE).change();
                     //F5                     
                     //$("#txt_fec_emision").val(datos[0].EMISION);
                     if ($("#hfCompletoInd").val() == "S") {
@@ -2577,11 +2577,11 @@ var NVMDOCV = function () {
                         $("#divBtnsMantenimiento,#btnBuscadocs").attr("style", "display:none");
 
                         //F4-DG
-                        $("#cboSerieDocVenta").empty();
-                        $("#cboSerieDocVenta").append('<option value="' + datos[0].CODIGO + '" data-ticket="' + datos[0].FORMATO_TICKET_IND + '" >' + datos[0].DCTO_SERIE + '</option>');
-                        $("#cboSerieDocVenta").select2("val", datos[0].CODIGO);
-                        $("#txtNroDocVenta").val(datos[0].DCTO_NRO);
-                        $("#lblTipoCorrelativo").html("[" + datos[0].COD_AUT + "]");
+                        //$("#cboSerieDocVenta").empty();
+                        //$("#cboSerieDocVenta").append('<option value="' + datos[0].CODIGO + '" data-ticket="' + datos[0].FORMATO_TICKET_IND + '" >' + datos[0].DCTO_SERIE + '</option>');
+                        //$("#cboSerieDocVenta").select2("val", datos[0].CODIGO);
+                        //$("#txtNroDocVenta").val(datos[0].DCTO_NRO);
+                        //$("#lblTipoCorrelativo").html("[" + datos[0].COD_AUT + "]");
 
                         //F5 DC
                         var estado = "";
@@ -2686,10 +2686,10 @@ var NVMDOCV = function () {
                     $("#lblImporteTotal").html(datos[0].VALOR);
                     //FIN CARGA TOTALES
 
-                    var validarDoc = $('#cboSerieDocVenta').text();
-                    if (validarDoc.substring(0, 1) == 'F' || validarDoc.substring(0, 1) == 'B') {
-                        //$('#btnEFac').removeClass('hidden');
-                    }
+                    //var validarDoc = $('#cboSerieDocVenta').text();
+                    //if (validarDoc.substring(0, 1) == 'F' || validarDoc.substring(0, 1) == 'B') {
+                    //    //$('#btnEFac').removeClass('hidden');
+                    //}
 
                     var monedaCabecera = datos[0].MONEDA;
                     //LISTAR DETALLES
@@ -2841,6 +2841,13 @@ var NVMDOCV = function () {
                                     $(".btnEliminarDetalle").remove();
                                     $("#tabla_det").DataTable().column(0).visible(false);
                                     $(".slcNombProd").attr("disabled", "disabled");
+                                    $("#cboDocumentoVenta").select2("val", datos[0].DCTO_CODE).change();
+                                    $("#cboSerieDocVenta").empty();
+                                    $("#cboSerieDocVenta").append('<option value="' + datos[0].CODIGO + '" data-ticket="' + datos[0].FORMATO_TICKET_IND + '" >' + datos[0].DCTO_SERIE + '</option>');
+                                    $("#cboSerieDocVenta").select2("val", datos[0].CODIGO);
+                                    $("#txtNroDocVenta").val(datos[0].DCTO_NRO);
+                                    $("#lblTipoCorrelativo").html("[" + datos[0].COD_AUT + "]");
+                                    $('#cboSerieDocVenta').attr('disabled', true);
                                 } else {
                                     $("#rbRedondeo,#rbDonacion").removeAttr("disabled");
                                     CalcularDetraccion();
@@ -5459,7 +5466,7 @@ function AgregarDetalleVenta() {
             var unidadMedidaCode = $("#cbo_und_medida :selected").val();
             var unidadMedida = $("#cbo_und_medida :selected").html();
             var precioUnidad = $("#txtPrecioUnitario").val().replace(",", ".");
-            var glosa = $.trim($("#txt_glosa_det").val());
+            var glosa = $.trim($("#txt_glosa_det").val().replace(/<\/?[^>]+(>|$)/gi, ""));
 
             //Guardar Almacen
             var almacenCode = $("#cboAlmacen :selected").val();
@@ -5903,7 +5910,7 @@ function AgregarDetalleVenta() {
             var unidadMedidaCode = $("#cbo_und_medida :selected").val();
             var unidadMedida = $("#cbo_und_medida :selected").html();
             var precioUnidad = 0.00; //$("#txtPrecioUnitario").val().replace(",", ".");
-            var glosa = $.trim($("#txt_glosa_det").val());
+            var glosa = $.trim($("#txt_glosa_det").val().replace(/<\/?[^>]+(>|$)/gi, ""));
 
             //Guardar Almacen
             var almacenCode = $("#cboAlmacen :selected").val();
@@ -6318,7 +6325,7 @@ function AgregarDetalleVenta() {
         var unidadMedida = $("#cbo_und_medida :selected").html();
         var precioUnidad = 0.00; //$("#txtPrecioUnitario").val().replace(",", ".");
         // var precioUnidad = 0.00;
-        var glosa = $.trim($("#txt_glosa_det").val());
+        var glosa = $.trim($("#txt_glosa_det").val().replace(/<\/?[^>]+(>|$)/gi, ""));
 
         //Guardar Almacen
         var almacenCode = $("#cboAlmacen :selected").val();
@@ -8806,7 +8813,7 @@ function GrabarDctoVenta() {
             data.append('p_FECHA_EMISION', $("#txt_fec_emision").val());
             data.append('p_FECHA_TRANS', $("#txt_fec_transaccion").val());
             data.append('p_FECHA_VENCIMIENTO', $("#txt_fec_vencimiento").val());
-            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val());
+            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val().replace(/<\/?[^>]+(>|$)/gi, ""));
             data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
             data.append('p_SCSL_CODE', $("#cbo_Sucursal").val());
             // data.append('p_CAJA_CODE', '');
@@ -9214,7 +9221,7 @@ function GrabarCompletarDctoVenta() {
                     data.append('p_FECHA_EMISION', $("#txt_fec_emision").val());
                     data.append('p_FECHA_TRANS', $("#txt_fec_transaccion").val());
                     data.append('p_FECHA_VENCIMIENTO', $("#txt_fec_vencimiento").val());
-                    data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val());
+                    data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val().replace(/<\/?[^>]+(>|$)/gi, ""));
                     data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
                     data.append('p_SCSL_CODE', $("#cbo_Sucursal").val());
                     // data.append('p_CAJA_CODE', '');
@@ -9640,7 +9647,7 @@ function ActualizarDctoVenta() {
             data.append('p_FECHA_EMISION', $("#txt_fec_emision").val());
             data.append('p_FECHA_TRANS', $("#txt_fec_transaccion").val());
             data.append('p_FECHA_VENCIMIENTO', $("#txt_fec_vencimiento").val());
-            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val());
+            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val().replace(/<\/?[^>]+(>|$)/gi, ""));
             data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
             data.append('p_SCSL_CODE', $("#cbo_Sucursal").val());
             // data.append('p_CAJA_CODE', '');
@@ -9844,7 +9851,7 @@ function CompletarDctoVenta() {
             var detalles = "";
             var detalles_bon = "";
             var detalles_mue = "";
-            Bloquear("ventana");
+            //Bloquear("ventana");
             if ($("#cbo_moneda :selected").attr("data-tipo") == "MOBA") {
                 for (var i = 0; i < detallesVenta.length; i++) {
                     detalles += ValidaCaracter(detallesVenta[i].ITEM) + ";" +
@@ -10010,7 +10017,7 @@ function CompletarDctoVenta() {
             data.append('p_FECHA_EMISION', $("#txt_fec_emision").val());
             data.append('p_FECHA_TRANS', $("#txt_fec_transaccion").val());
             data.append('p_FECHA_VENCIMIENTO', $("#txt_fec_vencimiento").val());
-            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val());
+            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val().replace(/<\/?[^>]+(>|$)/gi, ""));
             data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
             data.append('p_SCSL_CODE', $("#cbo_Sucursal").val());
             // data.append('p_CAJA_CODE', '');
@@ -10158,42 +10165,82 @@ function CompletarDctoVenta() {
     }
 }
 
-function guardarQR() {
-    //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 
-    var NombreQR = $('#codigoQR img').attr('src');
+//function guardarQR() {
+//    //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 
+//    var NombreQR = $('#codigoQR img').attr('src');
 
-    var qrData = new FormData();
-    qrData.append('p_IMGQR', NombreQR);
+//    var qrData = new FormData();
+//    qrData.append('p_IMGQR', NombreQR);
 
-    $.ajax({
-        type: "post",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=GQR_VENTA&p_FVBVTAC_CODE=" + $("#txtNumDctoComp").val(),
-        data: qrData,
-        async: false,
-        contentType: false,
-        processData: false,
-        success: function (res) {
-            if (res != "OK") {
-                noexito();
-            }
-        },
-        error: function () {
-            alertCustom("No se guardaron correctamente los datos!")
-        }
-    });
-}
+//    $.ajax({
+//        type: "post",
+//        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=GQR_VENTA&p_FVBVTAC_CODE=" + $("#txtNumDctoComp").val(),
+//        data: qrData,
+//        async: false,
+//        contentType: false,
+//        processData: false,
+//        success: function (res) {
+//            if (res != "OK") {
+//                noexito();
+//            }
+//        },
+//        error: function () {
+//            alertCustom("No se guardaron correctamente los datos!")
+//        }
+//    });
+//}
 
-function verificarFormatoTicket(tipoDoc) {
-    //Bloquear("ventana");
+//function verificarFormatoTicket(tipoDoc) {
+//    //Bloquear("ventana");
+
+//    var data = new FormData();
+//    data.append('DOC_CODE', tipoDoc);
+//    data.append('CTLG', $("#cbo_Empresa").val());
+//    data.append('SCSL', $("#cbo_Sucursal").val());
+
+//    var jqxhr = $.ajax({
+//        type: "POST",
+//        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=FORTICK",
+//        contentType: false,
+//        data: data,
+//        processData: false,
+//        async: false,
+//        cache: false
+//    })
+//        .success(function (datos) {
+//            //Desbloquear("ventana");
+//            if (datos != null) {
+//                if (datos[0].FORMATO_TICKET == "SI") {
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            } else {
+//                return false;
+//                //noexito();
+//            }
+//        })
+//        .error(function () {
+//            //Desbloquear("ventana");
+//            //noexito();
+//        });
+//    return jqxhr.responseText;
+
+//}
+
+
+//Imprimir dcto venta
+function ImprimirDctoVenta() {
 
     var data = new FormData();
-    data.append('DOC_CODE', tipoDoc);
-    data.append('CTLG', $("#cbo_Empresa").val());
-    data.append('SCSL', $("#cbo_Sucursal").val());
+    data.append('p_CODE', $("#txtNumDctoComp").val());
+    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
+    data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
 
     var jqxhr = $.ajax({
         type: "POST",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=FORTICK",
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
         contentType: false,
         data: data,
         processData: false,
@@ -10201,176 +10248,199 @@ function verificarFormatoTicket(tipoDoc) {
         cache: false
     })
         .success(function (datos) {
-            //Desbloquear("ventana");
             if (datos != null) {
-                if (datos[0].FORMATO_TICKET == "SI") {
-                    return true;
-                } else {
-                    return false;
-                }
+                $("#divDctoImprimir").html(datos);
+                setTimeout(function () {
+                    window.print();
+                }, 0.0000000000000001)
+
             } else {
-                return false;
-                //noexito();
+                noexito();
             }
+            //Desbloquear("ventana");
         })
         .error(function () {
             //Desbloquear("ventana");
-            //noexito();
+            noexito();
         });
-    return jqxhr.responseText;
-
-}
-
-
-//Imprimir dcto venta
-function ImprimirDctoVenta() {
 
     //Bloquear("ventana");
-    let ticket = $("#cboSerieDocVenta :selected").attr("data-ticket");//DPORTA
+    //let ticket = $("#cboSerieDocVenta :selected").attr("data-ticket");//DPORTA
 
-    if (ticket == 'SI') {
-        //if (verificarFormatoTicket($("#cboDocumentoVenta").val()) == '[{"FORMATO_TICKET" :"SI"}]') {
-        var data = new FormData();
-        data.append('p_CODE', $("#txtNumDctoComp").val());
-        data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
-        data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
-        data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
+    //if (ticket == 'SI') {
+    //    //if (verificarFormatoTicket($("#cboDocumentoVenta").val()) == '[{"FORMATO_TICKET" :"SI"}]') {
+    //    var data = new FormData();
+    //    data.append('p_CODE', $("#txtNumDctoComp").val());
+    //    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    //    data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
+    //    data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
 
-        var jqxhr = $.ajax({
-            type: "POST",
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
-            contentType: false,
-            data: data,
-            processData: false,
-            async: false,
-            cache: false
-        })
-            .success(function (datos) {
-                if (datos != null) {
-                    $("#divDctoImprimir").html(datos);
-                    setTimeout(function () {
-                        window.print();
-                    }, 0.0000000000000001)
+    //    var jqxhr = $.ajax({
+    //        type: "POST",
+    //        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
+    //        contentType: false,
+    //        data: data,
+    //        processData: false,
+    //        async: false,
+    //        cache: false
+    //    })
+    //        .success(function (datos) {
+    //            if (datos != null) {
+    //                $("#divDctoImprimir").html(datos);
+    //                setTimeout(function () {
+    //                    window.print();
+    //                }, 0.0000000000000001)
 
-                } else {
-                    noexito();
-                }
-                //Desbloquear("ventana");
-            })
-            .error(function () {
-                //Desbloquear("ventana");
-                noexito();
-            });
-    } else {
-        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101' || $("#cboDocumentoVenta").val() == '0001' || $("#cboDocumentoVenta").val() == '0003') {
+    //            } else {
+    //                noexito();
+    //            }
+    //            //Desbloquear("ventana");
+    //        })
+    //        .error(function () {
+    //            //Desbloquear("ventana");
+    //            noexito();
+    //        });
+    //} else {
+    //    //if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101' || $("#cboDocumentoVenta").val() == '0001' || $("#cboDocumentoVenta").val() == '0003') {
 
-            var data = new FormData();
-            data.append('p_CODE', $("#txtNumDctoComp").val());
-            data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
-            data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
-            data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
+    //    //    var data = new FormData();
+    //    //    data.append('p_CODE', $("#txtNumDctoComp").val());
+    //    //    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    //    //    data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+    //    //    data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
 
-            var jqxhr = $.ajax({
-                type: "POST",
-                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
-                contentType: false,
-                data: data,
-                processData: false,
-                async: false,
-                cache: false
-            })
-                .success(function (datos) {
-                    if (datos != null) {
-                        $("#divDctoImprimir").html(datos);
-                        setTimeout(function () {
-                            window.print();
-                        }, 0.0000000000000001)
+    //    //    var jqxhr = $.ajax({
+    //    //        type: "POST",
+    //    //        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=IMPR",
+    //    //        contentType: false,
+    //    //        data: data,
+    //    //        processData: false,
+    //    //        async: false,
+    //    //        cache: false
+    //    //    })
+    //    //        .success(function (datos) {
 
+    //    //            if (datos != null) {
+    //    //                $("#divDctoImprimir").html(datos);
+    //    //                setTimeout(function () {
+    //    //                    window.print();
+    //    //                }, 0.0000000000000001)
 
-                    } else {
-                        noexito();
-                    }
-                    //Desbloquear("ventana");
-                })
-                .error(function () {
-                    //Desbloquear("ventana");
-                    noexito();
-                });
-        } else {
-            crearImpresion($("#txtNumDctoComp").val());
-            //Desbloquear("ventana");
-        }
-    }
-
+    //    //            } else {
+    //    //                noexito();
+    //    //            }
+    //    //            //Desbloquear("ventana");
+    //    //        })
+    //    //        .error(function () {
+    //    //            //Desbloquear("ventana");
+    //    //            noexito();
+    //    //        });
+    //    //} else {
+    //    //    crearImpresion($("#txtNumDctoComp").val());
+    //    //    //Desbloquear("ventana");
+    //    //}
+    //    crearImpresion($("#txtNumDctoComp").val());
+    //}
 }
 
 //Descargar dcto alternativo
 var DescargarPDFAlt = function (sCodVenta) {
+
     $("#ctl00_cph_ctl00_PCONGEN1_ctl00_CodDoc").val(sCodVenta);
-    let ticket = $("#cboSerieDocVenta :selected").attr("data-ticket");
-    if (ticket == 'SI') {
-        var data = new FormData();
-        data.append("OPCION", "pdfAlternativo");
-        data.append("p_CODE", sCodVenta);
-        data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
-        data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
-        data.append("p_PLAZO", $("#txt_plazo_pago").val());
-        data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
 
-        $.ajax({
-            type: "POST",
-            url: "vistas/nv/ajax/nvmdocv.ashx",
-            contentType: false,
-            data: data,
-            processData: false,
-            async: false,
-            success: function (data) {
-                if (data == "OK") {
-                    $("[id*=btnDescPDF]").click();
-                } else {
-                    noexito();
-                    return;
-                }
-            },
-            error: function (msg) {
-                noexitoCustom("No se pudo generar el PDF.");
+    var data = new FormData();
+    data.append("OPCION", "pdfAlternativo");
+    data.append("p_CODE", sCodVenta);
+    data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
+    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    data.append("p_PLAZO", $("#txt_plazo_pago").val());
+    data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
+
+    $.ajax({
+        type: "POST",
+        url: "vistas/nv/ajax/nvmdocv.ashx",
+        contentType: false,
+        data: data,
+        processData: false,
+        async: false,
+        success: function (data) {
+            if (data == "OK") {
+                $("[id*=btnDescPDF]").click();
+            } else {
+                noexito();
+                return;
             }
-        });
-
-    } else {
-        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101') {
-
-            var data = new FormData();
-            data.append("OPCION", "pdfAlternativo");
-            data.append("p_CODE", sCodVenta);
-            data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
-            data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
-            data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
-
-            $.ajax({
-                type: "POST",
-                url: "vistas/nv/ajax/nvmdocv.ashx",
-                contentType: false,
-                data: data,
-                processData: false,
-                async: false,
-                success: function (data) {
-                    if (data == "OK") {
-                        $("[id*=btnPdf_Click]").click();
-                    } else {
-                        noexito();
-                        return;
-                    }
-                },
-                error: function (msg) {
-                    noexitoCustom("No se pudo generar el PDF.");
-                }
-            });
-        } else {
-            crearImpresion($("#txtNumDctoComp").val());
-            //Desbloquear("ventana");
+        },
+        error: function (msg) {
+            noexitoCustom("No se pudo generar el PDF.");
         }
-    }
+    });
+
+    //let ticket = $("#cboSerieDocVenta :selected").attr("data-ticket");
+    //if (ticket == 'SI') {
+    //    var data = new FormData();
+    //    data.append("OPCION", "pdfAlternativo");
+    //    data.append("p_CODE", sCodVenta);
+    //    data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
+    //    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    //    data.append("p_PLAZO", $("#txt_plazo_pago").val());
+    //    data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
+
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "vistas/nv/ajax/nvmdocv.ashx",
+    //        contentType: false,
+    //        data: data,
+    //        processData: false,
+    //        async: false,
+    //        success: function (data) {
+    //            if (data == "OK") {
+    //                $("[id*=btnDescPDF]").click();
+    //            } else {
+    //                noexito();
+    //                return;
+    //            }
+    //        },
+    //        error: function (msg) {
+    //            noexitoCustom("No se pudo generar el PDF.");
+    //        }
+    //    });
+
+    //} else {
+    //    console.log(sCodVenta);
+    //    //if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101' || $("#cboDocumentoVenta").val() == '0001' || $("#cboDocumentoVenta").val() == '0003') {
+
+    //    //    var data = new FormData();
+    //    //    data.append("OPCION", "pdfAlternativo");
+    //    //    data.append("p_CODE", sCodVenta);
+    //    //    data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
+    //    //    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    //    //    data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+
+    //    //    $.ajax({
+    //    //        type: "POST",
+    //    //        url: "vistas/nv/ajax/nvmdocv.ashx",
+    //    //        contentType: false,
+    //    //        data: data,
+    //    //        processData: false,
+    //    //        async: false,
+    //    //        success: function (data) {
+    //    //            if (data == "OK") {
+    //    //                $("[id*=btnPdf_Click]").click();
+    //    //            } else {
+    //    //                noexito();
+    //    //                return;
+    //    //            }
+    //    //        },
+    //    //        error: function (msg) {
+    //    //            noexitoCustom("No se pudo generar el PDF.");
+    //    //        }
+    //    //    });
+    //    //} else {
+    //    //    crearImpresion($("#txtNumDctoComp").val());
+    //    //    //Desbloquear("ventana");
+    //    //}
+    //}
 }
 
 //Devuelve vacio si el descuento es 0, sino devuelve su valor con el signo negativo
@@ -10848,7 +10918,7 @@ function CargarDatosDocumentoOrigen() {
                         var unidadMedidaCode = $("#cbo_und_medida :selected").val();
                         var unidadMedida = $("#cbo_und_medida :selected").html();
                         var precioUnidad = $("#txtPrecioUnitario").val().replace(",", ".");
-                        var glosa = $.trim($("#txt_glosa_det").val());
+                        var glosa = $.trim($("#txt_glosa_det").val().replace(/<\/?[^>]+(>|$)/gi, ""));
 
                         var almacenCode = datos[i].ALMC;
                         var almacen = datos[i].DESC_ALMC;

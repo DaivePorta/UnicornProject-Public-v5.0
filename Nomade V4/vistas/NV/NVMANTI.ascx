@@ -330,7 +330,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                             
                                         </div>
                                         <%--<div class="span12" style="margin-left: 0">                                            
@@ -380,7 +379,7 @@
                                             </div>
                                             <div class="span11">
                                                 <div class="control-group">
-                                                    <textarea id="txt_comentario" class="span12" rows="1" style="resize: vertical; max-height: 110px;" maxlength="90"></textarea>
+                                                    <textarea id="txt_comentario" class="span12 obligatorio" rows="1" style="resize: vertical; max-height: 110px;" maxlength="90"></textarea>
                                                 </div>
                                             </div>
 
@@ -1139,14 +1138,39 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="row-fluid" id="ocultar4">
+                                                    <%--<div class="row-fluid" id="ocultar4">
                                                         <div class="span4">
                                                             <label id="lbl_detalle4">-</label>
                                                         </div>
-                                                        <div class="span8">
+                                                        <div class="span8 mNroOpe">
                                                             <div class="control-group">
                                                                 <div class="controls">
                                                                     <input type="text" id="txtNroOpe" class="obligatorio span12" disabled="disabled" />
+                                                                    <span id="operationStatus" style="display: none"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>--%>
+                                                    <div class="row-fluid"  id="ocultar4">
+                                                        <div class="span4">
+                                                            <label id="lbl_detalle4">-</label>
+                                                        </div>
+                                                        <div class="span4 mAppPago" style="display: none;">
+                                                            <div class="control-group">
+                                                                <div class="controls">
+                                                                    <select id="cbo_appPago" class="span12 obligatorio"  disabled="disabled">
+                                                                        <option value="YAPE">YAPE</option>
+                                                                        <%--<option value="LUKITA">LUKITA</option>
+                                                                        <option value="TUNKI">TUNKI</option>--%>
+                                                                        <option value="PLIN">PLIN</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="span8 mNroOpe">
+                                                            <div class="control-group">
+                                                                <div class="controls">
+                                                                   <input type="text" id="txtNroOpe" class="span12 obligatorio" disabled="disabled"  style="text-transform: uppercase"/>
                                                                 </div>
                                                             </div>
                                                         </div>

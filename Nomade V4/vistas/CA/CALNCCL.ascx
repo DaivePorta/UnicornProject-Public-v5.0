@@ -126,15 +126,17 @@
                                     <tr>
                                         <th>CÓDIGO</th>
                                         <th></th>
-                                        <th>DOCUMENTO</th>                                                                           
+                                        <th>DOCUMENTO</th>    
+                                        <th>FECHA EMISIÓN</th>
                                         <th>MOTIVO</th>                                                                           
                                         <th>MONEDA</th>
                                         <th>IMPORTE</th>
-                                        <th>CLIENTE</th>
-                                        <th>EMISIÓN</th>
+                                        <th>CLIENTE</th>                                        
                                         <th>ESTADO</th>
-                                         <th>DOCUMENTO<br />
+                                        <th>DOCUMENTO<br />
                                             ORIGEN</th>  
+                                        <th>FECHA EMISIÓN<br />
+                                            DOC. ORIGEN</th>  
                                     </tr>
                                 </thead>
                        

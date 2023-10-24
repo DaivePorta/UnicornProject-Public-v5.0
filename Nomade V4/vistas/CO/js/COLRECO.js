@@ -231,6 +231,7 @@
         data.append('p_MES_DES', $('#cboMes option:selected').html());
         data.append('p_RUC', $('#ruc').html());
         data.append('p_CTLG_CODE', $('#cboEmpresa').val());
+        data.append('p_DESC_EMPRESA', $('#cboEmpresa option:selected').html());
 
         $.ajax({
             type: "POST",

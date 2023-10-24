@@ -310,8 +310,11 @@ var NVLDOCT = function () {
         arrTotalVentaPos = new Array();
         arrTotalVentaPosD = new Array();
 
-        arrTotalVentaTomPed = new Array();
-        arrTotalVentaTomPedD = new Array();
+        //arrTotalVentaTomPed = new Array();
+        //arrTotalVentaTomPedD = new Array();
+
+        arrTotalNC = new Array();
+        arrTotalNCD = new Array();
 
         var parms = {
             data: null,
@@ -319,45 +322,137 @@ var NVLDOCT = function () {
                 {
                     data: null, createdCell: function (td, cellData, rowData, row, col) {
                         $($(td).parents("tr")[0]).attr("data-tipo", 'venta anulada');
+                        //if (rowData.ANULADO.toString() == "ANULADO") {
+                        //    $(td).html("<i class='icon-pushpin' style='color: #AD193E;font-size:14px;'>");
+                        //    if (rowData.MONEDA == '0002') {
+                        //        arrTotalAnulados.push(rowData.VALOR);
+                        //    } else {
+                        //        arrTotalAnuladosD.push(rowData.VALOR);
+                        //    }
+                        //} else if (rowData.MONTO_NG != 0 || rowData.MONTO_NC != 0) { // DPORTA 14/09/2023
+                        //    $(td).html("<i class='icon-pushpin' style='color: #00839A; font-size:14px;'>");
+                        //    if (rowData.MONEDA == '0002') {
+                        //        if (rowData.COMPLETO.toString() == "COMPLETO") {
+                        //            arrTotalNC.push(rowData.MONTO_NG + rowData.MONTO_NC);
+                        //            if (rowData.TIPO_MODULO.toString() == "N" || rowData.TIPO_MODULO.toString() == "P") {
+                        //                $(td).html("<i class='icon-pushpin' style='color: black;font-size:14px;'>")
+                        //                arrTotalVentaNormal.push(rowData.VALOR - (rowData.MONTO_NG + rowData.MONTO_NC));
+                        //            } else if (rowData.TIPO_MODULO.toString() == "R") {
+                        //                $(td).html("<i class='icon-pushpin' style='color: #094CB4;font-size:14px;'>")
+                        //                arrTotalVentaRapida.push(rowData.VALOR - (rowData.MONTO_NG + rowData.MONTO_NC));
+                        //            } else if (rowData.TIPO_MODULO.toString() == "A") {
+                        //                $(td).html("<i class='icon-pushpin' style='color: #5535B0;font-size:14px;'>");
+                        //                arrTotalVentaAnticipo.push(rowData.VALOR - (rowData.MONTO_NG + rowData.MONTO_NC));
+                        //            } else if (rowData.TIPO_MODULO.toString() == "X") {
+                        //                $(td).html("<i class='icon-pushpin' style='color: #00A300;font-size:14px;'>");
+                        //                arrTotalVentaPos.push(rowData.VALOR - (rowData.MONTO_NG + rowData.MONTO_NC));
+                        //            }
+                        //        }
+                        //    } else {
+                        //        if (rowData.COMPLETO.toString() == "COMPLETO") {
+                        //            arrTotalNCD.push(rowData.MONTO_NG + rowData.MONTO_NC);
+                        //            if (rowData.TIPO_MODULO.toString() == "N" || rowData.TIPO_MODULO.toString() == "P") {
+                        //                $(td).html("<i class='icon-pushpin' style='color: black;font-size:14px;'>")
+                        //                arrTotalVentaNormalD.push(rowData.VALOR - (rowData.MONTO_NG + rowData.MONTO_NC));
+                        //            } else if (rowData.TIPO_MODULO.toString() == "R") {
+                        //                $(td).html("<i class='icon-pushpin' style='color: #094CB4;font-size:14px;'>")
+                        //                arrTotalVentaRapidaD.push(rowData.VALOR - (rowData.MONTO_NG + rowData.MONTO_NC));
+                        //            } else if (rowData.TIPO_MODULO.toString() == "A") {
+                        //                $(td).html("<i class='icon-pushpin' style='color: #5535B0;font-size:14px;'>");
+                        //                arrTotalVentaAnticipoD.push(rowData.VALOR - (rowData.MONTO_NG + rowData.MONTO_NC));
+                        //            } else if (rowData.TIPO_MODULO.toString() == "X") {
+                        //                $(td).html("<i class='icon-pushpin' style='color: #00A300;font-size:14px;'>");
+                        //                arrTotalVentaPosD.push(rowData.VALOR - (rowData.MONTO_NG + rowData.MONTO_NC))
+                        //            }
+                        //        }
+                        //    }
+                        //} else {
+                        //    if (rowData.TIPO_MODULO.toString() == "N" || rowData.TIPO_MODULO.toString() == "P") {
+                        //        $(td).html("<i class='icon-pushpin' style='color: black;font-size:14px;'>")
+                        //        if (rowData.MONEDA == '0002')//SOLES
+                        //            if (rowData.COMPLETO.toString() == "COMPLETO")
+                        //                arrTotalVentaNormal.push(rowData.VALOR);
+                        //        else
+                        //            if (rowData.COMPLETO.toString() == "COMPLETO")
+                        //                arrTotalVentaNormalD.push(rowData.VALOR);
+                        //    } else if (rowData.TIPO_MODULO.toString() == "R") {
+                        //        $(td).html("<i class='icon-pushpin' style='color: #094CB4;font-size:14px;'>")
+                        //        if (rowData.MONEDA == '0002')//SOLES
+                        //            if (rowData.COMPLETO.toString() == "COMPLETO")
+                        //                arrTotalVentaRapida.push(rowData.VALOR);
+                        //        else
+                        //            if (rowData.COMPLETO.toString() == "COMPLETO")
+                        //                arrTotalVentaRapidaD.push(rowData.VALOR);
+                        //    } else if (rowData.TIPO_MODULO.toString() == "A") {
+                        //        $(td).html("<i class='icon-pushpin' style='color: #5535B0;font-size:14px;'>");
+                        //        if (rowData.MONEDA == '0002')//SOLES
+                        //            if (rowData.COMPLETO.toString() == "COMPLETO")
+                        //                arrTotalVentaAnticipo.push(rowData.VALOR);
+                        //        else
+                        //            if (rowData.COMPLETO.toString() == "COMPLETO")
+                        //                arrTotalVentaAnticipoD.push(rowData.VALOR);
+                        //    } else if (rowData.TIPO_MODULO.toString() == "X") {
+                        //        $(td).html("<i class='icon-pushpin' style='color: #00A300;font-size:14px;'>");
+                        //        if (rowData.MONEDA == '0002')//SOLES
+                        //            if (rowData.COMPLETO.toString() == "COMPLETO")
+                        //                arrTotalVentaPos.push(rowData.VALOR);
+                        //        else
+                        //            if (rowData.COMPLETO.toString() == "COMPLETO")
+                        //                arrTotalVentaPosD.push(rowData.VALOR)
+                        //    }
+                        //}                        
+                        if (rowData.TIPO_MODULO.toString() == "N" || rowData.TIPO_MODULO.toString() == "P") {
+                            $(td).html("<i class='icon-pushpin' style='color: black;font-size:14px;'>")
+                            if (rowData.MONEDA == '0002')//SOLES
+                                if (rowData.COMPLETO.toString() == "COMPLETO")
+                                    arrTotalVentaNormal.push(rowData.VALOR);
+                            else
+                                if (rowData.COMPLETO.toString() == "COMPLETO")
+                                    arrTotalVentaNormalD.push(rowData.VALOR);
+                        } else if (rowData.TIPO_MODULO.toString() == "R") {
+                            $(td).html("<i class='icon-pushpin' style='color: #094CB4;font-size:14px;'>")
+                            if (rowData.MONEDA == '0002')//SOLES
+                                if (rowData.COMPLETO.toString() == "COMPLETO")
+                                    arrTotalVentaRapida.push(rowData.VALOR);
+                            else
+                                if (rowData.COMPLETO.toString() == "COMPLETO")
+                                    arrTotalVentaRapidaD.push(rowData.VALOR);
+                        } else if (rowData.TIPO_MODULO.toString() == "A") {
+                            $(td).html("<i class='icon-pushpin' style='color: #5535B0;font-size:14px;'>");
+                            if (rowData.MONEDA == '0002')//SOLES
+                                if (rowData.COMPLETO.toString() == "COMPLETO")
+                                    arrTotalVentaAnticipo.push(rowData.VALOR);
+                            else
+                                if (rowData.COMPLETO.toString() == "COMPLETO")
+                                    arrTotalVentaAnticipoD.push(rowData.VALOR);
+                        } else if (rowData.TIPO_MODULO.toString() == "X") {
+                            $(td).html("<i class='icon-pushpin' style='color: #00A300;font-size:14px;'>");
+                            if (rowData.MONEDA == '0002')//SOLES
+                                if (rowData.COMPLETO.toString() == "COMPLETO")
+                                    arrTotalVentaPos.push(rowData.VALOR);
+                            else
+                                if (rowData.COMPLETO.toString() == "COMPLETO")
+                                    arrTotalVentaPosD.push(rowData.VALOR)
+                        }                        
+                        if (rowData.MONTO_NG != 0 || rowData.MONTO_NC != 0) {
+                            $(td).html("<i class='icon-pushpin' style='color: #00839A; font-size:14px;'>");
+                            if (rowData.MONEDA == '0002') {
+                                if (rowData.COMPLETO.toString() == "COMPLETO") {
+                                    arrTotalNC.push(rowData.MONTO_NG + rowData.MONTO_NC);
+                                }
+                            } else {
+                                if (rowData.COMPLETO.toString() == "COMPLETO") {
+                                    arrTotalNCD.push(rowData.MONTO_NG + rowData.MONTO_NC);
+                                }
+                            }
+                        }
                         if (rowData.ANULADO.toString() == "ANULADO") {
                             $(td).html("<i class='icon-pushpin' style='color: #AD193E;font-size:14px;'>");
-                            if (rowData.MONEDA == '0002')//SOLES
+                            if (rowData.MONEDA == '0002') {
                                 arrTotalAnulados.push(rowData.VALOR);
-                            else
+                            } else {
                                 arrTotalAnuladosD.push(rowData.VALOR);
-                        } else {
-                            if (rowData.TIPO_MODULO.toString() == "N" || rowData.TIPO_MODULO.toString() == "P") {
-                                $(td).html("<i class='icon-pushpin' style='color: black;font-size:14px;'>")
-                                if (rowData.MONEDA == '0002')//SOLES
-                                    arrTotalVentaNormal.push(rowData.VALOR);
-                                else
-                                    arrTotalVentaNormalD.push(rowData.VALOR);
-                            } else if (rowData.TIPO_MODULO.toString() == "R") {
-                                $(td).html("<i class='icon-pushpin' style='color: #094CB4;font-size:14px;'>")
-                                if (rowData.MONEDA == '0002')//SOLES
-                                    arrTotalVentaRapida.push(rowData.VALOR);
-                                else
-                                    arrTotalVentaRapidaD.push(rowData.VALOR);
-                            } else if (rowData.TIPO_MODULO.toString() == "A") {
-                                $(td).html("<i class='icon-pushpin' style='color: #5535B0;font-size:14px;'>");
-                                if (rowData.MONEDA == '0002')//SOLES
-                                    arrTotalVentaAnticipo.push(rowData.VALOR);
-                                else
-                                    arrTotalVentaAnticipoD.push(rowData.VALOR);
-                            } else if (rowData.TIPO_MODULO.toString() == "X") {
-                                $(td).html("<i class='icon-pushpin' style='color: #00A300;font-size:14px;'>");
-                                if (rowData.MONEDA == '0002')//SOLES
-                                    arrTotalVentaPos.push(rowData.VALOR);
-                                else
-                                    arrTotalVentaPosD.push(rowData.VALOR);
                             }
-                            //else if (rowData.TIPO_MODULO.toString() == "T") { // Agregué tipo de venta = 'T' (12/02/18)
-                            //    $(td).html("<i class='icon-pushpin' style='color: #00839A; font-size:14px;'>");
-                            //    if (rowData.MONEDA == '0002')//SOLES
-                            //        arrTotalVentaTomPed.push(rowData.VALOR);
-                            //    else
-                            //        arrTotalVentaTomPedD.push(rowData.VALOR);
-                            //} 
                         }
                         $(td).attr("align", "center");
                     }
@@ -369,6 +464,10 @@ var NVLDOCT = function () {
                 },
                 {
                     data: "DOCUMENTO", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "left"); }
+
+                },
+                {
+                    data: "DESC_SUCURSAL", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "center"); }
 
                 },
                 {
@@ -502,7 +601,7 @@ var NVLDOCT = function () {
                 };
 
                 // Total over this page
-                if (api.column(7).data().length) {
+                if (api.column(8).data().length) {
                     var auxArray = new Array();
                     var auxArray2 = new Array();
                     //filtro
@@ -521,6 +620,19 @@ var NVLDOCT = function () {
                 } else {
                     pageTotalMoba = 0
                     pageTotalMoal = 0;
+
+                    arrTotalVentaNormal = 0
+                    arrTotalVentaNormalD = 0;
+                    arrTotalVentaRapida = 0
+                    arrTotalVentaRapidaD = 0;
+                    arrTotalAnulados = 0
+                    arrTotalAnuladosD = 0;
+                    arrTotalVentaAnticipo = 0
+                    arrTotalVentaAnticipoD = 0;
+                    arrTotalVentaPos = 0
+                    arrTotalVentaPosD = 0;
+                    arrTotalNC = 0
+                    arrTotalNCD = 0;
                 };
 
                 var SMOBA = "S/.";
@@ -532,8 +644,8 @@ var NVLDOCT = function () {
                 $("#tdVtaRapidaSol").html("<span style='color:#094CB4;'>" + SMOBA + formatoMiles(autoSuma(arrTotalVentaRapida)).toString() + "</span>");
                 $("#tdVtaRapidaDol").html("<span style='color:#094CB4;'>" + SMOAL + formatoMiles(autoSuma(arrTotalVentaRapidaD)).toString() + "</span>");
 
-                $("#tdVtaAnuladaSol").html("<span style='color:#AD193E;'>" + SMOBA + formatoMiles(autoSuma(arrTotalAnulados)).toString() + "</span>");
-                $("#tdVtaAnuladaDol").html("<span style='color:#AD193E;'>" + SMOAL + formatoMiles(autoSuma(arrTotalAnuladosD)).toString() + "</span>");
+                $("#tdVtaAnuladaSol").html("<span style='color:#AD193E;'>" + " - " + SMOBA + formatoMiles(autoSuma(arrTotalAnulados)).toString() + "</span>");
+                $("#tdVtaAnuladaDol").html("<span style='color:#AD193E;'>" + " - " + SMOAL + formatoMiles(autoSuma(arrTotalAnuladosD)).toString() + "</span>");
 
                 $("#tdVtaAnticipoSol").html("<span style='color:#5535B0;'>" + SMOBA + formatoMiles(autoSuma(arrTotalVentaAnticipo)).toString() + "</span>");
                 $("#tdVtaAnticipoDol").html("<span style='color:#5535B0;'>" + SMOAL + formatoMiles(autoSuma(arrTotalVentaAnticipoD)).toString() + "</span>");
@@ -542,8 +654,12 @@ var NVLDOCT = function () {
                 $("#tdVtaPosDol").html("<span style='color:#00A300;'>" + SMOAL + formatoMiles(autoSuma(arrTotalVentaPosD)).toString() + "</span>");
 
                 // Agregué totales para ventas del tip 'Toma Pedido' - ERICK (13/02/2018)
-                $("#tdVtaTomPedSol").html("<span style='color:#00839A;'>" + SMOBA + formatoMiles(autoSuma(arrTotalVentaTomPed)).toString() + "</span>");
-                $("#tdVtaTomPedDol").html("<span style='color:#00839A;'>" + SMOAL + formatoMiles(autoSuma(arrTotalVentaTomPedD)).toString() + "</span>");
+                //$("#tdVtaTomPedSol").html("<span style='color:#00839A;'>" + SMOBA + formatoMiles(autoSuma(arrTotalVentaTomPed)).toString() + "</span>");
+                //$("#tdVtaTomPedDol").html("<span style='color:#00839A;'>" + SMOAL + formatoMiles(autoSuma(arrTotalVentaTomPedD)).toString() + "</span>");
+
+                // Agregué totales NC - DPORTA (14/09/2023)
+                $("#tdNCSol").html("<span style='color:#00839A;'>" + " - " + SMOBA + formatoMiles(autoSuma(arrTotalNC)).toString() + "</span>");
+                $("#tdNCDol").html("<span style='color:#00839A;'>" + " - " + SMOAL + formatoMiles(autoSuma(arrTotalNCD)).toString() + "</span>");
 
                 $("#tdTotales").html("<strong><label style='font-weight: 600;'>&nbsp;Total en página: S/. " + formatoMiles(pageTotalMoba).toString() + " | US$ " + formatoMiles(pageTotalMoal).toString() + "</label></strong>");
 
@@ -642,7 +758,7 @@ var NVLDOCT = function () {
 
         $.ajax({
             type: "POST",
-            url: "vistas/NV/ajax/NVLDOCT.ashx?OPCION=3",
+            url: "vistas/NV/ajax/NVLDOCT.ashx?OPCION=3.5",
             beforeSend: Bloquear("divDocumento"),
             contentType: false,
             data: data,
@@ -668,11 +784,14 @@ var NVLDOCT = function () {
                     arrTotalVentaPos = new Array();
                     arrTotalVentaPosD = new Array();
 
-                    arrTotalVentaTomPed = new Array();
-                    arrTotalVentaTomPedD = new Array();
+                    //arrTotalVentaTomPed = new Array();
+                    //arrTotalVentaTomPedD = new Array();
+
+                    arrTotalNC = new Array();
+                    arrTotalNCD = new Array();
 
                     oTable.fnAddData(datos);
-                    oTable.fnSort([[3, "desc"]]);
+                    oTable.fnSort([[4, "desc"]]);
                 } else {
                     infoCustom2("No se encontraron datos!");
                 }

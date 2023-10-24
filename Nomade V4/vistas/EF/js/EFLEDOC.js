@@ -31,7 +31,8 @@ var EFLEDOC = function () {
     var fillCboEmpresa = function () {
         $.ajax({
             type: "post",
-            url: "vistas/ca/ajax/calvica.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
+            //url: "vistas/ca/ajax/calvica.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
+            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -40,7 +41,8 @@ var EFLEDOC = function () {
                 $('#cboEmpresa').append('<option></option>');
                 if (datos != null) {
                     for (var i = 0; i < datos.length; i++) {
-                        $('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+                        //$('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+                        $('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '" ruc="' + datos[i].RUC + '">' + datos[i].DESCRIPCION + '</option>');
                     }
                 } else {
                     $('#cboEmpresa').select2('val', '');

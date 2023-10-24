@@ -213,7 +213,28 @@
             Throw (ex)
         End Try
     End Function
+    Public Function ListarCajerosCaja_FAST(ByVal p_caja_code As String, ByVal p_usua_cajero As String, Optional p_ctlg_code As String = " ", Optional p_scsl_code As String = " ", Optional p_TIPO_FILTRO As String = "NORMAL") As DataTable
+        Try
+            Dim cmd As IDbCommand
+            Dim dt As DataTable
 
+            cmd = cn.GetNewCommand("PFS_LISTAR_CAJERO_POR_CAJA_FAST", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CAJA_CODE", p_caja_code, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_USUA_CAJERO", p_usua_cajero, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_ctlg_code, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_scsl_code, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_FILTRO", p_TIPO_FILTRO, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
     Public Function ReporteInconsistenciasCaja(ByVal tipo As String, ByVal caja As String, ByVal desde As String, ByVal hasta As String, ByVal p_CAJERO As String, ByVal ctlg_code As String, scsl_code As String) As DataTable
         Try
             Dim cmd As IDbCommand

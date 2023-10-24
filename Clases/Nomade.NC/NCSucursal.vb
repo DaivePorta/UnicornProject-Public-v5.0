@@ -16,7 +16,27 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_EXONERADO", p_exonerado, ParameterDirection.Input, 253))
             dt = cn.Consulta(cmd)
 
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 
+    Public Function ListarSucursalFast(ByVal p_codigoemp As String, ByVal p_codigosuc As String, ByVal p_estado As String, Optional ByVal p_exonerado As String = "") As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFC_LISTAR_SUCURSAL_FAST", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_codigoemp, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_codigosuc, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_IND", p_estado, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_EXONERADO", p_exonerado, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
 
             If Not (dt Is Nothing) Then
                 Return dt
@@ -38,8 +58,6 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_USUA_ID", p_codigosuc, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_IND", p_estado, ParameterDirection.Input, 253))
             dt = cn.Consulta(cmd)
-
-
 
             If Not (dt Is Nothing) Then
                 Return dt

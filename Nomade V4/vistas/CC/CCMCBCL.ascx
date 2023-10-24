@@ -299,11 +299,22 @@
                                     <label id="lbl_detalle4">-</label>
 
                                 </div>
-                                <div class="span7">
+                                <div class="span3 mAppPago" style="display: none;">
                                     <div class="control-group">
                                         <div class="controls">
-                                            <input type="text" id="txtNroOpe" class="obligatorio span12" disabled="disabled" />
-
+                                            <select id="cbo_appPago" class="span12 obligatorio"  disabled="disabled">
+                                                <option value="YAPE">YAPE</option>
+                                                <%--<option value="LUKITA">LUKITA</option>
+                                                <option value="TUNKI">TUNKI</option>--%>
+                                                <option value="PLIN">PLIN</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="span7 mNroOpe">
+                                    <div class="control-group">
+                                        <div class="controls">
+                                           <input type="text" id="txtNroOpe" class="span12 obligatorio" disabled="disabled" style="text-transform: uppercase"/>
                                         </div>
                                     </div>
                                 </div>

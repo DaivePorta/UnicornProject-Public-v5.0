@@ -506,7 +506,6 @@ Public Class NVMANTI : Implements IHttpHandler
 
                     Dim strCodAsientoCobroVenta As String
                     strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroAnticipo(p_CODE, dtCabecera.Rows(0)("ASIENTO_COBRO"), dtCabecera.Rows(0)("PAGADO_IND"))
-
                     'Dim oDT_DocVenta As New DataTable
                     'oDT_DocVenta = nvVenta.fnGetDocAnti(p_CODE)
                     'If oDT_DocVenta Is Nothing Then

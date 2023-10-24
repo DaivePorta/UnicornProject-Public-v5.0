@@ -114,7 +114,7 @@ Public Class CCLRCCL : Implements IHttpHandler
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TABLA").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CODIGO_REF").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("DOCUMENTO").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("RAZON_SOCIAL").ToString())
+                resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("RAZON_SOCIAL").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("DOCUMENTO_ID").ToString())
                 resb.AppendFormat("<td align='center' data-order='{1}'>{0}</td>", If(dt.Rows(i)("EMISION").ToString() = "", "", dt.Rows(i)("EMISION").ToString().Substring(0, 10)), ObtenerFecha(dt.Rows(i)("EMISION").ToString()))
                 resb.AppendFormat("<td align='center' data-order='{1}'>{0}</td>", If(dt.Rows(i)("VENCIMIENTO").ToString() = "", "", dt.Rows(i)("VENCIMIENTO").ToString().Substring(0, 10)), ObtenerFecha(dt.Rows(i)("VENCIMIENTO").ToString()))

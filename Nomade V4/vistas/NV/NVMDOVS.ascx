@@ -155,7 +155,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="span2">
+                                            <div class="span1">
                                                 <div class="control-group">
                                                     <label class="control-label" for="txtNumSec">
                                                         Secuencia</label>
@@ -168,13 +168,26 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="span1">
+                                                <div class="control-group">
+                                                    <label class="control-label" for="txtKardex">
+                                                        ID Kardex</label>
+                                                </div>
+                                            </div>
                                             <div class="span2">
                                                 <div class="control-group">
-                                                    <label class="control-label" for="txtNumSec">
+                                                    <div class="controls">
+                                                        <input id="txtKardex" class="span12" disabled="disabled" placeholder="Kardex" type="text" style="text-align: center" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="span1">
+                                                <div class="control-group">
+                                                    <label class="control-label" for="txtNumAt">
                                                         Nro. Atención</label>
                                                 </div>
                                             </div>
-                                            <div class="span3">
+                                            <div class="span2">
                                                 <div class="control-group">
                                                     <div class="controls">
                                                         <input id="txtNumAt" class="span12" disabled="disabled" placeholder="Nro. Atención" type="text" style="text-align: center" />
@@ -1235,10 +1248,22 @@
                                                         <div class="span4">
                                                             <label id="lbl_detalle4">-</label>
                                                         </div>
-                                                        <div class="span8">
+                                                        <div class="span4 mAppPago" style="display: none;">
                                                             <div class="control-group">
                                                                 <div class="controls">
-                                                                    <input type="text" id="txtNroOpe" class="obligatorio span12" disabled="disabled" />
+                                                                    <select id="cbo_appPago" class="span12 obligatorio"  disabled="disabled">
+                                                                        <option value="YAPE">YAPE</option>
+                                                                        <%--<option value="LUKITA">LUKITA</option>
+                                                                        <option value="TUNKI">TUNKI</option>--%>
+                                                                        <option value="PLIN">PLIN</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="span8 mNroOpe">
+                                                            <div class="control-group">
+                                                                <div class="controls">
+                                                                   <input type="text" id="txtNroOpe" class="span12 obligatorio" disabled="disabled"  style="text-transform: uppercase"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1344,10 +1369,22 @@
                                                         <div class="span4">
                                                             <label id="lbl_detalle4_2">-</label>
                                                         </div>
-                                                        <div class="span8">
+                                                        <div class="span4 mAppPago2" style="display: none;">
                                                             <div class="control-group">
                                                                 <div class="controls">
-                                                                    <input type="text" id="txtNroOpe2" class="obligatorio span12" disabled="disabled" />
+                                                                    <select id="cbo_appPago2" class="span12 obligatorio"  disabled="disabled">
+                                                                        <option value="YAPE">YAPE</option>
+                                                                        <%--<option value="LUKITA">LUKITA</option>
+                                                                        <option value="TUNKI">TUNKI</option>--%>
+                                                                        <option value="PLIN">PLIN</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="span8 mNroOpe2">
+                                                            <div class="control-group">
+                                                                <div class="controls">
+                                                                   <input type="text" id="txtNroOpe2" class="span12 obligatorio" disabled="disabled"  style="text-transform: uppercase"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1441,10 +1478,22 @@
                                                         <div class="span4">
                                                             <label id="lbl_detalle4_3">-</label>
                                                         </div>
-                                                        <div class="span8">
+                                                        <div class="span4 mAppPago3" style="display: none;">
                                                             <div class="control-group">
                                                                 <div class="controls">
-                                                                    <input type="text" id="txtNroOpe3" class="obligatorio span12" disabled="disabled" />
+                                                                    <select id="cbo_appPago3" class="span12 obligatorio"  disabled="disabled">
+                                                                        <option value="YAPE">YAPE</option>
+                                                                        <%--<option value="LUKITA">LUKITA</option>
+                                                                        <option value="TUNKI">TUNKI</option>--%>
+                                                                        <option value="PLIN">PLIN</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="span8 mNroOpe3">
+                                                            <div class="control-group">
+                                                                <div class="controls">
+                                                                   <input type="text" id="txtNroOpe3" class="span12 obligatorio" disabled="disabled"  style="text-transform: uppercase"/>
                                                                 </div>
                                                             </div>
                                                         </div>

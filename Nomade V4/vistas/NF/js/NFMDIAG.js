@@ -517,7 +517,7 @@ var NFMDIAG = function () {
     function cargarJsonEmpleado(empresa) {
         $.ajax({
             type: "post",
-            url: "vistas/GL/ajax/GLMLETR.ashx?flag=LE&empresa=" + empresa,
+            url: "vistas/GL/ajax/GLMLETR.ashx?flag=LE-2&empresa=" + empresa,
             contenttype: "application/json;",
             datatype: "json",
             async: false,

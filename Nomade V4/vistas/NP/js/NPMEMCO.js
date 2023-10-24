@@ -349,8 +349,8 @@ var NPMEMCO = function () {
             }
             $("#cboEmpresaAlerta").select2('val', $('#ctl00_hddctlg').val());
 
-            ListarRegimenLaboral(); 
-            fillCboSucursal();
+            //ListarRegimenLaboral(); 
+            //fillCboSucursal();
         }
      
     };
@@ -1026,7 +1026,7 @@ var NPMEMCO = function () {
 
         $('#DatosEmp').slideUp();        
         fillCboEmpresa();
-        fillCboEmpleado("A");        
+        //fillCboEmpleado("A");        
         ListarTipoCotrato();
         ListarEstadoContrato();
         ListarModFormativa();
@@ -1188,7 +1188,7 @@ var GetContratos = function () {
                }
            })
            //columns(8).visible(false);
-           $('#tblContratos').DataTable().columns(10).visible(false);
+           $('#tblContratos').DataTable().columns(12).visible(false);
            actualizarEstilos()
            $('#tblContratos tbody').on('click', 'tr', function () {
                if ($(this).hasClass('selected')) {
@@ -1202,7 +1202,7 @@ var GetContratos = function () {
                    var row = table.fnGetData(pos);
                    var code = row[0];
                    var nro = row[1];
-                   var ctlg_code = row[10];
+                   var ctlg_code = row[12];
                    
                    window.location.href = '?f=npmemco&pidm=' + code + "&nro=" + nro + "&ctlg_code=" + ctlg_code ;
                }

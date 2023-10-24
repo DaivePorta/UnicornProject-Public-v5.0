@@ -750,8 +750,6 @@ var CPMPGVA = function () {
                     $("#cbo_Det_Origen").attr("data-placeholder", "CAJA").select2("val", "").change();
                     $("#cbDestino").select2("val", "");
 
-
-
                     $.ajaxSetup({ async: false });
                     $.post("vistas/CP/ajax/CPMPGVA.ASHX", { flag: 7, empresa: $("#slcEmpresa").val(), usuario: $("#ctl00_txtus").val(), establec: ($("#slcEstablec").val() == null ? "" : $('#slcEstablec').val().toString()), },
                         function (res) {
@@ -802,6 +800,7 @@ var CPMPGVA = function () {
                     $("#cboMedioPago").html(StringMediosPago);
                     $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0001" && valorO != "0008" && valorO != "") $(j).remove(); });
                     $("#cboMedioPago").attr("disabled", false);
+                    CargarDatosCobroPorDefecto();
                     break;
 
                 case "Banco":
@@ -878,6 +877,9 @@ var CPMPGVA = function () {
 
             $("#txtNroOpe").val("");
             $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
+            $(".mPersona").css("display", "none");
+            offObjectEvents("txtNroOpe");
+            $("#txtNroOpe").removeClass("personas").attr("disabled", false);
             switch (MedioActual) {
 
                 case "0001"://DEPOSITO BANCARIO
@@ -2770,6 +2772,25 @@ function insertar_fila(padre, html1, html2) {
         ' </div>' +
         '</div>';
     $(padre).append(filaHtml);
+}
+
+function CargarDatosCobroPorDefecto() {
+    //CARGA POR DEFECTO
+    //  $('#cbo_OrigenPago').select2("val", "Caja").change();
+    if ($("#cbo_Det_Origen option").length > 0) {
+        var cbo = $("#cbo_Det_Origen option");
+        $("#cbo_Det_Origen").select2("val", $($("#cbo_Det_Origen option")[1]).val()).change();
+
+        if ($("#cboMedioPago option").length > 0) {
+            $("#cboMedioPago").select2("val", "0008"); //EFECTIVO DIRECTO           
+            $("#cboMedioPago").change(); //EFECTIVO DIRECTO    
+            var jsonUsuario = devuelveDatosUsuario($("#ctl00_lblusuario").html());
+            if (jsonUsuario != null) {
+                $("#txtNroOpe").val(jsonUsuario[0].NOMBRE).keyup().siblings("ul").children("li").click();
+                $("#txtClientes").focus();
+            }
+        }
+    }
 }
 
 function limpiaCampos() {

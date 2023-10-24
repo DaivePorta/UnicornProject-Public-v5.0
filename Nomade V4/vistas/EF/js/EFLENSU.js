@@ -30,7 +30,8 @@
     var fillCboEmpresa = function () {
         $.ajax({
             type: "post",
-            url: "vistas/ca/ajax/calvica.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
+            //url: "vistas/ca/ajax/calvica.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
+            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -39,7 +40,8 @@
                 $('#cboEmpresa').append('<option></option>');
                 if (datos != null) {
                     for (var i = 0; i < datos.length; i++) {
-                        $('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+                        /*$('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');*/
+                        $('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '" ruc="' + datos[i].RUC + '">' + datos[i].DESCRIPCION + '</option>');
                     }
                 } else {
                     $('#cboEmpresa').select2('val', '');
@@ -278,8 +280,9 @@
             let pos = oTable.api(true).row($(this).parents("tr")[0]).index();
             let row = oTable.fnGetData(pos);
             let documento = row.COD_DOCUMENTO;
+            let serieNro = row.DOCUMENTO;
 
-            console.log(row);
+            //console.log(row);
 
             $('#btnEnviar').off("click"); // quitar eventos del boton
             $('#btnEnviarBaja').off("click");
@@ -302,7 +305,7 @@
                     $('#lblMonto').html(row.TOTAL);
                     $('#btnEnviar').on('click', function () { // boton del modal
                         bUltimo = true;
-                        GenerarDocFacturacion(documento);
+                        GenerarDocFacturacion(documento, serieNro);
                     });
                     break;
                 case "baja":
@@ -327,7 +330,7 @@
                     fnDescargarArchivoEfact(sCodTipoDoc, row.DOCUMENTO.toString().split("/")[1]);
                     break;
                 case "verificar":
-                    fnVerificarDocOrbitum(documento);
+                    fnVerificarDocOrbitum(documento, serieNro);
                     break;
                 case "verificar_baja":
                     fnVerificarBajaDoc(documento);
@@ -337,10 +340,11 @@
         });
     };
 
-    var fnVerificarDoc = function (documento) {
+    var fnVerificarDoc = function (documento, serieNro) {
 
         var sCodEmpresa = $("#cboEmpresa").val();
         var sCodTipoDoc = $("#cboDocumento").val();
+        var rucEmpresa = $('#cboEmpresa option:selected').attr('ruc');
 
         if (sCodTipoDoc == '0001' || sCodTipoDoc == '0003') {
             if (sCodTipoDoc == '0001') {
@@ -350,8 +354,8 @@
                     var sOpcion = 'VBOLELEC';
                 }
             }
-            var sCodVenta = documento;
-            var sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=" + sOpcion + "&sCodEmpresa=" + sCodEmpresa + "&sCodVenta=" + sCodVenta;
+            //var sCodVenta = documento;
+            var sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=" + sOpcion + "&sCodEmpresa=" + sCodEmpresa + "&sCodVenta=" + documento + "&sSerieNro=" + serieNro + "&rucEmpresa=" + rucEmpresa;
             $.ajax({
                 type: "post",
                 url: sRuta,
@@ -407,8 +411,8 @@
             });
         } else {
             if (sCodTipoDoc == '0007') {   // NOTA DE CREDITO                
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VNCORB&sCodEmpresa=" + sCodEmpresa + "&sCodNC=" + sCodVenta
+                //var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VNCORB&sCodEmpresa=" + sCodEmpresa + "&sCodNC=" + documento + "&sSerieNro=" + serieNro + "&rucEmpresa=" + rucEmpresa;
 
                 $.ajax({
                     type: "post",
@@ -466,9 +470,9 @@
                     }
                 });
             } else if (sCodTipoDoc == '0008') { // NOTA DE DEBITO
-                var sOpcion = 'FACT';
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
+                //var sOpcion = 'VND';
+                //var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + documento + "&sSerieNro=" + serieNro + "&rucEmpresa=" + rucEmpresa;
 
                 $.ajax({
                     type: "post",
@@ -523,9 +527,9 @@
                     }
                 });
             } else if (sCodTipoDoc == '0009') { //GUIA DE REMISION
-                var sOpcion = 'FACT';
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VGUIA_REMI_ELEC&sCodEmpresa=" + sCodEmpresa + "&sCodGuiaRemision=" + sCodVenta
+                //var sOpcion = 'VGUIA_REMI_ELEC';
+                //var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VGUIA_REMI_ELEC&sCodEmpresa=" + sCodEmpresa + "&sCodGuiaRemision=" + documento + "&sSerieNro=" + serieNro + "&rucEmpresa=" + rucEmpresa;
 
                 $.ajax({
                     type: "post",
@@ -585,11 +589,12 @@
     };
 
 
-    var fnVerificarDocOrbitum = function (documento) {
+    var fnVerificarDocOrbitum = function (documento, serieNro) {
 
         var sCodEmpresa = $("#cboEmpresa").val();
         var sCodTipoDoc = $("#cboDocumento").val();
         var anticipo = (documento.substring(0, 2) == "AP") ? true : false;
+        var rucEmpresa = $('#cboEmpresa option:selected').attr('ruc');
 
         if (sCodTipoDoc == '0001' || sCodTipoDoc == '0003') {
             if (sCodTipoDoc == '0001') {
@@ -607,8 +612,8 @@
                 }      
                 //var sOpcion = 'VBOLELEC';    
             }
-            var sCodVenta = documento;
-            var sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=" + sOpcion + "&sCodEmpresa=" + sCodEmpresa + "&sCodVenta=" + sCodVenta;
+            //var sCodVenta = documento;
+            var sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=" + sOpcion + "&sCodEmpresa=" + sCodEmpresa + "&sCodVenta=" + documento + "&sSerieNro=" + serieNro + "&rucEmpresa=" + rucEmpresa;
             $.ajax({
                 type: "post",
                 url: sRuta,
@@ -663,8 +668,8 @@
             });
         } else {
             if (sCodTipoDoc == '0007') {   // NOTA DE CREDITO                
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VNCORB&sCodEmpresa=" + sCodEmpresa + "&sCodNC=" + sCodVenta
+                //var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VNCORB&sCodEmpresa=" + sCodEmpresa + "&sCodNC=" + documento + "&sSerieNro=" + serieNro + "&rucEmpresa=" + rucEmpresa;
 
                 $.ajax({
                     type: "post",
@@ -722,9 +727,9 @@
                     }
                 });
             } else if (sCodTipoDoc == '0008') { // NOTA DE DEBITO
-                var sOpcion = 'FACT';
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
+                //var sOpcion = 'FACT';
+                //var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VND&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + documento + "&sSerieNro=" + serieNro + "&rucEmpresa=" + rucEmpresa;
 
                 $.ajax({
                     type: "post",
@@ -782,9 +787,9 @@
                     }
                 });
             } else if (sCodTipoDoc == '0009') {
-                var sOpcion = 'FACT';
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VGUIA_REMI_ELEC&sCodEmpresa=" + sCodEmpresa + "&sCodGuiaRemision=" + sCodVenta
+                //var sOpcion = 'FACT';
+                //var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=VGUIA_REMI_ELEC&sCodEmpresa=" + sCodEmpresa + "&sCodGuiaRemision=" + documento + "&sSerieNro=" + serieNro + "&rucEmpresa=" + rucEmpresa;
                 $.ajax({
                     type: "post",
                     url: sRuta,
@@ -1008,10 +1013,12 @@
         }
     };
 
-    var GenerarDocFacturacion = function (documento) {
+    var GenerarDocFacturacion = function (documento, serieNro) {
         
         var sCodEmpresa = $("#cboEmpresa").val();
         var sCodTipoDoc = $("#cboDocumento").val();
+        var rucEmpresa = $('#cboEmpresa option:selected').attr('ruc');
+
         var anticipo = (documento.substring(0, 2) == "AP") ? true : false;
 
         if (sCodTipoDoc == '0001' || sCodTipoDoc == '0003') {
@@ -1030,8 +1037,8 @@
                     }                    
                 }
             }
-            var sCodVenta = documento;
-            var sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=" + sOpcion + "&sCodEmpresa=" + sCodEmpresa + "&sCodVenta=" + sCodVenta;
+            //var sCodVenta = documento;
+            let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=" + sOpcion + "&sCodEmpresa=" + sCodEmpresa + "&sCodVenta=" + documento + "&rucEmpresa=" + rucEmpresa;
             $.ajax({
                 type: "post",
                 url: sRuta,
@@ -1054,7 +1061,7 @@
                         return;
                     }                    
                     
-                    fnVerificarDocOrbitum(documento);
+                    fnVerificarDocOrbitum(documento, serieNro);
                     $("#divConfirmacion").modal('hide');
                     
                 },
@@ -1069,8 +1076,8 @@
             });
         } else {
             if (sCodTipoDoc == '0007') {   // NOTA DE CREDITO                
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=NC_ORBI&sCodEmpresa=" + sCodEmpresa + "&sCodNC=" + sCodVenta
+                //var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=NC_ORBI&sCodEmpresa=" + sCodEmpresa + "&sCodNC=" + documento + "&rucEmpresa=" + rucEmpresa;
 
                 $.ajax({
                     type: "post",
@@ -1094,7 +1101,7 @@
                             return;
                         }
 
-                        fnVerificarDocOrbitum(documento);
+                        fnVerificarDocOrbitum(documento, serieNro);
 
                         $("#divConfirmacion").modal('hide');
                     },
@@ -1109,8 +1116,8 @@
                 });
             } else if (sCodTipoDoc == '0008') {   // NOTA DE DEBITO
                 //var sOpcion = 'FACT';
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=ND_ORBI&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + sCodVenta
+                //var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=ND_ORBI&sCodEmpresa=" + sCodEmpresa + "&sCodND=" + documento + "&rucEmpresa=" + rucEmpresa;
 
                 $.ajax({
                     type: "post",
@@ -1134,7 +1141,7 @@
                             return;
                         }
 
-                        fnVerificarDocOrbitum(documento);
+                        fnVerificarDocOrbitum(documento, serieNro);
                         $("#divConfirmacion").modal('hide');
 
                     },
@@ -1149,8 +1156,8 @@
                 });
             } else if (sCodTipoDoc == '0009') { // GUIA DE REMISION
                 //var sOpcion = 'FACT';
-                var sCodVenta = documento;
-                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=GUIA_REMI_ORBI&sCodEmpresa=" + sCodEmpresa + "&sCodGuiaRemision=" + sCodVenta
+                //var sCodVenta = documento;
+                let sRuta = "vistas/EF/ajax/EFLENSU.ashx?sOpcion=GUIA_REMI_ORBI&sCodEmpresa=" + sCodEmpresa + "&sCodGuiaRemision=" + documento + "&rucEmpresa=" + rucEmpresa;
 
                 $.ajax({
                     type: "post",
@@ -1174,7 +1181,7 @@
                             return;
                         }
 
-                        fnVerificarDocOrbitum(documento);
+                        fnVerificarDocOrbitum(documento, serieNro);
                         $("#divConfirmacion").modal('hide');
 
                     },
@@ -1232,7 +1239,7 @@
                 datatype: "json",
                 async: false,
                 success: function (datos) {
-                    console.log(datos)
+                    //console.log(datos)
                     if (isEmpty(datos)) {
                         alertCustom("Error al Enviar Documento Eletrónico");
                         return;
@@ -1373,6 +1380,7 @@
         $('#cboEmpresa').on('change', function () {
             Bloquear("ventana");
             fillCboEstablecimiento();
+            fillCboTipoDocumento();
             fillCliente();
             oTable.fnClearTable();
             Desbloquear("ventana");
@@ -1431,7 +1439,7 @@
                     }
                     if (arrayDetalle[i].ESTADO_ELECT == 'NO ENVIADO' || arrayDetalle[i].ESTADO_ELECT == 'ERROR') {
                         if (arrayDetalle[i].ANULADO_IND == 'N') {
-                            GenerarDocFacturacion(arrayDetalle[i].COD_DOCUMENTO);                           
+                            GenerarDocFacturacion(arrayDetalle[i].COD_DOCUMENTO, arrayDetalle[i].DOCUMENTO);
                         } else {
                             DarBajaDocFacturacion(arrayDetalle[i].COD_DOCUMENTO);
                         }
@@ -1517,7 +1525,7 @@
                     }
                     if (arrayDetalle[i].ESTADO_ELECT == 'PENDIENTE' || arrayDetalle[i].ESTADO_ELECT == 'ENVIADO' || arrayDetalle[i].ESTADO_ELECT == 'PENDIENTE DE BAJA') {
                         if (arrayDetalle[i].ANULADO_IND == 'N') {
-                            fnVerificarDoc(arrayDetalle[i].COD_DOCUMENTO);
+                            fnVerificarDoc(arrayDetalle[i].COD_DOCUMENTO, arrayDetalle[i].DOCUMENTO);
                         } else {
                             fnVerificarBajaDoc(arrayDetalle[i].COD_DOCUMENTO);
                         }                        
@@ -1561,7 +1569,7 @@
                         oTable.fnClearTable();
                         if (datos.length > 0) {
                             oTable.fnAddData(datos);
-                            oTable.fnSort([[4, "desc"]]);
+                            oTable.fnSort([[4,5, "desc"]]);
                             $(".btnTbl").tooltip();
                         } else {
                             infoCustom2("No se encontraron datos!");
@@ -1702,9 +1710,10 @@
             datatype: "json",
             async: false,
             success: function (datos) {
-                if (isEmpty(datos)) {
-                    return;
-                }
+                //if (isEmpty(datos)) {
+                //    return;
+                //}
+                $('#cboDocumento').empty();
                 //$('#cboDocumento').append('<option Value="TODOS">TODOS</option>');//se comenta esta línea y se oculta la opción de todos
                 for (var i = 0; i < datos.length; i++) {
                     $('#cboDocumento').append('<option value="' + datos[i].TIPO_DOC_CODE + '">' + datos[i].TIPO_DOC + '</option>');
@@ -1754,7 +1763,7 @@
             beforeSend: function () { Bloquear("ventana", "Descargando Archivos de Efact..."); },
             url: "vistas/EF/ajax/EFLENSU.ashx?sOpcion=BAJAR_EFACT&sTipoDoc=" + sTipoDoc + "&sNroDoc=" + sNroDoc,
             success: function (datos) {
-                console.log(datos);
+                //console.log(datos);
                 if (datos === "") {                  
                     infoCustom("El archivo no se ha descargado. Inténtelo en otro momento.");
                 }

@@ -9,7 +9,6 @@ Imports iTextSharp.text.pdf
 
 Public Class COLREVE : Implements IHttpHandler
 
-
     Dim OPCION As String
     Dim p_PERS_PIDM, p_CTLG_CODE, p_SCSL_CODE, p_USUA_ID As String
     Dim p_ANIO, p_MES, p_MES_DES, p_DESC_EMPRESA As String
@@ -61,10 +60,10 @@ Public Class COLREVE : Implements IHttpHandler
                     dt = coRegistroVentas.ListarRegistroVentas_sunat(p_ANIO, p_MES, p_CTLG_CODE, "")
                     res = GenerarPDF(dt)
 
-                Case "6"
-                    context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = coRegistroVentas.ListarRegistroVentas_sunat(p_ANIO, p_MES, p_CTLG_CODE, "")
-                    res = GenerarTXT(dt) 'Genera el .txt     
+                    'Case "6"
+                    '    context.Response.ContentType = "application/text; charset=utf-8"
+                    '    dt = coRegistroVentas.ListarRegistroVentas_sunat(p_ANIO, p_MES, p_CTLG_CODE, "")
+                    '    res = GenerarTXT(dt) 'Genera el .txt     
             End Select
 
             context.Response.Write(res)

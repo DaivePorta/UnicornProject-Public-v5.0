@@ -23,6 +23,13 @@ var CCLRFVA = function () {
 
     }
 
+    var actualizarEstilos = function () {
+        $(".ColVis_Button, .TableTools_Button ColVis_MasterButton").css("margin-bottom", "10px");
+        $(".ColVis_Button, .TableTools_Button ColVis_MasterButton").addClass("btn green");
+        $("TableTools_Button").css("float", "left");
+        $(".DTTT.btn-group").addClass("pull-right");
+    }
+
     var fillCboEmpresa = function () {
         $.ajax({
             type: "post",
@@ -183,6 +190,36 @@ var CCLRFVA = function () {
                Desbloquear("ventana");               
                if (datos != null) {
                    $('#divBandeja').html(datos)
+
+                   $("#tblBandeja").dataTable({
+                       "sDom": 'TC<"clear">lfrtip',
+                       "sPaginationType": "full_numbers",
+                       "scrollX": true,
+                       "bAutoWidth": false,
+                       "oLanguage": {
+                           "sEmptyTable": "No hay datos disponibles en la tabla.",
+                           "sZeroRecords": "No hay datos disponibles en la tabla."
+                       },
+                       "oTableTools": {
+                           "sSwfPath": "recursos/plugins/swf/copy_csv_xls_pdf.swf",
+                           "aButtons": [
+                               {
+                                   "sExtends": "copy",
+                                   "sButtonText": "Copiar"
+                               },
+                               {
+                                   "sExtends": "pdf",
+                                   "sPdfOrientation": "landscape",
+                                   "sButtonText": "Exportar a PDF"
+                               },
+                               {
+                                   "sExtends": "xls",
+                                   "sButtonText": "Exportar a Excel"
+                               }
+                           ]
+                       }
+                   });
+
                    //Montos totales separados por moneda
                    $("#txtTotalMonedaBase0").html($("#hfMontoTotalBase").val());
                    $("#txtTotalMonedaAlterna0").html($("#hfMontoTotalAlterna").val());
@@ -203,15 +240,11 @@ var CCLRFVA = function () {
                    else
                        $("#bloqueTipoCambio").attr("style", "display:none;");
 
-
                    //$("#tblBandeja").DataTable()
-                   oTable = $('#tblBandeja').dataTable({
-                       "sPaginationType": "full_numbers"
-                   });
-
+                   oTable = $('#tblBandeja').dataTable();
+                   actualizarEstilos()
                    //$("#txtDeudaTotal").html($("#hfDeudaTotal").val());
-                   //$("#txtMontoTotal").html($("#hfMontoTotal").val());
-
+                   //$("#txtMontoTotal").html($("#hfMontoTotal").val());                   
                } else {
                    noexito();
                }

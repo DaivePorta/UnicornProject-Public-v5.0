@@ -278,7 +278,7 @@ function ConfirmarTransferencia(tipo, codigo) {
 
     if (tipo == "aceptar") {
         $("#btnAceptar").attr("href", "javascript:AceptarTransferencia('" + codigo + "','" + JSON.stringify(datosJson) + "');")
-
+        
         var contenido = "";
 
         $("#mensajeConfirmacion").html('¿Está seguro de <span style="color: blue;font-weight:600;">ACEPTAR</span> la transferencia?');
@@ -291,6 +291,7 @@ function ConfirmarTransferencia(tipo, codigo) {
 }
 
 function AceptarTransferencia(codigo, strDatos) {
+    $("#btnAceptar").attr("disabled", true);
     var datosJson = JSON.parse(strDatos);
     //-----------------------------------
     var data = new FormData();
@@ -327,19 +328,25 @@ function AceptarTransferencia(codigo, strDatos) {
                 exito();
                 cargarDatosCaja();
             } else if (datos[0].RESPUESTA == "CERRADO_ORGN") {
+                $("#btnAceptar").attr("disabled", false);
                 alertCustom("La caja origen de la trasferencia se encuentra cerrada.");
 
             } else if (datos[0].RESPUESTA == "CERRADO_MOBA") {
+                $("#btnAceptar").attr("disabled", false);
                 alertCustom("La caja destino para Moneda Base no se encuentra abierta.");
             }
             else if (datos[0].RESPUESTA == "CERRADO_MOAL") {
+                $("#btnAceptar").attr("disabled", false);
                 alertCustom("La caja destino para Moneda Alterna no se encuentra abierta.");
             }
             else if (datos[0].RESPUESTA == "EXCESO") {
+                $("#btnAceptar").attr("disabled", false);
                 alertCustom("El monto a diferir superó los fondos en la caja origen. Verifique sus datos.");
             } else if (datos[0].RESPUESTA == "ERROR") {
+                $("#btnAceptar").attr("disabled", false);
                 noexito();
             } else {
+                $("#btnAceptar").attr("disabled", false);
                 alertCustom(datos[0].RESPUESTA);
             }
         }

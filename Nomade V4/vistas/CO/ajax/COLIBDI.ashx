@@ -9,10 +9,9 @@ Imports iTextSharp.text.pdf
 
 Public Class COLIBDI : Implements IHttpHandler
 
-
     Dim OPCION As String
     Dim p_PERS_PIDM, p_CTLG_CODE, p_SCSL_CODE, p_USUA_ID As String
-    Dim p_ANIO, p_MES, p_MES_DES As String
+    Dim p_ANIO, p_MES, p_MES_DES, p_DESC_EMPRESA As String
     Dim p_RUC As String
 
     Dim ccCuentaPorCobrar As New Nomade.CC.CCCuentaPorCobrar("Bn")
@@ -22,7 +21,7 @@ Public Class COLIBDI : Implements IHttpHandler
     Dim periodo As New Nomade.NC.NCPeriodo("bn")
     Dim coLibroContable As New Nomade.CO.COLibroDiario("Bn")
 
-    Dim dt As DataTable
+    Dim dt As System.Data.DataTable
     Dim res, cod, msg As String
     Dim resb As New StringBuilder
     Dim resArray As Array
@@ -31,6 +30,7 @@ Public Class COLIBDI : Implements IHttpHandler
 
         OPCION = context.Request("OPCION")
 
+        p_DESC_EMPRESA = context.Request("p_DESC_EMPRESA")
         p_CTLG_CODE = context.Request("p_CTLG_CODE")
         p_SCSL_CODE = context.Request("p_SCSL_CODE")
         p_USUA_ID = context.Request("p_USUA_ID")
@@ -50,14 +50,15 @@ Public Class COLIBDI : Implements IHttpHandler
 
             Select Case OPCION
 
-                Case "1" 'Generar tabla: Libro 8 en interfaz
+                Case "4" 'Generar tabla: Libro 8 en interfaz
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = coLibroContable.listarLibroDiario(p_CTLG_CODE, p_ANIO, p_MES, "")
+                    dt = coLibroContable.listarLibroDiario(p_ANIO, p_MES, p_CTLG_CODE, "")
                     res = GenerarTablaLibroDiario(dt).ToString()
+                    'GenerarTXT(dt) 'Genera el .txt 
 
-                Case "2"
+                Case "5"
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = coLibroContable.listarLibroDiario(p_CTLG_CODE, p_ANIO, p_MES, "")
+                    dt = coLibroContable.listarLibroDiario(p_ANIO, p_MES, p_CTLG_CODE, "")
                     res = GenerarPDF(dt) 'Tambien genera el .txt            
             End Select
 
@@ -69,9 +70,8 @@ Public Class COLIBDI : Implements IHttpHandler
     End Sub
 
     Public Function GenerarPDF(ByVal dt As DataTable) As String
-        Dim ress As String
-
-        Dim cNomArch As String
+        Dim ress As String = ""
+        Dim cNomArch As String = ""
         Dim htmlText As New StringBuilder
         If Not dt Is Nothing Then
             cNomArch = "LE" + p_RUC + p_ANIO + p_MES + "00050100" + "00" + "1" + "1" + "1" + "1" + ".pdf"
@@ -82,8 +82,10 @@ Public Class COLIBDI : Implements IHttpHandler
         'dt=
         htmlText = GenerarTablaLibroDiario(dt)
         HTMLToPDF(htmlText, cNomArch)
-        ress = GenerarTXT(dt)
-
+        'ress = GenerarTXT(dt)
+        If dt.Rows.Count <> 0 Then
+            ress = "ok"
+        End If
         Return ress
     End Function
 
@@ -116,24 +118,24 @@ Public Class COLIBDI : Implements IHttpHandler
         Dim cadena As String = ""
         Dim archivo As String
         Dim res As String = ""
+        Dim cantidad_datos As Integer = 0
         Try
-
             If Not dt Is Nothing Then
                 res = "Archivos\" + "LE" + p_RUC + p_ANIO + p_MES + "00050100" + "00" + "1" + "1" + "1" + "1" + ".txt"
-
             Else
                 res = "Archivos\" + "LE" + p_RUC + p_ANIO + p_MES + "00050100" + "00" + "1" + "0" + "1" + "1" + ".txt"
             End If
+
             archivo = HttpContext.Current.Server.MapPath("~") + res
 
             If My.Computer.FileSystem.FileExists(archivo) Then
                 My.Computer.FileSystem.DeleteFile(archivo)
             End If
-
             Dim nroCorrelativo As Integer = 0
 
             If Not dt Is Nothing Then
                 Dim fd As New StreamWriter(archivo, True)
+                cantidad_datos = dt.Rows.Count
                 For i As Integer = 0 To dt.Rows.Count - 1
                     nroCorrelativo += 1
                     'PERIODO, CUO, CORRELATIVO CONTABLE                 
@@ -149,7 +151,9 @@ Public Class COLIBDI : Implements IHttpHandler
                     cadena += dt.Rows(i)("CORR_REG_VENTAS").ToString() + "|" + dt.Rows(i)("CORR_REG_COMPRAS").ToString() + "|" + dt.Rows(i)("CORR_REG_CONSIG").ToString() + "|" +
                               dt.Rows(i)("ESTADO_OPERACION").ToString()
 
-                    cadena += vbCrLf
+                    If cantidad_datos <> nroCorrelativo Then
+                        cadena += vbCrLf
+                    End If
                 Next
                 fd.Write(cadena)
                 fd.Close()
@@ -166,95 +170,114 @@ Public Class COLIBDI : Implements IHttpHandler
         Return res
     End Function
 
-    Public Function GenerarTablaLibroDiario(ByVal dt As DataTable) As StringBuilder
+    Public Function GenerarTablaLibroDiario(ByVal dt As System.Data.DataTable) As StringBuilder
         Dim total As Decimal = 0
         res = ""
         resb.Clear()
         '------
-        Dim dtEmpresa As New DataTable
-        dtEmpresa = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "")
+        'Cambios : buscar '**'
+        'Dim dtEmpresa As New System.Data.DataTable
+        'dtEmpresa = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "")
         resb.AppendFormat("<table border=""0"" width=""100%"" >")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "PERIODO:")
-        resb.AppendFormat("<td width='75%'  style=""mso-number-format:'\@'"">{0} {1}</td>", p_MES_DES, p_ANIO)
+        resb.AppendFormat("<td width='75%'>{0} {1}</td>", p_MES_DES, p_ANIO)
         resb.AppendFormat("</tr>")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "RUC:")
-        resb.AppendFormat("<td id='ruc' width='75%'>{0}</td>", dtEmpresa.Rows(0)("RUC").ToString())
+        resb.AppendFormat("<td id='ruc' width='75%'>{0}</td>", p_RUC)
         resb.AppendFormat("</tr>")
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td width='25%'><strong>{0}</strong></td>", "APELLIDOS Y NOMBRES, DENOMINACIÓN O RAZÓN SOCIAL:")
-        resb.AppendFormat("<td width='75%'>{0}</td>", dtEmpresa.Rows(0)("DESCRIPCION").ToString())
+        resb.AppendFormat("<td width='75%'>{0}</td>", p_DESC_EMPRESA)
         resb.AppendFormat("</tr>")
         resb.AppendFormat("</table>")
         resb.AppendFormat("<br/>")
 
-        resb.AppendFormat("<table id=""tblLibroDiario"" border=""1"" style=""max-width:3000px;width:1500px;"">")
+        resb.AppendFormat("<table id=""tblLibroDiario"" border=""1"" style=""max-width:3000px;width:2570px;"" width:""2570px"">")
         resb.AppendFormat("<thead>")
-        resb.AppendFormat("<tr style='font-size:12px;color:white' align='center' bgcolor='#666666'>")
-        resb.AppendFormat("<th style='width:75px;'>PERIODO</th>")
-        resb.AppendFormat("<th style='width:75px;'>CÓDIGO ÚNICO DE LA OPERACIÓN (CUO)</th>")
-        resb.AppendFormat("<th style='width:75px;'>NÚMERO CORRELATIVO DEL ASIENTO CONTABLE</th>")
-        resb.AppendFormat("<th style='width:75px;'>PLAN CONTABLE USADO POR EL DEUDOR TRIBUTARIO (TABLA 17)</th>")
-        resb.AppendFormat("<th style='width:75px;'>CÓDIGO DE CUENTA CONTABLE </th>")
-        resb.AppendFormat("<th style='width:75px;'>FECHA DE OPERACIÓN</th>")
-        resb.AppendFormat("<th style='width:150px;'>GLOSA DE LA NATURALEZA DE LA OPERACIÓN</th>")
-        resb.AppendFormat("<th style='width:75px;'>DEBE</th>")
-        resb.AppendFormat("<th style='width:75px;'>HABER</th>")
-        resb.AppendFormat("<th style='width:75px;'>CORRELATIVO EN REGISTRO DE VENTA</th>")
-        resb.AppendFormat("<th style='width:75px;'>CORRELATIVO EN REGISTRO DE COMRPA</th>")
-        resb.AppendFormat("<th style='width:75px;'>CORRELATIVO EN REGISTRO DE CONSIGNACIONES</th>")
-        resb.AppendFormat("<th style='width:75px;'>ESTADO DE LA OPERACIÓN</th>")
-        resb.AppendFormat("</tr>")
-        resb.AppendFormat("</thead>")
-        resb.AppendFormat("<tbody>")
+        'Fila 1 CABECERA
+        resb.AppendFormat("<tr style='font-size:9px;' align='center' bgcolor='#666666' color='white'>")
+        resb.AppendFormat("<th rowspan='2' style='width:75px;'>PERIODO</th>") '**
+        resb.AppendFormat("<th rowspan='2' style='width:75px;'>CÓDIGO ÚNICO DE LA OPERACIÓN (CUO)</th>") '**
+        resb.AppendFormat("<th rowspan='2' style='width:75px;'>NÚMERO CORRELATIVO DEL ASIENTO CONTABLE</th>") '**
+        resb.AppendFormat("<th rowspan='2' style='width:85px;'>CUENTA CONTABLE</th>")
+        resb.AppendFormat("<th rowspan='2' style='width:85px;'>CÓDIGO UNIDAD OPERATIVA</th>")
+        resb.AppendFormat("<th rowspan='2' style='width:85px;'>CENTRO DE COSTOS</th>")
+        resb.AppendFormat("<th rowspan='2' style='width:85px;'>TIPO DE MONEDA</th>")
+        resb.AppendFormat("<th colspan='2' rowspan='1' style='width:60px;'>IDENTIDAD DEL EMISOR</th>")
+        resb.AppendFormat("<th colspan='3' rowspan='1' style='width:60px;'>COMPROBANTE DE PAGO O DOCUMENTO</th>")
+        resb.AppendFormat("<th rowspan='2' style='width:80px;' >FECHA CONTABLE</th>")
+        resb.AppendFormat("<th rowspan='2' style='width:75px;'>FECHA DE VENCIMIENTO</th>") '**        
+        resb.AppendFormat("<th rowspan='2' style='width:75px;'>FECHA DE OPERACIÓN O EMISIÓN</th>") '** 
+        resb.AppendFormat("<th rowspan='2' style='width:75px;'>DESCRIPCIÓN OPERACIÓN</th>") '** 
+        resb.AppendFormat("<th rowspan='2' style='width:75px;'>GLOSA REFERENCIAL</th>") '** 
+        resb.AppendFormat("<th colspan='2' rowspan='1' style='width:60px;'>MOVIMIENTOS</th>")
+        resb.AppendFormat("<th rowspan='2' style='width:60px;'>CÓDIGO DEL LIBRO</th>") '**
+        resb.AppendFormat("<th rowspan='2' style='width:60px;'>ESTADO QUE IDENTIFICA LA OPORTUNIDAD DE LA ANOTACIÓN O INDICACIÓN SI ÉSTA CORRESPONDE A UN AJUSTE</th>") '**
 
+        resb.AppendFormat("</tr>")
+        'Fila 2 CABECERA
+        resb.AppendFormat("<tr style='font-size:9px;' align='center' bgcolor='#666666' color='white'>")
+        resb.AppendFormat("<th style='width:60px;'>TIPO DOC. INDENTIDAD</th>")
+        resb.AppendFormat("<th style='width:60px;'>NRO. DOC. IDENTIDAD</th>")
+        resb.AppendFormat("<th style='width:60px;'>TIPO (TABLA 10)</th>")
+        resb.AppendFormat("<th style='width:60px;'>N° SERIE </th>")
+        resb.AppendFormat("<th style='width:60px;'>NÚMERO</th>")
+        resb.AppendFormat("<th style='width:60px;'>DEBE</th>")
+        resb.AppendFormat("<th style='width:60px;'>HABER</th>")
+        resb.AppendFormat("</tr>")
+
+        resb.AppendFormat("</thead>")
+        resb.AppendFormat("<tbody >")
+
+        Dim nroCorrelativo As Integer = 0
         Dim totalDebe As Decimal = 0
         Dim totalHaber As Decimal = 0
-
-
         If Not dt Is Nothing Then
+            Dim editar As String = "Editar"
             For i As Integer = 0 To dt.Rows.Count - 1
-                'nroCorrelativo += 1               
-                resb.AppendFormat("<tr style='font-size:10px;'>")
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("PERIODO").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CUO").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CORRELATIVO").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPL").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CUENTA_CONTABLE").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("FECHA_OPERACION").ToString())
-                resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("DESCRIPCION").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("MONTO_DEBE").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("MONTO_HABER").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CORR_REG_VENTAS").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CORR_REG_COMPRAS").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CORR_REG_CONSIG").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("ESTADO_OPERACION").ToString())
+                nroCorrelativo += 1
+                resb.AppendFormat("<tr style='font-size:9px;'>")
+                'PERIODO , CUO, CORRELATIVO ASIENTO CONTABLE
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("PERIODO").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CUO").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_MOV").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CUENTA_CONTABLE").ToString()) '**
 
-                If dt.Rows(i)("MONTO_DEBE").ToString().Equals(String.Empty) Then
-                    totalDebe += 0
-                Else
-                    totalDebe += Decimal.Parse(dt.Rows(i)("MONTO_DEBE").ToString())
-                End If
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("COD_UNIDAD_OPERATIVA").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CENTRO_COSTOS").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_MONEDA").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_DOC_IDENTIDAD").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_DOC_IDENTTIDAD").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_DOC_COMPROBANTE").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("SERIE_COMPROBANTE").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_COMPROBANTE").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("FECHA_CONTABLE").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("FECHA_VENCIMIENTO").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("FECHA_EMISION").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CTAS_DESCRIPCION").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("GLOSA_REFERENCIAL").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("DEBE").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("HABER").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CODIGO_LIBRO").ToString()) '**
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("ESTADO_AJUSTE").ToString()) '**
 
-                If dt.Rows(i)("MONTO_HABER").ToString().Equals(String.Empty) Then
-                    totalHaber += 0
-                Else
-                    totalHaber += Decimal.Parse(dt.Rows(i)("MONTO_HABER").ToString())
-                End If
-
+                totalDebe += Decimal.Parse(dt.Rows(i)("DEBE").ToString())
+                totalHaber += Decimal.Parse(dt.Rows(i)("HABER").ToString())
             Next
-            '    'Fila de totales          
-            resb.AppendFormat("<tr style='font-size:10px;font-weight:700'>")
-            resb.AppendFormat("<td colspan='6' align='center' style='border-bottom:1px solid white;border-left:1px solid white;' >{0}</td>", "")
+            'Fila de totales          
+            resb.AppendFormat("<tr style='font-size:9px;font-weight:700'>")
+            resb.AppendFormat("<td colspan='16' align='center' style='border-bottom:1px solid white;border-left:1px solid white;' >{0}</td>", "") '**
             resb.AppendFormat("<td colspan='1' align='center' >TOTALES</td>")
-            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalDebe))
-            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalHaber))
-            resb.AppendFormat("<td colspan='4' align='center' ></td>")
+            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalDebe)) 'Total Debe
+            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", String.Format("{0:#0.00}", totalHaber)) 'Total Haber
+            resb.AppendFormat("<td colspan='1' align='center' ></td>") '**
+            resb.AppendFormat("<td colspan='1' align='center' ></td>") '**
             resb.AppendFormat("</tr>")
         Else
             resb.AppendFormat("<tr>")
-            resb.AppendFormat("<td colspan='1' align='center' >{0}</td>", "NO HAY DATOS")
+            resb.AppendFormat("<td colspan='41' align='center' >{0}</td>", "NO HAY DATOS")
             resb.AppendFormat("</tr>")
         End If
         resb.AppendFormat("</tbody>")
@@ -265,7 +288,7 @@ Public Class COLIBDI : Implements IHttpHandler
         Return resb
     End Function
 
-    Public Function GenerarCmbAnioMes(ByVal dt As DataTable) As String
+    Public Function GenerarCmbAnioMes(ByVal dt As System.Data.DataTable) As String
         If Not dt Is Nothing Then
             res = "<option></option>"
             For i As Integer = 0 To dt.Rows.Count - 1
@@ -277,7 +300,28 @@ Public Class COLIBDI : Implements IHttpHandler
         Return res
     End Function
 
-    Private Function SortDataTableColumn(ByVal dt As DataTable, ByVal column As String, ByVal sort As String) As DataTable
+    Public Sub ExportToExcel(dt As System.Data.DataTable, ByRef context As HttpContext)
+        If dt.Rows.Count > 0 Then
+            Dim filename As String = "DownloadExcel.xls"
+            Dim tw As New System.IO.StringWriter()
+            Dim hw As New System.Web.UI.HtmlTextWriter(tw)
+            Dim dgGrid As New DataGrid()
+            dgGrid.DataSource = dt
+            dgGrid.DataBind()
+
+            'Get the HTML for the control.
+            dgGrid.RenderControl(hw)
+
+            'Write the HTML back to the browser.
+            context.Response.ContentType = "application/vnd.ms-excel"
+            context.Response.AppendHeader("Content-Disposition", (Convert.ToString("attachment; filename=") & filename) + "")
+            ' Me.EnableViewState = False
+            context.Response.Write(tw.ToString())
+            context.Response.End()
+        End If
+    End Sub
+
+    Private Function SortDataTableColumn(ByVal dt As System.Data.DataTable, ByVal column As String, ByVal sort As String) As System.Data.DataTable
         Dim dtv As New DataView(dt)
         dtv.Sort = column & " " & sort
         Return dtv.ToTable()

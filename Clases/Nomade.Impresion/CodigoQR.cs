@@ -18,9 +18,7 @@ namespace Nomade.Impresion
         {
             this.cn = new Connection(str);
         }        
-        public string fnGetCodigoQR(string codigoOperacion, string ctlg) {
-
-            string informacionQR = getDatosQR(codigoOperacion, ctlg);
+        public string fnGetCodigoQR(string informacionQR) {
 
             var qrGenerator = new QRCodeGenerator();
             var qrCodeData = qrGenerator.CreateQrCode(informacionQR, QRCodeGenerator.ECCLevel.Q);
@@ -33,24 +31,6 @@ namespace Nomade.Impresion
             byteImage = MS.ToArray();
 
             return Convert.ToBase64String(byteImage);
-        }
-        private string getDatosQR(string p_VTAC_CODE, string p_CTLG)
-        {
-            try
-            {
-                IDbCommand newCommand = this.cn.GetNewCommand("SP_LISTAR_DATOS_QR", CommandType.StoredProcedure);
-                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, (DbType)253, 0));
-                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_CTLG", p_CTLG, ParameterDirection.Input, (DbType)253, 0));
-                newCommand.Parameters.Add(this.cn.GetNewParameter("@p_RPTA", string.Empty, ParameterDirection.Output, (DbType)253, 0));
-                newCommand = cn.Ejecuta_parms(newCommand);
-
-                string sRpta = ((IDataParameter)newCommand.Parameters["@p_RPTA"]).Value.ToString();
-                return sRpta;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
     }
 }

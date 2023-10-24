@@ -1184,7 +1184,7 @@ function validarPersonaNatural() {
         var existeActividad = false;
 
         for (var i = 0; i < jsonActividades.length; i++) {
-            if (v_Actividad == jsonActividades[i]) {
+            if (v_Actividad == $.trim(jsonActividades[i].replace('(', '').replace(')', ''))) {
                 existeActividad = true;
                 break;
             }

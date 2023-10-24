@@ -194,8 +194,7 @@
                         });
                     $('#tblbmodal').removeAttr('style');
                     $('.clear').html('<div class="span12" style="padding: 8px 0px 14px 0px">\
-                    <div style="display: inline-block"><button class="btn green">Mostrar / Ocultar</button></div>\
-                    <div style="display: inline-block; padding-left: 20px">\
+                    \<div style="display: inline-block; padding-left: 20px">\
                             <a class="toggle-vis" data-column="2" href="#">SERIE</a>&nbsp;&nbsp;-&nbsp;&nbsp;\
                             <a class="toggle-vis" data-column="3" href="#">CANTIDAD</a>&nbsp;&nbsp;-&nbsp;&nbsp;\
                             <a class="toggle-vis" data-column="4" href="#">FECHA COMPRA</a>&nbsp;&nbsp;-&nbsp;&nbsp;\

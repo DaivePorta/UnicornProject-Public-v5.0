@@ -118,6 +118,29 @@ Public Class CCLRFVA : Implements IHttpHandler
                         resb.Append("]")
                     End If
                     res = resb.ToString()
+                Case "2.4" 'lista clientes activos e inactivos
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = ncCliente.ListarClienteAuto("", "", "", "Y", p_CTLG_CODE)
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            resb.Append("""ID"" :" & """" & MiDataRow("ID").ToString & """,")
+                            resb.Append("""RAZON_SOCIAL"" :" & """" & MiDataRow("RAZON_SOCIAL").ToString & """,")
+                            resb.Append("""DNI"" :" & """" & MiDataRow("DNI").ToString & """,")
+                            resb.Append("""DIRECCION"" :" & """" & MiDataRow("DIRECCION").ToString & """,")
+                            resb.Append("""CODIGO_CATEGORIA"" :" & """" & MiDataRow("CODIGO_CATEGORIA").ToString & """,")
+                            resb.Append("""CATE_DESC"" :" & """" & MiDataRow("CATE_DESC").ToString & """,")
+                            resb.Append("""RUC"" :" & """" & MiDataRow("RUC").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
                 Case "2.5" 'lista clientes más rápido
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = ncCliente.ListarClienteAuto("", "", "", "Z", p_CTLG_CODE)
@@ -156,6 +179,29 @@ Public Class CCLRFVA : Implements IHttpHandler
                         resb.Append("]")
                     End If
                     res = resb.ToString()
+                Case "2.7" 'listar persona
+                    Dim p As New Nomade.NC.NCPersona("Bn")
+                    dt = p.listar_Persona("Y")
+                    If Not (dt Is Nothing) Then
+                        'dt = SortDataTableColumn(dt, "RAZON_SOCIAL", "ASC")
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            'resb.Append("""ID"" :" & """" & MiDataRow("ID").ToString & """,")
+                            resb.Append("""RAZON_SOCIAL"" :" & """" & MiDataRow("NOMBRE").ToString & """,")
+                            resb.Append("""TIPO_DOCUMENTO"" :" & """" & MiDataRow("CODIGO_TIPO_DOCUMENTO").ToString & """,")
+                            resb.Append("""NRO_DOCUMENTO"" :" & """" & MiDataRow("NRO_DOCUMENTO").ToString & """,")
+                            resb.Append("""CODIGO_TIPO_PERSONA"" :" & """" & MiDataRow("CODIGO_TIPO_PERSONA").ToString & """,")
+                            resb.Append("""ESTADO"" :" & """" & MiDataRow("ESTADO").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
                 Case "3" 'lista facturas de venta
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = ccCuentaPorCobrar.ListarCreditoClienteFechas("", p_CTLG_CODE, p_SCSL_CODE, "", "CR", p_PERS_PIDM, "C", Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), "", "", "")
@@ -163,7 +209,7 @@ Public Class CCLRFVA : Implements IHttpHandler
                 Case "4" 'listas amortizaciones cliente (detalles de filas de tabla) DESDE fabampr
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = ccCuentaPorCobrar.ListarAmortizacionesCliente(p_FACTURA)
-                    dt2 = anticipo.ListarAnticipoDocumento(p_FACTURA)
+                    'dt2 = anticipo.ListarAnticipoDocumento(p_FACTURA)
                     res = GenerarTablaAmortizaciones(dt)
 
             End Select
@@ -224,10 +270,10 @@ Public Class CCLRFVA : Implements IHttpHandler
             valorTipoCambio = "-"
             resb.AppendFormat("<tr>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
-            resb.AppendFormat("<td style='text-align:center;'>NO HAY DATOS DISPONIBLES</td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
+            resb.AppendFormat("<td style='text-align:center;'> NO HAY DATOS DISPONIBLES </td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
@@ -305,9 +351,9 @@ Public Class CCLRFVA : Implements IHttpHandler
         If (dt Is Nothing) Then
             'No hay datos
             resb.AppendFormat("<tr>")
-            resb.AppendFormat("<td style='text-align:center;'>NO HAY DATOS DISPONIBLES</td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
+            resb.AppendFormat("<td style='text-align:center;'> NO HAY DATOS DISPONIBLES  </td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")
             resb.AppendFormat("<td style='text-align:center;'> </td>")

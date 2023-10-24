@@ -31,7 +31,7 @@ Public Class NVMDOCS : Implements IHttpHandler
 
     Dim USAR_IGV_IND As String
     Dim COPIA_IND As String
-    'ssss
+    Dim p_KARDEX As String
 
     Dim p_ESTADO_IND As String
     Dim p_CLIE_DOID_NRO As String
@@ -169,7 +169,7 @@ Public Class NVMDOCS : Implements IHttpHandler
 
         p_DETALLES_MUESTRA = vChar(context.Request("p_DETALLES_MUESTRA"))
 
-
+        p_KARDEX = context.Request("p_KARDEX")
 
         p_RESP_PIDM = context.Request("p_RESP_PIDM")
         p_FACTOR_RENTA = context.Request("p_FACTOR_RENTA")
@@ -230,10 +230,9 @@ Public Class NVMDOCS : Implements IHttpHandler
                     If(p_FECHA_EMISION_DETRAC = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_DETRAC)),
                     If(p_FECHA_EMISION_RETEN = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_RETEN)),
                     p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_DETALLES, p_DCTO_SERIE_REF, p_DCTO_NUM_REF, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND,
-                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
-                     IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD),
-                   IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD),
-                   p_TOTAL_GRATUITAS)
+                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_KARDEX,
+                    If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
+                    IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD), IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD), p_TOTAL_GRATUITAS)
 
                     If Not (array Is Nothing) Then
                         Dim msgError As String = "OK"
@@ -270,10 +269,9 @@ Public Class NVMDOCS : Implements IHttpHandler
                     If(p_FECHA_EMISION_DETRAC = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_DETRAC)),
                     If(p_FECHA_EMISION_RETEN = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_RETEN)),
                     p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_DETALLES, p_DCTO_SERIE_REF, p_DCTO_NUM_REF, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND,
-                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, "0.00", "0.00", "0.00", "0.00", If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
-                      IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD),
-                   IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD),
-                   p_TOTAL_GRATUITAS)
+                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_KARDEX,
+                    "0.00", "0.00", "0.00", "0.00", If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
+                    IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD), IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD), p_TOTAL_GRATUITAS)
                     If Not (array Is Nothing) Then
                         resb.Append("[")
                         resb.Append("{")
@@ -303,9 +301,9 @@ Public Class NVMDOCS : Implements IHttpHandler
                     If(p_FECHA_EMISION_DETRAC = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_DETRAC)),
                     If(p_FECHA_EMISION_RETEN = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_RETEN)),
                     p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_DETALLES, p_DCTO_SERIE_REF, p_DCTO_NUM_REF, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND,
-                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, "0.00", "0.00", "0.00", "0.00", If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
-                    IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD),
-                   IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD))
+                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_KARDEX,
+                    "0.00", "0.00", "0.00", "0.00", If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
+                    IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD), IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD))
                     If Not (array Is Nothing) Then
                         Dim msgError As String = "OK"
                         'If array(0).ToString.Length = 9 And p_COMPLETO_IND = "S" Then
@@ -457,6 +455,7 @@ Public Class NVMDOCS : Implements IHttpHandler
                                     resb.Append("""PIDM_ABOGADO"" :" & """" & MiDataRow("PIDM_ABOGADO").ToString & """,")
                                     resb.Append("""NOMBRE_ABOGADO"" :" & """" & MiDataRow("NOMBRE_ABOGADO").ToString & """,")
                                     resb.Append("""VALOR_TOTAL_OS"" :" & """" & MiDataRow("VALOR_TOTAL_OS").ToString & """,")
+                                    resb.Append("""KARDEX"" :" & """" & MiDataRow("KARDEX").ToString & """,")
                                     resb.Append("""CLIENTE"" :" & """" & MiDataRow("NOMBRE_CLIENTE").ToString & """")
                                     resb.Append("}")
                                     resb.Append(",")

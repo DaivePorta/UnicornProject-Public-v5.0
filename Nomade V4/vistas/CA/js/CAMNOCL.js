@@ -1147,7 +1147,15 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
 
             $("#hfDespachadoInd").val(despachado);
             $("#hfCobradoInd").val(pagado);
-
+            if (pagado == 'N') {
+                $("#chkAplicar").attr("checked", true).parent().addClass("checked");
+                $('#chkAplicar').attr('disabled', true);
+                $('#chkAplicar').change();
+            } else {
+                $("#chkAplicar").attr("checked", false).parent().removeClass("checked");
+                $('#chkAplicar').attr('disabled', false);
+                $('#chkAplicar').change();
+            }        
             $("#hfMoneda").val(moneda);
             $("#hfSimboloMoneda").val(simboloMoneda);
             $("#hfScslExoneradaInd").val(scslExonerada);
@@ -1216,7 +1224,15 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
 
                 $("#hfDespachadoInd").val(despachado);
                 $("#hfCobradoInd").val(pagado);
-
+                if (pagado == 'N') {
+                    $("#chkAplicar").attr("checked", true).parent().addClass("checked");
+                    $('#chkAplicar').attr('disabled', true);
+                    $('#chkAplicar').change();
+                } else {
+                    $("#chkAplicar").attr("checked", false).parent().removeClass("checked");
+                    $('#chkAplicar').attr('disabled', false);
+                    $('#chkAplicar').change();
+                } 
                 $("#hfMoneda").val(moneda);
                 $("#hfSimboloMoneda").val(simboloMoneda);
                 $("#hfScslExoneradaInd").val(scslExonerada);

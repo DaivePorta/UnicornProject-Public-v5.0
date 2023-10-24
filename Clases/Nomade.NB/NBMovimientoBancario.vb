@@ -89,11 +89,17 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_MOVIMIENTO", p_tipo_movimiento, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_pidm, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTA_CODE", p_cta_code, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_OPERACION", p_tope, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM_CLIENTE", p_PIDM_cliente, ParameterDirection.Input, 253))
+            If p_tope = String.Empty Then
+                cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_OPERACION", DBNull.Value, ParameterDirection.Input, 253))
+            Else
+                cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_OPERACION", p_tope, ParameterDirection.Input, 253))
+            End If
 
-
-
+            If p_PIDM_cliente = String.Empty Then
+                cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM_CLIENTE", DBNull.Value, ParameterDirection.Input, 253))
+            Else
+                cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM_CLIENTE", p_PIDM_cliente, ParameterDirection.Input, 253))
+            End If
 
             cmd1 = cn.Ejecuta_parms(cmd)
             msg = "OK"
@@ -104,10 +110,52 @@
             Throw (ex)
         End Try
 
-
     End Function
 
+    Public Function ListarNroOperacionSinUsar(ByVal p_CUENTA_CODE As String, ByVal p_PIDM As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
 
+
+            cmd = cn.GetNewCommand("SP_LISTAR_NRO_OPERACION_SIN_USAR", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CUENTA_CODE", p_CUENTA_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function AgregarAMovimientoBancarioManual(ByVal p_CODIGO As String, ByVal p_PIDM As String, ByVal p_TIPO_OPERACION As String, Optional ByVal p_COD_VENTA As String = "") As String
+        Try
+            Dim msg As String
+
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("Sp_AgregarAMovimientoBancarioManual", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CodMovBanc", p_CODIGO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM_CLIENTE", p_PIDM, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_OPERACION", p_TIPO_OPERACION, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODIGO_VENTA", p_COD_VENTA, ParameterDirection.Input, 253))
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg = "OK"
+
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 
     Public Function CrearSaldoInicialCuenta(ByVal p_fecha_apertura As String, ByVal p_monto_apertura As String, ByVal p_pidm As String, ByVal p_cuenta_code As String, ByVal p_usua_id As String) As String
         Try
@@ -143,15 +191,13 @@
 
 
             cmd = cn.GetNewCommand("PFB_LISTAR_MOVIMIENTO_BANCARIO", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@p_MES", p_MES, ParameterDirection.Input, 253))
-            cmd.Parameters.Add(cn.GetNewParameter("@p_ANHO", p_ANHO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MES", If(String.IsNullOrEmpty(p_MES), DBNull.Value, p_MES), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ANHO", If(String.IsNullOrEmpty(p_ANHO), DBNull.Value, p_ANHO), ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CERRADO_IND", p_CERRADO_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CUENTA_CODE", p_CUENTA_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
-
-
 
             If Not (dt Is Nothing) Then
                 Return dt
@@ -170,6 +216,31 @@
 
 
             cmd = cn.GetNewCommand("PFB_LISTAR_MOVIMIENTO_BANCARIO_DETALLE", CommandType.StoredProcedure)
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_DET", p_CODE_DET, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function ListarMovimientoBancarioDetalleFast(ByVal p_CODE As String, Optional ByVal p_CODE_DET As String = "") As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+
+            cmd = cn.GetNewCommand("PFB_LISTAR_MOVIMIENTO_BANCARIO_DETALLE_FAST", CommandType.StoredProcedure)
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_DET", p_CODE_DET, ParameterDirection.Input, 253))

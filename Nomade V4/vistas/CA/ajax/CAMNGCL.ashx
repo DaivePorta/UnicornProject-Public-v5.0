@@ -234,6 +234,7 @@ Public Class CAMNGCL : Implements IHttpHandler
                             resb.Append("""PCTJ_IGV"" :" & """" & row("PCTJ_IGV").ToString & """,")
                             resb.Append("""DOCUMENTO"" :" & """" & row("DOCUMENTO").ToString & """,")
                             resb.Append("""DOCUMENTO_REF"" :" & """" & row("DOCUMENTO_REF").ToString & """,")
+                            resb.Append("""EMISION_REF"" :" & """" & row("EMISION_REF").ToString & """,")
                             resb.Append("""DCTO_REF_CODE"" :" & """" & row("DCTO_REF_CODE").ToString & """,")
                             resb.Append("""DCTO_REF_SERIE"" :" & """" & row("DCTO_REF_SERIE").ToString & """,")
                             resb.Append("""DCTO_REF_NRO"" :" & """" & row("DCTO_REF_NRO").ToString & """,")

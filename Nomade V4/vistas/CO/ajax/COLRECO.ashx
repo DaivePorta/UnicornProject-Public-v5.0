@@ -6,12 +6,8 @@ Imports System.Data
 Imports System.IO
 Imports iTextSharp.text
 Imports iTextSharp.text.pdf
-Imports Microsoft.Office.Interop.Excel
-
-
 
 Public Class COLRECO : Implements IHttpHandler
-
 
     Dim OPCION As String
     Dim p_PERS_PIDM, p_CTLG_CODE, p_SCSL_CODE, p_USUA_ID As String
@@ -53,55 +49,55 @@ Public Class COLRECO : Implements IHttpHandler
         Try
 
             Select Case OPCION
-                Case "0" 'lista empresas
-                    context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = ncEmpresa.ListarEmpresa(String.Empty, "A", context.User.Identity.Name)
-                    If Not (dt Is Nothing) Then
-                        dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
-                        resb.Append("[")
-                        For Each MiDataRow As DataRow In dt.Rows
-                            resb.Append("{")
-                            resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
-                            resb.Append("""DESCRIPCION"" :" & """" & MiDataRow("DESCRIPCION").ToString & """")
-                            resb.Append("}")
-                            resb.Append(",")
-                        Next
-                        resb.Append("{}")
-                        resb = resb.Replace(",{}", String.Empty)
-                        resb.Append("]")
-                    End If
-                    res = resb.ToString()
-                Case "1" 'lista sucursales
-                    context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = ncSucursal.ListarSucursal(p_CTLG_CODE, "", "A")
-                    If Not (dt Is Nothing) Then
-                        dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
-                        resb.Append("[")
-                        resb.Append("{")
-                        resb.Append("""CODIGO"" :" & """" & "TODOS" & """,")
-                        resb.Append("""DESCRIPCION"" :" & """" & "TODOS" & """")
-                        resb.Append("}")
-                        resb.Append(",")
-                        For Each MiDataRow As DataRow In dt.Rows
-                            resb.Append("{")
-                            resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
-                            resb.Append("""DESCRIPCION"" :" & """" & MiDataRow("DESCRIPCION").ToString & """")
-                            resb.Append("}")
-                            resb.Append(",")
-                        Next
-                        resb.Append("{}")
-                        resb = resb.Replace(",{}", String.Empty)
-                        resb.Append("]")
-                    End If
-                    res = resb.ToString()
-                Case "2"
-                    '1 = LISTAR AÑOS
-                    dt = periodo.Listar_Periodo("1")
-                    res = GenerarCmbAnioMes(dt)
-                Case "3"
-                    '2= LISTAR MESES
-                    dt = periodo.Listar_Periodo("2")
-                    res = GenerarCmbAnioMes(dt)
+                'Case "0" 'lista empresas
+                '    context.Response.ContentType = "application/json; charset=utf-8"
+                '    dt = ncEmpresa.ListarEmpresa(String.Empty, "A", context.User.Identity.Name)
+                '    If Not (dt Is Nothing) Then
+                '        dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
+                '        resb.Append("[")
+                '        For Each MiDataRow As DataRow In dt.Rows
+                '            resb.Append("{")
+                '            resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
+                '            resb.Append("""DESCRIPCION"" :" & """" & MiDataRow("DESCRIPCION").ToString & """")
+                '            resb.Append("}")
+                '            resb.Append(",")
+                '        Next
+                '        resb.Append("{}")
+                '        resb = resb.Replace(",{}", String.Empty)
+                '        resb.Append("]")
+                '    End If
+                '    res = resb.ToString()
+                'Case "1" 'lista sucursales
+                '    context.Response.ContentType = "application/json; charset=utf-8"
+                '    dt = ncSucursal.ListarSucursal(p_CTLG_CODE, "", "A")
+                '    If Not (dt Is Nothing) Then
+                '        dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
+                '        resb.Append("[")
+                '        resb.Append("{")
+                '        resb.Append("""CODIGO"" :" & """" & "TODOS" & """,")
+                '        resb.Append("""DESCRIPCION"" :" & """" & "TODOS" & """")
+                '        resb.Append("}")
+                '        resb.Append(",")
+                '        For Each MiDataRow As DataRow In dt.Rows
+                '            resb.Append("{")
+                '            resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
+                '            resb.Append("""DESCRIPCION"" :" & """" & MiDataRow("DESCRIPCION").ToString & """")
+                '            resb.Append("}")
+                '            resb.Append(",")
+                '        Next
+                '        resb.Append("{}")
+                '        resb = resb.Replace(",{}", String.Empty)
+                '        resb.Append("]")
+                '    End If
+                '    res = resb.ToString()
+                'Case "2"
+                '    '1 = LISTAR AÑOS
+                '    dt = periodo.Listar_Periodo("1")
+                '    res = GenerarCmbAnioMes(dt)
+                'Case "3"
+                '    '2= LISTAR MESES
+                '    dt = periodo.Listar_Periodo("2")
+                '    res = GenerarCmbAnioMes(dt)
 
                 Case "4" 'Generar tabla: Libro 8 en interfaz
                     context.Response.ContentType = "application/text; charset=utf-8"
@@ -114,10 +110,10 @@ Public Class COLRECO : Implements IHttpHandler
                     dt = coRegistroCompras.ListarRegistroCompras_Libro8(p_ANIO, p_MES, p_CTLG_CODE, "")
                     res = GenerarPDF(dt)
 
-                Case "6"
-                    context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = coRegistroCompras.ListarRegistroCompras_Libro8(p_ANIO, p_MES, p_CTLG_CODE, "")
-                    res = GenerarTXT(dt) 'Genera el .txt   
+                    'Case "6"
+                    '    context.Response.ContentType = "application/text; charset=utf-8"
+                    '    dt = coRegistroCompras.ListarRegistroCompras_Libro8(p_ANIO, p_MES, p_CTLG_CODE, "")
+                    '    res = GenerarTXT(dt) 'Genera el .txt   
 
             End Select
 

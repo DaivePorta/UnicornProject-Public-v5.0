@@ -346,7 +346,7 @@
             Dim cmd1 As IDbCommand
 
             cmd = cn.GetNewCommand("PMN_ACTUALIZAR_COMISIONES_OPERADOR", CommandType.StoredProcedure)
-            cmd.Parameters.Add(cn.GetNewParameter("@P_CODE", P_CODE, ParameterDirection.Output, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@P_CODE", P_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@P_OPTR_CODE", P_OPTR_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@P_COMISION_TOTAL_DEB", P_COMISION_TOTAL_DEB, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@P_COMISION_TOTAL_CRE", P_COMISION_TOTAL_CRE, ParameterDirection.Input, 253))

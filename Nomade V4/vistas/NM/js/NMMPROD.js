@@ -1490,11 +1490,13 @@ var NMMPROD = function () {
 
                                         fnCargarTablaConfigContab();
                                         let bConfigPorDefecto = false;
+                                        console.log("primer aoConfigCtas")
                                         let aoConfigCtas = fnListarCtasConfigAlmacen(bConfigPorDefecto);
                                         if (aoConfigCtas.length === 0) {
                                             bConfigPorDefecto = true;
                                             aoConfigCtas = fnListarCtasConfigAlmacen(bConfigPorDefecto);
                                         }
+                                        console.log(aoConfigCtas);
 
                                         let oTr = {};
                                         for (let i = 0; i < aoConfigCtas.length; i++) {
@@ -2328,13 +2330,14 @@ var NMMPROD = function () {
                 bConfigPorDefecto = true;
                 aoConfigCtas = fnListarCtasConfigAlmacen(bConfigPorDefecto);
             }
+            console.log(aoConfigCtas)
             let oTr = {};
             for (let i = 0; i < aoConfigCtas.length; i++) {
                 oTr = $("#tblConfigContabAlmacen").find(`[data-codmovalmc=${aoConfigCtas[i].TMOV_CODE}]`);
                 $(oTr).find('.ctadebe').val(`${aoConfigCtas[i].CUENTA_DEBE} - ${aoConfigCtas[i].CTAS_DEBE}`);
                 $(oTr).find('.ctahaber').val(`${aoConfigCtas[i].CUENTA_HABER} - ${aoConfigCtas[i].CTAS_HABER}`);
             }
-
+            console.log(oTr)
         });
 
 
@@ -2608,10 +2611,16 @@ var NMMPROD = function () {
         });
 
         $('#txtmodelo').on('blur', function () {
-            var sgrupo = $("#cbosubgrupo option:selected").text();
-            var marca = $("#cbomarca option:selected").text();
-            var modelo = $("#txtmodelo").val();
-            $("#txtproducto").val(sgrupo + ' ' + marca + ' ' + modelo);
+            var sgrupo = $.trim($("#cbosubgrupo option:selected").text());
+            var marca = $.trim($("#cbomarca option:selected").text());
+            var modelo = $.trim($("#txtmodelo").val());
+
+            if (marca == "") {
+                $.trim($("#txtproducto").val(sgrupo + ' ' + modelo));
+            } else {
+                $.trim($("#txtproducto").val(sgrupo + ' ' + marca + ' ' + modelo));
+            }
+            
         });
 
         $('#txtfichatecnica').on('keyup', function () {
@@ -3172,6 +3181,8 @@ var NMMPROD = function () {
             datatype: "json",
             async: false,
             success: function (datos) {
+                console.log("debug de datos")
+                console.log(datos)
                 aoConfigCtas = datos;
             },
             error: function (msg) {
@@ -3671,6 +3682,8 @@ var NMMPROD = function () {
                                 bConfigPorDefecto = true;
                                 aoConfigCtas = fnListarCtasConfigAlmacen(bConfigPorDefecto);
                             }
+                            console.log("ultimo aoConfigCtas")
+                            console.log(aoConfigCtas);
                             let oTr = {};
                             for (let i = 0; i < aoConfigCtas.length; i++) {
                                 oTr = $("#tblConfigContabAlmacen").find(`[data-codmovalmc=${aoConfigCtas[i].TMOV_CODE}]`);
@@ -4152,7 +4165,7 @@ function fillCboEstablecimiento(ctlg) {
     $("#cboEstablecimiento").select2();
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=0&CTLG_CODE=" + ctlg,
+        url: "vistas/NC/ajax/NCMCAJA.ashx?OPCION=7&CTLG_CODE=" + ctlg,
         contenttype: "application/json;",
         datatype: "json",
         async: true,

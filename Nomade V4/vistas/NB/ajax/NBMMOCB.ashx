@@ -23,8 +23,8 @@ Public Class NBMMOCB : Implements IHttpHandler
     Dim fecha_ope As String
     Dim fecha_valor As String
     Dim monto As String
-    Dim cta10 As String
-    Dim p_tope As String
+    Dim tipoOpeCta As String
+    Dim tipoOperacion As String
     Dim tc As String
     Dim user As String
     Dim tipo As String
@@ -39,6 +39,7 @@ Public Class NBMMOCB : Implements IHttpHandler
     Dim origen As String
 
     Dim persona As String
+    Dim codigoVenta As String
 
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         context.Response.ContentType = "text/plain"
@@ -63,8 +64,11 @@ Public Class NBMMOCB : Implements IHttpHandler
             fecha_valor = Utilities.fechaLocal(context.Request("fecha_valor"))
         End If
         monto = context.Request("monto")
-        cta10 = context.Request("cta10")
-        p_tope = context.Request("p_tope")
+
+        tipoOpeCta = context.Request("tipoOpeCta")
+        tipoOperacion = context.Request("tipoOperacion")
+        persona = context.Request("persona")
+        codigoVenta = context.Request("codigoVenta") 'String de codigo venta seleccionado en dinero por encargo
 
         user = context.Request("user")
         tipo = context.Request("tipo")
@@ -78,7 +82,6 @@ Public Class NBMMOCB : Implements IHttpHandler
         tipoChq = context.Request("tipoChq")
         origen = context.Request("origen")
 
-        persona = context.Request("persona")
         Try
 
             Select Case flag
@@ -93,12 +96,9 @@ Public Class NBMMOCB : Implements IHttpHandler
 
                     arrSplitDesc = Split(descripcion, ",")
 
-                    Dim desc, nro_cuen As String
+                    Dim desc As String
 
                     desc = arrSplitDesc(0)
-                    persona = arrSplitDesc(1)
-                    p_tope = arrSplitDesc(2)
-                    nro_cuen = arrSplitDesc(3)
 
                     res = P.CrearMovimientoBancarioDetalle(oficina, desc, canal, nro_operacion, fecha_ope, IIf(monto = 0, monto_d, monto), tc, fecha_valor, "S", user, stbl, tipo, pidm, cta_code, IIf(caja <> String.Empty, "C", "M"))
                     Dim ref = res
@@ -113,29 +113,130 @@ Public Class NBMMOCB : Implements IHttpHandler
                         End If
                     End If
 
-                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
-                    Dim strCodAsientoCobroDetracDocVenta As String
-                    strCodAsientoCobroDetracDocVenta = oCTGeneracionAsientos.GenerarAsientoMovBancario(ref, "N", "ADMINSIS", p_tope, nro_cuen, persona)
+                Case "1.5" 'Agregar tipo operacion y persona al movimiento bancario manual
+                    'Tambien se agregaran los tickets a la tabla intermedia
+
+                    Dim p As New Nomade.NB.NBMovimientoBancario("BN")
+                    res = p.AgregarAMovimientoBancarioManual(codigo, persona, tipoOperacion, codigoVenta)
 
                 Case "2"
-                    Dim q As New NOMADE.FI.SWTipoCambio("Bn")
+                    Dim q As New Nomade.FI.SWTipoCambio("Bn")
                     tc = q.TipoCambioHoy().Rows(0)("Venta").ToString
 
-                    Dim P As New NOMADE.NB.NBMovimientoBancario("Bn")
-                    res = P.ActualizarMovimientoBancarioDetalle(codigo, oficina, descripcion, canal, nro_operacion, fecha_ope, monto, tc, fecha_valor, "S", user, String.Empty, tipo, pidm, cta_code, p_tope, persona)
-
-
+                    Dim P As New Nomade.NB.NBMovimientoBancario("Bn")
+                    res = P.ActualizarMovimientoBancarioDetalle(codigo, oficina, descripcion, canal, nro_operacion, fecha_ope, monto, tc, fecha_valor, "S", user, String.Empty, tipo, pidm, cta_code, tipoOperacion, persona)
 
                 Case "3"
-                    Dim p As New NOMADE.NB.NBMovimientoBancario("BN")
+                    Dim p As New Nomade.NB.NBMovimientoBancario("BN")
                     dt = p.ListarMovimientoBancario(mes, anho, "", cuenta, empresapidm)
                     res = dt.Rows(0)("CODIGO") & "|" & dt.Rows(0)("CERRADO_IND")
 
+                Case "3.5" 'Para confirmar el codigo de operacion los anticipos
+                    Dim p As New Nomade.NB.NBMovimientoBancario("BN")
+                    dt = p.ListarNroOperacionSinUsar(cuenta, empresapidm)
+                    If Not dt Is Nothing Then
+                        resb.Append("[")
+                        For Each row As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""CODIGO"" :" & """" & row("CODIGO") & """,")
+                            resb.Append("""NRO_OPERACION"" :" & """" & row("NRO_OPERACION") & """,")
+                            resb.Append("""MONTO_CIERRE"" :" & """" & If(row("MONTO_CIERRE") IsNot DBNull.Value, row("MONTO_CIERRE"), row("MONTO")) & """,")
+                            resb.Append("""PIDM_CLIENTE"" :" & """" & row("PIDM_CLIENTE") & """,")
+                            resb.Append("""CERRADO_IND"" :" & """" & row("CERRADO_IND") & """")
+                            resb.Append("},")
+                        Next
+                        resb.Append("-")
+                        resb.Replace("},-", "}")
+                        resb.Append("]")
+                        res = resb.ToString()
+                    Else
+                        res = ""
+                    End If
+
                 Case "4"
-                    Dim p As New NOMADE.NB.NBMovimientoBancario("BN")
+                    Dim p As New Nomade.NB.NBMovimientoBancario("BN")
                     Dim auxiliar As Decimal = 0.0
                     Dim auxiliar2 As Decimal = 0.0
                     dt = p.ListarMovimientoBancarioDetalle(codigo)
+                    If dt IsNot Nothing Then
+                        dt.DefaultView.Sort = "FECHA_OPERACION_F ASC"
+                        dt = dt.DefaultView.ToTable()
+                    End If
+
+                    If Not dt Is Nothing Then
+                        resb.Append("[")
+                        resb.Append("{")
+                        resb.Append("""CODIGO"":"" "",")
+                        resb.Append("""OFICINA"":"" "",")
+                        resb.Append("""DESCRIPCION"":""SALDO ANTERIOR"",")
+                        resb.Append("""CANAL"":"" "",")
+                        resb.Append("""FECHA_OPERACION"":{""display"":"" "",""order"":""0""},")
+                        resb.Append("""MONTO"":"""",")
+                        resb.Append("""MONTO_ITF"":"""",")
+                        resb.Append("""FECHA_VALOR"":{""display"":"" "",""order"":""0""},")
+                        resb.Append("""SALDO_CONTABLE"":""" & dt.Rows(0)("SALDO_ANTERIOR").ToString & """,")
+                        resb.Append("""SALDO_DISPONIBLE"":""" & dt.Rows(0)("SALDO_ANTERIOR").ToString & """,")
+                        resb.Append("""NRO_OPERACION"":"" "",")
+                        resb.Append("""COMPLETO_IND"":""S"",")
+                        resb.Append("""TIPO"":"" """)
+                        resb.Append("},")
+                        auxiliar = Decimal.Parse(dt.Rows(0)("SALDO_ANTERIOR").ToString)
+                        auxiliar2 = Decimal.Parse(dt.Rows(0)("SALDO_ANTERIOR").ToString)
+
+                        For Each row As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""CODIGO"":""" & row("CODIGO").ToString & """,")
+                            resb.Append("""OFICINA"":""" & row("OFICINA").ToString & """,")
+                            resb.Append("""DESCRIPCION"":""" & row("DESCRIPCION").ToString & """,")
+                            resb.Append("""CANAL"":""" & row("CANAL").ToString & """,")
+                            resb.Append("""FECHA_OPERACION"":{""display"":""" & row("FECHA_OPERACION").ToString & """,""order"":""" & String.Join("", row("FECHA_OPERACION").ToString.Split("-").Reverse()) & """},")
+                            resb.Append("""MONTO"":""" & row("MONTO").ToString & """,")
+                            resb.Append("""MONTO_ITF"":""" & row("MONTO_ITF").ToString & """,")
+                            resb.Append("""FECHA_VALOR"":{""display"":""" & row("FECHA_VALOR").ToString & """,""order"":""" & String.Join("", row("FECHA_VALOR").ToString.Split("-").Reverse()) & """},")
+                            resb.Append("""COMPLETO_IND"":""" & row("COMPLETO_IND").ToString & """,")
+
+                            If row("TIPO").ToString = "I" Then
+                                If row("COMPLETO_IND").ToString = "S" Then
+                                    auxiliar = auxiliar + Decimal.Parse(row("MONTO").ToString) - Decimal.Parse(row("MONTO_ITF").ToString)
+                                End If
+
+                                auxiliar2 = auxiliar2 + Decimal.Parse(row("MONTO").ToString) - Decimal.Parse(row("MONTO_ITF").ToString)
+                            Else
+                                If row("COMPLETO_IND").ToString = "S" Then
+                                    auxiliar = auxiliar - Decimal.Parse(row("MONTO").ToString) - Decimal.Parse(row("MONTO_ITF").ToString)
+                                End If
+
+                                auxiliar2 = auxiliar2 - Decimal.Parse(row("MONTO").ToString) - Decimal.Parse(row("MONTO_ITF").ToString)
+                            End If
+
+
+                            resb.Append("""SALDO_CONTABLE"":""" & auxiliar & """,")
+                            resb.Append("""SALDO_DISPONIBLE"":""" & auxiliar2 & """,")
+                            resb.Append("""NRO_OPERACION"":""" & row("NRO_OPERACION").ToString.Trim() & """,")
+                            resb.Append("""CODIGO_OPERACION"":""" & row("CODIGO_OPERACION").ToString.Trim() & """,")
+                            resb.Append("""TIPO"":""" & row("TIPO").ToString & """,")
+                            resb.Append("""TIPO_REG"":""" & row("TIPO_REGISTRO").ToString & """")
+                            resb.Append("},")
+
+                        Next
+                        resb.Append("-")
+                        resb.Replace("},-", "}")
+
+                        resb.Append("]")
+                        res = resb.ToString()
+                    Else
+                        res = ""
+                    End If
+                Case "4.5"
+                    Dim p As New Nomade.NB.NBMovimientoBancario("BN")
+                    Dim auxiliar As Decimal = 0.0
+                    Dim auxiliar2 As Decimal = 0.0
+                    dt = p.ListarMovimientoBancarioDetalleFast(codigo)
+                    If dt IsNot Nothing Then
+                        dt.DefaultView.Sort = "FECHA_OPERACION_F ASC"
+                        dt = dt.DefaultView.ToTable()
+                    End If
+
                     If Not dt Is Nothing Then
                         resb.Append("[")
                         resb.Append("{")
@@ -199,14 +300,13 @@ Public Class NBMMOCB : Implements IHttpHandler
                     Else
                         res = ""
                     End If
-
                 Case "5"
-                    Dim p As New NOMADE.NC.NCEmpresa("BN")
+                    Dim p As New Nomade.NC.NCEmpresa("BN")
                     dt = p.ListarEmpresa(String.Empty, "A", HttpContext.Current.User.Identity.Name)
                     If dt Is Nothing Then
-                        res = GenerarSelect(dt, "codigo", "corto", "EMPRESA")
+                        res = GenerarSelect(dt, "codigo", "DESCRIPCION", "EMPRESA")
                     Else
-                        res = GenerarSelect(SortDataTableColumn(dt, "CORTO", "ASC"), "codigo", "corto", "EMPRESA")
+                        res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "codigo", "DESCRIPCION", "EMPRESA")
                     End If
 
                 Case "6"
@@ -235,17 +335,17 @@ Public Class NBMMOCB : Implements IHttpHandler
                     End If
                     res = resb.ToString()
                 Case "7"
-                    Dim p As New NOMADE.GL.GLLetras("Bn")
+                    Dim p As New Nomade.GL.GLLetras("Bn")
                     dt = p.ListarMoneda(empresa)
                     res = GenerarSelect(dt, "codigo", "descripcion", "MONEDA")
 
                 Case "M"
-                    Dim p As New NOMADE.NC.NCMonedas("BN")
+                    Dim p As New Nomade.NC.NCMonedas("BN")
                     dt = p.ListarMoneda(codigo, String.Empty, "A")
                     res = dt.Rows(0)("Simbolo").ToString
 
                 Case "L"
-                    Dim p As New NOMADE.NB.NBMovimientoBancario("BN")
+                    Dim p As New Nomade.NB.NBMovimientoBancario("BN")
                     dt = p.ListarMovimientoBancarioDetalle(String.Empty, codigo)
                     If Not dt Is Nothing Then
 
@@ -277,7 +377,11 @@ Public Class NBMMOCB : Implements IHttpHandler
                         res = ""
                     End If
 
-
+                Case "GEN_ASIENTO"
+                    Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                    Dim strCodAsientoCobroDetracDocVenta As String
+                    strCodAsientoCobroDetracDocVenta = oCTGeneracionAsientos.GenerarAsientoMovBancario(codigo, "N", "ADMINSIS", tipoOpeCta)
+                    res = strCodAsientoCobroDetracDocVenta
 
             End Select
 

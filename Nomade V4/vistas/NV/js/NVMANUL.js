@@ -40,7 +40,7 @@
     var fillCboEmpresa = function () {
         $.ajax({
             type: "post",
-            url: "vistas/ca/ajax/calvica.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CTLG_SHORT&USUA_ID=" + $('#ctl00_txtus').val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -394,7 +394,8 @@
             mes = 12;
             ano = ano - 1            
         } else {
-            mes = mes - 1;
+            //mes = mes - 1;
+            mes = mes;
         }
 
         if (mes >= 10) 
@@ -419,6 +420,15 @@
 var monedaCabecera;
 var flagAnular = true;
 var NVMANUL = function () {
+
+    $(document).ready(function () {
+        var checkbox = $('#chkDevEfectivo');
+        if (checkbox.length) {
+            checkbox.attr("checked", true).parent().addClass("checked");
+            checkbox.change();
+        }
+    });
+
 
     var plugins = function () {       
         $('#cboEmpresa').select2();
@@ -451,7 +461,7 @@ var NVMANUL = function () {
     var fillCboEmpresa = function () {
         $.ajax({
             type: "post",
-            url: "vistas/ca/ajax/calvica.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CTLG_SHORT&USUA_ID=" + $('#ctl00_txtus').val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -532,11 +542,44 @@ var NVMANUL = function () {
     };
 
     var fillVendedor = function () {
+        //var selectEst = $('#cboVendedor');
+        //// var CTLG_CODE = ($("#cboEmpresa").val() == "TODOS") ? '' : $("#cboEmpresa").val();
+        //$.ajax({
+        //    type: "post",
+        //    url: "vistas/nv/ajax/NVLDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+        //    contenttype: "application/json;",
+        //    datatype: "json",
+        //    async: false,
+        //    success: function (datos) {
+        //        selectEst.empty();
+        //        selectEst.append('<option></option>');
+        //        if (datos != null) {
+        //            $('#cboVendedor').append('<option Value="TODOS">TODOS</option>');
+        //            for (var i = 0; i < datos.length; i++) {
+        //                selectEst.append('<option value="' + datos[i].PIDM + '">' + datos[i].USUARIO + '</option>');
+        //            }
+        //            $('#cboVendedor').select2('val', 'TODOS');
+        //        } else {
+        //            selectEst.empty();
+        //            selectEst.append('<option></option>');
+        //            $('#cboVendedor').select2('val', '');
+        //        }
+
+        //    },
+        //    error: function (msg) {
+        //        alert(msg.d);
+        //    }
+        //});
+
         var selectEst = $('#cboVendedor');
         // var CTLG_CODE = ($("#cboEmpresa").val() == "TODOS") ? '' : $("#cboEmpresa").val();
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/NVLDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            //url: "vistas/nv/ajax/NVLDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LVEND" +
+                "&CTLG=" + $("#cboEmpresa").val() +
+                "&SCSL=" + $("#cboEstablecimiento").val() +
+                "&p_ESTADO_IND=" + "A",
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -566,7 +609,7 @@ var NVMANUL = function () {
         var selectEst = $('#cboCliente');
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=2&CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.5&p_CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -1081,7 +1124,8 @@ var NVMANUL = function () {
 
         }
 
-
+        //$('#chkDevEfectivo').prop('checked', true);
+        //$('#chkDevEfectivo').prop('checked', true);
     };
 
     return {
@@ -1094,9 +1138,9 @@ var NVMANUL = function () {
                 fillCboModoPago();
                 fillCboEmpresa();
                 fillCboEstablecimiento();
-                fillCboTipoDoc();
-                fillVendedor();
-                fillCliente();
+                //fillCboTipoDoc();
+                //fillVendedor();
+                //fillCliente();
                 cargaInicial();
             } else {
                 infoCustom2("Debe seleccionar un documento de venta!");

@@ -1,5 +1,5 @@
 ﻿var token_migo = '';//dporta
-var city = '';//dporta
+//var city = '';//dporta
 function deshabilitacombos(iddiv, id) {
     var auxiliar = new Array();
 
@@ -174,25 +174,25 @@ var ADICIONALES = function () {
         });
 
         //DIRECCION(CIUDAD) POR DEFECTO
-        $.ajax({
-            type: "post",
-            url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=CIDE",
-            contenttype: "application/json;",
-            datatype: "json",
-            async: true,
-            success: function (datos) {
-                if (datos != null) {
-                    if (datos[0].VALOR == "SI") {
-                        city = datos[0].DESCRIPCION_DETALLADA;
+        //$.ajax({
+        //    type: "post",
+        //    url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=CIDE",
+        //    contenttype: "application/json;",
+        //    datatype: "json",
+        //    async: true,
+        //    success: function (datos) {
+        //        if (datos != null) {
+        //            if (datos[0].VALOR == "SI") {
+        //                city = datos[0].DESCRIPCION_DETALLADA;
 
-                    } else {
-                        city = "TRUJILLO";
-                    }
-                } else {
-                    city = "TRUJILLO";
-                }
-            },
-        });
+        //            } else {
+        //                city = "TRUJILLO";
+        //            }
+        //        } else {
+        //            city = "TRUJILLO";
+        //        }
+        //    },
+        //});
 
     }
 
@@ -1793,7 +1793,7 @@ function MuestraDireccion(obj) {
             if (data.success == true) {
                 if (data.condicion_de_domicilio == "HABIDO") {
               //if (data.estado_del_contribuyente == "ACTIVO" && data.condicion_de_domicilio == "HABIDO") {
-                    $("#" + obj.attr("id") + ' #txtdir').val((data.direccion == ('-' || '') ? city : eliminarDiacriticos(data.direccion)));
+                    $("#" + obj.attr("id") + ' #txtdir').val(data.direccion == '-' || data.direccion == '' ? "TRUJILLO" : eliminarDiacriticos(data.direccion));
                     //$("#" + obj.attr("id") + ' #txtubigeo').val((data.direccion == ('-' || '') ? '130101' : data.ubigeo));
                 }
             } else {

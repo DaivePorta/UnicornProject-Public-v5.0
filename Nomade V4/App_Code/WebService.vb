@@ -45,7 +45,7 @@ Public Class WebService
         empresa = kv("empresa")
 
         Dim establecimiento As New NOMADE.NC.NCSucursal("bn")
-        Dim dt As DataTable = establecimiento.ListarSucursal(empresa, "", "")
+        Dim dt As DataTable = establecimiento.ListarSucursalFast(empresa, "", "")
         establecimiento = Nothing
 
 

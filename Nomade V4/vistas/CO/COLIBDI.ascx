@@ -39,8 +39,9 @@
     <div class="span12">
         <div class="portlet box blue" id="ventana">
             <div class="portlet-title">
-                <h4><i class="icon-reorder"></i>LIBRO SUNAT: REGISTRO DIARIO</h4>
+                <h4><i class="icon-reorder"></i>LIBRO 5 SUNAT: REGISTRO DIARIO</h4>
                 <div class="actions">
+                    <a class="btn green" onclick="javascript:NuevaPantalla();"><i class="icon-plus"></i>&nbsp;Nuevo</a>
                     <a class="btn black" href="javascript:imprimirDiv2(['divLibroDiario']);"><i class="icon-print"></i>&nbsp;Imprimir</a>
                 </div>
             </div>
@@ -81,7 +82,7 @@
                     <div class="span2">
                         <div class="control-group">
                             <div class="controls">
-                                <select id="cboMes" class="span12" data-placeholder="MES">
+                                <select id="cboMes" class="span12" data-placeholder="MES" tabindex="-1" title="" style="display: none;">
                                     <option></option>
                                     <option value="01">ENERO</option>
                                     <option value="02">FEBRERO</option>
@@ -104,13 +105,13 @@
 
                 <div class="row-fluid">
                     <asp:HiddenField ID="hddCtlg" runat="server" />
-                    <asp:HiddenField ID="hddDescMes" runat="server" />
                     <asp:HiddenField ID="hddAnio" runat="server" />
                     <asp:HiddenField ID="hddMes" runat="server" />
-
+                    <asp:HiddenField ID="hddDescMes" runat="server" />
+                    <asp:HiddenField ID="hddDescEmpresa" runat="server" />
                     <asp:HiddenField ID="hddRuc" runat="server" />
-                    <asp:HiddenField ID="hddDesca" runat="server" />
                     <asp:HiddenField ID="hfind_vacio" runat="server" />
+                    <asp:HiddenField ID="hddDesca" runat="server" />
 
                     <div id="filtros_3">
                         <div class="span1">
@@ -137,31 +138,29 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="span2">
+                        <%--<div class="span2">
                             <div class="control-group">
                                 <div class="controls">
                                     <a id="btnGenerarLibro" class="btn orange span12">Generar Libro</a>
                                 </div>
                             </div>
-                        </div>
+                        </div>--%>
 
-                        <div class="span8">
+                        <div class="span8" >
                             <div class="span4">
                                 <div class="control-group">
                                     <div class="controls">
-                                        <asp:Button class="btn green" ID="btnLibroPDF" CssClass="btnLibroPDF btn green span12 " runat="server" Text="Libro PDF"  />
+                                         <a id="btnDescargarLibroPDF" class="btn red span12">Libro PDF</a>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="span4">
                                 <div class="control-group">
                                     <div class="controls">
-                                        <asp:Button class="btn green" ID="btnLibroTXT" CssClass="btnLibroTXT btn green span12" runat="server" Text="Libro TXT" />
+                                         <a id="btnDescargarLibroTXT" class="btn black span12">Libro TXT</a>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="span4">
                                 <div class="control-group">
                                     <div class="controls">
@@ -170,11 +169,36 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="span8" style="display: none;">
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <asp:Button class="btn green" ID="btnLibroPDF" CssClass="btnLibroPDF btn red span12" runat="server" Text="Libro PDF" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <asp:Button class="btn green" ID="btnLibroTXT" CssClass="btnLibroTXT btn black span12" runat="server" Text="Libro TXT" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <%--<div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <asp:Button class="btn green" ID="btnLibroXls" CssClass="btnLibroXls btn green span12" runat="server" Text="Libro XLS" />
+                                    </div>
+                                </div>
+                            </div>--%>
+                        </div>
                     </div>
                 </div>
 
                 <div class="row-fluid">
-                    <div id="divLibroDiario" style="overflow: scroll; height: 450px; margin-bottom: 20px; resize: vertical;">
+                    <div id="divLibroDiario" style="overflow: scroll; height: 550px; margin-bottom: 20px; resize: vertical;">
                     </div>
                 </div>
 

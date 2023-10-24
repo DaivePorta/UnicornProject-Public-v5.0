@@ -85,7 +85,7 @@ var CCLRCCL = function () {
         //Proveedores
         $.ajax({
             type: "post",
-            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2&p_CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.4&p_CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -249,7 +249,8 @@ var CCLRCCL = function () {
                        "sZeroRecords": "No hay datos disponibles en la tabla."
                    }
                })
-               actualizarEstilos()
+               oTableTReg.fnSort([[5, "desc"]]);
+               actualizarEstilos();
 
 
                $('#tblCuentasPorCobrar').DataTable().columns(0).visible(false);
@@ -293,6 +294,8 @@ var CCLRCCL = function () {
                 $("#txtrazsocial").val(nombre);
                 $("#txtrazsocial").keyup().siblings("ul").children("li").click();
                 obtenerReporteCuentasPorCobrar();
+            } else {
+                infoCustom2("El cliente no se encuentra activo. Actívelo por favor para poder ver la información.")
             }
 
         }

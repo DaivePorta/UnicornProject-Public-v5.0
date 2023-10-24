@@ -7,7 +7,7 @@
     <div class="span12 ">
         <div class="portlet box blue" id="ventana">
             <div class="portlet-title">
-                <h4><i class="icon-reorder"></i>REPORTE DE ANALÍTICO DE VENTAS MENSUALES</h4>
+                <h4><i class="icon-reorder"></i>REPORTE ANALÍTICO DE VENTAS MENSUALES</h4>
                 <div class="actions">
                     <a class="btn black" href="javascript:imprimirDiv2(['tblReporteMostrar','chart', 'pie']);" ><i class="icon-print"></i>&nbsp;Imprimir</a>
                 </div>

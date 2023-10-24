@@ -8,6 +8,8 @@ var objAux;
 var vAsientoContable = null;
 const sCodModulo = "0003";
 var prmtACON = "NO";
+var prmtSURE;
+var p_indRR;
 var token_migo = '';//dporta
 var count = 0;
 var CPLPGAS = function () {
@@ -66,7 +68,7 @@ var CPLPGAS = function () {
                     }
                 },
                 {
-                    data: "MONTO",
+                    data: "IMPORTE_PAGAR",
                     createdCell: function (td, cellData, rowData, row, col) {
                         $(td).css('text-align', 'right')
                     }
@@ -2068,6 +2070,10 @@ var CPMPGAS = function () {
 
                 parseFloat($("#txt_monto").val(dTotal)).toFixed(2);
                 parseFloat($("#txt_importePagar").val(dTotal - parseFloat($("#txt_detraccion").val()))).toFixed(2);
+
+                $('#txt_retencion').val(0);
+
+                actualizarRetencionRenta();
             }
         });
 
@@ -2121,8 +2127,8 @@ var CPMPGAS = function () {
 
         $('#rbtipo_fijo').on('click', function () {
             if ($("#rbtipo_fijo").is(':checked')) {
-                $('#div_monto, #div_detraccion, #div_importePagar').slideDown();
-                $('#div_moneda, #div_detraccion, #div_importePagar').slideDown();
+                $('#div_monto, #div_detraccion, #div_retencion, #div_importePagar').slideDown();
+                $('#div_moneda, #div_detraccion, #div_retencion, #div_importePagar').slideDown();
             }
         });
 
@@ -2132,7 +2138,7 @@ var CPMPGAS = function () {
 
                 //var text = "Monto (" + $("#cbo_moneda :selected").attr("simbolo") + ")"
                 //$('#lbl_monto').text(text);
-                $('#simbMoneda,#simbMoneda2,#simbMoneda3').text($("#cbo_moneda :selected").attr("simbolo"));
+                $('#simbMoneda,#simbMoneda2,#simbMoneda3, #simbMoneda4').text($("#cbo_moneda :selected").attr("simbolo"));
 
                 moneda_ant = $(this).val();
             } else { moneda_ant = ""; }
@@ -2140,7 +2146,7 @@ var CPMPGAS = function () {
 
         $('#rbtipo_variable').on('click', function () {
             if ($("#rbtipo_variable").is(':checked')) {
-                $('#div_monto, #div_detraccion, #div_importePagar').slideDown();
+                $('#div_monto, #div_detraccion, #div_retencion, #div_importePagar').slideDown();
                 $('#div_moneda').slideDown();
                 $("#txt_monto").val("");
                 $("#txt_monto").focus();
@@ -2299,13 +2305,13 @@ var CPMPGAS = function () {
                 oTable.fnClearTable();
                 detallesGasto = [];
                 dTotal = 0;
-                $("#txt_monto, #txt_detraccion, #txt_importePagar").val("")
+                $("#txt_monto, #txt_detraccion, #txt_retencion, #txt_importePagar").val("")
             } else {
                 $('#cbx_destino').select2('val', 'DSTGRA');
                 oTable.fnClearTable();
                 detallesGasto = [];
                 dTotal = 0;
-                $("#txt_monto, #txt_detraccion, #txt_importePagar").val("")
+                $("#txt_monto, #txt_detraccion, txt_retencion, #txt_importePagar").val("")
             }
 
         });
@@ -2353,6 +2359,14 @@ var CPMPGAS = function () {
 
                 $(".divDestinoTipo").hide();
                 MuestraPeriodo("none")
+
+                oTable.fnClearTable();
+                detallesGasto = [];
+                dTotal = 0;
+                $("#txt_monto, #txt_detraccion, #txt_importePagar").val("");
+                actualizarRetencionRenta();
+                $("#txt_retencion").val("");
+
             } else { // CON DOCUMENTO
                 $('#chk_sindcto').prop('checked', false).parent().removeClass('checked');
 
@@ -2383,6 +2397,14 @@ var CPMPGAS = function () {
             }
         });
 
+        $('#chk_retencionrenta').change(function () {
+            var importePago = parseFloat($('#txt_importePagar').val());
+            var txtretencion = parseFloat($('#txt_retencion').val());
+            var importe = !this.checked ? (importePago + txtretencion) : importePago;
+            calcularRetencionRenta(importe)
+            $.uniform.update('#chk_retencionrenta');
+        });
+
         $('#txt_descripcion').bind('keypress', function (e) {
             var code = e.keyCode || e.which;
             if (code == 13) { //Enter keycode
@@ -2405,7 +2427,8 @@ var CPMPGAS = function () {
 
         $('#chk_sindcto').click().click()
         $('#chk_sindcto').prop('checked', true).parent().addClass('checked');
-        $('#simbMoneda,#simbMoneda2,#simbMoneda3').text($("#cbo_moneda :selected").attr("simbolo"));
+
+        $('#simbMoneda,#simbMoneda2,#simbMoneda3, #simbMoneda4').text($("#cbo_moneda :selected").attr("simbolo"));
         $("#txt_usua").val($("#ctl00_txtus").val())
         var CODE = ObtenerQueryString("codigo");
         //var permiso_ind = $("#hf_permiso").val();
@@ -2814,6 +2837,9 @@ var CPMPGAS = function () {
                                 || datos[0].EST_IND == "AMOR" || datos[0].EST_IND == "REC"
                                 || datos[0].EST_IND == "APRO") {
                                 $(".btnEliminarDetalle").attr("style", "display:none");
+                                $('#chk_retencionrenta').prop('checked', false);
+                                $('#chk_retencionrenta').prop('disabled', true);
+                                $('#txt_retencion').prop('disabled', true);
                             }
 
                             if (prmtACON == "SI") {
@@ -2884,10 +2910,10 @@ var CPMPGAS = function () {
                     vAsientoContable.sTipoMov = sCodModulo;
                     vAsientoContable.sCodDoc = sCodGasto;
                     vAsientoContable.objDoc = oDocGasto;
+                    vAsientoContable.indRR = p_indRR;
                     vAsientoContable.init(sCodAsiento);
                 });
         });
-
     }
 
 
@@ -2921,70 +2947,125 @@ var CPMPGAS = function () {
 
 //DPORTA
 function cargarParametrosSistema() {
-
-    //QUE SE GENERE O NO EL ASIENTO CONTABLE
+    let filtro = "ACON,MIGO,DETR,SURE"; //Aquí van los parámetros que se van a utilizar en la pantalla y luego se le hace su case
     $.ajax({
         type: "post",
-        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
+        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3.5&FILTRO=" + filtro,
         contenttype: "application/json;",
         datatype: "json",
         async: false,
         success: function (datos) {
             if (datos != null) {
-                prmtACON = datos[0].VALOR;
-            }
-            else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
-        },
-        error: function (msg) {
-            alertCustom("No se recuperó correctamente el parámetro ACON!");
-        }
-    });
-
-    //TOKEN PARA PODER HACER LAS CONSULTAS DE LOS N° DE DOCS. A SUNAT
-    $.ajax({
-        type: "post",
-        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=MIGO",
-        contenttype: "application/json;",
-        datatype: "json",
-        async: true,
-        success: function (datos) {
-            if (datos != null) {
-                token_migo = datos[0].DESCRIPCION_DETALLADA;
-            } else {
-                alertCustom("No se recuperó correctamente el parámetro MIGO!");
-            }
-        },
-        error: function (msg) {
-            alertCustom("No se recuperó correctamente el parámetro MIGO!");
-        }
-    });
-
-    //OBTENER PARAMETRO DE DETRACCION
-    $.ajax({
-        type: "post",
-        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=DETR",
-        contenttype: "application/json;",
-        datatype: "json",
-        async: true,
-        success: function (datos) {
-            if (datos != null) {
-                if (!isNaN(parseFloat(datos[0].VALOR))) {
-                    $('#hfParamDetraccion').val(datos[0].VALOR);
-                } else {
-                    infoCustom2("El parámetro de sistema de Detracción(DETR) no es válido. Se considerará como monto requerido 700")
-                    $('#hfParamDetraccion').val("700");
+                for (var i = 0; i < datos.length; i++) {
+                    switch (datos[i].CODIGO) {                        
+                        case "DETR":
+                            if (!isNaN(parseFloat(datos[i].VALOR))) {
+                                $('#hfParamDetraccion').val(datos[i].VALOR);
+                            } else {
+                                infoCustom2("El parámetro de sistema de Detracción(DETR) no es válido. Se considerará como monto requerido 700")
+                                $('#hfParamDetraccion').val("700");
+                            }
+                            break;
+                        case "ACON":
+                            prmtACON = datos[i].VALOR;
+                            break;
+                        case "SURE":
+                            prmtSURE = datos[i].VALOR;
+                            break;
+                        case "MIGO":
+                            token_migo = datos[i].DESCRIPCION_DETALLADA;
+                            break;
+                    }
                 }
+
             }
-            else { alertCustom("No se recuperó el parámetro de Detracción(DETR) correctamente!"); }
+            else { alertCustom("No se recuperaron correctamente los parámetros!"); }
         },
         error: function (msg) {
-            alertCustom("No se recuperó el parámetro de Detracción(DETR) correctamente!");
+            alertCustom("No se recuperaron correctamente los parámetros!");
         }
     });
+
+    //QUE SE GENERE O NO EL ASIENTO CONTABLE
+    //$.ajax({
+    //    type: "post",
+    //    url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
+    //    contenttype: "application/json;",
+    //    datatype: "json",
+    //    async: false,
+    //    success: function (datos) {
+    //        if (datos != null) {
+    //            prmtACON = datos[0].VALOR;
+    //        }
+    //        else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
+    //    },
+    //    error: function (msg) {
+    //        alertCustom("No se recuperó correctamente el parámetro ACON!");
+    //    }
+    //});
+
+    ////TOKEN PARA PODER HACER LAS CONSULTAS DE LOS N° DE DOCS. A SUNAT
+    //$.ajax({
+    //    type: "post",
+    //    url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=MIGO",
+    //    contenttype: "application/json;",
+    //    datatype: "json",
+    //    async: true,
+    //    success: function (datos) {
+    //        if (datos != null) {
+    //            token_migo = datos[0].DESCRIPCION_DETALLADA;
+    //        } else {
+    //            alertCustom("No se recuperó correctamente el parámetro MIGO!");
+    //        }
+    //    },
+    //    error: function (msg) {
+    //        alertCustom("No se recuperó correctamente el parámetro MIGO!");
+    //    }
+    //});
+
+    ////OBTENER PARAMETRO DE DETRACCION
+    //$.ajax({
+    //    type: "post",
+    //    url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=DETR",
+    //    contenttype: "application/json;",
+    //    datatype: "json",
+    //    async: true,
+    //    success: function (datos) {
+    //        if (datos != null) {
+    //            if (!isNaN(parseFloat(datos[0].VALOR))) {
+    //                $('#hfParamDetraccion').val(datos[0].VALOR);
+    //            } else {
+    //                infoCustom2("El parámetro de sistema de Detracción(DETR) no es válido. Se considerará como monto requerido 700")
+    //                $('#hfParamDetraccion').val("700");
+    //            }
+    //        }
+    //        else { alertCustom("No se recuperó el parámetro de Detracción(DETR) correctamente!"); }
+    //    },
+    //    error: function (msg) {
+    //        alertCustom("No se recuperó el parámetro de Detracción(DETR) correctamente!");
+    //    }
+    //});
+
+    ////PARAMETRO SUJETO A RETENCION
+    //$.ajax({
+    //    type: "post",
+    //    url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=SURE",
+    //    contenttype: "application/json;",
+    //    datatype: "json",
+    //    async: false,
+    //    success: function (datos) {
+    //        if (datos != null) {
+    //            prmtSURE = datos[0].VALOR;
+    //        }
+    //        else { alertCustom("No se recuperó correctamente el parámetro SURE!"); }
+    //    },
+    //    error: function (msg) {
+    //        alertCustom("No se recuperó correctamente el parámetro SURE!");
+    //    }
+    //});
 }
 
 var deleteDetalle = function (item) {
-
     for (var i = 0; i < detallesGasto.length; i++) {
         if (detallesGasto[i].ITEM == item) {
             //console.log("SI");            
@@ -2995,6 +3076,10 @@ var deleteDetalle = function (item) {
 
             parseFloat($("#txt_monto").val(dTotal)).toFixed(2);
             parseFloat($("#txt_importePagar").val(dTotal - parseFloat($("#txt_detraccion").val()))).toFixed(2);
+
+            $('#txt_retencion').val(0);
+
+            actualizarRetencionRenta();
         }
     }
 
@@ -3005,12 +3090,7 @@ var deleteDetalle = function (item) {
     } else {
         oTable.fnClearTable();
     }
-
-
-
-
 }
-
 
 var listarDetallesGasto = function (CODE) {
 
@@ -3051,6 +3131,9 @@ var listarDetallesGasto = function (CODE) {
                     objProd.SUB_MONTO = $("#cbo_moneda option:selected").attr("simbolo") + ' ' + datos[i].SUB_MONTO;
                     objProd.DETRACCION = datos[i].DETRACCION;
                     objProd.SUB_DETRACCION = $("#cbo_moneda option:selected").attr("simbolo") + ' ' + datos[i].DETRACCION;
+                    objProd.IND_RETENCION = datos[i].IND_RETENCION;
+                    //objProd.RETENCION = datos[i].RETENCION;
+                    //objProd.SUB_RETENCION = $("#cbo_moneda option:selected").attr("simbolo") + ' ' + datos[i].RETENCION;
                     objProd.TOTAL_NETO = datos[i].TOTAL_NETO;
                     objProd.SUB_TOTAL_NETO = $("#cbo_moneda option:selected").attr("simbolo") + ' ' + datos[i].TOTAL_NETO;
 
@@ -3067,6 +3150,14 @@ var listarDetallesGasto = function (CODE) {
 
                 parseFloat($("#txt_monto").val(dTotal)).toFixed(2);
                 parseFloat($("#txt_importePagar").val(dTotal - parseFloat($("#txt_detraccion").val()))).toFixed(2);
+
+                if (datos[0].IND_RETENCION === 'N' && $('#cbo_documento').val() !== '0002') {
+                    $('#chk_retencionrenta').prop('disabled', true);
+                } else {
+                    $('#chk_retencionrenta').prop('disabled', false);
+                    actualizarRetencionRenta(datos[0].IND_RETENCION);
+                }
+
             }
             else { noexito(); }
         },
@@ -3080,8 +3171,6 @@ var listarDetallesGasto = function (CODE) {
     });
 
 }
-
-
 
 //function VerificaExiste(p_pidm, p_dcto, p_serie, p_numero) {
 
@@ -3114,6 +3203,14 @@ var listarDetallesGasto = function (CODE) {
 
 //}
 
+var confirmarGuardar = function () {
+    confirmarRetencion().then(continuar => {
+        if (continuar) {
+            Guardar();
+        }
+    });
+}
+ 
 var Guardar = function () {
 
     var p_CONC_CODE = '';
@@ -3144,6 +3241,8 @@ var Guardar = function () {
     var p_FECHA_VENCI = "";
     var p_DETRACCION_IND = 'N';
     var p_IMPORTE_DETRACCION = 0;
+    var p_RETENCION_IND = 'N';
+    var p_IMPORTE_RETENCION = 0;
     var p_IMPORTE_PAGAR = 0;
 
     //var p_COD_OPERACION = "";
@@ -3221,6 +3320,12 @@ var Guardar = function () {
         p_DETRACCION_IND = 'S';
         p_IMPORTE_DETRACCION = parseFloat($("#txt_detraccion").val()).toFixed(2);
     }
+
+    if ($("#chk_retencionrenta").is(':checked') && $("#txt_retencion").val() != '' && $("#txt_retencion").val() != 0 && !isNaN(parseFloat($("#txt_retencion").val()))) {
+        p_RETENCION_IND = 'S';
+        p_IMPORTE_RETENCION = parseFloat($("#txt_retencion").val()).toFixed(2);
+    }
+
     p_IMPORTE_PAGAR = parseFloat($("#txt_importePagar").val()).toFixed(2);
     var data = new FormData();
 
@@ -3251,6 +3356,8 @@ var Guardar = function () {
     data.append("p_COMPRAS_IND", p_COMPRAS_IND);
     data.append("p_DETRACCION_IND", p_DETRACCION_IND);
     data.append("p_IMPORTE_DETRACCION", p_IMPORTE_DETRACCION);
+    data.append("p_RETENCION_IND", p_RETENCION_IND);
+    data.append("p_IMPORTE_RETENCION", p_IMPORTE_RETENCION);
     data.append("p_IMPORTE_PAGAR", p_IMPORTE_PAGAR);
     //
     if (typeof ($("#cbo_periodo").val()) !== "undefined") {
@@ -3380,7 +3487,6 @@ var Guardar = function () {
 
         }, 2000);
     }
-
 }
 
 let VerificaFechaPeriodo = function () {
@@ -3434,6 +3540,8 @@ var Modificar = function () {
     var p_FECHA_VENCI = "";
     var p_DETRACCION_IND = 'N';
     var p_IMPORTE_DETRACCION = 0;
+    var p_RETENCION_IND = 'N';
+    var p_IMPORTE_RETENCION = 0;
     var p_IMPORTE_PAGAR = 0;
 
     p_DECLARA = p_DECLARA = (typeof $('#cboDeclara').val() == "undefined" ? "0002" : $('#cboDeclara').val());
@@ -3496,6 +3604,12 @@ var Modificar = function () {
         p_DETRACCION_IND = 'S';
         p_IMPORTE_DETRACCION = parseFloat($("#txt_detraccion").val()).toFixed(2);        
     }
+
+    if ($("#chk_retencionrenta").is(':checked') && $("#txt_retencion").val() != '' && $("#txt_retencion").val() != 0 && !isNaN(parseFloat($("#txt_retencion").val()))) {
+        p_RETENCION_IND = 'S';
+        p_IMPORTE_RETENCION = parseFloat($("#txt_retencion").val()).toFixed(2);
+    }
+
     p_IMPORTE_PAGAR = parseFloat($("#txt_importePagar").val()).toFixed(2);
 
     var data = new FormData();
@@ -3529,6 +3643,8 @@ var Modificar = function () {
     data.append("p_FECHA_VENCI", p_FECHA_VENCI);
     data.append("p_DETRACCION_IND", p_DETRACCION_IND);
     data.append("p_IMPORTE_DETRACCION", p_IMPORTE_DETRACCION);
+    data.append("p_RETENCION_IND", p_RETENCION_IND);
+    data.append("p_IMPORTE_RETENCION", p_IMPORTE_RETENCION);
     data.append("p_IMPORTE_PAGAR", p_IMPORTE_PAGAR);
 
     var p_TIPO_BIEN = "";
@@ -3790,6 +3906,45 @@ var ModificarP = function () {
     }
 };
 
+function actualizarRetencionRenta(indRetencion) {
+    var importePago = parseFloat($('#txt_importePagar').val());
+    var chkRetencionRenta = $('#chk_retencionrenta');
+
+    function funcionCheckbox(isEnabled, isChecked) {
+        chkRetencionRenta.prop('disabled', !isEnabled);
+        if (isChecked !== undefined) {
+            chkRetencionRenta.prop('checked', isChecked);
+        }
+        $.uniform.update('#chk_retencionrenta');
+    }
+
+    if ($('#cbo_documento').val() == '0002' && prmtSURE <= importePago) {
+        if (indRetencion) {
+            funcionCheckbox(true, indRetencion === 'S');
+            calcularRetencionRenta(importePago);
+        } else {
+            funcionCheckbox(true, true);
+            calcularRetencionRenta(importePago);
+        }
+    } else {
+        funcionCheckbox(false, false);
+        $('#txt_retencion').val(0);
+    }
+}
+
+
+function calcularRetencionRenta(importePago) {
+    var valorRetencionRenta = parseFloat(importePago * 0.08);
+    if ($('#chk_retencionrenta').is(':checked')) {
+        $('#txt_retencion').val(valorRetencionRenta.toFixed(2));
+        importePago = importePago - valorRetencionRenta;
+        $('#txt_importePagar').val(importePago.toFixed(2))
+    } else {
+        $('#txt_retencion').val(0);
+        $('#txt_importePagar').val(importePago);
+    }
+}
+
 var Aprobar = function () {
 
     if (detallesGasto.length > 0) {
@@ -3822,6 +3977,8 @@ var Aprobar = function () {
         var p_FECHA_VENCI = "";
         var p_DETRACCION_IND = 'N';
         var p_IMPORTE_DETRACCION = 0;
+        var p_RETENCION_IND = 'N';
+        var p_IMPORTE_RETENCION = 0;
         var p_IMPORTE_PAGAR = 0;
 
         p_DECLARA = p_DECLARA = (typeof $('#cboDeclara').val() == "undefined" ? "0002" : $('#cboDeclara').val());
@@ -3912,6 +4069,12 @@ var Aprobar = function () {
             p_DETRACCION_IND = 'S';
             p_IMPORTE_DETRACCION = parseFloat($("#txt_detraccion").val()).toFixed(2);            
         }
+
+        if ($("#chk_retencionrenta").is(':checked') && $("#txt_retencion").val() != '' && $("#txt_retencion").val() != 0 && !isNaN(parseFloat($("#txt_retencion").val()))) {
+            p_RETENCION_IND = 'S';
+            p_IMPORTE_RETENCION = parseFloat($("#txt_retencion").val()).toFixed(2);
+        }
+
         p_IMPORTE_PAGAR = parseFloat($("#txt_importePagar").val()).toFixed(2);
 
         var data = new FormData();
@@ -3948,6 +4111,8 @@ var Aprobar = function () {
         data.append("p_FECHA_VENCI", p_FECHA_VENCI);
         data.append("p_DETRACCION_IND", p_DETRACCION_IND);
         data.append("p_IMPORTE_DETRACCION", p_IMPORTE_DETRACCION);
+        data.append("p_RETENCION_IND", p_RETENCION_IND);
+        data.append("p_IMPORTE_RETENCION", p_IMPORTE_RETENCION);
         data.append("p_IMPORTE_PAGAR", p_IMPORTE_PAGAR);
 
         var p_TIPO_BIEN = "";
@@ -4056,14 +4221,24 @@ var Aprobar = function () {
                                     var sCodGasto = $("#txtCodigo").val();
                                     sCodGasto = $.trim(sCodGasto);
                                     var oDocGasto = fnGetGasto(sCodGasto);
+
                                     vAsientoContable.sCodDoc = sCodGasto;
                                     vAsientoContable.objDoc = oDocGasto;
+
+                                    //Si el usuario lo ve necesario, se puede deshabilitar la retencion de la renta a pesar de cumplir con las condiciones necesarias
+                                    $('#chk_retencionrenta').is(':checked') ? p_indRR = 'S' : p_indRR = 'N';
+
+                                    if ($('#cbo_documento').val() == '0002' && prmtSURE <= parseFloat($('#txt_monto').val()) && p_indRR === 'S') {
+                                        vAsientoContable.indRR = p_indRR;
+                                        vAsientoContable.prmtSURE = prmtSURE;
+                                    }
 
                                     if (p_DEDUCIBLE_IND == "S") {
                                         $('#btnGenerarAsiento').click();
                                     } else {
                                         $("#btnGenerarAsiento").attr("style", "display:display");
                                     }
+
                                 } else {
                                     var sCodGasto = $("#txtCodigo").val();
                                     sCodGasto = $.trim(sCodGasto);
@@ -4091,6 +4266,7 @@ var Aprobar = function () {
 
             }, 1000);
         }
+
     } else {
         infoCustom('No existe gasto agregado. Agregue un gasto');
     }
@@ -4103,13 +4279,41 @@ var ConfirmarAprobacion = function () {
     if ($("#chk_sindcto").is(':checked')) {
         $("#modal-confirmacion").modal("show");
     } else {
-        Aprobar();
+        confirmarRetencion().then(continuar => {
+            if (continuar) {
+                Aprobar();
+            }
+        });
     }
+}
+
+var confirmarRetencion = function () {
+    return new Promise((resolve) => {
+        if ($('#cbo_documento').val() == '0002' && prmtSURE <= parseFloat($('#txt_monto').val())) {
+            $("#ModalRetencion").modal('show');
+
+            $("#btnNO").one("click", function () {
+                $("#ModalRetencion").modal("hide");
+                resolve(false);
+            });
+
+            $("#btnOk").one("click", function () {
+                $("#ModalRetencion").modal("hide");
+                resolve(true);
+            });
+        } else {
+            resolve(true);
+        }
+    });
 }
 
 var registrarAprobacion = function () {
     $("#modal-confirmacion").modal("hide");
-    Aprobar();
+    confirmarRetencion().then(continuar => {
+        if (continuar) {
+            Aprobar();
+        }
+    });
 }
 
 var obtenerDetalle = function () {

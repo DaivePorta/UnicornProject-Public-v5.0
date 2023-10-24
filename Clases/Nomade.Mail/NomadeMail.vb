@@ -175,6 +175,7 @@ Public Class NomadeMail
 
         Dim l_numeros() As String = RECIPIENT_PHONE_NUMBER.Split(",")
         Dim MEDIA_ID As String
+        Dim originalProtocol = System.Net.ServicePointManager.SecurityProtocol
 
         Try
             Dim body As New StringBuilder
@@ -192,6 +193,7 @@ Public Class NomadeMail
 
             'Enviar documento al servidor de Facebook para obtener el ID 
             If Not (dt Is Nothing) Then
+                System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12
                 Using request_MediaID = New HttpRequestMessage(New HttpMethod("POST"), "https://graph.facebook.com/" + version + "/" + phone_number_id + "/media")
                     request_MediaID.Headers.Add("Authorization", "Bearer " + token)
                     Dim multipartContent = New MultipartFormDataContent()
@@ -278,6 +280,7 @@ Public Class NomadeMail
                         response.EnsureSuccessStatusCode()
                     End Using
                 Next
+                System.Net.ServicePointManager.SecurityProtocol = originalProtocol
             End If
 
         Catch ex As Exception

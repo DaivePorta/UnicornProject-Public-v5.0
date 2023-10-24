@@ -47,6 +47,31 @@
         End Try
     End Function
 
+    Public Function Listar_EmpleadosFast(ByVal p_PIDM As Integer, ByVal p_SEQ As Integer, ByVal p_ESTADO_IND As String, Optional ByVal p_CTLG_CODE As String = "", Optional p_SCSL_CODE As String = "",
+                                     Optional p_CARGO As String = "", Optional p_NOMBRE As String = "", Optional p_FILTRO As String = "") As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("PCS_LISTAR_EMPLEADO_FAST", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SEQ", p_SEQ, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_IND", p_ESTADO_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CARGO", p_CARGO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NOMBRE", p_NOMBRE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FILTRO", p_FILTRO, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
     Public Function Listar_Empleados_Contrato_Activo(P_CTLG_CODE As String, P_SCSL_CODE As String) As DataTable
         Try
             Dim dt As DataTable
@@ -415,12 +440,15 @@
             Throw (ex)
         End Try
     End Function
-    Public Function Lista_Empl_Centro_Costos(ByVal P_PIDM As Integer) As DataTable
+    Public Function Lista_Empl_Centro_Costos(ByVal P_PIDM As Integer, Optional ByVal p_CTLG_CODE As String = Nothing, Optional ByVal p_SCSL_CODE As String = Nothing) As DataTable
         Try
             Dim dt As DataTable
             Dim cmd As IDbCommand
             cmd = cn.GetNewCommand("PFC_LISTA_EMPL_CENTRO_COSTOS", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@P_PIDM", P_PIDM, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", If(p_CTLG_CODE Is Nothing, String.Empty, p_CTLG_CODE), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", If(p_SCSL_CODE Is Nothing, String.Empty, p_SCSL_CODE), ParameterDirection.Input, 253))
+
             dt = cn.Consulta(cmd)
             If Not (dt Is Nothing) Then
                 Return dt

@@ -1,4 +1,6 @@
-﻿Public Class NVVenta
+﻿Imports System.Reflection.Emit
+
+Public Class NVVenta
     Private cn As Nomade.Connection
     Dim dt As DataTable
     Public Sub New(ByVal str As String)
@@ -85,6 +87,47 @@
             Dim cmd As IDbCommand
 
             cmd = cn.GetNewCommand("PFV_LISTAR_DCTO_VENTA_BUSQ", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RAZON_SOCIAL", p_RAZON_SOCIAL, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_DCTO", p_TIPO_DCTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VENDEDOR", p_VENDEDOR, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ANULADO", p_ANULADO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PROD_CODE", p_PROD_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SERIE", p_NUM_SERIE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_COMPLETO_IND", p_COMPLETO_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_GRUPO_PROD", p_GRUPO_PROD, ParameterDirection.Input, 253))
+            'cmd.Parameters.Add(cn.GetNewParameter("@p_MONEDA", p_MONEDA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_VTA", p_TIPO_VTA, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function ListarDocVenta_BusqFAST(p_VTAC_CODE As String, p_RAZON_SOCIAL As String, p_NUM_DCTO As String,
+                                        p_TIPO_DCTO As String, p_VENDEDOR As String, p_ANULADO As String,
+                                        p_PROD_CODE As String, ByVal p_NUM_SERIE As String, ByVal p_DESDE As String,
+                                        p_HASTA As String, p_CTLG_CODE As String, p_SCSL_CODE As String,
+                                        Optional p_COMPLETO_IND As String = "", Optional p_GRUPO_PROD As String = "",
+                                        Optional p_MONEDA As String = "", Optional p_TIPO_VTA As String = "") As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFV_LISTAR_DCTO_VENTA_BUSQ_FAST", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RAZON_SOCIAL", p_RAZON_SOCIAL, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
@@ -235,6 +278,98 @@
             Else
                 Return Nothing
             End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function ListarDocumentosCanjeablesAplicables(ByVal p_DESDE As String, p_HASTA As String, p_CTLG_CODE As String, p_SCSL_CODE As String, p_ESTADO As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFV_LISTAR_DCTOS_CANJEABLES_APLICABLES", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", If(String.IsNullOrEmpty(p_DESDE), DBNull.Value, p_DESDE), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", If(String.IsNullOrEmpty(p_HASTA), DBNull.Value, p_HASTA), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", If(String.IsNullOrEmpty(p_SCSL_CODE), String.Empty, p_SCSL_CODE), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", If(String.IsNullOrEmpty(p_ESTADO), String.Empty, p_ESTADO), ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+    Public Function ListarTicketsConMovimientoBancario(p_CODE As String, p_CTLG_CODE As String, p_SCSL_CODE As String, p_ESTADO As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_LISTAR_TICKETS_CON_MOVIMIENTO_BANC", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", If(String.IsNullOrEmpty(p_SCSL_CODE), String.Empty, p_SCSL_CODE), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", If(String.IsNullOrEmpty(p_ESTADO), String.Empty, p_ESTADO), ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+    Public Function ListarTicketsSinMovimientoBancario(p_CTLG_CODE As String, p_SCSL_CODE As String, p_ESTADO As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_LISTAR_TICKETS_SIN_MOVIMIENTO", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", If(String.IsNullOrEmpty(p_SCSL_CODE), String.Empty, p_SCSL_CODE), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", If(String.IsNullOrEmpty(p_ESTADO), String.Empty, p_ESTADO), ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function AplicarCanjearDocumento(ByVal p_FECHA As String, ByVal p_DOCUMENTO_NUEVO As String, ByVal p_AUTORIZACION As String, ByVal p_TIPO As String, ByVal p_COD_VENTA As String, ByVal p_MONTO_APLICADO As String) As Array
+        Try
+            Dim msg(1) As String
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFV_APLICAR_CANJEAR_DOCUMENTO", CommandType.StoredProcedure)
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA", p_FECHA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DOCUMENTO_NUEVO", p_DOCUMENTO_NUEVO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_AUTORIZACION", p_AUTORIZACION, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO", p_TIPO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_COD_VENTA", p_COD_VENTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MONTO_APLICADO", p_MONTO_APLICADO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RPTA", String.Empty, ParameterDirection.Output, 253))
+
+            cmd = cn.Ejecuta_parms(cmd)
+            msg(0) = cmd.Parameters("@p_RPTA").Value
+
+            Return msg
+
         Catch ex As Exception
             Throw (ex)
         End Try
@@ -1165,7 +1300,7 @@
                                            ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_DETALLES_PAGO As String, ByVal p_DETALLES_PAGO2 As String, ByVal p_DETALLES_PAGO3 As String,
                                            ByVal p_DESPACHO_VENTA_IND As String, ByVal p_COBRAR_IND As String,
                                            ByVal p_EFECTIVO_RECIBIDO As String, ByVal p_EFECTIVO_RECIBIDO_ALTERNO As String, ByVal p_VUELTO As String, ByVal p_VUELTO_ALTERNO As String, ByVal p_AUTODETRACCION As String,
-                                           Optional p_RESP_PIDM As String = Nothing, Optional ByVal p_VALIDAR_STOCK_IND As String = "S",
+                                           ByVal p_KARDEX As String, Optional p_RESP_PIDM As String = Nothing, Optional ByVal p_VALIDAR_STOCK_IND As String = "S",
                                            Optional p_DETALLES_BONI As String = "",
                                            Optional p_DIRECCION As String = "",
                                            Optional p_LATITUD As String = Nothing,
@@ -1254,6 +1389,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_VUELTO", p_VUELTO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VUELTO_ALTERNO", p_VUELTO_ALTERNO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_AUTODETRACCION", p_AUTODETRACCION, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_KARDEX", p_KARDEX, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VALIDAR_STOCK_IND", p_VALIDAR_STOCK_IND, ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_BONI", p_DETALLES_BONI, ParameterDirection.Input, 253))
@@ -1300,7 +1436,7 @@
                                            ByVal p_DCTO_SERIE_REF As String, ByVal p_DCTO_NUM_REF As String,
                                            ByVal p_SCSL_EXONERADA_IND As String, ByVal p_IGV_IMPR_IND As String,
                                            ByVal p_VALOR_CAMBIO_OFI As String, ByVal p_COD_AUT As String, ByVal p_PCTJ_IGV As String,
-                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String,
+                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_KARDEX As String,
                                            Optional p_RESP_PIDM As String = Nothing, Optional p_DETALLES_BONI As String = "", Optional p_DETALLES_MUESTRA As String = "",
                                            Optional p_DIRECCION As String = "",
                                            Optional p_LATITUD As String = "",
@@ -1377,11 +1513,13 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMPUESTO_RENTA", p_IMPUESTO_RENTA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESP_PIDM", p_RESP_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_KARDEX", p_KARDEX, ParameterDirection.Input, 253))
+
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_NUM_SEQ_DOC", String.Empty, ParameterDirection.Output, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_BONI", p_DETALLES_BONI, ParameterDirection.Input, 253))
-
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_MUESTRA", p_DETALLES_MUESTRA, ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_DIRECCION", p_DIRECCION, ParameterDirection.Input, 253))
@@ -1421,8 +1559,8 @@
                                            ByVal p_DCTO_SERIE_REF As String, ByVal p_DCTO_NUM_REF As String,
                                            ByVal p_SCSL_EXONERADA_IND As String, ByVal p_IGV_IMPR_IND As String,
                                            ByVal p_VALOR_CAMBIO_OFI As String, ByVal p_COD_AUT As String, ByVal p_PCTJ_IGV As String,
-                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String,
-                                            Optional p_EFECTIVO_RECIBIDO As String = "", Optional p_EFECTIVO_RECIBIDO_ALTERNO As String = "", Optional p_VUELTO As String = "", Optional p_VUELTO_ALTERNO As String = "",
+                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_KARDEX As String,
+                                           Optional p_EFECTIVO_RECIBIDO As String = "", Optional p_EFECTIVO_RECIBIDO_ALTERNO As String = "", Optional p_VUELTO As String = "", Optional p_VUELTO_ALTERNO As String = "",
                                            Optional p_RESP_PIDM As String = Nothing, Optional p_DETALLES_BONI As String = "", Optional p_DETALLES_MUESTRA As String = "",
                                            Optional p_DIRECCION As String = "",
                                            Optional p_LATITUD As String = "",
@@ -1507,9 +1645,10 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESP_PIDM", p_RESP_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
 
+            cmd.Parameters.Add(cn.GetNewParameter("@p_KARDEX", p_KARDEX, ParameterDirection.Input, 253))
+
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_BONI", p_DETALLES_BONI, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_MUESTRA", p_DETALLES_MUESTRA, ParameterDirection.Input, 253))
-
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_DIRECCION", p_DIRECCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_LATITUD", p_LATITUD, ParameterDirection.Input, 253))
@@ -1552,7 +1691,7 @@
                                           ByVal p_DCTO_SERIE_REF As String, ByVal p_DCTO_NUM_REF As String,
                                           ByVal p_SCSL_EXONERADA_IND As String, ByVal p_IGV_IMPR_IND As String,
                                           ByVal p_VALOR_CAMBIO_OFI As String, ByVal p_COD_AUT As String, ByVal p_PCTJ_IGV As String,
-                                          ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String,
+                                          ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_KARDEX As String,
                                           Optional p_EFECTIVO_RECIBIDO As String = "", Optional p_EFECTIVO_RECIBIDO_ALTERNO As String = "", Optional p_VUELTO As String = "", Optional p_VUELTO_ALTERNO As String = "",
                                           Optional p_RESP_PIDM As String = Nothing, Optional p_DETALLES_BONI As String = "", Optional p_DETALLES_MUESTRA As String = "",
                                           Optional p_DIRECCION As String = "",
@@ -1633,7 +1772,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESP_PIDM", p_RESP_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
 
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_KARDEX", p_KARDEX, ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_BONI", p_DETALLES_BONI, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_MUESTRA", p_DETALLES_MUESTRA, ParameterDirection.Input, 253))
@@ -2412,6 +2551,25 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_DCTO", p_TIPO_DCTO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function ListarCabeceraVentaUnica(ByVal p_VTAC_CODE As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFV_LISTAR_CABECERA_VENTA_UNICA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", p_VTAC_CODE, ParameterDirection.Input, 253))
             dt = cn.Consulta(cmd)
 
             If Not (dt Is Nothing) Then

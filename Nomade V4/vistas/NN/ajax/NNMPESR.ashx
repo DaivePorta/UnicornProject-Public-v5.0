@@ -9,18 +9,18 @@ Public Class NNMPESR : Implements IHttpHandler
     Dim p_CTLG_CODE, p_CODIGO, p_ESTADO, p_FECHA_INI, p_FECHA_FIN, p_GLOSA, p_MOTIVO, p_PIDM, p_USUA_ID As String
 
     Dim dt As DataTable
-    
-    
+
+
     Dim res As String
     Dim resb As New StringBuilder
-    
-    
-    
-    
-    
+
+
+
+
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         OPCION = context.Request("OPCION")
-        
+
         p_CTLG_CODE = context.Request("p_CTLG_CODE")
         p_ESTADO = context.Request("p_ESTADO")
         p_FECHA_INI = context.Request("p_FECHA_INI")
@@ -30,14 +30,14 @@ Public Class NNMPESR : Implements IHttpHandler
         p_PIDM = context.Request("p_PIDM")
         p_USUA_ID = context.Request("p_USUA_ID")
         p_CODIGO = context.Request("p_CODIGO")
-      
-        
+
+
         Select Case OPCION
             Case "1"
                 context.Response.ContentType = "application/json; charset=utf-8"
                 Dim NNPlanilla As New Nomade.NN.NNPlanilla("Bn")
                 dt = NNPlanilla.Listar_Periodo_Sin_Remuneracion(IIf(p_CTLG_CODE = Nothing, "", IIf(p_CTLG_CODE = "T", "", p_CTLG_CODE)), IIf(p_MOTIVO = Nothing, "", IIf(p_MOTIVO = "T", "", p_MOTIVO)), IIf(p_CODIGO = Nothing, "", p_CODIGO))
-                
+
                 If Not (dt Is Nothing) Then
                     resb.Append("[")
                     For Each MiDataRow As DataRow In dt.Rows
@@ -55,9 +55,9 @@ Public Class NNMPESR : Implements IHttpHandler
                         resb.Append("""FEC_FIN"" :" & """" & MiDataRow("FEC_FIN").ToString & """,")
                         resb.Append("""IND_MODIF"" :" & """" & MiDataRow("IND_MODIF").ToString & """,")
                         resb.Append("""MOTIVO_DESC"" :" & """" & MiDataRow("MOTIVO_DESC").ToString & """")
-                       
 
-                     
+
+
                         resb.Append("}")
                         resb.Append(",")
                     Next
@@ -69,20 +69,20 @@ Public Class NNMPESR : Implements IHttpHandler
                 res = resb.ToString()
             Case "G" '
                 context.Response.ContentType = "text/html"
-                res = Crear_Periodo_Sin_Remuneracion(p_CTLG_CODE, p_ESTADO, p_FECHA_INI, p_FECHA_FIN, p_GLOSA, p_MOTIVO, p_PIDM, p_USUA_ID)
+                res = Crear_Periodo_Sin_Remuneracion(p_CTLG_CODE, p_ESTADO, Utilities.fechaLocal(p_FECHA_INI), Utilities.fechaLocal(p_FECHA_FIN), p_GLOSA, p_MOTIVO, p_PIDM, p_USUA_ID)
             Case "AT" '
                 context.Response.ContentType = "text/html"
-                res = Actualizar_Periodo_Sin_Remuneracion(p_CTLG_CODE, p_ESTADO, p_FECHA_INI, p_FECHA_FIN, p_GLOSA, p_MOTIVO, p_PIDM, p_USUA_ID, p_CODIGO)
-          
-           
+                res = Actualizar_Periodo_Sin_Remuneracion(p_CTLG_CODE, p_ESTADO, Utilities.fechaLocal(p_FECHA_INI), Utilities.fechaLocal(p_FECHA_FIN), p_GLOSA, p_MOTIVO, p_PIDM, p_USUA_ID, p_CODIGO)
+
+
             Case Else
         End Select
         context.Response.Write(res)
     End Sub
- 
-    
-    
-        
+
+
+
+
     Public Function Crear_Periodo_Sin_Remuneracion(p_CTLG_CODE As String, p_ESTADO As String,
                                                 p_FECHA_INI As String, p_FECHA_FIN As String,
                                                 p_GLOSA As String, p_MOTIVO As String,
@@ -93,9 +93,9 @@ Public Class NNMPESR : Implements IHttpHandler
         Return resp
         NNPlanilla = Nothing
     End Function
-    
-    
-    
+
+
+
     Public Function Actualizar_Periodo_Sin_Remuneracion(p_CTLG_CODE As String, p_ESTADO As String,
                                              p_FECHA_INI As String, p_FECHA_FIN As String,
                                              p_GLOSA As String, p_MOTIVO As String,
@@ -106,10 +106,10 @@ Public Class NNMPESR : Implements IHttpHandler
         Return resp
         NNPlanilla = Nothing
     End Function
-    
-    
-    
-    
+
+
+
+
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False

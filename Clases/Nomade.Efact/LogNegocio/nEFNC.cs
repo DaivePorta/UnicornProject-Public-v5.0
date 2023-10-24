@@ -578,7 +578,7 @@ namespace Nomade.Efact.LogNegocio
             return "";
         }
 
-        public void fnGetNCOrbitum(string p_CTLG_CODE, string p_NC_CODE)
+        public void fnGetNCOrbitum(string p_CTLG_CODE, string p_NC_CODE, string p_RUC)
         {
             try
             {
@@ -607,29 +607,29 @@ namespace Nomade.Efact.LogNegocio
                 }
                 cEFNC ocEFNC = new cEFNC("Bn");
                 DataTable oDT_DatosDoc = ocEFNC.fnListarDatosDocumentoOrbitum(p_CTLG_CODE, p_NC_CODE);
+                DataRow oDR_Doc = oDT_DatosDoc.Rows[0];
 
                 if (oDT_DatosDoc == null)
                 {
                     throw new ArgumentException("[Advertencia]: No se encontró el Documento en la Base de Datos");
                 }
 
-                //VALIDAR LA INFO
-                DataRow oDR_Doc = oDT_DatosDoc.Rows[0];
+                //VALIDAR LA INFO                
                 string sIndElect = oDR_Doc["FactElecInd"].ToString();
-                string sSerieNro = oDR_Doc["SERIECORRELATIVO"].ToString(); //Numero y serie de documento
+                //string sSerieNro = oDR_Doc["SERIECORRELATIVO"].ToString(); //Numero y serie de documento
 
-                bool esElectronico = false;
+                //bool esElectronico = false;
 
-                if (sSerieNro.Substring(0, 1).Equals("B") || sSerieNro.Substring(0, 1).Equals("F"))
-                {
-                    esElectronico = true;
-                }
+                //if (sSerieNro.Substring(0, 1).Equals("B") || sSerieNro.Substring(0, 1).Equals("F"))
+                //{
+                //    esElectronico = true;
+                //}
 
-                if (!esElectronico)
-                {
-                    throw new ArgumentException("[Advertencia]: La serie del documento no es válida para facturación electrónica.");
-                }
-                else if (sIndElect.Equals("P"))
+                //if (!esElectronico)
+                //{
+                //    throw new ArgumentException("[Advertencia]: La serie del documento no es válida para facturación electrónica.");
+                //}
+                if (sIndElect.Equals("P"))
                 {
                     throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento se encuentra Pendiente de validación.");
                 }
@@ -672,7 +672,7 @@ namespace Nomade.Efact.LogNegocio
                 string n21 = oDR_Doc["NOT21"].ToString();
 
                 string seriecorrelativo = oDR_Doc["SERIECORRELATIVO"].ToString(); // serie y correlativo de la venta
-                string ruc = oDR_Doc["RUC"].ToString(); // ruc de la empresa
+                string ruc = p_RUC; //oDR_Doc["RUC"].ToString(); // ruc de la empresa
 
                 string sDatosCabecera = n1 + "|" + n2 + "|" + n3 + "|" + n4 + "|" + n5 + "|" + n6 + "|" + n7 + "|" +
                      n8 + "|" + n9 + "|" + n10 + "|" + n11 + "|" + n12 + "|" + n13 + "|" + n14 + "|" + n15 + "|" +
@@ -1053,7 +1053,7 @@ namespace Nomade.Efact.LogNegocio
             }
         }
 
-        public string fnVerificarDocOrbitum(string p_CTLG_CODE, string p_NC_CODE)
+        public string fnVerificarDocOrbitum(string p_CTLG_CODE, string p_NC_CODE, string p_SERIE_NRO, string p_RUC)
         {
             string sRespuesta = "";
             try
@@ -1083,16 +1083,16 @@ namespace Nomade.Efact.LogNegocio
                 }
                 cEFNC ocEFNC = new cEFNC("Bn");
 
-                DataTable oDT_DatosDoc = ocEFNC.fnListarDatosDocumentoOrbitum(p_CTLG_CODE, p_NC_CODE);
-                if (oDT_DatosDoc == null)
-                {
-                    throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
-                }
-                DataRow dataDocumento = oDT_DatosDoc.Rows[0];
+                //DataTable oDT_DatosDoc = ocEFNC.fnListarDatosDocumentoOrbitum(p_CTLG_CODE, p_NC_CODE);
+                //if (oDT_DatosDoc == null)
+                //{
+                //    throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
+                //}
+                //DataRow dataDocumento = oDT_DatosDoc.Rows[0];
 
-                string sSerieNroDoc = dataDocumento["SERIECORRELATIVO"].ToString(); // Serie y Nro del Documento
+                string sSerieNroDoc = p_SERIE_NRO; //dataDocumento["SERIECORRELATIVO"].ToString(); // Serie y Nro del Documento
 
-                string sRUC = dataDocumento["RUC"].ToString();
+                string sRUC = p_RUC; //dataDocumento["RUC"].ToString();
 
                 string sNombreArchivoEnvio = sPath_Orbitum + @"ENVIO\" + sRUC + "-07-" + sSerieNroDoc + ".zip";
                 string sNombreArchivoResp = sPath_Orbitum + @"RPTA\R" + sRUC + "-07-" + sSerieNroDoc + ".zip";

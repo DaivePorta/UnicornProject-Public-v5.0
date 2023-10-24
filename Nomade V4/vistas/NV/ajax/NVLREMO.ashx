@@ -193,21 +193,21 @@ Public Class NVLREMO : Implements IHttpHandler
             dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
         End If
         'tabla.Clear()
-        Dim dtMonedas As New DataTable
-        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        'Dim dtMonedas As New DataTable
+        'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
         Dim descMonedaAlterna As String = ""
         Dim simbMonedaBase As String = ""
         Dim simbMonedaAlterna As String = ""
-        For Each row In dtMonedas.Rows
-            If row("TIPO") = "MOBA" Then
-                descMonedaBase = row("DESC_CORTA")
-                simbMonedaBase = row("SIMBOLO")
-            Else
-                descMonedaAlterna = row("DESC_CORTA")
-                simbMonedaAlterna = row("SIMBOLO")
-            End If
-        Next
+        'For Each row In dtMonedas.Rows
+        'If row("TIPO") = "MOBA" Then
+        descMonedaBase = "PEN" 'row("DESC_CORTA")
+        simbMonedaBase = "S/" 'row("SIMBOLO")
+        'Else
+        descMonedaAlterna = "USD" 'row("DESC_CORTA")
+        simbMonedaAlterna = "$" 'row("SIMBOLO")
+        'End If
+        'Next
         Dim efectivoIngresoSoles As Decimal = 0
         Dim efectivoIngresoDolares As Decimal = 0
         Dim tarjetaIngresoSoles As Decimal = 0
@@ -224,8 +224,10 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim totalComisionDolares As Decimal = 0
         Dim otrosMediosPagosSoles As Decimal = 0
         Dim otrosMediosPagosDolares As Decimal = 0
-        Dim devolucionSoles As Decimal = 0
-        Dim devolucionDolares As Decimal = 0
+        Dim devolucionCajaSoles As Decimal = 0
+        Dim devolucionCajaDolares As Decimal = 0
+        Dim devolucionBancoSoles As Decimal = 0
+        Dim devolucionBancoDolares As Decimal = 0
         Dim devAmorNCSoles As Decimal = 0
         Dim devAmorNCDolares As Decimal = 0
         'crédito
@@ -247,6 +249,8 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim otrosMediosPagosDolaresC As Decimal = 0
         Dim ventaCreditoSoles As Decimal = 0
         Dim ventalCreditoDolares As Decimal = 0
+        Dim ventaContSinPagoSoles As Decimal = 0
+        Dim ventaContSinPagoDolares As Decimal = 0
         If (dtVentasContado Is Nothing) Then
             'No hay datos     
         Else
@@ -261,7 +265,7 @@ Public Class NVLREMO : Implements IHttpHandler
 
                 If continuar Then
                     'EFECTIVO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0009"))) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0009"))) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             efectivoIngresoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -269,7 +273,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     'TARJETA DE DEBITO  / TARJETA DE CREDITO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0006"))) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0006"))) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             tarjetaIngresoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -277,7 +281,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEPOSITO EN CUENTA
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0013"))) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0013"))) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             cuentasIngresoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -285,7 +289,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) And Not (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL")) And Not (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -293,11 +297,21 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEVOLUCIÓN A CLIENTE
-                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y") Then
-                        If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
-                            devolucionSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
-                        Else
-                            devolucionDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                    If (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y")) Or dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("SI") Then
+                        'DESDE CAJA
+                        If (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0009") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0006")) Then
+                            If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                                devolucionCajaSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            Else
+                                devolucionCajaDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            End If
+                            'DESDE BANCO
+                        ElseIf (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0013") Or dtVentasContado.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL")) Then
+                            If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                                devolucionBancoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            Else
+                                devolucionBancoDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            End If
                         End If
                     End If
                     ' AMORTIZACIÓN POR NOTA DE CRÉDITO A CLIENTE
@@ -376,7 +390,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' BILLETERA DIGITAL
-                    If dtVentasCredito.Rows(i)("FORMA_PAGO").ToString().Equals("0020") Then
+                    If dtVentasCredito.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL") Then
                         If dtVentasCredito.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSolesC += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
                         Else
@@ -413,6 +427,14 @@ Public Class NVLREMO : Implements IHttpHandler
                             ventaCreditoSoles += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
                         Else
                             ventalCreditoDolares += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
+                        End If
+                    End If
+                    ' VENTAS AL CONTADO/CONTRAENTREGA SIN PAGO
+                    If (dtVentasCredito.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasCredito.Rows(i)("FORMA_PAGO").ToString().Equals("C-SIN PAGO")) Then
+                        If dtVentasCredito.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                            ventaContSinPagoSoles += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
+                        Else
+                            ventaContSinPagoDolares += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
                         End If
                     End If
                 End If
@@ -467,11 +489,18 @@ Public Class NVLREMO : Implements IHttpHandler
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'><strong>{1}{0:N}</strong></td>", totalIngresoDolares, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
-        'Fila 5.5 DEVOLUCION
+        'Fila 5.5 DEVOLUCION DESDE CAJA
         tabla.AppendFormat("<tr>")
-        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>DEVUELTO A CLIENTES</strong></td>")
-        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionSoles, simbMonedaBase)
-        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionDolares, simbMonedaAlterna)
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>DEVUELTO A CLIENTES DESDE CAJA</strong></td>")
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionCajaSoles, simbMonedaBase)
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionCajaDolares, simbMonedaAlterna)
+        tabla.AppendFormat("</tr>")
+
+        'Fila 5.6 DEVOLUCION DESDE BANCO
+        tabla.AppendFormat("<tr>")
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>DEVUELTO A CLIENTES DESDE BANCO</strong></td>")
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionBancoSoles, simbMonedaBase)
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionBancoDolares, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
         'Fila 5.9 DEVOLUCION POR NC MEDIANTE AMORTIZACION A CLIENTE
@@ -554,25 +583,32 @@ Public Class NVLREMO : Implements IHttpHandler
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalCreditoDolaresC, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
-        'Fila 7 TOTAL AUTO-DETRACCIONES
-        tabla.AppendFormat("<tr>")
-        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>COBRO DETRACCIONES A CLIENTES</strong></td>")
-        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraSolesC, simbMonedaBase)
-        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraDolaresC, simbMonedaAlterna)
-        tabla.AppendFormat("</tr>")
-
-        'Fila 8 TOTAL COMISIONES TARJETA
+        'Fila 7 TOTAL COMISIONES TARJETA
         tabla.AppendFormat("<tr>")
         tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>COMISIÓN DE TARJETAS POR COBRANZAS</strong></td>")
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalComisionSolesC, simbMonedaBase)
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalComisionDolaresC, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
+        'Fila 8 TOTAL DETRACCIONES
+        tabla.AppendFormat("<tr>")
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>DETRACCIONES A CLIENTES POR COBRARS</strong></td>")
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraSolesC, simbMonedaBase)
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraDolaresC, simbMonedaAlterna)
+        tabla.AppendFormat("</tr>")
+
         'Fila 9 VENTAS AL CRÉDITO
-        tabla.AppendFormat("<tr style='background-color:#E4EAE8;color:black;'>")
+        tabla.AppendFormat("<tr style='background-color:#D6EAF8;color:black;'>")
         tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>VENTAS AL CRÉDITO</strong></td>")
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventaCreditoSoles, simbMonedaBase)
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventalCreditoDolares, simbMonedaAlterna)
+        tabla.AppendFormat("</tr>")
+
+        'Fila 10 VENTAS AL CONTADO/CONTRAENTREGA SIN PAGO 
+        tabla.AppendFormat("<tr style='background-color:#EBF5FB;color:black;'>")
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>VENTAS AL CONTADO SIN PAGO</strong></td>")
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventaContSinPagoSoles, simbMonedaBase)
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventaContSinPagoDolares, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
         tabla.AppendFormat("</tbody>")
@@ -668,6 +704,7 @@ Public Class NVLREMO : Implements IHttpHandler
                 tabla.AppendFormat("<thead>")
                 tabla.AppendFormat("<tr style='background-color:#4B8CC5;color:white;'>")
                 tabla.AppendFormat("<th>GASTOS DE CAJA</th>")
+                tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>CAJA</th>")
                 tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>MONTO ({0})</th>", simbMonedaBase)
                 tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>APROBADO</th>")
                 tabla.AppendFormat("</tr>")
@@ -676,6 +713,7 @@ Public Class NVLREMO : Implements IHttpHandler
                 For i As Integer = 0 To dtDetGastos.Rows.Count - 1
                     tabla.Append("<tr>")
                     tabla.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dtDetGastos.Rows(i)("DESC_GASTO").ToString())
+                    tabla.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dtDetGastos.Rows(i)("ORIGEN_PAGO").ToString())
                     tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtDetGastos.Rows(i)("MONTO_PAGADO").ToString())))
                     tabla.AppendFormat("<td style='text-align:center;border-left: 1px solid #cbcbcb;'>{0}</td>", dtDetGastos.Rows(i)("APROBADO").ToString())
                     tabla.Append("</tr>")
@@ -796,21 +834,21 @@ Public Class NVLREMO : Implements IHttpHandler
 
     Public Function GenerarTablaVentasContado(ByVal dt As DataTable) As String
         resb.Clear()
-        Dim dtMonedas As New DataTable
-        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        'Dim dtMonedas As New DataTable
+        'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
         Dim descMonedaAlterna As String = ""
         Dim simbMonedaBase As String = ""
         Dim simbMonedaAlterna As String = ""
-        For Each row In dtMonedas.Rows
-            If row("TIPO") = "MOBA" Then
-                descMonedaBase = row("DESC_CORTA")
-                simbMonedaBase = row("SIMBOLO")
-            Else
-                descMonedaAlterna = row("DESC_CORTA")
-                simbMonedaAlterna = row("SIMBOLO")
-            End If
-        Next
+        'For Each row In dtMonedas.Rows
+        'If row("TIPO") = "MOBA" Then
+        descMonedaBase = "PEN" 'row("DESC_CORTA")
+        simbMonedaBase = "S/" 'row("SIMBOLO")
+        'Else
+        descMonedaAlterna = "USD" 'row("DESC_CORTA")
+        simbMonedaAlterna = "$" 'row("SIMBOLO")
+        'End If
+        'Next
         Dim efectivoIngresoSoles As Decimal = 0
         Dim efectivoIngresoDolares As Decimal = 0
         Dim tarjetaIngresoSoles As Decimal = 0
@@ -827,8 +865,10 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim totalComisionDolares As Decimal = 0
         Dim otrosMediosPagosSoles As Decimal = 0
         Dim otrosMediosPagosDolares As Decimal = 0
-        Dim devolucionSoles As Decimal = 0
-        Dim devolucionDolares As Decimal = 0
+        Dim devolucionCajaSoles As Decimal = 0
+        Dim devolucionCajaDolares As Decimal = 0
+        Dim devolucionBancoSoles As Decimal = 0
+        Dim devolucionBancoDolares As Decimal = 0
         Dim devAmorNCSoles As Decimal = 0
         Dim devAmorNCDolares As Decimal = 0
         If (dt Is Nothing) Then
@@ -845,7 +885,7 @@ Public Class NVLREMO : Implements IHttpHandler
 
                 If continuar Then
                     'EFECTIVO
-                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dt.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dt.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0009"))) Then
+                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dt.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dt.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0009"))) Then
                         If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             efectivoIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
                         Else
@@ -853,7 +893,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     'TARJETA DE DEBITO  / TARJETA DE CREDITO
-                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dt.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dt.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0006"))) Then
+                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dt.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dt.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0006"))) Then
                         If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             tarjetaIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
                         Else
@@ -861,7 +901,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEPOSITO EN CUENTA
-                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dt.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dt.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0013"))) Then
+                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dt.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dt.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0013"))) Then
                         If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             cuentasIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
                         Else
@@ -869,7 +909,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dt.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) And Not (dt.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dt.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
+                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dt.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL")) And Not (dt.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dt.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
                         If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
                         Else
@@ -877,11 +917,21 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEVOLUCIÓN A CLIENTE
-                    If dt.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dt.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y") Then
-                        If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
-                            devolucionSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
-                        Else
-                            devolucionDolares += Convert.ToDecimal(dt.Rows(i)("MONTO"))
+                    If (dt.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dt.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y")) Or dt.Rows(i)("DEV_CLIENTE").ToString().Equals("SI") Then
+                        'DESDE CAJA
+                        If (dt.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0009") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0006")) Then
+                            If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                                devolucionCajaSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
+                            Else
+                                devolucionCajaDolares += Convert.ToDecimal(dt.Rows(i)("MONTO"))
+                            End If
+                            'DESDE BANCO
+                        ElseIf (dt.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dt.Rows(i)("FORMA_PAGO").ToString().Equals("0013") Or dt.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL")) Then
+                            If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                                devolucionBancoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
+                            Else
+                                devolucionBancoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO"))
+                            End If
                         End If
                     End If
                     ' AMORTIZACIÓN POR NOTA DE CRÉDITO A CLIENTE
@@ -968,11 +1018,18 @@ Public Class NVLREMO : Implements IHttpHandler
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'><strong>{1}{0:N}</strong></td>", totalIngresoDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
-        'Fila 5.5 DEVOLUCION
+        'Fila 5.5 DEVOLUCION CAJA
         resb.AppendFormat("<tr>")
-        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>DEVUELTO A CLIENTES</strong></td>")
-        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionSoles, simbMonedaBase)
-        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionDolares, simbMonedaAlterna)
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>DEVUELTO A CLIENTES DESDE CAJA</strong></td>")
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionCajaSoles, simbMonedaBase)
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionCajaDolares, simbMonedaAlterna)
+        resb.AppendFormat("</tr>")
+
+        'Fila 5.6 DEVOLUCION BANCO
+        resb.AppendFormat("<tr>")
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>DEVUELTO A CLIENTES DESDE BANCO</strong></td>")
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionBancoSoles, simbMonedaBase)
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionBancoDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
         'Fila 5.9 DEVOLUCION POR NC MEDIANTE AMORTIZACION A CLIENTE
@@ -1011,21 +1068,21 @@ Public Class NVLREMO : Implements IHttpHandler
 
     Public Function GenerarTablaCobroVentasCredito(ByVal dt As DataTable) As String
         resb.Clear()
-        Dim dtMonedas As New DataTable
-        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        'Dim dtMonedas As New DataTable
+        'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
         Dim descMonedaAlterna As String = ""
         Dim simbMonedaBase As String = ""
         Dim simbMonedaAlterna As String = ""
-        For Each row In dtMonedas.Rows
-            If row("TIPO") = "MOBA" Then
-                descMonedaBase = row("DESC_CORTA")
-                simbMonedaBase = row("SIMBOLO")
-            Else
-                descMonedaAlterna = row("DESC_CORTA")
-                simbMonedaAlterna = row("SIMBOLO")
-            End If
-        Next
+        'For Each row In dtMonedas.Rows
+        'If row("TIPO") = "MOBA" Then
+        descMonedaBase = "PEN" 'row("DESC_CORTA")
+        simbMonedaBase = "S/" 'row("SIMBOLO")
+        'Else
+        descMonedaAlterna = "USD" 'row("DESC_CORTA")
+        simbMonedaAlterna = "$" 'row("SIMBOLO")
+        'End If
+        'Next
         Dim efectivoIngresoSoles As Decimal = 0
         Dim efectivoIngresoDolares As Decimal = 0
         Dim tarjetaIngresoSoles As Decimal = 0
@@ -1044,6 +1101,8 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim otrosMediosPagosDolares As Decimal = 0
         Dim ventaCreditoSoles As Decimal = 0
         Dim ventalCreditoDolares As Decimal = 0
+        Dim ventaContSinPagoSoles As Decimal = 0
+        Dim ventaContSinPagoDolares As Decimal = 0
         If (dt Is Nothing) Then
             'No hay datos     
         Else
@@ -1082,7 +1141,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If dt.Rows(i)("FORMA_PAGO").ToString().Equals("0020") Then
+                    If dt.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL") Then
                         If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
                         Else
@@ -1119,6 +1178,14 @@ Public Class NVLREMO : Implements IHttpHandler
                             ventaCreditoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
                         Else
                             ventalCreditoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO"))
+                        End If
+                    End If
+                    ' VENTAS AL CONTADO/CONTRAENTREGA SIN PAGO
+                    If (dt.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dt.Rows(i)("FORMA_PAGO").ToString().Equals("C-SIN PAGO")) Then
+                        If dt.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                            ventaContSinPagoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO"))
+                        Else
+                            ventaContSinPagoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO"))
                         End If
                     End If
                 End If
@@ -1180,25 +1247,32 @@ Public Class NVLREMO : Implements IHttpHandler
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalCreditoDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
-        'Fila 7 TOTAL AUTO-DETRACCIONES
-        resb.AppendFormat("<tr>")
-        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>COBRO DETRACCIONES A CLIENTES</strong></td>")
-        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraSoles, simbMonedaBase)
-        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraDolares, simbMonedaAlterna)
-        resb.AppendFormat("</tr>")
-
-        'Fila 8 TOTAL COMISIONES TARJETA
+        'Fila 7 TOTAL COMISIONES TARJETA
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>COMISIÓN DE TARJETAS POR COBRANZAS</strong></td>")
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalComisionSoles, simbMonedaBase)
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalComisionDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
+        'Fila 8 TOTAL DETRACCIONES
+        resb.AppendFormat("<tr>")
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>DETRACCIONES A CLIENTES POR COBRAR</strong></td>")
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraSoles, simbMonedaBase)
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraDolares, simbMonedaAlterna)
+        resb.AppendFormat("</tr>")
+
         'Fila 9 VENTAS AL CRÉDITO
-        resb.AppendFormat("<tr style='background-color:#E4EAE8;color:black;'>")
+        resb.AppendFormat("<tr style='background-color:#D6EAF8;color:black;'>")
         resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>VENTAS AL CRÉDITO</strong></td>")
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventaCreditoSoles, simbMonedaBase)
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventalCreditoDolares, simbMonedaAlterna)
+        resb.AppendFormat("</tr>")
+
+        'Fila 10 VENTAS AL CONTADO/CONTRAENTREGA SIN PAGO 
+        resb.AppendFormat("<tr style='background-color:#EBF5FB;color:black;'>")
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'><strong>VENTAS AL CONTADO SIN PAGO</strong></td>")
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventaContSinPagoSoles, simbMonedaBase)
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventaContSinPagoDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
         resb.AppendFormat("</tbody>")
@@ -1209,21 +1283,21 @@ Public Class NVLREMO : Implements IHttpHandler
 
     Public Function GenerarTablaPagoGastosPorBanco(ByVal dt As DataTable) As String
         resb.Clear()
-        Dim dtMonedas As New DataTable
-        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        'Dim dtMonedas As New DataTable
+        'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
         Dim descMonedaAlterna As String = ""
         Dim simbMonedaBase As String = ""
         Dim simbMonedaAlterna As String = ""
-        For Each row In dtMonedas.Rows
-            If row("TIPO") = "MOBA" Then
-                descMonedaBase = row("DESC_CORTA")
-                simbMonedaBase = row("SIMBOLO")
-            Else
-                descMonedaAlterna = row("DESC_CORTA")
-                simbMonedaAlterna = row("SIMBOLO")
-            End If
-        Next
+        'For Each row In dtMonedas.Rows
+        'If row("TIPO") = "MOBA" Then
+        descMonedaBase = "PEN" 'row("DESC_CORTA")
+        simbMonedaBase = "S/" 'row("SIMBOLO")
+        'Else
+        descMonedaAlterna = "USD" 'row("DESC_CORTA")
+        simbMonedaAlterna = "$" 'row("SIMBOLO")
+        'End If
+        'Next
         '------
         resb.AppendFormat("<table id=""tblTotales3"" class=""table display DTTT_selectable"" style=""border: 1px solid #cbcbcb;width:100%;"">")
         resb.AppendFormat("<thead>")
@@ -1254,21 +1328,21 @@ Public Class NVLREMO : Implements IHttpHandler
 
     Public Function GenerarTablaVentasArea(ByVal dt As DataTable) As String
         resb.Clear()
-        Dim dtMonedas As New DataTable
-        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        'Dim dtMonedas As New DataTable
+        'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
         Dim descMonedaAlterna As String = ""
         Dim simbMonedaBase As String = ""
         Dim simbMonedaAlterna As String = ""
-        For Each row In dtMonedas.Rows
-            If row("TIPO") = "MOBA" Then
-                descMonedaBase = row("DESC_CORTA")
-                simbMonedaBase = row("SIMBOLO")
-            Else
-                descMonedaAlterna = row("DESC_CORTA")
-                simbMonedaAlterna = row("SIMBOLO")
-            End If
-        Next
+        'For Each row In dtMonedas.Rows
+        'If row("TIPO") = "MOBA" Then
+        descMonedaBase = "PEN" 'row("DESC_CORTA")
+        simbMonedaBase = "S/" 'row("SIMBOLO")
+        'Else
+        descMonedaAlterna = "USD" 'row("DESC_CORTA")
+        simbMonedaAlterna = "$" 'row("SIMBOLO")
+        'End If
+        'Next
         '------
         resb.AppendFormat("<table id=""tblTotales4"" class=""table display DTTT_selectable"" style=""border: 1px solid #cbcbcb;width:100%;"">")
         resb.AppendFormat("<thead>")
@@ -1299,26 +1373,27 @@ Public Class NVLREMO : Implements IHttpHandler
 
     Public Function GenerarTablaDetGastos(ByVal dt As DataTable) As String
         resb.Clear()
-        Dim dtMonedas As New DataTable
-        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        'Dim dtMonedas As New DataTable
+        'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
         Dim descMonedaAlterna As String = ""
         Dim simbMonedaBase As String = ""
         Dim simbMonedaAlterna As String = ""
-        For Each row In dtMonedas.Rows
-            If row("TIPO") = "MOBA" Then
-                descMonedaBase = row("DESC_CORTA")
-                simbMonedaBase = row("SIMBOLO")
-            Else
-                descMonedaAlterna = row("DESC_CORTA")
-                simbMonedaAlterna = row("SIMBOLO")
-            End If
-        Next
+        'For Each row In dtMonedas.Rows
+        'If row("TIPO") = "MOBA" Then
+        descMonedaBase = "PEN" 'row("DESC_CORTA")
+        simbMonedaBase = "S/" 'row("SIMBOLO")
+        'Else
+        descMonedaAlterna = "USD" 'row("DESC_CORTA")
+        simbMonedaAlterna = "$" 'row("SIMBOLO")
+        'End If
+        'Next
         '------
         resb.AppendFormat("<table id=""tblTotales4.5"" class=""table display DTTT_selectable"" style=""border: 1px solid #cbcbcb;width:100%;"">")
         resb.AppendFormat("<thead>")
         resb.AppendFormat("<tr style='background-color:#4B8CC5;color:white;'>")
         resb.AppendFormat("<th>GASTOS DE CAJA</th>")
+        resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>CAJA</th>")
         resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>MONTO ({0})</th>", simbMonedaBase)
         resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>APROBADO</th>")
         resb.AppendFormat("</tr>")
@@ -1328,12 +1403,14 @@ Public Class NVLREMO : Implements IHttpHandler
             For i As Integer = 0 To dt.Rows.Count - 1
                 resb.Append("<tr>")
                 resb.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dt.Rows(i)("DESC_GASTO").ToString())
+                resb.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dt.Rows(i)("ORIGEN_PAGO").ToString())
                 resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_PAGADO").ToString())))
                 resb.AppendFormat("<td style='text-align:center;border-left: 1px solid #cbcbcb;'>{0}</td>", dt.Rows(i)("APROBADO").ToString())
                 resb.Append("</tr>")
             Next
         Else
             resb.Append("<tr>")
+            resb.AppendFormat("<td style='text-align:center;border-center: 1px solid #cbcbcb;'>{0}</td>", "No hay datos")
             resb.AppendFormat("<td style='text-align:center;border-center: 1px solid #cbcbcb;'>{0}</td>", "No hay datos")
             resb.AppendFormat("<td style='text-align:center;border-center: 1px solid #cbcbcb;'>{0}</td>", "No hay datos")
             resb.AppendFormat("<td style='text-align:center;border-center: 1px solid #cbcbcb;'>{0}</td>", "No hay datos")
@@ -1347,21 +1424,21 @@ Public Class NVLREMO : Implements IHttpHandler
 
     Public Function GenerarTablaVentasSubArea(ByVal dt As DataTable) As String
         resb.Clear()
-        Dim dtMonedas As New DataTable
-        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        'Dim dtMonedas As New DataTable
+        'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
         Dim descMonedaAlterna As String = ""
         Dim simbMonedaBase As String = ""
         Dim simbMonedaAlterna As String = ""
-        For Each row In dtMonedas.Rows
-            If row("TIPO") = "MOBA" Then
-                descMonedaBase = row("DESC_CORTA")
-                simbMonedaBase = row("SIMBOLO")
-            Else
-                descMonedaAlterna = row("DESC_CORTA")
-                simbMonedaAlterna = row("SIMBOLO")
-            End If
-        Next
+        'For Each row In dtMonedas.Rows
+        'If row("TIPO") = "MOBA" Then
+        descMonedaBase = "PEN" 'row("DESC_CORTA")
+        simbMonedaBase = "S/" 'row("SIMBOLO")
+        'Else
+        descMonedaAlterna = "USD" 'row("DESC_CORTA")
+        simbMonedaAlterna = "$" 'row("SIMBOLO")
+        'End If
+        'Next
         '------
         resb.AppendFormat("<table id=""tblTotales5"" class=""table display DTTT_selectable"" style=""border: 1px solid #cbcbcb;width:100%;"">")
         resb.AppendFormat("<thead>")
@@ -1392,21 +1469,21 @@ Public Class NVLREMO : Implements IHttpHandler
 
     Public Function GenerarTablaInconsistencias(ByVal dt As DataTable) As String
         resb.Clear()
-        Dim dtMonedas As New DataTable
-        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        'Dim dtMonedas As New DataTable
+        'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
         Dim descMonedaAlterna As String = ""
         Dim simbMonedaBase As String = ""
         Dim simbMonedaAlterna As String = ""
-        For Each row In dtMonedas.Rows
-            If row("TIPO") = "MOBA" Then
-                descMonedaBase = row("DESC_CORTA")
-                simbMonedaBase = row("SIMBOLO")
-            Else
-                descMonedaAlterna = row("DESC_CORTA")
-                simbMonedaAlterna = row("SIMBOLO")
-            End If
-        Next
+        'For Each row In dtMonedas.Rows
+        'If row("TIPO") = "MOBA" Then
+        descMonedaBase = "PEN" 'row("DESC_CORTA")
+        simbMonedaBase = "S/" 'row("SIMBOLO")
+        'Else
+        descMonedaAlterna = "USD" 'row("DESC_CORTA")
+        simbMonedaAlterna = "$" 'row("SIMBOLO")
+        'End If
+        'Next
         '------
         resb.AppendFormat("<table id=""tblTotales6"" class=""table display DTTT_selectable"" style=""border: 1px solid #cbcbcb;width:100%;"">")
         resb.AppendFormat("<thead>")
@@ -1472,21 +1549,21 @@ Public Class NVLREMO : Implements IHttpHandler
         If p_DET_GASTO = "S" Then
             dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
         End If
-        Dim dtMonedas As New DataTable
-        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        'Dim dtMonedas As New DataTable
+        'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
         Dim descMonedaAlterna As String = ""
         Dim simbMonedaBase As String = ""
         Dim simbMonedaAlterna As String = ""
-        For Each row In dtMonedas.Rows
-            If row("TIPO") = "MOBA" Then
-                descMonedaBase = row("DESC_CORTA")
-                simbMonedaBase = row("SIMBOLO")
-            Else
-                descMonedaAlterna = row("DESC_CORTA")
-                simbMonedaAlterna = row("SIMBOLO")
-            End If
-        Next
+        'For Each row In dtMonedas.Rows
+        'If row("TIPO") = "MOBA" Then
+        descMonedaBase = "PEN" 'row("DESC_CORTA")
+        simbMonedaBase = "S/" 'row("SIMBOLO")
+        'Else
+        descMonedaAlterna = "USD" 'row("DESC_CORTA")
+        simbMonedaAlterna = "$" 'row("SIMBOLO")
+        'End If
+        'Next
         Dim efectivoIngresoSoles As Decimal = 0
         Dim efectivoIngresoDolares As Decimal = 0
         Dim tarjetaIngresoSoles As Decimal = 0
@@ -1503,8 +1580,10 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim totalComisionDolares As Decimal = 0
         Dim otrosMediosPagosSoles As Decimal = 0
         Dim otrosMediosPagosDolares As Decimal = 0
-        Dim devolucionSoles As Decimal = 0
-        Dim devolucionDolares As Decimal = 0
+        Dim devolucionCajaSoles As Decimal = 0
+        Dim devolucionCajaDolares As Decimal = 0
+        Dim devolucionBancoSoles As Decimal = 0
+        Dim devolucionBancoDolares As Decimal = 0
         Dim devAmorNCSoles As Decimal = 0
         Dim devAmorNCDolares As Decimal = 0
         'crédito
@@ -1526,6 +1605,8 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim otrosMediosPagosDolaresC As Decimal = 0
         Dim ventaCreditoSoles As Decimal = 0
         Dim ventalCreditoDolares As Decimal = 0
+        Dim ventaContSinPagoSoles As Decimal = 0
+        Dim ventaContSinPagoDolares As Decimal = 0
         If (dtVentasContado Is Nothing) Then
             'No hay datos     
         Else
@@ -1540,7 +1621,7 @@ Public Class NVLREMO : Implements IHttpHandler
 
                 If continuar Then
                     'EFECTIVO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0009"))) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0009"))) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             efectivoIngresoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -1548,7 +1629,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     'TARJETA DE DEBITO  / TARJETA DE CREDITO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0006"))) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0006"))) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             tarjetaIngresoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -1556,7 +1637,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEPOSITO EN CUENTA
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0013"))) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0013"))) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             cuentasIngresoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -1564,7 +1645,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) And Not (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL")) And Not (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -1572,11 +1653,21 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEVOLUCIÓN A CLIENTE
-                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y") Then
-                        If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
-                            devolucionSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
-                        Else
-                            devolucionDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                    If (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y")) Or dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("SI") Then
+                        'DESDE CAJA
+                        If (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0009") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0006")) Then
+                            If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                                devolucionCajaSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            Else
+                                devolucionCajaDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            End If
+                            'DESDE BANCO
+                        ElseIf (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0013") Or dtVentasContado.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL")) Then
+                            If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                                devolucionBancoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            Else
+                                devolucionBancoDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            End If
                         End If
                     End If
                     ' AMORTIZACIÓN POR NOTA DE CRÉDITO A CLIENTE
@@ -1655,7 +1746,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If dtVentasCredito.Rows(i)("FORMA_PAGO").ToString().Equals("0020") Then
+                    If dtVentasCredito.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL") Then
                         If dtVentasCredito.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSolesC += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
                         Else
@@ -1692,6 +1783,14 @@ Public Class NVLREMO : Implements IHttpHandler
                             ventaCreditoSoles += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
                         Else
                             ventalCreditoDolares += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
+                        End If
+                    End If
+                    ' VENTAS AL CONTADO/CONTRAENTREGA SIN PAGO
+                    If (dtVentasCredito.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasCredito.Rows(i)("FORMA_PAGO").ToString().Equals("C-SIN PAGO")) Then
+                        If dtVentasCredito.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                            ventaContSinPagoSoles += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
+                        Else
+                            ventaContSinPagoDolares += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
                         End If
                     End If
                 End If
@@ -1746,11 +1845,18 @@ Public Class NVLREMO : Implements IHttpHandler
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'><strong>{1}{0:N}</strong></td>", totalIngresoDolares, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
-        'Fila 5.5 DEVOLUCION
+        'Fila 5.5 DEVOLUCION DESDE CAJA
         tabla.AppendFormat("<tr>")
-        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>DEVUELTO A CLIENTES</strong></td>")
-        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", devolucionSoles, simbMonedaBase)
-        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", devolucionDolares, simbMonedaAlterna)
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>DEVUELTO A CLIENTES DESDE CAJA</strong></td>")
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", devolucionCajaSoles, simbMonedaBase)
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", devolucionCajaDolares, simbMonedaAlterna)
+        tabla.AppendFormat("</tr>")
+
+        'Fila 5.6 DEVOLUCION DESDE BANCO
+        tabla.AppendFormat("<tr>")
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>DEVUELTO A CLIENTES DESDE BANCO</strong></td>")
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", devolucionBancoSoles, simbMonedaBase)
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", devolucionBancoDolares, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
         'Fila 5.9 DEVOLUCION POR NC MEDIANTE AMORTIZACION A CLIENTE
@@ -1833,25 +1939,32 @@ Public Class NVLREMO : Implements IHttpHandler
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", totalCreditoDolaresC, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
-        'Fila 7 TOTAL AUTO-DETRACCIONES
-        tabla.AppendFormat("<tr>")
-        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>COBRO DETRACCIONES A CLIENTES</strong></td>")
-        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", totalAutoDetraSolesC, simbMonedaBase)
-        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", totalAutoDetraDolaresC, simbMonedaAlterna)
-        tabla.AppendFormat("</tr>")
-
-        'Fila 8 TOTAL COMISIONES TARJETA
+        'Fila 7 TOTAL COMISIONES TARJETA
         tabla.AppendFormat("<tr>")
         tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>COMISIÓN DE TARJETAS POR COBRANZAS</strong></td>")
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", totalComisionSolesC, simbMonedaBase)
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", totalComisionDolaresC, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
+        'Fila 8 TOTAL DETRACCIONES
+        tabla.AppendFormat("<tr>")
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>DETRACCIONES A CLIENTES POR COBRAR</strong></td>")
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", totalAutoDetraSolesC, simbMonedaBase)
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", totalAutoDetraDolaresC, simbMonedaAlterna)
+        tabla.AppendFormat("</tr>")
+
         'Fila 9 VENTAS AL CRÉDITO
-        tabla.AppendFormat("<tr style='background-color:#E4EAE8;color:black;'>")
+        tabla.AppendFormat("<tr style='background-color:#D6EAF8;color:black;'>")
         tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>VENTAS AL CRÉDITO</strong></td>")
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", ventaCreditoSoles, simbMonedaBase)
         tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", ventalCreditoDolares, simbMonedaAlterna)
+        tabla.AppendFormat("</tr>")
+
+        'Fila 10 VENTAS AL CONTADO/CONTRAENTREGA SIN PAGO 
+        tabla.AppendFormat("<tr style='background-color:#EBF5FB;color:black;'>")
+        tabla.AppendFormat("<td style='border-right: 1px solid #cbcbcb; font-size:160%;'><strong>VENTAS AL CONTADO SIN PAGO</strong></td>")
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", ventaContSinPagoSoles, simbMonedaBase)
+        tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{1}{0:N}</td>", ventaContSinPagoDolares, simbMonedaAlterna)
         tabla.AppendFormat("</tr>")
 
         tabla.AppendFormat("</tbody>")
@@ -1947,6 +2060,7 @@ Public Class NVLREMO : Implements IHttpHandler
                 tabla.AppendFormat("<thead>")
                 tabla.AppendFormat("<tr style='background-color:#4B8CC5;color:white;'>")
                 tabla.AppendFormat("<th style='font-size:200%;'>GASTOS DE CAJA</th>")
+                tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>CAJA</th>")
                 tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:200%;'>MONTO ({0})</th>", simbMonedaBase)
                 tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:200%;'>APROBADO POR</th>")
                 tabla.AppendFormat("</tr>")
@@ -1955,6 +2069,7 @@ Public Class NVLREMO : Implements IHttpHandler
                 For i As Integer = 0 To dtDetGastos.Rows.Count - 1
                     tabla.Append("<tr>")
                     tabla.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb; font-size:160%;'>{0}</td>", dtDetGastos.Rows(i)("DESC_GASTO").ToString())
+                    tabla.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb; font-size:160%;'>{0}</td>", dtDetGastos.Rows(i)("ORIGEN_PAGO").ToString())
                     tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtDetGastos.Rows(i)("MONTO_PAGADO").ToString())))
                     tabla.AppendFormat("<td style='text-align:center;border-left: 1px solid #cbcbcb; font-size:160%;'>{0}</td>", dtDetGastos.Rows(i)("APROBADO").ToString())
                     tabla.Append("</tr>")
@@ -2038,21 +2153,21 @@ Public Class NVLREMO : Implements IHttpHandler
             dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
         End If
         'tabla.Clear()
-        Dim dtMonedas As New DataTable
-        dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
+        'Dim dtMonedas As New DataTable
+        'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
         Dim descMonedaBase As String = ""
         Dim descMonedaAlterna As String = ""
         Dim simbMonedaBase As String = ""
         Dim simbMonedaAlterna As String = ""
-        For Each row In dtMonedas.Rows
-            If row("TIPO") = "MOBA" Then
-                descMonedaBase = row("DESC_CORTA")
-                simbMonedaBase = row("SIMBOLO")
-            Else
-                descMonedaAlterna = row("DESC_CORTA")
-                simbMonedaAlterna = row("SIMBOLO")
-            End If
-        Next
+        'For Each row In dtMonedas.Rows
+        'If row("TIPO") = "MOBA" Then
+        descMonedaBase = "PEN" 'row("DESC_CORTA")
+        simbMonedaBase = "S/" 'row("SIMBOLO")
+        'Else
+        descMonedaAlterna = "USD" 'row("DESC_CORTA")
+        simbMonedaAlterna = "$" 'row("SIMBOLO")
+        'End If
+        'Next
         Dim efectivoIngresoSoles As Decimal = 0
         Dim efectivoIngresoDolares As Decimal = 0
         Dim tarjetaIngresoSoles As Decimal = 0
@@ -2069,8 +2184,10 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim totalComisionDolares As Decimal = 0
         Dim otrosMediosPagosSoles As Decimal = 0
         Dim otrosMediosPagosDolares As Decimal = 0
-        Dim devolucionSoles As Decimal = 0
-        Dim devolucionDolares As Decimal = 0
+        Dim devolucionCajaSoles As Decimal = 0
+        Dim devolucionCajaDolares As Decimal = 0
+        Dim devolucionBancoSoles As Decimal = 0
+        Dim devolucionBancoDolares As Decimal = 0
         Dim devAmorNCSoles As Decimal = 0
         Dim devAmorNCDolares As Decimal = 0
         'crédito
@@ -2092,6 +2209,8 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim otrosMediosPagosDolaresC As Decimal = 0
         Dim ventaCreditoSoles As Decimal = 0
         Dim ventalCreditoDolares As Decimal = 0
+        Dim ventaContSinPagoSoles As Decimal = 0
+        Dim ventaContSinPagoDolares As Decimal = 0
         If (dtVentasContado Is Nothing) Then
             'No hay datos     
         Else
@@ -2106,7 +2225,7 @@ Public Class NVLREMO : Implements IHttpHandler
 
                 If continuar Then
                     'EFECTIVO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0009"))) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0009"))) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             efectivoIngresoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -2114,7 +2233,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     'TARJETA DE DEBITO  / TARJETA DE CREDITO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0006"))) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0006"))) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             tarjetaIngresoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -2122,7 +2241,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEPOSITO EN CUENTA
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("NO") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0013"))) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And Not dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0013"))) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             cuentasIngresoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -2130,7 +2249,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0020")) And Not (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
+                    If (dtVentasContado.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasContado.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL")) And Not (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("X") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("X")) Then
                         If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
                         Else
@@ -2138,11 +2257,21 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' DEVOLUCIÓN A CLIENTE
-                    If dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y") Then
-                        If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
-                            devolucionSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
-                        Else
-                            devolucionDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                    If (dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("Y") And dtVentasContado.Rows(i)("DEV_CLIENTE_NCG").ToString().Equals("Y")) Or dtVentasContado.Rows(i)("DEV_CLIENTE").ToString().Equals("SI") Then
+                        'DESDE CAJA
+                        If (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0008") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0009") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0005") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0006")) Then
+                            If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                                devolucionCajaSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            Else
+                                devolucionCajaDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            End If
+                            'DESDE BANCO
+                        ElseIf (dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0001") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0003") Or dtVentasContado.Rows(i)("FORMA_PAGO").ToString().Equals("0013") Or dtVentasContado.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL")) Then
+                            If dtVentasContado.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                                devolucionBancoSoles += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            Else
+                                devolucionBancoDolares += Convert.ToDecimal(dtVentasContado.Rows(i)("MONTO"))
+                            End If
                         End If
                     End If
                     ' AMORTIZACIÓN POR NOTA DE CRÉDITO A CLIENTE
@@ -2221,7 +2350,7 @@ Public Class NVLREMO : Implements IHttpHandler
                         End If
                     End If
                     ' OTROS MEDIOS DE PAGO
-                    If dtVentasCredito.Rows(i)("FORMA_PAGO").ToString().Equals("0020") Then
+                    If dtVentasCredito.Rows(i)("ORIGEN_PAGO").ToString().Equals("BILLETERA DIGITAL") Then
                         If dtVentasCredito.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
                             otrosMediosPagosSolesC += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
                         Else
@@ -2258,6 +2387,14 @@ Public Class NVLREMO : Implements IHttpHandler
                             ventaCreditoSoles += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
                         Else
                             ventalCreditoDolares += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
+                        End If
+                    End If
+                    ' VENTAS AL CONTADO/CONTRAENTREGA SIN PAGO
+                    If (dtVentasCredito.Rows(i)("MODO_PAGO").ToString().Equals("0001") And dtVentasCredito.Rows(i)("FORMA_PAGO").ToString().Equals("C-SIN PAGO")) Then
+                        If dtVentasCredito.Rows(i)("CODIGO_MONEDA").ToString().Equals("0002") Then
+                            ventaContSinPagoSoles += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
+                        Else
+                            ventaContSinPagoDolares += Convert.ToDecimal(dtVentasCredito.Rows(i)("MONTO"))
                         End If
                     End If
                 End If
@@ -2324,11 +2461,18 @@ Public Class NVLREMO : Implements IHttpHandler
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'><strong>{1}{0:N}</strong></td>", totalIngresoDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
-        'Fila 5.5 DEVOLUCION
+        'Fila 5.5 DEVOLUCION DESDE CAJA
         resb.AppendFormat("<tr>")
-        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'>DEVUELTO A CLIENTES</td>")
-        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionSoles, simbMonedaBase)
-        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionDolares, simbMonedaAlterna)
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'>DEVUELTO A CLIENTES DESDE CAJA</td>")
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionCajaSoles, simbMonedaBase)
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionCajaDolares, simbMonedaAlterna)
+        resb.AppendFormat("</tr>")
+
+        'Fila 5.6 DEVOLUCION DESDE BANCO
+        resb.AppendFormat("<tr>")
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'>DEVUELTO A CLIENTES DESDE BANCO</td>")
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionBancoSoles, simbMonedaBase)
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", devolucionBancoDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
         'Fila 5.9 DEVOLUCION POR NC MEDIANTE AMORTIZACION A CLIENTE
@@ -2413,25 +2557,32 @@ Public Class NVLREMO : Implements IHttpHandler
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalCreditoDolaresC, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
-        'Fila 7 TOTAL AUTO-DETRACCIONES
-        resb.AppendFormat("<tr>")
-        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'>COBRO DETRACCIONES A CLIENTES</td>")
-        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraSolesC, simbMonedaBase)
-        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraDolaresC, simbMonedaAlterna)
-        resb.AppendFormat("</tr>")
-
-        'Fila 8 TOTAL COMISIONES TARJETA
+        'Fila 7 TOTAL COMISIONES TARJETA
         resb.AppendFormat("<tr>")
         resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'>COMISIÓN DE TARJETAS POR COBRANZAS</td>")
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalComisionSolesC, simbMonedaBase)
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalComisionDolaresC, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
+        'Fila 8 TOTAL DETRACCIONES
+        resb.AppendFormat("<tr>")
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'>DETRACCIONES A CLIENTES POR COBRAR</td>")
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraSolesC, simbMonedaBase)
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", totalAutoDetraDolaresC, simbMonedaAlterna)
+        resb.AppendFormat("</tr>")
+
         'Fila 9 VENTAS AL CRÉDITO
-        resb.AppendFormat("<tr style='background-color:#E4EAE8;color:black;'>")
+        resb.AppendFormat("<tr style='background-color:#D6EAF8;color:black;'>")
         resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'>VENTAS AL CRÉDITO</td>")
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventaCreditoSoles, simbMonedaBase)
         resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventalCreditoDolares, simbMonedaAlterna)
+        resb.AppendFormat("</tr>")
+
+        'Fila 10 VENTAS AL CONTADO/CONTRAENTREGA SIN PAGO 
+        resb.AppendFormat("<tr style='background-color:#EBF5FB;color:black;'>")
+        resb.AppendFormat("<td style='border-right: 1px solid #cbcbcb;'>VENTAS AL CONTADO SIN PAGO</td>")
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventaContSinPagoSoles, simbMonedaBase)
+        resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{1}{0:N}</td>", ventaContSinPagoDolares, simbMonedaAlterna)
         resb.AppendFormat("</tr>")
 
         resb.AppendFormat("</tbody>")
@@ -2527,6 +2678,7 @@ Public Class NVLREMO : Implements IHttpHandler
                 resb.AppendFormat("<thead>")
                 resb.AppendFormat("<tr style='background-color:#4B8CC5;color:black;'>")
                 resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>GASTOS DE CAJA</th>")
+                resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>CAJA</th>")
                 resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>MONTO ({0})</th>", simbMonedaBase)
                 resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>APROBADO</th>")
                 resb.AppendFormat("</tr>")
@@ -2535,6 +2687,7 @@ Public Class NVLREMO : Implements IHttpHandler
                 For i As Integer = 0 To dtDetGastos.Rows.Count - 1
                     resb.Append("<tr>")
                     resb.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dtDetGastos.Rows(i)("DESC_GASTO").ToString())
+                    resb.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dtDetGastos.Rows(i)("ORIGEN_PAGO").ToString())
                     resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtDetGastos.Rows(i)("MONTO_PAGADO").ToString())))
                     resb.AppendFormat("<td style='text-align:center;border-left: 1px solid #cbcbcb;'>{0}</td>", dtDetGastos.Rows(i)("APROBADO").ToString())
                     resb.Append("</tr>")

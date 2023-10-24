@@ -1,10 +1,219 @@
-﻿var NPMCCEM = function () {
+﻿var NPLCCEM = function () {
+    var fillCboEmpresa = function () {
+        $.ajax({
+            type: "post",
+            url: "vistas/ca/ajax/calvica.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
+            contenttype: "application/json;",
+            datatype: "json",
+            async: false,
+            success: function (datos) {
+                $('#cboEmpresa').empty();
+                if (datos != null) {
+                    for (var i = 0; i < datos.length; i++) {
+                        $('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+                    }
+                    $("#cboEmpresa").select2('val', $('#ctl00_hddctlg').val()).change();
+                    fillCboEstablecimiento();
+
+                } else {
+                    $('#cboEmpresa').select2('val', '');
+                }
+            },
+            error: function (msg) {
+                alert(msg);
+            }
+        });
+    };
+
+    var fillCboEstablecimiento = function () {
+        var Emp = $("#cboEmpresa").val();
+        if (Emp == 'TODOS') { Emp = '' };
+
+        $.ajax({
+            type: "post",
+            url: "vistas/NC/ajax/NCMCAJA.ashx?OPCION=7&CTLG_CODE=" + Emp,
+            contenttype: "application/json;",
+            datatype: "json",
+            async: false,
+            success: function (datos) {
+                $('#cboSucursal').empty();
+                $('#cboSucursal').append('<option val="">TODOS</option>');
+                if (datos != null) {
+                    for (var i = 0; i < datos.length; i++) {
+                        $('#cboSucursal').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+                    }
+
+                    if (Emp == '') {
+                        $('#cboSucursal').select2('val', 'TODOS').change();
+                    }
+                    else {
+                        $('#cboSucursal').select2('val', $('#ctl00_hddestablecimiento').val()).change();
+                    }
+
+
+                } else {
+                    $('#cboSucursal').select2('val', '').change();
+                }
+            },
+            error: function (msg) {
+                alert(msg.d);
+            }
+        });
+    };
+
+    var eventoControles = function () {
+        $('#cboEmpresa').on('change', function () {
+            fillCboEstablecimiento();
+            if ($('#cboEmpresa').val() == 'TODOS') {
+                $('#cboSucursal').attr('disabled', 'disabled');
+            }
+            else {
+                $('#cboSucursal').removeAttr('disabled');
+            }
+        });
+        $('#cboSucursal').on('change', function () {
+            ListarCentroCosto();
+        });
+    }
+
+    var plugins = function () {
+        $('#cboEmpresa').select2();
+        $('#cboSucursal').select2();
+    }
+
+    return {
+        init: function () {
+            crearTablaVacia();
+            plugins();
+            eventoControles();
+            fillCboEmpresa();   
+        }
+    };
+
+}();
+
+function crearTablaVacia() {
+
+    var parms = {
+        data: null,
+        sDom: 'T<"clear">lfrtip',         
+        order: [[0, "desc"]],
+        oTableTools: {
+            sSwfPath: "recursos/plugins/swf/copy_csv_xls_pdf.swf",
+            aButtons: [
+                { "sExtends": "copy", "sButtonText": "Copiar" },
+                { "sExtends": "pdf", "sPdfOrientation": "landscape", "sButtonText": "Exportar a PDF" },
+                { "sExtends": "xls", "sButtonText": "Exportar a Excel" }
+            ]
+        },
+        columns: [
+            {
+                data: "EMPRESA",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).css('text-align', 'center')
+                }
+            },
+            {
+                data: "SUCURSAL",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center')
+
+                }
+            },
+            {
+                data: "NOMBRE_EMPLEADO",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).css('text-align', 'left')
+                }
+            },
+            {
+                data: "DNI",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).css('text-align', 'center')
+                }
+            },
+            {
+                data: "CCD_CODE",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center')
+
+                }
+            },
+            {
+                data: "CENTRO_COSTO",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center')
+                }
+            },
+
+            {
+                data: "PORCENTAJE",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center')
+                    $(td).html(cellData + '%'); 
+                }
+            },
+            {
+                data: "PIDM",
+                visible: false
+            }
+        ]
+    }
+
+    oTableEmp = iniciaTabla('tblEmpleadosCC', parms);
+
+    $('#tblEmpleadosCC tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            oTableEmp.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+
+            var pos = oTableEmp.fnGetPosition(this);
+            var row = oTableEmp.fnGetData(pos);
+            var pidm = row.PIDM;
+
+            window.location.href = '?f=NPMCCEM&nIdPersona=' + pidm;
+        }
+    });
+}
+
+function ListarCentroCosto() {
+
+    var Emp = $("#cboEmpresa").val();
+    var Suc = $('#cboSucursal').val();
+
+    if (Emp == 'TODOS') { Emp = '' };
+    if (Suc == 'TODOS') { Suc = '' };
+
+    $.ajax({
+        type: "POST",
+        url: "vistas/NP/ajax/NPMCCEM.ashx?OPCION=" + "1.5" + "&CTLG_CODE=" + Emp + "&SCSL_CODE=" + Suc,
+        contentType: "application/json;",
+        dataType: "json",
+        success: function (datos) {
+            console.log(datos)
+            oTableEmp.fnClearTable();
+            if (!isEmpty(datos) && datos != null) {
+                oTableEmp.fnAddData(datos);
+            }
+        },
+        error: function (msg) {
+            console.log(msg);
+            alertCustom("Empleados no se listaron correctamente");
+        }
+    });
+
+}
+
+var NPMCCEM = function () {
     var oCentroCostoCab = [];
     var sCentroCostoCab = "";
     var aoNiveles = [];
     var aoNiveles = [];
     datos2 = null;
-
+    var pidm = ObtenerQueryString("nIdPersona");
     var fnCargarParametros = function (psPlanCostos) {
         aoNiveles = CargarNivelesCentroCostos(psPlanCostos);
     };
@@ -64,11 +273,20 @@
             success: function (datos) {
                 $('#cboEmpleado').empty();
                 if (datos != null) {
-
                     for (var i = 0; i < datos.length; i++) {
                         $('#cboEmpleado').append('<option value="' + datos[i].PIDM + '" val_ctlg_code ="' + datos[i].CTLG_CODE + '" val_Empresa ="' + datos[i].CTLG_DESC_CORTA + '"  val_Sucursal ="' + datos[i].SCSL_DESC + '" >' + datos[i].NOMBRE_EMPLEADO + '</option>');
                     }
-                    $('#cboEmpleado').select2('val', datos[0].PIDM);
+
+                    //El botón de C. Costo ya existente enviaba el pidm desde la pagina de empleados pero no hacia nada con esto
+                    //Esta condicional pondra el pidm que reciba desde la pagina de empleados
+                    //Tambien confirma si el pidm que se envia de la pagina de empleados existe en la lista
+                    //De no estarlo tendra su comportamiento convencional
+                    if ($('#cboEmpleado option[value=' + pidm + ']').length > 0) {
+                        $('#cboEmpleado').val(pidm).trigger('change');
+                    } else {
+                        $('#cboEmpleado').select2('val', datos[0].PIDM);
+                    };
+                    $("#btnAsignar").trigger('click');
                 } else {
                     $('#cboEmpleado').select2('val', '');
                 }
@@ -258,8 +476,8 @@
                         GetCentroCostos();
 
                         $('#DatosEmp').slideDown();
-                        $('#btnAsignar').attr('disabled', 'disabled');
-                        $('#cboEmpleado').attr('disabled', 'disabled');
+                        //$('#btnAsignar').attr('disabled', 'disabled');
+                        //$('#cboEmpleado').attr('disabled', 'disabled');
                         $('#btnCancelar').removeAttr('disabled');
                     }
                 }
@@ -481,8 +699,6 @@
 
 }();
 
-
-
 var GetCentroCostos = function () {
     var data = new FormData();
     data.append('PIDM', $('#cboEmpleado').val());
@@ -538,8 +754,6 @@ var GetCentroCostos = function () {
         });
 
 }
-
-
 
 function eliminaCentroCosto(CECC_CODE, PTVCECD_CODE) {
 
@@ -605,7 +819,6 @@ function eliminaCentroCosto(CECC_CODE, PTVCECD_CODE) {
 
 
 }
-
 
 function sumaTabla() {
 

@@ -133,10 +133,10 @@
                             <div class="controls">
                                 <select id="cboEmision" class="span12" data-placeholder="Emision">
                                     <option value="">TODOS</option>
-                                    <option value="A">ACEPTADOS</option>
-                                    <option value="P">PENDIENTE</option>
-                                    <option value="S">ENVIADOS</option>
+                                    <option value="A">ACEPTADOS</option>   
                                     <option value="N">NO ENVIADOS</option>
+                                    <option value="P">PENDIENTE</option>                                                                     
+                                    <option value="S">ENVIADOS</option>                                    
                                     <option value="X">ERROR</option>                                  
                                     <option value="B">DE BAJA</option>                          
                                     <option value="Q">PENDIENTE DE BAJA</option>
@@ -183,12 +183,12 @@
                                             </label>
                                         </div>
                                     </th>
-                                    <th>COD. DOCUMENTO</th>
-                                    <th>DOC. CLIENTE</th>
+                                    <th>CÓDIGO DOCUMENTO</th>
+                                    <th>DCTO. CLIENTE</th>
                                     <th>CLIENTE</th>
                                     <th>SERIE-NRO</th>
                                     <th>FECHA EMISIÓN</th>
-                                    <th>FORMA DE PAGO</th>
+                                    <th>INFORMACIÓN</th>
                                     <th>TOTAL</th>
                                     <th>ESTADO</th>
                                     <th></th>                                    
@@ -211,7 +211,7 @@
 </div>
 
 
-<div id="divConfirmacion" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 35%;" aria-hidden="true">
+<div id="divConfirmacion" class="modal hide fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel1" aria-hidden="true">
     <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
         <button type="button" class="btn close_mail red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
             <i class="icon-remove"></i>

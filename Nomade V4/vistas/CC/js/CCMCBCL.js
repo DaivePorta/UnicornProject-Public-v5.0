@@ -19,6 +19,7 @@ var no_rentencion = false;
 var montoNC = 0;
 var moneCode;
 var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
+const mediosPago = ['0001', '0003', '0005', '0006', '0020']; //PARA VERIFICAR EL NÚMERO DE OPERACIÓN O COD. DE AUTORIZACIÓN. DPORTA 16/08/2023
 var CCLCBCL = function () {
 
     var plugins = function () {
@@ -457,6 +458,7 @@ var CCMCBCL = function () {
         $('#cbo_OrigenPago').select2();
         $('#cboCtaEmpresa').select2();
         $('#cboMedioPago').select2();
+        $('#cbo_appPago').select2();
         $('#cbo_Det_Origen, #cbo_moneda').select2();
         $("#txtMonto, #txtEfectivo, #txtVuelto").keypress(function (e) { return (ValidaDecimales(e, this, 2)); })
         $("#txt_TC").keypress(function (e) { return (ValidaDecimales(e, this, 4)); })
@@ -541,6 +543,8 @@ var CCMCBCL = function () {
     }
 
     var cargarCombos = function () {
+
+        //COMBO APP MOVIL
 
         // CARGA DE CATALOGOS
         $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: 5 },
@@ -669,7 +673,7 @@ var CCMCBCL = function () {
     function cargarJsonEmpleado(empresa) {
         $.ajax({
             type: "post",
-            url: "vistas/GL/ajax/GLMLETR.ashx?flag=LE&empresa=" + empresa,
+            url: "vistas/GL/ajax/GLMLETR.ashx?flag=LE-2&empresa=" + empresa,
             contenttype: "application/json;",
             datatype: "json",
           //  async: false,
@@ -770,7 +774,7 @@ var CCMCBCL = function () {
 
 
         $('#cbo_OrigenPago').change(function () {
-            $("#txtMonto, #cbo_moneda, #txtNroOpe, #txtDestino").attr("disabled", true);
+            $("#txtMonto, #cbo_moneda, #txtNroOpe, #txtDestino, #cbo_appPago").attr("disabled", true);
             $("#cboMedioPago").val("").change();
             var OrigenActual = $(this).val();
 
@@ -894,7 +898,8 @@ var CCMCBCL = function () {
                 switch (MedioActual) {
 
                     case "0001"://DEPOSITO BANCARIO
-
+                        $(".mAppPago").css("display", "none");
+                        $(".mNroOpe").attr('class', 'span7 mNroOpe');
                         $("#lbl_detalle3").html("Origen de Pago");
                         $("#lbl_detalle4").html("Nro. Operación");
                         $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
@@ -914,7 +919,8 @@ var CCMCBCL = function () {
                         break;
 
                     case "0008": //EFECTIVO
-
+                        $(".mAppPago").css("display", "none");
+                        $(".mNroOpe").attr('class', 'span7 mNroOpe');
                         $("#lbl_detalle3").html("Destino");
                         $("#lbl_detalle4").html("Persona Recibe");
 
@@ -940,7 +946,8 @@ var CCMCBCL = function () {
                         break;
 
                     case "0003": //transferencia
-
+                        $(".mNroOpe").attr('class', 'span7 mNroOpe');
+                        $(".mAppPago").css("display", "none");
                         $("#lbl_detalle3").html("Origen");
                         $("#lbl_detalle4").html("Nro. Operación");
                       
@@ -989,7 +996,8 @@ var CCMCBCL = function () {
                         break;
 
                     case "0013": //cheques bancarios
-
+                        $(".mAppPago").css("display", "none");
+                        $(".mNroOpe").attr('class', 'span7 mNroOpe');
                         $("#lbl_detalle3").html("N° Cheque");
                         $("#lbl_detalle4").html("Girado a");
 
@@ -1005,7 +1013,8 @@ var CCMCBCL = function () {
                         break;
 
                     case "0006": //tarjeta de credito
-             
+                        $(".mAppPago").css("display", "none");
+                        $(".mNroOpe").attr('class', 'span7 mNroOpe');
                         $("#cbo_moneda").attr("disabled", false);
                         $("#lbl_detalle3").html("N° Tarjeta");
                         $("#lbl_detalle4").html("Cod. Autorización");
@@ -1113,6 +1122,8 @@ var CCMCBCL = function () {
                         break;
 
                     case "0005": // tarjeta de debito
+                        $(".mAppPago").css("display", "none");
+                        $(".mNroOpe").attr('class', 'span7 mNroOpe');
                         $("#cbo_moneda").attr("disabled", false);
                         $("#lbl_detalle3").html("N° Tarjeta");
                         $("#lbl_detalle4").html("Cod. Autorización");
@@ -1221,16 +1232,22 @@ var CCMCBCL = function () {
                         let billetera_dig = $("#cbo_Det_Origen :selected").attr("billetera_dig");
 
                         if (billetera_dig == 'S') {
+                            $(".mAppPago").css("display", "block");
                             $("#lbl_detalle3").html("Origen de Pago");
                             //$("#lbl_detalle4").html("Nro. Op.");
-                            $("#lbl_detalle4").html("App - Nro. Celular");
+                            $("#lbl_detalle4").html("App - Nro. Operación");
                             $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
                             $("#cbDestino").html("<option>BILLETERA DIGITAL</option>").attr("disabled", true).select2();
 
                             $(".mPersona").css("display", "none");
                             offObjectEvents("txtNroOpe");
+                            $("#cbo_appPago").removeClass("personas").attr("disabled", false);
+
+                      
+                            $("#cbo_appPago").attr("disabled", false);
+                            $(".mNroOpe").attr('class', 'span4 mNroOpe');
                             $("#txtNroOpe").removeClass("personas").attr("disabled", false);
-                            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de billetera digital");
+                            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "Nro. Operación");
                             $("#txtMonto").attr("disabled", false);
                             $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
 
@@ -1238,25 +1255,27 @@ var CCMCBCL = function () {
                             $("#txtEfectivo").val("");
                             $("#txtVuelto").val("");
 
-                            let nombre_cuenta = $("#cbo_Det_Origen :selected").html(); //DPORTA 09/12/2021
+                            //let nombre_cuenta = $("#cbo_Det_Origen :selected").html(); //DPORTA 09/12/2021
 
-                            if (nombre_cuenta.indexOf('BCP') > 0) {
-                                //$("#txtNroOpe").val("YAPE  -");
-                                mascespecial("txtNroOpe", "YAPE  -", 16);
-                            } else if (nombre_cuenta.indexOf('BBVA') > 0) {
-                                //$("#txtNroOpe").val("LUKITA-");
-                                mascespecial("txtNroOpe", "LUKITA-", 16);
-                            } else if (nombre_cuenta.indexOf('IBK') > 0) {
-                                //$("#txtNroOpe").val("TUNKI -");
-                                mascespecial("txtNroOpe", "TUNKI -", 16);
-                            } else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
-                                //$("#txtNroOpe").val("PLIN  -");
-                                mascespecial("txtNroOpe", "PLIN  -", 16);
-                            }
+                            //if (nombre_cuenta.indexOf('BCP') > 0) {
+                            //    //$("#txtNroOpe").val("YAPE  -");
+                            //    mascespecial("txtNroOpe", "", 9);
+                            //} else if (nombre_cuenta.indexOf('BBVA') > 0) {
+                            //    //$("#txtNroOpe").val("LUKITA-");
+                            //    mascespecial("txtNroOpe", "", 9);
+                            //} else if (nombre_cuenta.indexOf('IBK') > 0) {
+                            //    //$("#txtNroOpe").val("TUNKI -");
+                            //    mascespecial("txtNroOpe", "", 9);
+                            //} else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
+                            //    //$("#txtNroOpe").val("PLIN  -");
+                            //    mascespecial("txtNroOpe", "", 9);
+                            //}
                         } else if (typeof (billetera_dig) == "undefined") {
 
                         } else {
                             infoCustom2("La cuenta destino seleccionada no tiene asociada una Billetera digital");
+                            $(".mAppPago").css("display", "none");
+                            $(".mNroOpe").attr('class', 'span7 mNroOpe');
                         }
                         
                         break;
@@ -2407,16 +2426,6 @@ $("#btnGrabar").click(function () { verificaPago(); });
 
 function verificaPago() {
 
-    if ($("#cboMedioPago").val() == "0020" && $("#txtNroOpe").val() != "" && $("#txtNroOpe").val().length < 16) { //DPORTA 09/12/2021 BILLETERA DIG.
-        infoCustom2("Debe colocar el número de celular correctamente!");
-        $("#txtNroOpe").pulsate({
-            color: "#FF0000",
-            reach: 20,
-            repeat: 3,
-            glow: true
-        });
-        return 0;
-    }
     var aux=0, aux2=0;
     
     if (!eventoModalHide) {
@@ -2503,7 +2512,7 @@ function verificaPago() {
 function pagarRetencion() {
 
     var aux_vuelto = false;
-
+    var verificaNroOpera = "";//DPORTA 21/04/2021
     var monto = $("#txtMonto").val();
     var efectivo = $('#txtEfectivo').val();
     var vuelto = $('#txtVuelto').val();
@@ -2649,6 +2658,37 @@ function pagarRetencion() {
         return;
     }
 
+    //DPORTA 21/04/2021
+    //if ($("#cboMedioPago").val() == '0001' || $("#cboMedioPago").val() == '0003' || $("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006' || $("#cboMedioPago").val() == '0020') {
+    if (mediosPago.includes($("#cboMedioPago").val())) {
+
+        verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
+
+        if (verificaNroOpera == 'OK') {
+            let continuar = true;
+        } else {
+            if (verificaNroOpera.substring(0, 1) == 'B') { //BANCO
+                infoCustom2("El Nro. de Op. " + verificaNroOpera.split("@")[0].substring(2).replace("OP", '') + " ya se encuentra registrado en el sistema");
+                $("#txtNroOpe").pulsate({
+                    color: "#FF0000",
+                    reach: 20,
+                    repeat: 3,
+                    glow: true
+                });
+                return;
+            } else { //CAJA
+                infoCustom2("El Cod. de Aut. " + verificaNroOpera.split("@")[0].substring(2) + " ya se encuentra registrado en el sistema");
+                $("#txtNroOpe").pulsate({
+                    color: "#FF0000",
+                    reach: 20,
+                    repeat: 3,
+                    glow: true
+                });
+                return;
+            }
+        }
+    }
+
     var medio_pa = "";
     var p_documento = "";
     var cade_pagoConNotacredito = "";
@@ -2757,7 +2797,11 @@ function pagarRetencion() {
         var p_flag = 1;
         var adicional = "";
 
-        p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
+        if (medio_pa == "0020") {
+            p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
+        } else {
+            p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
+        }
 
         var det_desc = "", pidm_cta = "", cta = "", compl = "";
 
@@ -2893,6 +2937,7 @@ function pagarRetencion() {
                             llenarTablaModalNotaCredito();
                             limpiaCampos();
                             $("#imgSustento").attr("src", "../../recursos/img/no_disponible.jpg");
+                            $(".mAppPago").css("display", "none");
                             montoNC = 0;
                             break;
                         } else {
@@ -2915,12 +2960,12 @@ function pagarRetencion() {
 }
 
 // VERIFICACIÓN DE COD. OP Y COD. AUT.
-function verificarNroOperacion(nroOpera, nroOpera2, nroOpera3) { //DPORTA 21/04/2021
+function verificarNroOperacion(nroOpera) { //DPORTA 21/04/2021
     //var respuesta = false;
 
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOpera + "/" + nroOpera2 + "/" + nroOpera3,
+        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOpera,
         contenttype: "application/json;",
         datatype: "json",
         async: false,
@@ -3113,18 +3158,31 @@ function pagar() {
                 return;
             }
             //DPORTA 21/04/2021
-            if ($("#cboMedioPago").val() == '0001' || $("#cboMedioPago").val() == '0003' || $("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006') {
+            //if ($("#cboMedioPago").val() == '0001' || $("#cboMedioPago").val() == '0003' || $("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006' || $("#cboMedioPago").val() == '0020') {
+            if (mediosPago.includes($("#cboMedioPago").val())) {
 
-                verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + $("#txtNroOpe").val());
+                verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
 
                 if (verificaNroOpera == 'OK') {
                     let continuar = true;
                 } else {
                     if (verificaNroOpera.substring(0, 1) == 'B') { //BANCO
-                        infoCustom2("El Nro. de Op. " + verificaNroOpera.substring(2) + " ya se encuentra registrado en el sistema");
+                        infoCustom2("El Nro. de Op. " + verificaNroOpera.split("@")[0].substring(2).replace("OP", '') + " ya se encuentra registrado en el sistema");
+                        $("#txtNroOpe").pulsate({
+                            color: "#FF0000",
+                            reach: 20,
+                            repeat: 3,
+                            glow: true
+                        });
                         return;
                     } else { //CAJA
-                        infoCustom2("El Cod. de Aut. " + verificaNroOpera.substring(2) + " ya se encuentra registrado en el sistema");
+                        infoCustom2("El Cod. de Aut. " + verificaNroOpera.split("@")[0].substring(2) + " ya se encuentra registrado en el sistema");
+                        $("#txtNroOpe").pulsate({
+                            color: "#FF0000",
+                            reach: 20,
+                            repeat: 3,
+                            glow: true
+                        });
                         return;
                     }
                 }
@@ -3214,7 +3272,7 @@ function pagar() {
                 sIndPago = "S";
                 if (nMontoDeudaItem > nTotalMontoPagarTemp) {
                     nMontoCobrarItem = nTotalMontoPagarTemp;
-                    sIndPago = "N";
+                    sIndPago = "P";
                 }
 
                 if (moneda_activa_tipo === "MOBA") {
@@ -3238,8 +3296,11 @@ function pagar() {
             p_origen = $("#txtDestino").val();
             var p_flag = 1;
             var adicional = "";
-
-            p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
+            if (medio_pa == "0020") {
+                p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
+            } else {
+                p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
+            }
 
             var det_desc = "", pidm_cta = "", cta = "", compl = "";
 
@@ -3377,6 +3438,7 @@ function pagar() {
                                limpiaCampos();
                                montoNC = 0;
                                $("#imgSustento").attr("src", "../../recursos/img/no_disponible.jpg");
+                               $(".mAppPago").css("display", "none");
                                break;
                            } else {
                                alertCustom("El cobro no se realizó por ser Caja de otra Sucursal");
@@ -3614,7 +3676,14 @@ function verificarPagoNotaCredito() {
             json_select_NotaCredito.forEach(
                 function (obj) {
                     var montoLetra = parseFloat(obj.MONTO_USABLE).Redondear(2);
-                    json_nota_dcto.push({ "Documento": json_selec[0], "Nota": obj, "monto": montoLetra, "completo": "N" });
+                    var montoVenta = parseFloat(json_selec[0].POR_PAGAR_BASE).Redondear(2)
+                    var indPagado = "S";
+
+                    if (montoVenta > montoLetra) {
+                        indPagado = "P";
+                    }
+
+                    json_nota_dcto.push({ "Documento": json_selec[0], "Nota": obj, "monto": montoLetra, "completo": indPagado });
                 }
             );
 

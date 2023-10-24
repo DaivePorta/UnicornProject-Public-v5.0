@@ -11,7 +11,9 @@ var SIMB_MONEDA = "";
 var vAsientoContable = null;
 const sCodModulo = "0003";
 var prmtACON = "NO";
-
+var prmtSURE;
+var p_indRR;
+var p_indtempRR;
 var CPLAGAS = function () {
     var oCentroCostoCab = [];
     var aoNiveles = [];
@@ -355,6 +357,8 @@ var CPLAGAS = function () {
             $("#txt_glosa").val(row.GASTO_DESC);
             $("#txt_monto").html(formatoMiles(row.MONTO) + "&nbsp;(" + row.MONEDA + ")");
             $("#txt_importePagar").html(formatoMiles(row.IMPORTE_PAGAR) + "&nbsp;(" + row.MONEDA + ")");
+            p_indRR = row.RETENCION_IND;
+            console.log(p_indRR);
             $("#lbl_proveedor").html(row.BENEFICIARIO)
 
             //var permiso_ind = $("#hf_permiso").val();
@@ -489,6 +493,7 @@ var CPLAGAS = function () {
                     vAsientoContable.sTipoMov = sCodModulo;
                     vAsientoContable.sCodDoc = sCodGasto;
                     vAsientoContable.objDoc = oDocGasto;
+                    vAsientoContable.indRR = p_indRR;
                     vAsientoContable.init(sCodAsiento);
                 });
         });
@@ -1202,47 +1207,81 @@ var CPLAGAS = function () {
 
 //DPORTA
 function cargarParametrosSistema() {
-
-    //QUE SE GENERE O NO EL ASIENTO CONTABLE
+    let filtro = "ACON,DETR,SURE"; //Aquí van los parámetros que se van a utilizar en la pantalla y luego se le hace su case
     $.ajax({
         type: "post",
-        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
+        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3.5&FILTRO=" + filtro,
         contenttype: "application/json;",
         datatype: "json",
         async: false,
         success: function (datos) {
             if (datos != null) {
-                prmtACON = datos[0].VALOR;
-            }
-            else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
-        },
-        error: function (msg) {
-            alertCustom("No se recuperó correctamente el parámetro ACON!");
-        }
-    });
-
-    //OBTENER PARAMETRO DE DETRACCION
-    $.ajax({
-        type: "post",
-        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=DETR",
-        contenttype: "application/json;",
-        datatype: "json",
-        async: true,
-        success: function (datos) {
-            if (datos != null) {
-                if (!isNaN(parseFloat(datos[0].VALOR))) {
-                    $('#hfParamDetraccion').val(datos[0].VALOR);
-                } else {
-                    infoCustom2("El parámetro de sistema de Detracción(DETR) no es válido. Se considerará como monto requerido 700")
-                    $('#hfParamDetraccion').val("700");
+                for (var i = 0; i < datos.length; i++) {
+                    switch (datos[i].CODIGO) {
+                        case "DETR":
+                            if (!isNaN(parseFloat(datos[i].VALOR))) {
+                                $('#hfParamDetraccion').val(datos[i].VALOR);
+                            } else {
+                                infoCustom2("El parámetro de sistema de Detracción(DETR) no es válido. Se considerará como monto requerido 700")
+                                $('#hfParamDetraccion').val("700");
+                            }
+                            break;
+                        case "ACON":
+                            prmtACON = datos[i].VALOR;
+                            break;
+                        case "SURE":
+                            prmtSURE = datos[i].VALOR;
+                            break;
+                    }
                 }
+
             }
-            else { alertCustom("No se recuperó el parámetro de Detracción(DETR) correctamente!"); }
+            else { alertCustom("No se recuperaron correctamente los parámetros!"); }
         },
         error: function (msg) {
-            alertCustom("No se recuperó el parámetro de Detracción(DETR) correctamente!");
+            alertCustom("No se recuperaron correctamente los parámetros!");
         }
     });
+    //QUE SE GENERE O NO EL ASIENTO CONTABLE
+    //$.ajax({
+    //    type: "post",
+    //    url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=ACON",
+    //    contenttype: "application/json;",
+    //    datatype: "json",
+    //    async: false,
+    //    success: function (datos) {
+    //        if (datos != null) {
+    //            prmtACON = datos[0].VALOR;
+    //        }
+    //        else { alertCustom("No se recuperó correctamente el parámetro ACON!"); }
+    //    },
+    //    error: function (msg) {
+    //        alertCustom("No se recuperó correctamente el parámetro ACON!");
+    //    }
+    //});
+
+    ////OBTENER PARAMETRO DE DETRACCION
+    //$.ajax({
+    //    type: "post",
+    //    url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=DETR",
+    //    contenttype: "application/json;",
+    //    datatype: "json",
+    //    async: true,
+    //    success: function (datos) {
+    //        if (datos != null) {
+    //            if (!isNaN(parseFloat(datos[0].VALOR))) {
+    //                $('#hfParamDetraccion').val(datos[0].VALOR);
+    //            } else {
+    //                infoCustom2("El parámetro de sistema de Detracción(DETR) no es válido. Se considerará como monto requerido 700")
+    //                $('#hfParamDetraccion').val("700");
+    //            }
+    //        }
+    //        else { alertCustom("No se recuperó el parámetro de Detracción(DETR) correctamente!"); }
+    //    },
+    //    error: function (msg) {
+    //        alertCustom("No se recuperó el parámetro de Detracción(DETR) correctamente!");
+    //    }
+    //});
 }
 
 var HABIDO_IND = "1";
@@ -2168,7 +2207,7 @@ var CPMAGAS = function () {
 
         $("#add_detalle").on("click", function () {
 
-            if (vErrors(['cbo_gasto', 'cbo_subgasto', 'txt_centro_costo', 'txtcuenta', 'txtSubTotal'])) {
+            if (vErrors(['cbo_gasto', 'cbo_subgasto', 'txt_centro_costo', 'txtcuenta', 'txtSubTotal']) && p_indRR !== "S") {
                 let codGasto = $("#cbo_gasto").val();
                 let descGasto = $("#cbo_gasto option:selected").text();
                 let codSubGasto = $("#cbo_subgasto").val();
@@ -2243,6 +2282,15 @@ var CPMAGAS = function () {
                 parseFloat($("#txt_monto").val(dTotal)).toFixed(2);
                 parseFloat($("#txt_importePagar").val(dTotal - parseFloat($("#hfMontoDetraccion").val()))).toFixed(2);
 
+                if (p_indRR === "S" && $("#cbo_documento").val() === "0002" && $("#txt_monto").val() >= prmtSURE) {
+                    p_indtempRR = "S";
+                    calcularRetencionRenta($("#txt_monto").val());
+                } else {
+                    p_indtempRR = "N"
+                }
+                console.log(p_indRR);
+                console.log(p_indtempRR);
+                console.log(prmtSURE);
                 //$("#txt_monto").val(formatoMiles(dTotal));
             }
         });
@@ -2459,6 +2507,10 @@ var CPMAGAS = function () {
                             var CONC_CODE = row.CONC_CODE;
                             var SCONC_CODE = row.SCONC_CODE;
                             var IMPORTE_PAGAR = parseFloat(row.IMPORTE_PAGAR).toFixed(2);
+
+                            p_indRR = row.RETENCION_IND;
+                            console.log(p_indRR);
+
                             //ListarGasto(CTLG, CONC_CODE);
                             //ListarSubGasto(CONC_CODE, SCONC_CODE);
 
@@ -2567,8 +2619,8 @@ var CPMAGAS = function () {
 
                             $("#div_ce_costos").empty();
                             $("#div_ce_costos").html(' <input id="txt_centro_costo" class="b span12 m-wrap" type="text" >');
-                            listarDetallesGasto(CODE);                            
-                            
+                            listarDetallesGasto(CODE);
+                            console.log(prmtSURE);
                             if (prmtACON == "SI") {
                                 var sCodGasto = $("#hfcodgasto").val();
                                 sCodGasto = $.trim(sCodGasto);
@@ -2983,7 +3035,7 @@ var CPMAGAS = function () {
 var deleteDetalle = function (item) {
 
     for (var i = 0; i < detallesGasto.length; i++) {
-        if (detallesGasto[i].ITEM == item) {
+        if (detallesGasto[i].ITEM == item && p_indRR !== "S") {
             //console.log("SI");            
             dTotal = dTotal - parseFloat(detallesGasto[i].MONTO);
             detallesGasto.splice(i, 1);
@@ -2992,6 +3044,17 @@ var deleteDetalle = function (item) {
 
             parseFloat($("#txt_monto").val(dTotal)).toFixed(2);
             parseFloat($("#txt_importePagar").val(dTotal - parseFloat($("#hfMontoDetraccion").val()))).toFixed(2);
+
+            if (p_indRR === "S" && $("#cbo_documento").val() === "0002" && $("#txt_monto").val() >= prmtSURE) {
+                p_indtempRR = "S";
+                calcularRetencionRenta($("#txt_monto").val());
+            } else {
+                p_indtempRR = "N";
+            }
+
+            console.log(p_indRR);
+            console.log(p_indtempRR);
+            console.log(prmtSURE);
         }
     }
 
@@ -3055,7 +3118,12 @@ var Aprobar = function () {
     p_IND_COMPRAS = $("#chk_compras").is(':checked') ? 'S' : 'N';
 
     p_IMPORTE_PAGAR = $.trim(ReplaceTotal(",", "", $('#txt_importePagar').val()));
-    if (p_MONTO > p_IMPORTE_PAGAR && p_IMPORTE_PAGAR != 0) {
+
+    if (p_indtempRR) {
+        p_indtempRR === "S" ? p_indRR = "S" : p_indRR = "N";
+    }
+
+    if (p_MONTO > p_IMPORTE_PAGAR && p_IMPORTE_PAGAR != 0 && p_indRR !== "S") {
         p_DETRACCION_IND = 'S';
         p_IMPORTE_DETRACCION = p_MONTO - p_IMPORTE_PAGAR;
     }    
@@ -3110,7 +3178,7 @@ var Aprobar = function () {
     //data.append("p_OPERACION", p_OPERACION);
 
     arr = [];
-   
+
 
     if ($("#chk_sin_dcto").is(':checked')) {
         arr.push("txt_monto");
@@ -3217,6 +3285,11 @@ var Aprobar = function () {
                                 var oDocGasto = fnGetGasto(sCodGasto);
                                 vAsientoContable.sCodDoc = sCodGasto;
                                 vAsientoContable.objDoc = oDocGasto;
+
+                                if ($('#cbo_documento').val() == '0002' && prmtSURE <= parseFloat($('#txt_monto').val()) && p_indRR === 'S') {
+                                    vAsientoContable.indRR = p_indRR;
+                                    vAsientoContable.prmtSURE = prmtSURE;
+                                }
 
                                 if (p_IND_DEDUCIBLE == "S") {
                                     $('#btnGenerarAsiento').click();
@@ -3663,6 +3736,16 @@ function AgregaItemComboDctoInt(Cod, Nom) {
     selectDocumento.change();
 }
 
+function calcularRetencionRenta(importePago) {
+    var valorRetencionRenta = parseFloat(importePago * 0.08);
+    console.log(valorRetencionRenta);
+    importePago = importePago - valorRetencionRenta;
+    if (parseFloat($('#txt_monto').val()) >= prmtSURE) {
+        $('#txt_importePagar').val(importePago.toFixed(2))
+    }
+    console.log(importePago);
+}
+
 function HideAceptar() {
     $("#MuestraModalAceptar").modal("hide")
     //setTimeout(function () {
@@ -3771,7 +3854,12 @@ var Aprobar1 = function () {
     p_IND_DEDUCIBLE = $("#chkDeducible").is(':checked') ? 'S' : 'N';
 
     p_IMPORTE_PAGAR = obj_actual.IMPORTE_PAGAR;
-    if (p_MONTO > p_IMPORTE_PAGAR && p_IMPORTE_PAGAR != 0) {
+
+    if (p_indtempRR) {
+        p_indtempRR === "S" ? p_indRR = "S" : p_indRR = "N";
+    }
+
+    if (p_MONTO > p_IMPORTE_PAGAR && p_IMPORTE_PAGAR != 0 && p_indRR !== "S") {
         p_DETRACCION_IND = 'S';
         p_IMPORTE_DETRACCION = p_MONTO - p_IMPORTE_PAGAR;
     }
@@ -3949,11 +4037,12 @@ var btnGenerarAsiento = function (sCodGasto1) {//dporta
 };
 
 var fnGenerarAsiento = function (sCodGasto1) { //dporta
-
     var data = new FormData();
     data.append("OPCION", "GEN_ASIENTO");
     data.append("p_CODE", sCodGasto1);
     data.append("USUA_ID", $("#ctl00_txtus").val());
+    data.append("p_SURE", prmtSURE);
+    data.append("p_indRR", p_indRR);
     data.append("p_NCMOCONT_CODIGO", sCodModulo);
 
     Bloquear("ventana");

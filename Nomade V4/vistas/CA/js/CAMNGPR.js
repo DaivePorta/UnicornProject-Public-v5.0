@@ -27,7 +27,7 @@ function fillTblDocumentos() {
     if (CODE == undefined) {
         CODE = "";
     }
-    Bloquear("ventana")
+    //Bloquear("ventana")
     $.ajax({
         type: "post",
         url: "vistas/ca/ajax/CAMNGPR.ashx?OPCION=1" +
@@ -39,37 +39,30 @@ function fillTblDocumentos() {
             "&p_CODE=" + CODE +
             "&p_FECHA_TRANSACCION=" + $("#txtFechaTransaccion").val() +
             "&p_MONE_CODE=" + $("#cboMoneda").val(),
-        async: true,
+        async: false,
         success: function (datos) {
-            Desbloquear("ventana");
             if (datos != null) {
                 $('#divTblDocumentos').html(datos)
+                $("#tblDocumentos").DataTable({
+                    "oLanguage": {
+                        "sEmptyTable": "No hay datos disponibles en la tabla.",
+                        "sZeroRecords": "No hay datos disponibles en la tabla."
+                    }
+                });
             }
-
-            $("#tblBuscarDocumento").DataTable({
-                "oLanguage": {
-                    "sEmptyTable": "No hay datos disponibles en la tabla.",
-                    "sZeroRecords": "No hay datos disponibles en la tabla."
-                }
-            });
-
-            var oTable = $('#tblBuscarDocumento').dataTable();
-            oTable.fnSort([[0, "desc"]]);
-            $("#_buscarDocumento").modal('show');
-
         },
         error: function (msg) {
-            Desbloquear("ventana");
+            //Desbloquear("ventana");
 
-            $("#tblBuscarDocumento").DataTable({
-                "oLanguage": {
-                    "sEmptyTable": "No hay datos disponibles en la tabla.",
-                    "sZeroRecords": "No hay datos disponibles en la tabla."
-                }
-            });
-            var oTable = $('#tblBuscarDocumento').dataTable();
-            oTable.fnSort([[0, "desc"]]);
-            $("#_buscarDocumento").modal('show');
+            //$("#tblBuscarDocumento").DataTable({
+            //    "oLanguage": {
+            //        "sEmptyTable": "No hay datos disponibles en la tabla.",
+            //        "sZeroRecords": "No hay datos disponibles en la tabla."
+            //    }
+            //});
+            //var oTable = $('#tblBuscarDocumento').dataTable();
+            //oTable.fnSort([[0, "desc"]]);
+            //$("#_buscarDocumento").modal('show');
 
             alert(msg);
         }
@@ -142,7 +135,8 @@ var CAMNGPR = function () {
             Bloquear("divCboEmpresa");
             $.ajax({
                 type: "post",
-                url: "vistas/nm/ajax/nmmfpro.ashx?OPCION=0&USUA_ID=" + $('#ctl00_txtus').val(),
+                //url: "vistas/nm/ajax/nmmfpro.ashx?OPCION=0&USUA_ID=" + $('#ctl00_txtus').val(),
+                url: "vistas/ca/ajax/calvica.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
                 contenttype: "application/json;",
                 datatype: "json",
                 async: true,
@@ -185,7 +179,8 @@ var CAMNGPR = function () {
         $('#divCboEstablecimiento').select2("val", "");
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=0&CTLG_CODE=" + $('#cboEmpresa').val(),
+            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=0&CTLG_CODE=" + $('#cboEmpresa').val(),
+            url: "vistas/NC/ajax/NCMCAJA.ashx?OPCION=7&CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: true,
@@ -195,7 +190,8 @@ var CAMNGPR = function () {
                 $('#cboEstablecimiento').append('<option value=""></option>');
                 if (datos != null) {
                     for (var i = 0; i < datos.length; i++) {
-                        $('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '" data-exonerado="' + datos[i].EXONERADO + '" data-almc="' + datos[i].ALMC_CODE + '" >' + datos[i].DESCRIPCION + '</option>');
+                        //$('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '" data-exonerado="' + datos[i].EXONERADO + '" data-almc="' + datos[i].ALMC_CODE + '" >' + datos[i].DESCRIPCION + '</option>');
+                        $('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '" data-exonerado="' + datos[i].EXONERADO + '">' + datos[i].DESCRIPCION + '</option>');
                     }
                 }
                 Fin2_CargaEstablecimiento();
@@ -397,13 +393,14 @@ var CAMNGPR = function () {
 
     //TIPOS DE MOTIVOS SUNAT
     var fillCboMotivoSunat = function () {
-        $("#cboMotivo").html("<option></option>");
+        //$("#cboMotivo").html("<option></option>");
+        $('#cboMotivo').select2("val", "");
         $.ajax({
             type: "post",
             url: "vistas/ca/ajax/CAMNOCL.ashx?OPCION=LMOTSUNAT&p_FTVMOSU_IND_ESTADO=A",
             contenttype: "application/json;",
             datatype: "json",
-            async: false,
+            async: true,
             success: function (datos) {
                 if (isEmpty(datos)) {
                     alertInfo("No se encontrarón motivos sunat de nota de crédito.");
@@ -414,7 +411,7 @@ var CAMNGPR = function () {
                         $("#cboMotivo").append('<option value="' + datos[i].CodMotivoNC + '" codsunat="' + datos[i].CodMotivoSunatNC + '">' + datos[i].Descripcion + '</option>');
                     }
                 }
-                // $("#cboMotivo").val("").change();
+                Fin2_CargaMotivo();
             },
             error: function (msg) {
                 alertCustom("Error al obtener motivos sunat de nota de crédito.");
@@ -459,6 +456,7 @@ var CAMNGPR = function () {
             fillCboEstablecimiento();
             fillCboTipoDocumento();
             fillCboPeriodo();
+            fillCboMotivoSunat();
             filltxtrazsocial();
 
             $("#cboEstablecimiento").change();
@@ -593,7 +591,7 @@ var CAMNGPR = function () {
                     $("#txtFechaEmision").val(datos[0].EMISION);
                     $("#txtFechaTransaccion").val(datos[0].TRANSACCION);
                     //F4
-                    $("#cboMotivo").select2("val", datos[0].MOTIVO_CODE).change();
+                    //$("#cboMotivo").select2("val", datos[0].MOTIVO_CODE).change();
                     $("#txtMotivoAdicional").val(datos[0].MOTIVO_DESC);
                     //F5
                     $("#cboMoneda").select2("val", datos[0].MONE_CODE);
@@ -603,32 +601,8 @@ var CAMNGPR = function () {
                     $("#txtFechaEmisionRef").val(datos[0].EMISION_REF);
                     //AGREGADO
                     $("#txtMonto").val(datos[0].IMPORTE_TOTAL);
-
-                    //LLENAR DETALLES
-                    Bloquear("divTblDetalles");
-                    var data2 = new FormData();
-                    data2.append('p_CODE', code);
-                    var jqxhr = $.ajax({
-                        type: "POST",
-                        url: "vistas/ca/ajax/CAMNGPR.ashx?OPCION=5",
-                        contentType: false,
-                        data: data2,
-                        processData: false,
-                        async: true
-                    })
-                   .success(function (datos) {
-                       Desbloquear("divTblDetalles");
-                       if (datos != null) {
-                           detalles = datos;
-                           ListarTablaDetalles();
-                           $(".btnEliminarDetalle").remove();
-                       }
-                   })
-                   .error(function () {
-                       Desbloquear("divTblDetalles");
-                       alertCustom("Detalles no se listaron correctamente")
-                   });
-
+                    
+                    fillTblDetallesNotaCredito(datos[0].CODIGO);
 
                     //LLENAR MONTOS
                     $("#txtGravada").val(parseFloat(datos[0].IMPORTE_GRA).toFixed(2));
@@ -707,6 +681,12 @@ var CAMNGPR = function () {
             $("#cboTipoDocumento").select2("val", gDatos[0].DCTO_REF_TIPO_CODE);
         }
     };
+    var Fin2_CargaMotivo = function () {
+        $("#cboMotivo").select2("val", "");
+        if (gDatos != null) {
+            $("#cboMotivo").select2("val", gDatos[0].MOTIVO_CODE);
+        }
+    };
     var Fin2_CargaPeriodo = function () {
         if (gDatos != null) {
             $("#cboPeriodo").select2("val", gDatos[0].MES_PERIODO + "-" + gDatos[0].ANIO_PERIODO)
@@ -747,9 +727,36 @@ var CAMNGPR = function () {
 
 }();
 
-//---------------------MANEJO DETALLES 
+//---------------------MANEJO DETALLES
 
-//Valida dcto global y otros conceptos -- Daive 
+//Valida dcto global y otros conceptos -- Daive
+
+function fillTblDetallesNotaCredito(code) {
+    //LLENAR DETALLES
+    Bloquear("divTblDetalles");
+    var data2 = new FormData();
+    data2.append('p_CODE', code);
+    var jqxhr = $.ajax({
+        type: "POST",
+        url: "vistas/ca/ajax/CAMNGPR.ashx?OPCION=5",
+        contentType: false,
+        data: data2,
+        processData: false,
+        async: false
+    })
+        .success(function (datos) {
+            Desbloquear("divTblDetalles");
+            if (datos != null) {
+                detalles = datos;
+                ListarTablaDetalles();
+                $(".btnEliminarDetalle").remove();
+            }
+        })
+        .error(function () {
+            Desbloquear("divTblDetalles");
+            alertCustom("Detalles no se listaron correctamente")
+        });
+}
 
 function ValidarTotales() {
     if ($("#cboMotivo").val() == "004" || $("#cboMotivo").val() == "010" || $("#cboMotivo").val() == "005") {
@@ -910,9 +917,9 @@ function LimpiarCamposDetalle() {
 
 //---------------------
 function mostrarModalBuscarDocumento() {
-    Bloquear("ventana")
+    //Bloquear("ventana")
     var html =
-    '<div id="_buscarDocumento" style="display: block; width: 850px; left: 45%;" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="false" style="display: none;">' +
+    '<div id="_buscarDocumento" style="display: block; width: 850px; left: 45%;"  class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="false" style="display: none;">' +
     '<div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color:#ffffff;">' +
     ' <button type="button"  class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">' +
     '  <i class="icon-remove"></i>' +
@@ -928,7 +935,7 @@ function mostrarModalBuscarDocumento() {
     '                         <th>CODIGO</th>' +
     '                         <th>SERIE</th>' +
     '                         <th>NRO</th>' +
-    '                         <th>EMISION</th>' +
+    '                         <th>EMISIÓN</th>' +
     '                     </tr>' +
     '                 </thead>' +
     '                 <tbody>' +
@@ -954,6 +961,17 @@ function mostrarModalBuscarDocumento() {
         $("body").append(html);
     }
     fillTblDocumentos();
+    Desbloquear("ventana")
+    var oTable = $('#tblBuscarDocumento').dataTable();
+    oTable.fnSort([[0, "desc"]]);
+    $("#_buscarDocumento").modal('show');
+
+    if ($("#_buscarDocumento").hasClass('in') == true) {
+        $('#tblBuscarDocumento_filter.dataTables_filter input[type=search]').focus();
+    }
+    $('#_buscarDocumento').on('shown.bs.modal', function () {
+        $('#tblBuscarDocumento_filter.dataTables_filter input[type=search]').focus();
+    });
 }
 
 function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, moneda, simboloMoneda, scslExonerada, emision) {
@@ -1297,7 +1315,8 @@ var CALNGPR = function () {
             Bloquear("divCboEmpresa");
             $.ajax({
                 type: "post",
-                url: "vistas/nm/ajax/nmmfpro.ashx?OPCION=0&USUA_ID=" + $('#ctl00_txtus').val(),
+                //url: "vistas/nm/ajax/nmmfpro.ashx?OPCION=0&USUA_ID=" + $('#ctl00_txtus').val(),
+                url: "vistas/ca/ajax/calvica.ashx?OPCION=0&p_USUA_ID=" + $('#ctl00_txtus').val(),
                 contenttype: "application/json;",
                 datatype: "json",
                 async: true,
@@ -1339,7 +1358,8 @@ var CALNGPR = function () {
         $('#divCboEstablecimiento').select2("val", "");
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=0&CTLG_CODE=" + $('#cboEmpresa').val(),
+            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=0&CTLG_CODE=" + $('#cboEmpresa').val(),
+            url: "vistas/NC/ajax/NCMCAJA.ashx?OPCION=7&CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: true,
@@ -1349,7 +1369,8 @@ var CALNGPR = function () {
                 $('#cboEstablecimiento').append('<option value=""></option>');
                 if (datos != null) {
                     for (var i = 0; i < datos.length; i++) {
-                        $('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '" data-exonerado="' + datos[i].EXONERADO + '" data-almc="' + datos[i].ALMC_CODE + '" >' + datos[i].DESCRIPCION + '</option>');
+                        //$('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '" data-exonerado="' + datos[i].EXONERADO + '" data-almc="' + datos[i].ALMC_CODE + '" >' + datos[i].DESCRIPCION + '</option>');
+                        $('#cboEstablecimiento').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
                     }
                 }
                 Fin2_CargaEstablecimiento();

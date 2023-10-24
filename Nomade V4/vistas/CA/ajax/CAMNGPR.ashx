@@ -287,34 +287,38 @@ Public Class CAMNGPR : Implements IHttpHandler
 
         If Not (dt_gasto Is Nothing) Then
             For i As Integer = 0 To dt_gasto.Rows.Count - 1
-                Dim beneficiario As String = dt_gasto.Rows(i)("PIDM_BENEF").ToString()
-                Dim doc_ref_code As String() = New String(3) {"0001", "0002", "0003", "0014"}
-                'BUSCA DOCUMENTOS VALIDOS E IDENTIFICA AL BENEFICIARIO POR CODIGO
-                If doc_ref_code.Contains(dt_gasto.Rows(i)("DCTO_CODE").ToString) And beneficiario = USUA_ID.ToString() Then
-                    'AJUSTA LA BUSQUEDA AL TIPO DE DOCUMENTO DE SER NECESARIO
-                    If p_DCTO_REF_TIPO_CODE = dt_gasto.Rows(i)("DCTO_CODE").ToString Or p_DCTO_REF_TIPO_CODE = "" Then
-                        'VALIDA QUE LA FECHA DE EMISION DE LA NOTA DE CREDITO SEA MENOR O IGUAL AL DOCUMENTO DE ORIGEN
-                        Dim continuar As Boolean = False
-                        If p_FECHA_EMISION <> "" And dt_gasto.Rows(i)("FECHA_EMISION").ToString() <> "" Then
-                            Dim fechaConsultada As Integer = Integer.Parse(ObtenerFecha(p_FECHA_EMISION))
-                            Dim fechaEvaluar As Integer = Integer.Parse(ObtenerFecha(dt_gasto.Rows(i)("FECHA_EMISION").ToString()))
-                            If fechaConsultada >= fechaEvaluar Then
-                                continuar = True
+                If dt_gasto.Rows(i)("ESTADO_APROB").ToString <> "3" Then
+                    If dt_gasto.Rows(i)("NOTA_CREDITO_IND").ToString = "N" Then
+                        Dim beneficiario As String = dt_gasto.Rows(i)("PIDM_BENEF").ToString()
+                        Dim doc_ref_code As String() = New String(3) {"0001", "0002", "0003", "0014"}
+                        'BUSCA DOCUMENTOS VALIDOS E IDENTIFICA AL BENEFICIARIO POR CODIGO
+                        If doc_ref_code.Contains(dt_gasto.Rows(i)("DCTO_CODE").ToString) And beneficiario = USUA_ID.ToString() Then
+                            'AJUSTA LA BUSQUEDA AL TIPO DE DOCUMENTO DE SER NECESARIO
+                            If p_DCTO_REF_TIPO_CODE = dt_gasto.Rows(i)("DCTO_CODE").ToString Or p_DCTO_REF_TIPO_CODE = "" Then
+                                'VALIDA QUE LA FECHA DE EMISION DE LA NOTA DE CREDITO SEA MENOR O IGUAL AL DOCUMENTO DE ORIGEN
+                                Dim continuar As Boolean = False
+                                If p_FECHA_EMISION <> "" And dt_gasto.Rows(i)("FECHA_EMISION").ToString() <> "" Then
+                                    Dim fechaConsultada As Integer = Integer.Parse(ObtenerFecha(p_FECHA_EMISION))
+                                    Dim fechaEvaluar As Integer = Integer.Parse(ObtenerFecha(dt_gasto.Rows(i)("FECHA_EMISION").ToString()))
+                                    If fechaConsultada >= fechaEvaluar Then
+                                        continuar = True
+                                    End If
+                                End If
+                                If continuar Then
+                                    Dim serie_numero As String() = dt_gasto.Rows(i)("SERIE_NRO_DOC").ToString().Split(New Char() {"-"})
+                                    Dim fechaEmision As String = If(dt_gasto.Rows(i)("FECHA_EMISION").ToString() = "", "", dt_gasto.Rows(i)("FECHA_EMISION").ToString().Substring(0, 10))
+                                    resb.AppendFormat("<tr class='doc_fila' onclick=""setSeleccionDocumento('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}')"" id='doc_fila_{0}_{1}'>", dt_gasto.Rows(i)("CODIGO").ToString(), "", serie_numero(0), serie_numero(1), dt_gasto.Rows(i)("DCTO_CODE").ToString(), dt_gasto.Rows(i)("MONTO").ToString(), dt_gasto.Rows(i)("MONE_CODE").ToString(), dt_gasto.Rows(i)("MONE_SIMB").ToString(), "", fechaEmision)
+                                    resb.AppendFormat("<td align='center' >{0}</td>", dt_gasto.Rows(i)("CODIGO").ToString())
+                                    resb.AppendFormat("<td align='center' >{0}</td>", serie_numero(0))
+                                    resb.AppendFormat("<td align='center' >{0}</td>", serie_numero(1))
+                                    resb.AppendFormat("<td align='center' >{0}</td>", fechaEmision)
+                                    resb.AppendFormat("<td align='center' >{0}</td>", dt_gasto.Rows(i)("DCTO").ToString())
+                                    resb.AppendFormat("<td align='center' >{0}</td>", "")
+                                    'MUESTRA EL SIMBOLO DE MONEDA Y EL MONTO EN EL MODAL 
+                                    resb.AppendFormat("<td align='center' style='text-align:center;' >{0}</td>", dt_gasto.Rows(i)("MONE_SIMB").ToString() + " " + dt_gasto.Rows(i)("MONTO").ToString())
+                                    resb.AppendFormat("</tr>")
+                                End If
                             End If
-                        End If
-                        If continuar Then
-                            Dim serie_numero As String() = dt_gasto.Rows(i)("SERIE_NRO_DOC").ToString().Split(New Char() {"-"})
-                            Dim fechaEmision As String = If(dt_gasto.Rows(i)("FECHA_EMISION").ToString() = "", "", dt_gasto.Rows(i)("FECHA_EMISION").ToString().Substring(0, 10))
-                            resb.AppendFormat("<tr class='doc_fila' onclick=""setSeleccionDocumento('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}')"" id='doc_fila_{0}_{1}'>", dt_gasto.Rows(i)("CODIGO").ToString(), "", serie_numero(0), serie_numero(1), dt_gasto.Rows(i)("DCTO_CODE").ToString(), dt_gasto.Rows(i)("MONTO").ToString(), dt_gasto.Rows(i)("MONE_CODE").ToString(), dt_gasto.Rows(i)("MONE_SIMB").ToString(), "", fechaEmision)
-                            resb.AppendFormat("<td align='center' >{0}</td>", dt_gasto.Rows(i)("CODIGO").ToString())
-                            resb.AppendFormat("<td align='center' >{0}</td>", serie_numero(0))
-                            resb.AppendFormat("<td align='center' >{0}</td>", serie_numero(1))
-                            resb.AppendFormat("<td align='center' >{0}</td>", fechaEmision)
-                            resb.AppendFormat("<td align='center' >{0}</td>", dt_gasto.Rows(i)("DCTO").ToString())
-                            resb.AppendFormat("<td align='center' >{0}</td>", "")
-                            'MUESTRA EL SIMBOLO DE MONEDA Y EL MONTO EN EL MODAL 
-                            resb.AppendFormat("<td align='center' style='text-align:center;' >{0}</td>", dt_gasto.Rows(i)("MONE_SIMB").ToString() + " " + dt_gasto.Rows(i)("MONTO").ToString())
-                            resb.AppendFormat("</tr>")
                         End If
                     End If
                 End If

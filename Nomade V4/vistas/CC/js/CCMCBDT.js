@@ -219,7 +219,7 @@ var CCMCBDT = function () {
         function cargarJson() {
             $.ajax({ 
                 type: "post",
-                url: "vistas/GL/ajax/GLMLETR.ashx?flag=L",
+                url: "vistas/GL/ajax/GLMLETR.ashx?flag=L-2",
                 contenttype: "application/json;",
                 datatype: "json",
                 async: false,
@@ -651,7 +651,8 @@ function filltxtrazsocial(v_ID, v_value) {
     //Proveedores
     $.ajax({
         type: "post",
-        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2&p_CTLG_CODE=" + $("#slcEmpresa").val(),
+        //url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2&p_CTLG_CODE=" + $("#slcEmpresa").val(),
+        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.5&p_CTLG_CODE=" + $("#slcEmpresa").val(),
         contenttype: "application/json;",
         datatype: "json",
         async: false,
@@ -666,7 +667,8 @@ function filltxtrazsocial(v_ID, v_value) {
                         for (var i = 0; i < datos.length; i++) {
                             arrayRazonSocial.push(datos[i].RAZON_SOCIAL);
                             obj += '{';
-                            obj += '"DNI":"' + datos[i].DNI + '","RUC":"' + datos[i].RUC + '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL + '","PIDM":"' + datos[i].PIDM + '"';
+                            //obj += '"DNI":"' + datos[i].DNI + '","RUC":"' + datos[i].RUC + '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL + '","PIDM":"' + datos[i].PIDM + '"';
+                            obj += '"PIDM":"' + datos[i].PIDM + '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL + '"';
                             obj += '},';
                         }
                         obj += "{}";

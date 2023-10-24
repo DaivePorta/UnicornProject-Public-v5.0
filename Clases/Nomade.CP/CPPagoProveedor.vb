@@ -50,6 +50,14 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_MENSAJE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_GENERADO", String.Empty, ParameterDirection.Output, 253))
 
+            Dim p_detail_count As Integer = p_detalle.Split("|").Length
+
+            If p_detail_count > 10 Then
+                cmd.CommandTimeout = 120 ' Set timeout to 120 seconds
+            Else
+                cmd.CommandTimeout = 30 ' Set timeout to 30 seconds
+            End If
+
             cmd1 = cn.Ejecuta_parms(cmd)
 
             msg(0) = cmd.Parameters("@p_CODE_GENERADO").Value
@@ -106,6 +114,14 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_VER_IMAGEN", p_ver_imagen, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_MENSAJE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_GENERADO", String.Empty, ParameterDirection.Output, 253))
+
+            Dim p_detail_count As Integer = p_detalle.Split("|").Length
+
+            If p_detail_count > 10 Then
+                cmd.CommandTimeout = 120 ' Set timeout to 120 seconds
+            Else
+                cmd.CommandTimeout = 30 ' Set timeout to 30 seconds
+            End If
 
             cmd1 = cn.Ejecuta_parms(cmd)
 

@@ -944,7 +944,7 @@ namespace Nomade.Efact.LogNegocio
             return "";
         }
 
-        public void fnGetBoletaOrbitum(string p_CTLG_CODE, string p_VTAC_CODE)
+        public void fnGetBoletaOrbitum(string p_CTLG_CODE, string p_VTAC_CODE, string p_RUC)
         {
             try
             {
@@ -970,27 +970,38 @@ namespace Nomade.Efact.LogNegocio
                     {
                         sPath_Orbitum = sPath_Orbitum5;
                     }
-                }
+                }               
+
+                //DataTable oDT_Doc = ocEFBoleta.fnListarDoc(p_CTLG_CODE, p_VTAC_CODE);
+
+                //if (oDT_Doc == null)
+                //{
+                //    throw new ArgumentException("[Advertencia]: No se encontró el Documento en la Base de Datos");
+                //}
+
+                //DataRow oDR_Doc = oDT_Doc.NewRow();
+                //oDR_Doc = oDT_Doc.Rows[0];
+                //string sIndElect = oDR_Doc["FactElecInd"].ToString();
+                //string sSerieNro = oDR_Doc["NroSerieDoc"].ToString();
+
+                //if (!sSerieNro.Substring(0, 1).Equals("B"))
+                //{
+                //    throw new ArgumentException("[Advertencia]: La serie del documento no es válida para facturación electrónica.");
+                //}               
+
+                // Inicio - Datos del Documento
                 cEFBoleta ocEFBoleta = new cEFBoleta("Bn");
                 cEFFactura ocEFFactura = new cEFFactura("Bn");
+                DataTable oDT_DatosDoc = ocEFBoleta.fnListarDatosDocumentoOrbitum(p_CTLG_CODE, p_VTAC_CODE);
+                DataRow oDR_DatosDoc = oDT_DatosDoc.Rows[0];
 
-                DataTable oDT_Doc = ocEFBoleta.fnListarDoc(p_CTLG_CODE, p_VTAC_CODE);
-
-                if (oDT_Doc == null)
+                if (oDT_DatosDoc == null)
                 {
-                    throw new ArgumentException("[Advertencia]: No se encontró el Documento en la Base de Datos");
-                }
+                    throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
+                }               
 
-                DataRow oDR_Doc = oDT_Doc.NewRow();
-                oDR_Doc = oDT_Doc.Rows[0];
-                string sIndElect = oDR_Doc["FactElecInd"].ToString();
-                string sSerieNro = oDR_Doc["NroSerieDoc"].ToString();
-
-                if (!sSerieNro.Substring(0, 1).Equals("B"))
-                {
-                    throw new ArgumentException("[Advertencia]: La serie del documento no es válida para facturación electrónica.");
-                }
-                else if (sIndElect.Equals("P"))
+                string sIndElect = oDR_DatosDoc["ESTADO_SUNAT"].ToString();
+                if (sIndElect.Equals("P"))
                 {
                     throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento se encuentra Pendiente de validación.");
                 }
@@ -1006,16 +1017,6 @@ namespace Nomade.Efact.LogNegocio
                 {
                     throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento fué comunicado para baja.");
                 }
-
-                // Inicio - Datos del Documento
-                DataTable oDT_DatosDoc = ocEFBoleta.fnListarDatosDocumentoOrbitum(p_CTLG_CODE, p_VTAC_CODE);
-                if (oDT_DatosDoc == null)
-                {
-                    throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
-                }
-                DataRow oDR_DatosDoc = oDT_DatosDoc.Rows[0];
-
-
 
                 string c1 = oDR_DatosDoc["CAB1"].ToString(); // TIPO DE OPERACION 0101
                 string c2 = oDR_DatosDoc["CAB2"].ToString(); // Fecha de Emisión            
@@ -1038,7 +1039,7 @@ namespace Nomade.Efact.LogNegocio
                 string c18 = oDR_DatosDoc["CAB18"].ToString(); // Customizacion documento (2.0)
 
                 string seriecorrelativo = oDR_DatosDoc["SERIECORRELATIVO"].ToString(); // serie y correlativo de la venta
-                string ruc = oDR_DatosDoc["RUC"].ToString(); // ruc de la empresa
+                string ruc = p_RUC; //oDR_DatosDoc["RUC"].ToString(); // ruc de la empresa
 
                 string sDatosCabecera = c1 + "|" + c2 + "|" + c3 + "|" + c4 + "|" + c5 + "|" + c6 + "|" + c7 + "|" +
                      c8 + "|" + c9 + "|" + c10 + "|" + c11 + "|" + c12 + "|" + c13 + "|" + c14 + "|" + c15 + "|" +
@@ -1376,7 +1377,7 @@ namespace Nomade.Efact.LogNegocio
             }
         }
 
-        public void fnGetBoletaAnticipoOrbitum(string p_CTLG_CODE, string P_FVRANTI_CODE)
+        public void fnGetBoletaAnticipoOrbitum(string p_CTLG_CODE, string P_FVRANTI_CODE, string p_RUC)
         {
             try
             {
@@ -1403,23 +1404,36 @@ namespace Nomade.Efact.LogNegocio
                         sPath_Orbitum = sPath_Orbitum5;
                     }
                 }
+                
+                //DataTable oDT_Doc = ocEFBoleta.fnListarDocAnticipo(p_CTLG_CODE, P_FVRANTI_CODE);
+
+                //if (oDT_Doc == null)
+                //{
+                //    throw new ArgumentException("[Advertencia]: No se encontró el Documento en la Base de Datos");
+                //}
+
+                //DataRow oDR_Doc = oDT_Doc.Rows[0];
+                //string sIndElect = oDR_Doc["FactElecInd"].ToString();
+                //string sSerieNro = oDR_Doc["NroSerieDoc"].ToString();
+
+                //if (!sSerieNro.Substring(0, 2).Equals("BE"))
+                //{
+                //    throw new ArgumentException("[Advertencia]: La serie del documento no es válida para facturación electrónica.");
+                //}
+                
+
+                // Inicio - Datos del Documento
                 cEFBoleta ocEFBoleta = new cEFBoleta("Bn");
-                DataTable oDT_Doc = ocEFBoleta.fnListarDocAnticipo(p_CTLG_CODE, P_FVRANTI_CODE);
+                DataTable oDT_DatosDoc = ocEFBoleta.fnListarDatosBoletaAnticipoOrbitum(p_CTLG_CODE, P_FVRANTI_CODE);
+                DataRow oDR_DatosDoc = oDT_DatosDoc.Rows[0];
 
-                if (oDT_Doc == null)
+                if (oDT_DatosDoc == null)
                 {
-                    throw new ArgumentException("[Advertencia]: No se encontró el Documento en la Base de Datos");
+                    throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
                 }
 
-                DataRow oDR_Doc = oDT_Doc.Rows[0];
-                string sIndElect = oDR_Doc["FactElecInd"].ToString();
-                string sSerieNro = oDR_Doc["NroSerieDoc"].ToString();
-
-                if (!sSerieNro.Substring(0, 2).Equals("BE"))
-                {
-                    throw new ArgumentException("[Advertencia]: La serie del documento no es válida para facturación electrónica.");
-                }
-                else if (sIndElect.Equals("P"))
+                string sIndElect = oDR_DatosDoc["ESTADO_SUNAT"].ToString();
+                if (sIndElect.Equals("P"))
                 {
                     throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento se encuentra Pendiente de validación.");
                 }
@@ -1435,17 +1449,6 @@ namespace Nomade.Efact.LogNegocio
                 {
                     throw new ArgumentException("[Advertencia]: El documento ya fue generado. El Documento fué comunicado para baja.");
                 }
-
-
-
-                // Inicio - Datos del Documento
-                DataTable oDT_DatosDoc = ocEFBoleta.fnListarDatosBoletaAnticipoOrbitum(p_CTLG_CODE, P_FVRANTI_CODE);
-                if (oDT_DatosDoc == null)
-                {
-                    throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
-                }
-
-                DataRow oDR_DatosDoc = oDT_DatosDoc.Rows[0];
 
                 string c1 = oDR_DatosDoc["CAB1"].ToString(); // TIPO DE OPERACION 0101
                 string c2 = oDR_DatosDoc["CAB2"].ToString(); // Fecha de Emisión            
@@ -1468,7 +1471,7 @@ namespace Nomade.Efact.LogNegocio
                 string c18 = oDR_DatosDoc["CAB18"].ToString(); // Customizacion documento (2.0)
 
                 string seriecorrelativo = oDR_DatosDoc["SERIECORRELATIVO"].ToString(); // serie y correlativo de la venta
-                string ruc = oDR_DatosDoc["RUC"].ToString(); // ruc de la empresa
+                string ruc = p_RUC; //oDR_DatosDoc["RUC"].ToString(); // ruc de la empresa
 
                 string sDatosCabecera = c1 + "|" + c2 + "|" + c3 + "|" + c4 + "|" + c5 + "|" + c6 + "|" + c7 + "|" +
                      c8 + "|" + c9 + "|" + c10 + "|" + c11 + "|" + c12 + "|" + c13 + "|" + c14 + "|" + c15 + "|" +
@@ -1700,7 +1703,7 @@ namespace Nomade.Efact.LogNegocio
             }
         }
 
-        public string fnVerificarDocOrbitum(string p_CTLG_CODE, string p_VTAC_CODE)
+        public string fnVerificarDocOrbitum(string p_CTLG_CODE, string p_VTAC_CODE, string p_SERIE_NRO, string p_RUC)
         {
             string sRespuesta = "";
             try
@@ -1728,19 +1731,19 @@ namespace Nomade.Efact.LogNegocio
                         sPath_Orbitum = sPath_Orbitum5;
                     }
                 }
-                cEFBoleta ocEFBoleta = new cEFBoleta("Bn");
+                //cEFBoleta ocEFBoleta = new cEFBoleta("Bn");
                 cEFFactura ocEFFactura = new cEFFactura("Bn");
 
                 string tipoDocumento = p_VTAC_CODE.Substring(0, 2);
 
                 if (tipoDocumento == "AP")
                 {
-                    DataTable oDT_Doc = ocEFBoleta.fnListarDocAnticipo(p_CTLG_CODE, p_VTAC_CODE);
+                    //DataTable oDT_Doc = ocEFBoleta.fnListarDocAnticipo(p_CTLG_CODE, p_VTAC_CODE);
 
-                    DataRow oDR_DatosDoc = oDT_Doc.Rows[0];
-                    string sucursal = oDR_DatosDoc["SUCURSAL"].ToString(); // Sucursal del documento
-                    string sSerieNroDoc = oDR_DatosDoc["NroSerieDoc"].ToString(); // Serie y Nro del Documento   
-                    string sRUC = oDR_DatosDoc["RUC"].ToString();
+                    //DataRow oDR_DatosDoc = oDT_Doc.Rows[0];
+                    //string sucursal = oDR_DatosDoc["SUCURSAL"].ToString(); // Sucursal del documento
+                    string sSerieNroDoc = p_SERIE_NRO; //oDR_DatosDoc["NroSerieDoc"].ToString(); // Serie y Nro del Documento   
+                    string sRUC = p_RUC; //oDR_DatosDoc["RUC"].ToString();
 
                     string sNombreArchivoEnvio = sPath_Orbitum + @"ENVIO\" + sRUC + "-03-" + sSerieNroDoc + ".zip";
                     string sNombreArchivoResp = sPath_Orbitum + @"RPTA\R" + sRUC + "-03-" + sSerieNroDoc + ".zip";
@@ -1831,22 +1834,22 @@ namespace Nomade.Efact.LogNegocio
                 }
                 else
                 {
-                    DataTable oDT_Doc = ocEFBoleta.fnListarDoc(p_CTLG_CODE, p_VTAC_CODE);
-                    DataTable oDT_DatosEmpresa = ocEFBoleta.fnListarDatosEmpresa(p_CTLG_CODE);
+                    //DataTable oDT_Doc = ocEFBoleta.fnListarDoc(p_CTLG_CODE, p_VTAC_CODE);
+                    //DataTable oDT_DatosEmpresa = ocEFBoleta.fnListarDatosEmpresa(p_CTLG_CODE);
 
-                    if (oDT_Doc == null)
-                    {
-                        throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
-                    }
+                    //if (oDT_Doc == null)
+                    //{
+                    //    throw new ArgumentException("[Advertencia]: No se encontró los datos del Documento");
+                    //}
 
-                    DataRow oDR_DatosDoc = oDT_Doc.NewRow();
-                    oDR_DatosDoc = oDT_Doc.Rows[0];
-                    string sSerieNroDoc = oDR_DatosDoc["NroSerieDoc"].ToString(); // Serie y Nro del Documento
+                    //DataRow oDR_DatosDoc = oDT_Doc.NewRow();
+                    //oDR_DatosDoc = oDT_Doc.Rows[0];
+                    string sSerieNroDoc = p_SERIE_NRO; //oDR_DatosDoc["NroSerieDoc"].ToString(); // Serie y Nro del Documento
 
-                    DataRow oDR_DatosEmpresa = oDT_DatosEmpresa.NewRow();
-                    oDR_DatosEmpresa = oDT_DatosEmpresa.Rows[0];
+                    //DataRow oDR_DatosEmpresa = oDT_DatosEmpresa.NewRow();
+                    //oDR_DatosEmpresa = oDT_DatosEmpresa.Rows[0];
 
-                    string sRUC = oDR_DatosEmpresa["4C"].ToString(); // RUC DE LA EMPRESA
+                    string sRUC = p_RUC; //oDR_DatosDoc["RUC"].ToString(); // RUC DE LA EMPRESA
 
                     string sNombreArchivo = sPath_Orbitum + @"FIRMA\" + sRUC + "-03-" + sSerieNroDoc + ".xml";
                     string sNombreArchivoResp = sPath_Orbitum + @"RPTA\R" + sRUC + "-03-" + sSerieNroDoc + ".zip";

@@ -9,6 +9,30 @@ var vAsientoContable = null;
 const sCodModulo = "0009";
 var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
 var prmtBFDV = "NO";//BLOQUEA FECHA DE EMISIÓN
+const mediosPago = ['0001', '0003', '0005', '0006', '0020']; //PARA VERIFICAR EL NÚMERO DE OPERACIÓN O COD. DE AUTORIZACIÓN. DPORTA 16/08/2023
+
+//function fillcboUniMedida(codUniMed) {
+//    $.ajax({
+//        type: "post",
+//        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LUNPRO&COD_UNI=" + codUniMed,
+//        contenttype: "application/json;",
+//        datatype: "json",
+//        async: false,
+//        success: function (datos) {
+//            $('#cbo_und_medida').empty();
+//            $('#cbo_und_medida').append('<option></option>');
+//            if (datos != null) {
+//                for (var i = 0; i < datos.length; i++) {
+//                    $('#cbo_und_medida').append('<option value="' + datos[i].CODUNI2 + '" equivalencia="' + datos[i].EQUI + '">' + datos[i].UNIDAD_MEDIDA + '</option>');
+//                }
+//            }
+//            $('#cbo_und_medida').select2('val', "");
+//        },
+//        error: function (msg) {
+//            alert(msg);
+//        }
+//    });
+//}
 var NVMANTI = function () {
 
     var fnFillBandejaCtas = function () {
@@ -205,7 +229,7 @@ var NVMANTI = function () {
         //$('#txtFechaPago').datepicker("setDate", new Date()).datepicker("setEndDate", "now");
         $('#txtFechaPago').datepicker();
 
-        $('#cbo_OrigenPago').select2();
+        $('#cbo_OrigenPago,#cbo_appPago').select2();
         $('#cboMedioPago').select2();
         $('#cbo_Det_Origen').select2();
         $('#cboCtaEmpresa').select2();
@@ -218,7 +242,8 @@ var NVMANTI = function () {
         if (dPermanente == null) {
             $.ajax({
                 type: "post",
-                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CTLG&USUA_ID=" + $('#ctl00_txtus').val(),
+                //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CTLG&USUA_ID=" + $('#ctl00_txtus').val(),
+                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CTLG_SHORT&USUA_ID=" + $('#ctl00_txtus').val(),
                 contenttype: "application/json;",
                 datatype: "json",
                 async: false,
@@ -339,28 +364,28 @@ var NVMANTI = function () {
         $('#cbo_modo_pago').select2();
     }
 
-    var fillcboUniMedida = function () {
-        $.ajax({
-            type: "post",
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=3",
-            contenttype: "application/json;",
-            datatype: "json",
-            async: true,
-            success: function (datos) {
-                $('#cbo_und_medida').empty();
-                $('#cbo_und_medida').append('<option></option>');
-                if (datos != null) {
-                    for (var i = 0; i < datos.length; i++) {
-                        $('#cbo_und_medida').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
-                    }
-                }
-                $('#cbo_und_medida').select2('val', "");
-            },
-            error: function (msg) {
-                alertCustom("Unidades de Medida no se listaron correctamente.");
-            }
-        });
-    }
+    //var fillcboUniMedida = function () {
+    //    $.ajax({
+    //        type: "post",
+    //        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=3",
+    //        contenttype: "application/json;",
+    //        datatype: "json",
+    //        async: true,
+    //        success: function (datos) {
+    //            $('#cbo_und_medida').empty();
+    //            $('#cbo_und_medida').append('<option></option>');
+    //            if (datos != null) {
+    //                for (var i = 0; i < datos.length; i++) {
+    //                    $('#cbo_und_medida').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+    //                }
+    //            }
+    //            $('#cbo_und_medida').select2('val', "");
+    //        },
+    //        error: function (msg) {
+    //            alertCustom("Unidades de Medida no se listaron correctamente.");
+    //        }
+    //    });
+    //}
     //DocumentosIdentidad
     var fillCboTipoDoc = function () {
         //Bloquear("divCboTipoDoc");
@@ -440,7 +465,21 @@ var NVMANTI = function () {
 
     var calcularFechaVencimiento = function () {
         if ($("#txt_plazo_pago").val() > 0) {
-            $.ajax({
+            //var fecha = new Date(Date($("#txt_fec_emision").val()));
+            //var plazo = parseInt($("#txt_plazo_pago").val());
+            //fecha.setDate(fecha.getDate() + plazo);
+            //var fecha_vencimiento = (fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()) + '/' + ((fecha.getMonth() + 1) < 10 ? '0' + (fecha.getMonth() + 1) : (fecha.getMonth() + 1)) + '/' + fecha.getFullYear();
+            //$("#txt_fec_vencimiento").val(fecha_vencimiento);
+            var fechita = $("#txt_fec_emision").val();
+            let dia = fechita.split("/")[0];
+            let mes = fechita.split("/")[1] - 1; // -1 porque el mes empieza en 0 que viene a ser enero y diciembre sería 11
+            let anio = fechita.split("/")[2];
+            var fecha = new Date(anio, mes, dia);
+            var plazo = parseInt($("#txt_plazo_pago").val());
+            fecha.setDate(fecha.getDate() + plazo);
+            var fecha_vencimiento = (fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()) + '/' + ((fecha.getMonth() + 1) < 10 ? '0' + (fecha.getMonth() + 1) : (fecha.getMonth() + 1)) + '/' + fecha.getFullYear();
+            $("#txt_fec_vencimiento").val(fecha_vencimiento);
+            /*$.ajax({
                 type: "post",
                 url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=FECHAX&p_PLAZO=" + $("#txt_plazo_pago").val() + "&p_FECHA_EMISION=" + $("#txt_fec_emision").val(),
                 contenttype: "application/json;",
@@ -454,7 +493,7 @@ var NVMANTI = function () {
                 error: function (msg) {
                     alert(msg);
                 }
-            });
+            });*/
         }
     }
 
@@ -471,13 +510,14 @@ var NVMANTI = function () {
                 $('#cbo_moneda').select2('val', $('#cbo_coti option:selected').attr('mone'));
                 $('#cbo_moneda2').select2('val', $('#cbo_coti option:selected').attr('mone'));
 
-                let dSaldo = $('#cbo_coti option:selected').attr('SALDO');
+                //let dSaldo = $('#cbo_coti option:selected').attr('SALDO');
+                let dImporte = $('#cbo_coti option:selected').attr('IMPORTE');
                 let pCambio = $("#txt_valor_cambio_Oficial").val();
 
                 if ($('#cbo_coti option:selected').attr('mone') == '0002') {
-                    $("#lblImporteCobrar").html(parseFloat(dSaldo).toFixed(2));
+                    $("#lblImporteCobrar").html(parseFloat(dImporte).toFixed(2));
                 } else {
-                    let monto = parseFloat(dSaldo) / parseFloat(pCambio);
+                    let monto = parseFloat(dImporte) / parseFloat(pCambio);
                     $("#lblImporteCobrar").html(monto.toFixed(2));
                 }
 
@@ -568,14 +608,14 @@ var NVMANTI = function () {
                     fillTxtResponsablePago();
                     asincrono = true;
                 }
-                if ($("#hfPIDM").val() != "") {
-                    //filltxtdescproducto('');
-                }
+                //if ($("#hfPIDM").val() != "") {
+                //    //filltxtdescproducto('');
+                //}
                 cargarJsonEmpleado($(this).val());
                 empresaAnterior = $(this).val();
 
                 $("#cbo_OrigenPago").change();
-                CargarDatosCobroPorDefecto();
+                //CargarDatosCobroPorDefecto();
                 fillCboVendedor($('#cbo_Empresa').val(), $('#cbo_Sucursal').val(), "A", true);
             }
         });
@@ -1475,7 +1515,7 @@ var NVMANTI = function () {
             plugins();
             eventoControles();            
             fillCboModoPago();
-            fillcboUniMedida();
+            //fillcboUniMedida();
             fillCboTipoDoc();
             //Usan CTLG            
             fillCboEmpresa();
@@ -1489,6 +1529,9 @@ var NVMANTI = function () {
             CargarDatosCobro();            
             $('#cbo_moneda').attr('disabled', true);
             $('#chx_sin_origen').attr('disabled', true);
+            //if ($("#chx_sin_origen").is(":checked")) {
+            //    $('#chx_sin_origen').change();
+            //}
             $('#cbo_coti').attr('disabled', true);
             //ListarTablaAnteriores("");
             $('#div_anteriores').html("");
@@ -1514,7 +1557,7 @@ var llenaCotizaciones = function () {
                 if (datos != null) {
                     for (var i = 0; i < datos.length; i++) {
                         //if (datos[i].CODIGO == "0001" || datos[i].CODIGO == "0002") {
-                        $('#cbo_coti').append('<option value="' + datos[i].CODIGO + '" mone="' + datos[i].MONEDA_CODE + '" SALDO="' + datos[i].SALDO + '" >' + datos[i].NUM_DCTO + ' - ' + datos[i].GLOSA.toUpperCase() + ' - ' + datos[i].SIMBOLO_MONEDA + ' ' + datos[i].IMPORTE + '</option>');
+                        $('#cbo_coti').append('<option value="' + datos[i].CODIGO + '" mone="' + datos[i].MONEDA_CODE + '" IMPORTE="' + datos[i].IMPORTE + '" >' + datos[i].NUM_DCTO + ' - ' + datos[i].GLOSA.toUpperCase() + ' - ' + datos[i].SIMBOLO_MONEDA + ' - ' + datos[i].IMPORTE + '</option>');
                         //}
                     }
                     $('#cbo_coti').attr('disabled', false);
@@ -1926,9 +1969,11 @@ function cargarParametrosSistema() {
 }
 
 function ListarSucursales(ctlg) {
+    var USUA_ID = $("#ctl00_txtus").val();
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=0&CTLG_CODE=" + ctlg,
+        //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=0&CTLG_CODE=" + ctlg,
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LSU&CTLG_CODE=" + ctlg + "&USUA_ID=" + USUA_ID,
         contenttype: "application/json;",
         datatype: "json",
         async: false,
@@ -1949,11 +1994,15 @@ function ListarSucursales(ctlg) {
 
 }
 
+var ajaxVendedor = null;
 function fillCboVendedor(ctlg, scsl, estado, bAsync) {
+    if (ajaxVendedor) {
+        ajaxVendedor.abort();
+    }
     if (bAsync == undefined) {
         bAsync = true;
     }
-    $.ajax({
+    ajaxVendedor = $.ajax({
         type: "post",
         url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LVEND" +
             "&CTLG=" + ctlg +
@@ -1974,11 +2023,12 @@ function fillCboVendedor(ctlg, scsl, estado, bAsync) {
                     }
                 }
             }
-
             $('#cboVendedor').select2("val", pidmActual);
         },
         error: function (msg) {
-            alertCustom("Vendedores no se listaron correctamente.");
+            if (msg.statusText != "abort") {
+                alertCustom("Vendedores no se listaron correctamente.");
+            }
         }
     });
 }
@@ -2408,7 +2458,7 @@ function ListarValorCambioOficial(monecode) {
 
 //Lista Clientes 
 function fillTxtCliente(v_ID, v_value) {
-
+    Bloquear("divFilaCliente");
     $("#divTxtClientes").html('<input id="txtClientes" class="span12" type="text" placeholder="Cliente" style="text-transform: uppercase" />');
     var selectRazonSocial = $(v_ID);
     //if (asincrono == true) {
@@ -2425,6 +2475,7 @@ function fillTxtCliente(v_ID, v_value) {
             //if (asincrono == true) {
             //    Desbloquear("divFilaCliente");
             //}
+            Desbloquear("divFilaCliente");
             if (datos != null) {
                 textclientes = selectRazonSocial.typeahead({
                     items: 20,
@@ -2598,7 +2649,7 @@ function fillTxtCliente(v_ID, v_value) {
         },
         error: function (msg) {
             alertCustom("Clientes no se listaron correctamente");
-            //Desbloquear("divFilaCliente");
+            Desbloquear("divFilaCliente");
         }
     });
 }
@@ -2851,9 +2902,9 @@ function AgregarDetalleVenta(datos2) {
         
         if ($('#cbo_moneda option:selected').attr('data-tipo') == "MOBA") {
 
-            objProd.MONTO_DESCUENTO ='0.00';
-            objProd.PRECIO_DETALLE = '0.00'; //El precio está en la misma moneda que  cbo_moneda
-            objProd.PU = '0.00';
+            objProd.MONTO_DESCUENTO = datos2[i].DESCUENTO;
+            objProd.PRECIO_DETALLE = datos2[i].PU; //El precio está en la misma moneda que  cbo_moneda
+            objProd.PU = datos2[i].PU;
             objProd.TOTAL_BRUTO = (parseFloat(datos2[i].CANTIDAD) * parseFloat(datos2[i].PU)).toFixed(2);
             objProd.TOTAL_NETO = datos2[i].TOTAL;
             objProd.MONTO_DETRAC = datos2[i].DETRACCION;
@@ -4028,23 +4079,22 @@ function verificarNroOperacion(nroOpera, nroOpera2, nroOpera3) { //DPORTA 21/04/
 
 function CompletaryPagar() {
 
-    if ($('#txtMonto').val() != "") {
-        if ($("#cboMedioPago").val() == "0020" && $("#txtNroOpe").val().length < 16) { //DPORTA 09/12/2021 BILLETERA DIG.
-            if ($("#txtNroOpe").val().length == 0) {
-                vErrors(['txtNroOpe']);
-            } else {
-                infoCustom2("Debe colocar el número de celular correctamente!");
-                $("#txtNroOpe").pulsate({
-                    color: "#FF0000",
-                    reach: 20,
-                    repeat: 3,
-                    glow: true
-                });
-            }
-            return 0;
-        }
-    }
-
+    //if ($('#txtMonto').val() != "") {
+    //    if ($("#cboMedioPago").val() == "0020" && $("#txtNroOpe").val().length < 16) { //DPORTA 09/12/2021 BILLETERA DIG.
+    //        if ($("#txtNroOpe").val().length == 0) {
+    //            vErrors(['txtNroOpe']);
+    //        } else {
+    //            infoCustom2("Debe colocar el número de celular correctamente!");
+    //            $("#txtNroOpe").pulsate({
+    //                color: "#FF0000",
+    //                reach: 20,
+    //                repeat: 3,
+    //                glow: true
+    //            });
+    //        }
+    //        return 0;
+    //    }
+    //}
     GrabarCompletarDctoVenta()
 }
 
@@ -4179,18 +4229,38 @@ function GrabarCompletarDctoVenta() {
                 }
             }
             if (continuar) {//DPORTA 21/04/2021
-                if ($("#cboMedioPago").val() == '0001' || $("#cboMedioPago").val() == '0003' || $("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006'){
+                //if ($("#cboMedioPago").val() == '0001' || $("#cboMedioPago").val() == '0003' || $("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006' || $("#cboMedioPago").val() == '0020') {
+                if (mediosPago.includes($("#cboMedioPago").val())) {
 
-                    verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + $("#txtNroOpe").val());
+                    //No debe verificarse cuando es un anticipo por compensar
+                    //Anticipo por compensar requiere que exista un nro de operacion con el que vincularse
+                    if ($("#cboMedioPago").val() != '0021') {
+                        verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
+                    };
 
                     if (verificaNroOpera == 'OK') {
                         continuar = true;
                     } else {
                         continuar = false;
+                        $("#A4").attr("disabled", false);
                         if (verificaNroOpera.substring(0, 1) == 'B') { //BANCO
-                            infoCustom2("El Nro. de Op. " + verificaNroOpera.substring(2) + " ya se encuentra registrado en el sistema");
+                            infoCustom2("El Nro. de Op. " + verificaNroOpera.split("@")[0].substring(2).replace("OP", '') + " ya se encuentra registrado en el sistema");
+                            $("#txtNroOpe").pulsate({
+                                color: "#FF0000",
+                                reach: 20,
+                                repeat: 3,
+                                glow: true
+                            });
+                            return;
                         } else { //CAJA
-                            infoCustom2("El Cod. de Aut. " + verificaNroOpera.substring(2) + " ya se encuentra registrado en el sistema");
+                            infoCustom2("El Cod. de Aut. " + verificaNroOpera.split("@")[0].substring(2) + " ya se encuentra registrado en el sistema");
+                            $("#txtNroOpe").pulsate({
+                                color: "#FF0000",
+                                reach: 20,
+                                repeat: 3,
+                                glow: true
+                            });
+                            return;
                         }
                     }
                 }
@@ -4396,7 +4466,7 @@ function GrabarCompletarDctoVenta() {
                                //    setTimeout(guardarQR, 500);
                                //}
                                BloquearCampos();
-
+                               $("#cbo_appPago").attr('disabled', true);
                                if (prmtACON == "SI") {
                                    var sCodVenta = $("#txtNumDctoComp").val();
                                    sCodVenta = $.trim(sCodVenta);
@@ -4405,6 +4475,23 @@ function GrabarCompletarDctoVenta() {
                                    vAsientoContable.objDoc = oDocVta;
 
                                    $('#btnGenerarAsiento').click();
+
+                                   var p_COMPENSADO_IND = $('#cboMedioPago').val() === '0021' ? "S" : "N";
+                                   $.ajax({
+                                       type: "post",
+                                       url: "vistas/nv/ajax/NVMANTI.ashx?OPCION=GEN_ASIENTO_2&p_CODE=" + sCodVenta + "&p_CTLG" + $("#cbo_Empresa").val() + "&p_COMPENSADO_IND=" + p_COMPENSADO_IND,
+                                       contenttype: "application/json;",
+                                       datatype: "json",
+                                       async: false,
+                                       success: function (datos) {
+                                           if (datos != null && datos.length != 0) {
+                                               descuentoCliente = (datos[0].DESCUENTO == "") ? 0 : parseFloat(datos[0].DESCUENTO);
+                                           }
+                                       },
+                                       error: function (msg) {
+                                           alertCustom("No se obtuvo correctamente descuento por Categoría de cliente.");
+                                       }
+                                   });
                                }
                            }
                            else {
@@ -4413,15 +4500,18 @@ function GrabarCompletarDctoVenta() {
                        }
                        else {
                            noexito();
+                           $("#A4").attr("disabled", false);
                        }
                    } else {
                        noexito();
+                       $("#A4").attr("disabled", false);
                    }
                    Desbloquear("ventana");
                })
         .error(function () {
             noexito();
             Desbloquear("ventana");
+            $("#A4").attr("disabled", false);
         });
 
             }
@@ -4432,30 +4522,30 @@ function GrabarCompletarDctoVenta() {
     }
 };
 
-function guardarQR() {
-    //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 
-    var NombreQR = $('#codigoQR img').attr('src');
+//function guardarQR() {
+//    //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 
+//    var NombreQR = $('#codigoQR img').attr('src');
 
-    var qrData = new FormData();
-    qrData.append('p_IMGQR', NombreQR);
+//    var qrData = new FormData();
+//    qrData.append('p_IMGQR', NombreQR);
 
-    $.ajax({
-        type: "post",
-        url: "vistas/nv/ajax/nvmanti.ashx?OPCION=GQR_ANTICIPO&p_CODE_COTI=" + $("#txtNumDctoComp").val(), //codigodctoglobal -- CUANDO SE DA PRIMERO EN EL BOTON COMPLETAR
-        data: qrData,
-        async: false,
-        contentType: false,
-        processData: false,
-        success: function (res) {
-            if (res != "OK") {
-                noexito();
-            }
-        },
-        error: function () {
-            alertCustom("No se guardaron correctamente los datos!")
-        }
-    });
-}
+//    $.ajax({
+//        type: "post",
+//        url: "vistas/nv/ajax/nvmanti.ashx?OPCION=GQR_ANTICIPO&p_CODE_COTI=" + $("#txtNumDctoComp").val(), //codigodctoglobal -- CUANDO SE DA PRIMERO EN EL BOTON COMPLETAR
+//        data: qrData,
+//        async: false,
+//        contentType: false,
+//        processData: false,
+//        success: function (res) {
+//            if (res != "OK") {
+//                noexito();
+//            }
+//        },
+//        error: function () {
+//            alertCustom("No se guardaron correctamente los datos!")
+//        }
+//    });
+//}
 
 //Devuelve vacio si el descuento es 0, sino devuelve su valor con el signo negativo
 function vDesc(valor) {
@@ -4718,7 +4808,7 @@ function cargarJsonEmpleado(empresa) {
     $.ajax({
         type: "post",
         async: false,
-        url: "vistas/GL/ajax/GLMLETR.ashx?flag=LE&empresa=" + empresa,
+        url: "vistas/GL/ajax/GLMLETR.ashx?flag=LE-2&empresa=" + empresa,
         contenttype: "application/json;",
         datatype: "json",
         success: function (datos) {
@@ -4749,6 +4839,7 @@ function CargarDatosCobro() {
             $("#lbl_detalle3").html("-");
             $("#lbl_detalle4").html("-");
             $("#cboMedioPago").val("").change();
+            reiniciarNroOp()
 
             switch (OrigenActual) {
 
@@ -4818,7 +4909,7 @@ function CargarDatosCobro() {
 
                     $("#cboMedioPago").html(StringMediosPago);
                     //DPORTA 09/12/2021 BILLETERA DIG.
-                    $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0013" && valorO != "0001" && valorO != "0020" && valorO != "") $(j).remove(); });
+                    $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0013" && valorO != "0001" && valorO != "0020" && valorO != "0021" && valorO != "") $(j).remove(); });
                     //$("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0013" && valorO != "0001" && valorO != "") $(j).remove(); });
                     //$("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0013" && valorO != "") $(j).remove(); });
                     $("#cboMedioPago").attr("disabled", false);
@@ -4845,16 +4936,20 @@ function CargarDatosCobro() {
             $("#txtDestino").val("");
             $("#txtDestino").attr("disabled", false).off("change").attr("placeholder", "");
             $("#txtNroOpe").val("");
+            reiniciarNroOp()
 
             $(".pos,#tarjeta,#bco").remove();
             $(".mPersona").css("display", "none");
             offObjectEvents("txtNroOpe");
 
             $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+            $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
             switch (MedioActual) {
                 case "0001"://DEPOSITO BANCARIO
+                    $(".mAppPago").css("display", "none");
+                    $(".mNroOpe").attr('class', 'span8 mNroOpe');
                     $("#lbl_detalle3").html("Origen");
-                    $("#lbl_detalle4").html("Nro. Op.");
+                    $("#lbl_detalle4").html("Nro. Operación");
 
                     //$("#txtDestino").attr("disabled", false);
                     $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");//de nvmdovr
@@ -4864,17 +4959,19 @@ function CargarDatosCobro() {
                     $(".mPersona").css("display", "none");
                     offObjectEvents("txtNroOpe");
                     $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                     $("#txtMonto").attr("disabled", false);
                     break;
 
                 case "0008": //EFECTIVO
-
+                    $(".mAppPago").css("display", "none");
+                    $(".mNroOpe").attr('class', 'span8 mNroOpe');
                     $("#lbl_detalle3").html("Destino");
                     $("#lbl_detalle4").html("Persona Recibe");
 
                     $("#txtDestino").val("ENTREGA DIRECTA").attr("disabled", true);
                     $(".mPersona").css("display", "block");
-
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
                     $("#txtNroOpe").addClass("personas").attr("disabled", false);
                     cargarInputsPersona();
 
@@ -4884,9 +4981,10 @@ function CargarDatosCobro() {
                     break;
 
                 case "0003": //transferencia
-
+                    $(".mAppPago").css("display", "none");
+                    $(".mNroOpe").attr('class', 'span8 mNroOpe');
                     $("#lbl_detalle3").html("Origen");
-                    $("#lbl_detalle4").html("Nro. Op.");
+                    $("#lbl_detalle4").html("Nro. Operación");
 
                     $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
                     $("#cbDestino").select2();
@@ -4921,32 +5019,35 @@ function CargarDatosCobro() {
                     $("#cbDestino").attr("disabled", false).change();
                     $("#cbo_moneda").attr("disabled", true);
                     $("#txtMonto").attr("disabled", false);
-                    $("#txtNroOpe").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
 
                     break;
 
                 case "0013": //cheques bancarios
-
+                    $(".mAppPago").css("display", "none");
+                    $(".mNroOpe").attr('class', 'span8 mNroOpe');
                     $("#lbl_detalle3").html("N° Cheque");
                     $("#lbl_detalle4").html("Girado a");
 
                     $("#txtDestino").attr("disabled", false);
-                    $("#txtNroOpe").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "");
 
 
                     $("#txtMonto").attr("disabled", false);
                     break;
 
                 case "0006": //tarjeta de credito
-
+                    $(".mAppPago").css("display", "none");
+                    $(".mNroOpe").attr('class', 'span8 mNroOpe');
                     $("#cbo_moneda").attr("disabled", false);
                     $("#lbl_detalle3").html("N° Tarjeta");
-                    $("#lbl_detalle4").html("Cod. Aut.");
+                    $("#lbl_detalle4").html("Cod. Autorización");
 
                     $("#txtNroOpe").attr("disabled", false);
                     $("#txtMonto").attr("disabled", false);
 
                     $("#txtDestino").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
                     mascespecial("txtDestino", "************", 16);
 
                     $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos" class="span12"><option></option></select></div></div>');
@@ -5045,14 +5146,16 @@ function CargarDatosCobro() {
 
                     break;
                 case "0005": // tarjeta de debito
-
+                    $(".mAppPago").css("display", "none");
+                    $(".mNroOpe").attr('class', 'span8 mNroOpe');
                     $("#lbl_detalle3").html("N° Tarjeta");
-                    $("#lbl_detalle4").html("Cod. Aut.");
+                    $("#lbl_detalle4").html("Cod. Autorización");
 
                     $("#txtNroOpe").attr("disabled", false);
                     $("#txtMonto").attr("disabled", false);
 
                     $("#txtDestino").attr("disabled", false).attr("placeholder", "ult. 4 digitos");
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la operación");
                     mascespecial("txtDestino", "************", 16);
 
                     $($(this).parents(".row-fluid")[0]).append('<div class="row-fluid pos" id="pos"><div class="span4">POS</div><div class="span8"><select data-placeholder="POS" id="slcPos" class="span12"><option></option></select></div></div>');
@@ -5152,16 +5255,23 @@ function CargarDatosCobro() {
                     let billetera_dig = $("#cbo_Det_Origen :selected").attr("billetera_dig");
 
                     if (billetera_dig == 'S') {
+                        $(".mAppPago").css("display", "block");
                         $("#lbl_detalle3").html("Origen de Pago");
                         //$("#lbl_detalle4").html("Nro. Op.");
-                        $("#lbl_detalle4").html("App - Nro. Celular");
+                        $("#lbl_detalle4").html("App - Nro. Operación");
                         $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
                         $("#cbDestino").html("<option>BILLETERA DIGITAL</option>").attr("disabled", true).select2();
 
                         $(".mPersona").css("display", "none");
                         offObjectEvents("txtNroOpe");
+                        $("#cbo_appPago").removeClass("personas").attr("disabled", false);
+
+
+                        $("#cbo_appPago").attr("disabled", false);
+                        $(".mNroOpe").attr('class', 'span4 mNroOpe');
                         $("#txtNroOpe").removeClass("personas").attr("disabled", false);
-                        $("#txtMonto").attr("disabled", false);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "Nro. Operación");
+                        //$("#txtMonto").attr("disabled", true);
                         $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
 
                         //$("#txtVuelto").hide();
@@ -5169,21 +5279,21 @@ function CargarDatosCobro() {
                         //$("#txtVuelto").val("");
                         //$("#id_Vuelto").hide();
 
-                        let nombre_cuenta = $("#cbo_Det_Origen :selected").html(); //DPORTA 09/12/2021
+                        //let nombre_cuenta = $("#cbo_Det_Origen :selected").html(); //DPORTA 09/12/2021
 
-                        if (nombre_cuenta.indexOf('BCP') > 0) {
-                            //$("#txtNroOpe").val("YAPE  -");
-                            mascespecial("txtNroOpe", "YAPE  -", 16);
-                        } else if (nombre_cuenta.indexOf('BBVA') > 0) {
-                            //$("#txtNroOpe").val("LUKITA-");
-                            mascespecial("txtNroOpe", "LUKITA-", 16);
-                        } else if (nombre_cuenta.indexOf('IBK') > 0) {
-                            //$("#txtNroOpe").val("TUNKI -");
-                            mascespecial("txtNroOpe", "TUNKI -", 16);
-                        } else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
-                            //$("#txtNroOpe").val("PLIN  -");
-                            mascespecial("txtNroOpe", "PLIN  -", 16);
-                        }
+                        //if (nombre_cuenta.indexOf('BCP') > 0) {
+                        //    //$("#txtNroOpe").val("YAPE  -");
+                        //    mascespecial("txtNroOpe", "YAPE  -", 16);
+                        //} else if (nombre_cuenta.indexOf('BBVA') > 0) {
+                        //    //$("#txtNroOpe").val("LUKITA-");
+                        //    mascespecial("txtNroOpe", "LUKITA-", 16);
+                        //} else if (nombre_cuenta.indexOf('IBK') > 0) {
+                        //    //$("#txtNroOpe").val("TUNKI -");
+                        //    mascespecial("txtNroOpe", "TUNKI -", 16);
+                        //} else if (nombre_cuenta.indexOf('BIF') > 0 || nombre_cuenta.indexOf('SCT') > 0) {
+                        //    //$("#txtNroOpe").val("PLIN  -");
+                        //    mascespecial("txtNroOpe", "PLIN  -", 16);
+                        //}
 
                         //ValidarSuma(($("#txtEfectivo").val() == "" ? 0 : $("#txtEfectivo").val().replace(",", "")), ($("#txtEfectivo2").val() == "" ? 0 : $("#txtEfectivo2").val().replace(",", "")), ($("#txtEfectivo3").val() == "" ? 0 : $("#txtEfectivo3").val().replace(",", "")));
                     } else {
@@ -5191,8 +5301,38 @@ function CargarDatosCobro() {
                     }
 
                     break;
-            }
+                case "0021": //ANTICIPO POR COMPENSAR
+                    var listaNumeroOperacion = {};
+                    var cliente_pidm = $("#hfPIDM").val();
 
+                    $(".mAppPago").css("display", "none");
+                    $(".mNroOpe").attr('class', 'span8 mNroOpe');
+                    $("#lbl_detalle3").html("Origen");
+                    $("#lbl_detalle4").html("Nro. Operación");
+
+                    $("#txtDestino").parent().html("<select id='cbDestino' class='obligatorio span12 cbocta' data-placeholder='CUENTA DE CLIENTE'></select>");
+                    $("#cbDestino").html("<option>DEPOSITO DIRECTO VENTANILLA</option>").attr("disabled", true).select2();
+                    $("#cbo_moneda").val($("#cbo_Det_Origen :selected").attr("moneda")).change().attr("disabled", true);
+
+                    $(".mPersona").css("display", "none");
+                    offObjectEvents("txtNroOpe");
+                    $("#txtNroOpe").removeClass("personas").attr("disabled", false).attr("placeholder", "de la transacción");
+                    $("#txtMonto").attr("disabled", true);
+                    $("#id_Vuelto").hide();
+
+                    cliente_pidm = $("#hfPIDM").val();
+                    listarNroOperacion(cliente_pidm, listaNumeroOperacion);
+
+                    $("#txtNroOpe").on("input", function () {
+                        var numeroOperacion = $(this).val();
+                        if (numeroOperacion === "") {
+                            $("#txtMonto").val("");
+                        } else {
+                            confirmarNroOperacion(numeroOperacion, listaNumeroOperacion);
+                        }
+                    });
+                    break;
+            }
         });
 
         $("#txtMonto").on("keyup", function () {
@@ -5296,6 +5436,52 @@ function CargarDatosCobro() {
 
 }
 
+//Se llama una lista de numeros de operacion asociadas a la cuenta seleccionada
+function listarNroOperacion(cliente_pidm, listaNumeroOperacion) {
+    $.ajaxSetup({ async: true });
+    $.post("/vistas/NB/ajax/NBMMOCB.ASHX", { flag: 3.5, cuenta: $("#cbo_Det_Origen :selected").attr("value"), empresapidm: $('#hfPIDM').val()})
+        .success(function (res) {
+            if (res != null && res != "" && res.indexOf("error") < 0) {
+                var jsonResponse = JSON.parse(res);
+                var filteredResponse = [];
+
+                jsonResponse.forEach(function (row) {
+                    if (cliente_pidm === "" || cliente_pidm === row.PIDM_CLIENTE) {
+                        filteredResponse.push(row);
+                    }
+                });
+
+                if (filteredResponse.length > 0) {
+                    filteredResponse.forEach(function (row) {
+                        listaNumeroOperacion[row.NRO_OPERACION] = row.MONTO_CIERRE;
+                    });
+                }
+            }
+        })
+        .error( function (msg) {
+            alert(msg);
+        });
+}
+
+//Verifica que el nro de operacion asociado a esta cuenta este en el sistema
+function confirmarNroOperacion(numeroOperacion, listaNumeroOperacion) {
+    var montoCierre = listaNumeroOperacion[numeroOperacion];
+
+    if (montoCierre !== undefined) {
+        $("#txtNroOpe").css("border", "2px solid green"); 
+        $("#txtMonto").val(parseFloat(montoCierre).toFixed(2));
+    } else {
+        $("#txtNroOpe").css("border", "2px solid red"); 
+        $("#txtMonto").val("");
+    }
+}
+
+//Se quitan los efectos del borde en caso se elija una opcion diferente
+function reiniciarNroOp() {
+    $("#txtNroOpe").css("border", ""); 
+    $("#txtMonto").val("");
+}
+
 function pagar() {
     var datosPago = "";
     cade_pagar = "";
@@ -5337,8 +5523,13 @@ function pagar() {
             var p_fecha_pago = ConvertirDate($("#txtFechaPago").val());
 
             var p_origen = $("#txtDestino").val();
-            var p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
+            //var p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
             var medio_pa = $("#cboMedioPago").val();
+            if (medio_pa == "0020") {
+                var p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
+            } else {
+                var p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
+            }  
             var adicional = "";
             var cod_ape = "";
             var det_desc = "", pidm_cta = "", cta = "", compl = "";
@@ -5369,6 +5560,10 @@ function pagar() {
                         break;
                     case "0020": // OTROS (BILLETERA DIGITAL) DPORTA 09/12/2021
                         det_desc = "BILLETERA DIGITAL*" + "/" + $("#txtClientes").val();
+                        var p_origen = $("#cbDestino").val();
+                        break;
+                    case "0021": // ANTICIPO POR COMPENSAR
+                        det_desc = "ANTICIPO A COMPENSAR*" + "/" + $("#txtClientes").val();
                         var p_origen = $("#cbDestino").val();
                         break;
                 }

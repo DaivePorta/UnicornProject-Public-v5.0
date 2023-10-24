@@ -426,6 +426,12 @@ Public Class CAMNOCL : Implements IHttpHandler
                     Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
                     res = oCTGeneracionAsientos.GenerarAsientoNotaCreditoCliente(p_CODE, USUA_ID)
 
+                    'Si se anula la operación
+                    oCTGeneracionAsientos.SpCon_GenerarReversionAsientoCobroDocVenta(p_CODE, USUA_ID)
+
+                    'Si se hace una devolución total
+                    oCTGeneracionAsientos.SpCon_GenerarAsientoReversionAlmacenNotaCreditoCliente(p_CODE, USUA_ID)
+
                 Case Else
 
 

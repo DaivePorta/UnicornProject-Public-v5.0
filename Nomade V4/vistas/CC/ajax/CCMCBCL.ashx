@@ -149,13 +149,23 @@ Public Class CCMCBCL : Implements IHttpHandler
 
                     resArray = CobroCliente.CobrarClienteCaja(detalle, origen, usuario, codigo_apertura, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, tipo_cambio, VALIDAR_IMG, efectivo_recibido, efectivo_recibido_alterno, vuelto, vuelto_alterno, adicional, notaCredito)
 
+                    Dim batchSize As Integer = 5
+                    Dim totalDocs As String() = detalle.Split("|")
+                    Dim total As Integer = totalDocs.Length
+                    Dim batches As Integer = Math.Ceiling(total / batchSize)
+
                     If asiento_contable = "SI" Then
                         Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
                         Dim strCodAsientoCobroVenta As String
-                        For Each item As String In detalle.Split("|")
-                            'Ejemplo de traza: V01039153,B/BE01 - 0026864,10,0,S,0001|V01039155,B/BE01 - 0026865,20,0,S,0001
-                            Dim strCodVenta As String = item.Split(",")(0)
-                            strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(strCodVenta, "", "")
+                        For b As Integer = 0 To batches - 1
+                            Dim start As Integer = b * batchSize
+                            Dim endCount As Integer = Math.Min(start + batchSize, total)
+                            Dim batch As String() = totalDocs.Skip(start).Take(endCount - start).ToArray()
+
+                            For Each item As String In batch
+                                Dim strCodVenta As String = item.Split(",")(0)
+                                strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(strCodVenta, "", "")
+                            Next
                         Next
                     End If
 
@@ -182,15 +192,23 @@ Public Class CCMCBCL : Implements IHttpHandler
 
                     resArray = CobroCliente.CobrarClienteBanco(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, tipo_cambio, VALIDAR_IMG, efectivo_recibido, efectivo_recibido_alterno, vuelto, vuelto_alterno, adicional, origen, notaCredito)
 
+                    Dim batchSize As Integer = 5
+                    Dim totalDocs As String() = detalle.Split("|")
+                    Dim total As Integer = totalDocs.Length
+                    Dim batches As Integer = Math.Ceiling(total / batchSize)
+
                     If asiento_contable = "SI" Then
                         Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
                         Dim strCodAsientoCobroVenta As String
-                        Dim strCodAsientoITF As String
-                        For Each item As String In detalle.Split("|")
-                            'Ejemplo de traza: V01039153,B/BE01 - 0026864,10,0,S,0001|V01039155,B/BE01 - 0026865,20,0,S,0001
-                            Dim strCodVenta As String = item.Split(",")(0)
-                            strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(strCodVenta, "", "")
-                            strCodAsientoITF = oCTGeneracionAsientos.GenerarAsientoITF("", "", strCodVenta)
+                        For b As Integer = 0 To batches - 1
+                            Dim start As Integer = b * batchSize
+                            Dim endCount As Integer = Math.Min(start + batchSize, total)
+                            Dim batch As String() = totalDocs.Skip(start).Take(endCount - start).ToArray()
+
+                            For Each item As String In batch
+                                Dim strCodVenta As String = item.Split(",")(0)
+                                strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(strCodVenta, "", "")
+                            Next
                         Next
                     End If
 
@@ -578,8 +596,13 @@ Public Class CCMCBCL : Implements IHttpHandler
                     End If
                 Case "POS_PRED" 'DPORTA 24/06/2021
                     Dim p As New Nomade.NC.NCCaja("Bn")
-                    dt = p.ListaPOS_PRED(caja, empresa, estable, "A")
-                    res = dt.Rows(0)("CODIGO_POS").ToString
+                    dt = p.ListaPOS_PRED(caja, empresa, estable, "X")
+                    If dt Is Nothing Then
+                        res = "NO_EXISTE"
+                    Else
+                        res = dt.Rows(0)("CODIGO_POS").ToString
+                    End If
+
                 Case "MTAR"
                     dt = mtar.ListarMarcaTarjeta("", "A")
                     If dt Is Nothing Then

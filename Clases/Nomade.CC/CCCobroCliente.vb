@@ -60,6 +60,13 @@ Public Class CCCobroCliente
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_GENERADO", String.Empty, ParameterDirection.Output, 253))
             'cmd.Parameters.Add(cn.GetNewParameter("@p_CODIGO_MOV_BANC", String.Empty, ParameterDirection.Output, 253))
 
+            Dim p_detail_count As Integer = p_detalle.Split("|").Length
+
+            If p_detail_count > 10 Then
+                cmd.CommandTimeout = 120 ' Set timeout to 120 seconds
+            Else
+                cmd.CommandTimeout = 30 ' Set timeout to 30 seconds
+            End If
 
             cn.Ejecuta_parms(cmd)
 
@@ -126,6 +133,14 @@ Public Class CCCobroCliente
             cmd.Parameters.Add(cn.GetNewParameter("@p_MENSAJE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_GENERADO", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODIGO_MOV_BANC", String.Empty, ParameterDirection.Output, 253))
+
+            Dim p_detail_count As Integer = p_detalle.Split("|").Length
+
+            If p_detail_count > 10 Then
+                cmd.CommandTimeout = 120 ' Set timeout to 120 seconds
+            Else
+                cmd.CommandTimeout = 30 ' Set timeout to 30 seconds
+            End If
 
             cn.Ejecuta_parms(cmd)
 

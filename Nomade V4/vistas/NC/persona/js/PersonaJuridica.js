@@ -1691,7 +1691,7 @@ function validarPersonaJuridica() {
         var existeActividad = false;
 
         for (var i = 0; i < jsonActividades.length; i++) {
-            if (actividad == jsonActividades[i].replace('(','').replace(')','')) {
+            if (actividad == $.trim(jsonActividades[i].replace('(','').replace(')',''))) {
                 existeActividad = true;
                 break;
             }

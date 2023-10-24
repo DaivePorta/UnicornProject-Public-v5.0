@@ -157,13 +157,14 @@ Public Class NCLCAJA : Implements IHttpHandler
                 res = resb.ToString()
             Case "7"
                 context.Response.ContentType = "application/json; charset=utf-8"
-                dt = suc.ListarSucursal(CTLG_CODE, String.Empty, "A")
+                dt = suc.ListarSucursalFast(CTLG_CODE, String.Empty, "A")
                 If Not (dt Is Nothing) Then
                     resb.Append("[")
                     For Each MiDataRow As DataRow In dt.Rows
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
                         resb.Append("""DESCRIPCION"" :" & """" & MiDataRow("DESCRIPCION").ToString & """,")
+                        resb.Append("""EXONERADO"" :" & """" & MiDataRow("EXONERADO").ToString & """,")
                         resb.Append("""BIO_IND"" :" & """" & MiDataRow("BIO_IND").ToString & """")
                         resb.Append("}")
                         resb.Append(",")

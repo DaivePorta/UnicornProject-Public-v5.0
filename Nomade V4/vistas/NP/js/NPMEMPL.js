@@ -7,6 +7,8 @@ var ide;
 var p = 0;
 var us = $("#ctl00_txtus").val();
 var vg_SelectTipoContribuyente = '';
+var dire = "";//dporta
+//var city = '';//dporta
 var token_migo = '';//dporta
 DatosSunatCargados = new Array();
 DatosReniecCargados = new Array();
@@ -268,6 +270,27 @@ var NPMEMPL = function () {
                 alertCustom("No se recuperó correctamente el parámetro MIGO!");
             }
         });
+
+        //DIRECCION(CIUDAD) POR DEFECTO
+        //$.ajax({
+        //    type: "post",
+        //    url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=CIDE",
+        //    contenttype: "application/json;",
+        //    datatype: "json",
+        //    async: true,
+        //    success: function (datos) {
+        //        if (datos != null) {
+        //            if (datos[0].VALOR == "SI") {
+        //                city = datos[0].DESCRIPCION_DETALLADA;
+
+        //            } else {
+        //                city = "TRUJILLO";
+        //            }
+        //        } else {
+        //            city = "TRUJILLO";
+        //        }
+        //    },
+        //});
     }
 
     var fillCboTipoDocumento = function () {
@@ -554,6 +577,7 @@ function cargarEstereotipos() {
             $.ajaxSetup({ async: true });
 
             ADICIONALES.init();
+            $("#txtdir").val(dire == '-' || dire == '' ? "TRUJILLO" : eliminarDiacriticos(dire));//dporta
 
             $("#tabAdicionales").on("click", function () {
                 if ($.trim($('#hfEstereotipoActivo').val()) != "ADICIONALES") {
@@ -867,35 +891,33 @@ function HandlerKeydownDocumento() {
 function MuestraReniec() {
     //DPORTA_RF
     var NRO = ide;
-    if (NRO.length == 8) {
-        var formData = new FormData();
-        formData.append("token", token_migo);
-        formData.append("dni", NRO);
 
-        var request = new XMLHttpRequest();
+    var formData = new FormData();
+    formData.append("token", token_migo);
+    formData.append("dni", NRO);
 
-        request.open("POST", "https://api.migo.pe/api/v1/dni-beta");
-        request.setRequestHeader("Accept", "application/json");
+    var request = new XMLHttpRequest();
 
-        request.send(formData);
-        request.onload = function () {
-            var data = JSON.parse(this.response);
-            $("#PerNoExiste").modal('hide');
-            if (data.success == true) {
-                $("#captchaModal").modal('hide');
+    request.open("POST", "https://api.migo.pe/api/v1/dni-beta");
+    request.setRequestHeader("Accept", "application/json");
 
-                MuestraFormulario(false, 'R');
-                DatosReniecCargados = data;
+    request.send(formData);
+    request.onload = function () {
+        var data = JSON.parse(this.response);
+        $("#PerNoExiste").modal('hide');
+        if (data.success == true) {
+            $("#captchaModal").modal('hide');
 
-            } else {
-                alertCustom("No se Encontraron Resultados. Verique si ingresó correctamente el DNI")
-                $("#captchaModal").modal('hide');
-                $("#PerNoExiste").modal("show");
-            }
-        };
-    } else {
-        infoCustom2("RENIEC solo consulta números de DNI");
-    }
+            MuestraFormulario(false, 'R');
+            DatosReniecCargados = data;
+
+        } else {
+            MuestraReniec2();//DPORTA 27/09/2021
+            //alertCustom("No se Encontraron Resultados. Verique si ingresó correctamente el DNI")
+            //$("#captchaModal").modal('hide');
+            //$("#PerNoExiste").modal("show");
+        }
+    };
     
     //var NRO = ide;
     //$.ajax({
@@ -929,6 +951,40 @@ function MuestraReniec() {
     //    }
     //});
 
+}
+
+function MuestraReniec2() {//DPORTA 27/09/2021
+    //DPORTA_RF
+    var NRO = ide;
+    if (NRO.length == 8) {
+        var formData = new FormData();
+        formData.append("token", token_migo);
+        formData.append("dni", NRO);
+
+        var request = new XMLHttpRequest();
+
+        request.open("POST", "https://api.migo.pe/api/v1/dni");
+        request.setRequestHeader("Accept", "application/json");
+
+        request.send(formData);
+        request.onload = function () {
+            var data = JSON.parse(this.response);
+            $("#PerNoExiste").modal('hide');
+            if (data.success == true) {
+                $("#captchaModal").modal('hide');
+
+                MuestraFormulario(false, 'R');
+                DatosReniecCargados = data;
+
+            } else {
+                alertCustom("No se Encontraron Resultados. Verique si ingresó correctamente el DNI")
+                $("#captchaModal").modal('hide');
+                $("#PerNoExiste").modal("show");
+            }
+        };
+    } else {
+        infoCustom2("RENIEC solo consulta números de DNI");
+    }
 }
 
 //function CargaReniec() {

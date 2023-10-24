@@ -309,7 +309,7 @@
                                 <div class="span7">
                                     <div class="control-group">
                                         <div class="controls">
-                                            <input type="text" id="txtNroOpe" class="obligatorio span12" disabled="disabled" />
+                                            <input type="text" id="txtNroOpe" class="obligatorio span12" disabled="disabled" style="text-transform: uppercase"/>
 
                                         </div>
                                     </div>

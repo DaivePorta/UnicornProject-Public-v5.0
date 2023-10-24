@@ -41,6 +41,7 @@ Public Class CPMPGDI : Implements IHttpHandler
     Dim tipo_cambio As String
     Dim codModulo As String
     Dim asiento_contable As String
+    Dim pidm_proveedor As String
 
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         context.Response.ContentType = "text/plain"
@@ -71,6 +72,7 @@ Public Class CPMPGDI : Implements IHttpHandler
         estable = context.Request("estable")
         tipo_cambio = context.Request("tipo_cambio")
         codModulo = context.Request("codModulo")
+        pidm_proveedor = context.Request("selectedPidm")
         asiento_contable = context.Request("asiento_contable")
 
         Try
@@ -315,7 +317,7 @@ Public Class CPMPGDI : Implements IHttpHandler
 
                 Case "L"
                     context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = PagoDiverso.ListarPagosDiversos(empresa, 0)
+                    dt = PagoDiverso.ListarPagosDiversos(empresa, pidm_proveedor)
                     If Not dt Is Nothing Then
 
                         res = Utilities.Datatable2Json(dt)

@@ -132,72 +132,126 @@ Public Class CALREPO : Implements IHttpHandler
 
 
     Public Function GenerarTablaResumenCaja(ByVal dt As DataTable, ByVal dt2 As DataTable, ByVal USUA_ID As String) As StringBuilder
-        Dim efectivoIngresoSoles As Decimal = 0.0
-        Dim efectivoIngresoDolares As Decimal = 0.0
-        Dim efectivoEgresoSoles As Decimal = 0.0
-        Dim efectivoEgresoDolares As Decimal = 0.0
-        Dim saldoEfectivoSoles As Decimal = 0.0
-        Dim saldoefectivo As Decimal = 0.0
-        Dim saldoefectivoDol As Decimal = 0.0
-        Dim ventastotales As Decimal = 0.0
-        Dim ventastotalesDol As Decimal = 0.0
+
+        Dim efectivoEgresoSoles As Decimal = 0
+        Dim efectivoEgresoDolares As Decimal = 0
+        Dim efectivoIngresoSoles As Decimal = 0
+        Dim efectivoIngresoDolares As Decimal = 0
+
+        Dim saldoEfectivoSoles As Decimal = 0
+        Dim saldoEfectivoDolares As Decimal = 0
+
+        Dim tarjetaIngresoSoles As Decimal = 0
+        Dim tarjetaIngresoDolares As Decimal = 0
+        Dim tarjetaEgresoSoles As Decimal = 0
+        Dim tarjetaEgresoDolares As Decimal = 0
+
+        Dim saldoTarjetaSoles As Decimal = 0
+        Dim saldoTarjetaDolares As Decimal = 0
+
+        Dim totalIngresoSoles As Decimal = 0
+        Dim totalIngresoDolares As Decimal = 0
+        Dim totalEgresoSoles As Decimal = 0
+        Dim totalEgresoDolares As Decimal = 0
+
+        Dim totalSaldoSoles As Decimal = 0
+        Dim totalSaldoDolares As Decimal = 0
 
         If Not (dt Is Nothing) Then
+            Dim continuar As Boolean = True
 
             For i As Integer = 0 To dt.Rows.Count - 1
 
-                If (dt.Rows(i)("PAGO").ToString().Equals("SI")) Then
-                    If (dt.Rows(i)("TIPO_MOVIMIENTO").ToString().Equals("I") And dt.Rows(i)("ANULADO_IND").ToString().Equals("N") And dt.Rows(i)("DEV_EFECTIVO_IND").ToString().Equals("N")) Then
-                        'If (dt.Rows(i)("FOPA_CODE").ToString().Equals("0008")) Then
-                        efectivoIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
-                        efectivoIngresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
-                        'End If
-                    End If
-                    If (dt.Rows(i)("TIPO_MOVIMIENTO").ToString().Equals("I") And dt.Rows(i)("ANULADO_IND").ToString().Equals("S") And dt.Rows(i)("DEV_EFECTIVO_IND").ToString().Equals("N")) Then
-                        'If (dt.Rows(i)("FOPA_CODE").ToString().Equals("0008")) Then
-                        efectivoIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
-                        efectivoIngresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
-                        'End If
-                    End If
-                    If (dt.Rows(i)("TIPO_MOVIMIENTO").ToString().Equals("E") And dt.Rows(i)("ANULADO_IND").ToString().Equals("N") And dt.Rows(i)("DEV_EFECTIVO_IND").ToString().Equals("N")) Then
-                        'If (dt.Rows(i)("FOPA_CODE").ToString().Equals("0008")) Then
-                        efectivoEgresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_EGRESO_SOLES"))
-                        efectivoEgresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_EGRESO_DOLARES"))
-                        'End If
-                    End If
-
+                If dt.Rows(i)("ANULADO_IND") = "N" Or (dt.Rows(i)("ANULADO_IND") = "S" And dt.Rows(i)("DEV_EFECTIVO_IND") = "N") Then
+                    continuar = True
+                Else
+                    continuar = False
                 End If
 
-            Next
+                If continuar Then
+                    If Not (dt.Rows(i)("PAGO") Is DBNull.Value) Then
+                        If (dt.Rows(i)("PAGO").ToString().Equals("SI")) Then
+                            'INGRESOS---------------------------------------
+                            If (dt.Rows(i)("TIPO_MOVIMIENTO").ToString().Equals("I")) Then
+                                'EFECTIVO
+                                If (dt.Rows(i)("FOPA_CODE").ToString().Equals("0008") Or dt.Rows(i)("FOPA_CODE").ToString().Equals("0009")) Then
+                                    If Not (dt.Rows(i)("DESCRIPCION").ToString().Contains("DEVOLUCION A CLIENTE")) Then
+                                        efectivoIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
+                                        efectivoIngresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
+                                    End If
 
-            '***SE SUMA EL MONTO DE VENTAS SOLO SI NO ESTÁ ANULADO; O EN EL CASO QUE ESTÉ ANULADO SE SUMA
-            'SOLO SI NO SE HA HECHO LA DEVOLUCION DE EFECTIVO AL ANULAR
-            For i As Integer = 0 To dt.Rows.Count - 1
-                If (dt.Rows(i)("PAGO").ToString().Equals("SI")) Then
-                    If (dt.Rows(i)("DCTO_REF_IND").ToString().Equals("V")) Then
-
-                        If dt.Rows(i)("ANULADO_IND").ToString() = "N" Then
-                            'If (dt.Rows(i)("FOPA_CODE").ToString().Equals("0008")) Then
-                            ventastotales += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
-                            ventastotalesDol += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
-                            'End If
-                        Else
-                            If dt.Rows(i)("DEV_EFECTIVO_IND").ToString() = "N" Then
-                                ventastotales += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
-                                ventastotalesDol += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
+                                End If
+                                'TARJETA DE DEBITO  / TARJETA DE CREDITO
+                                If (dt.Rows(i)("FOPA_CODE").ToString().Equals("0005") Or dt.Rows(i)("FOPA_CODE").ToString().Equals("0006")) Then
+                                    If Not (dt.Rows(i)("DESCRIPCION").ToString().Contains("DEVOLUCION A CLIENTE")) Then
+                                        tarjetaIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
+                                        tarjetaIngresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
+                                    End If
+                                End If
+                                'EFECTIVO + TARJETA CREDITO/DEBITO
+                                If (dt.Rows(i)("FOPA_CODE").ToString().Equals("109")) Then
+                                    tarjetaIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
+                                    tarjetaIngresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
+                                End If
                             End If
                         End If
+                        '-------
+                        'EGRESOS---------------------------------------
+                        If (dt.Rows(i)("TIPO_MOVIMIENTO").ToString().Equals("E")) Then
+                            efectivoEgresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_EGRESO_SOLES"))
+                            efectivoEgresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_EGRESO_DOLARES"))
+                        End If
+                        '------
                     End If
                 End If
-
             Next
+
+            ''***SE SUMA EL MONTO DE VENTAS SOLO SI NO ESTÁ ANULADO; O EN EL CASO QUE ESTÉ ANULADO SE SUMA
+            ''SOLO SI NO SE HA HECHO LA DEVOLUCION DE EFECTIVO AL ANULAR
+            'For i As Integer = 0 To dt.Rows.Count - 1
+            '    If (dt.Rows(i)("PAGO").ToString().Equals("SI")) Then
+            '        If (dt.Rows(i)("DCTO_REF_IND").ToString().Equals("V")) Then
+            '            Dim fopa_code As String = dt.Rows(i)("FOPA_CODE").ToString()
+
+            '            If dt.Rows(i)("ANULADO_IND").ToString() = "N" Then
+            '                If fopa_code.Equals("0008") Then ' Efectivo
+            '                    efectivoIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
+            '                    efectivoIngresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
+            '                ElseIf fopa_code.Equals("0005") Or fopa_code.Equals("0006") Then ' Tarjeta
+            '                    TarjetaIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
+            '                    TarjetaIngresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
+            '                End If
+            '            Else
+            '                If dt.Rows(i)("DEV_EFECTIVO_IND").ToString() = "N" Then
+            '                    If fopa_code.Equals("0008") Then ' Efectivo
+            '                        efectivoIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
+            '                        efectivoIngresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
+            '                    ElseIf fopa_code.Equals("0005") Or fopa_code.Equals("0006") Then ' Tarjeta
+            '                        TarjetaIngresoSoles += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_SOLES"))
+            '                        TarjetaIngresoDolares += Convert.ToDecimal(dt.Rows(i)("MONTO_INGRESO_DOLARES"))
+            '                    End If
+            '                End If
+            '            End If
+            '        End If
+            '    End If
+            'Next
 
 
         End If
 
 
-        saldoefectivo = efectivoIngresoSoles - efectivoEgresoSoles
-        saldoefectivoDol = efectivoIngresoDolares - efectivoEgresoDolares
+        totalIngresoSoles = efectivoIngresoSoles + tarjetaIngresoSoles
+        totalIngresoDolares = efectivoIngresoDolares + tarjetaIngresoDolares
+        totalEgresoSoles = efectivoEgresoSoles '+ tarjetaEgresoSoles + cuentasEgresoSoles + chequesEgresoSoles + creditoEgresoSoles
+        totalEgresoDolares = efectivoEgresoDolares '+ tarjetaEgresoDolares + cuentasEgresoDolares + chequesEgresoDolares + creditoEgresoDolares
+
+        saldoEfectivoSoles = efectivoIngresoSoles - efectivoEgresoSoles
+        saldoEfectivoDolares = efectivoIngresoDolares - efectivoEgresoDolares
+        saldoTarjetaSoles = tarjetaIngresoSoles '- tarjetaEgresoSoles
+        saldoTarjetaDolares = tarjetaIngresoDolares '- tarjetaEgresoDolares
+
+        totalSaldoSoles = saldoEfectivoSoles + saldoTarjetaSoles
+        totalSaldoDolares = saldoEfectivoDolares + saldoTarjetaDolares
 
 
 
@@ -248,33 +302,53 @@ Public Class CALREPO : Implements IHttpHandler
         'resumen ejec
         resb.AppendFormat("<table border=""0"" width=""50%"" align='center' >")
         resb.AppendFormat("<tr>")
-        resb.AppendFormat("<td  align='left'>{0}</td>", "")
-        resb.AppendFormat("<td  align='center'>{0}</td>", "TOTAL(S/.)")
-        resb.AppendFormat("<td  align='center'>{0}</td>", "TOTAL($.)")
-        resb.AppendFormat("<td  align='right'>{0}</td>", "")
-        resb.AppendFormat("<td  align='right'>{0}</td>", "TOTAL(S/.)")
-        resb.AppendFormat("<td  align='right'>{0}</td>", "TOTAL($.)")
+        resb.AppendFormat("<td  align='center'>{0}</td>", "")
+        resb.AppendFormat("<td  align='center'>{0}</td>", "INGRESO (S/.)")
+        resb.AppendFormat("<td  align='center'>{0}</td>", "EGRESO (S/.)")
+        resb.AppendFormat("<td  align='center'>{0}</td>", "INGRESO ($.)")
+        resb.AppendFormat("<td  align='center'>{0}</td>", "EGRESO ($.)")
+        resb.AppendFormat("<td  align='center'>{0}</td>", "SALDO (S/.)")
+        resb.AppendFormat("<td  align='center'>{0}</td>", "SALDO ($.)")
         resb.AppendFormat("</tr>")
         resb.AppendFormat("<tr>")
-        resb.AppendFormat("<td  align='left'><strong>{0}</strong></td>", "VENTAS TOTALES")
-        resb.AppendFormat("<td  align='center'><strong>S/.{0}</strong></td>", ventastotales)
-        resb.AppendFormat("<td  align='center'><strong>$.{0}</strong></td>", ventastotalesDol)
-        resb.AppendFormat("<td  align='right'><strong>{0}</strong></td>", "EGRESOS")
-        resb.AppendFormat("<td  align='right'><strong>S/.{0}</strong></td>", efectivoEgresoSoles)
-        resb.AppendFormat("<td  align='right'><strong>$.{0}</strong></td>", efectivoEgresoDolares)
+        resb.AppendFormat("<td  align='left'><strong>{0}</strong></td>", "TOTAL")
+        resb.AppendFormat("<td  align='center'><strong>S/.{0}</strong></td>", totalIngresoSoles)
+        resb.AppendFormat("<td  align='center'><strong>S/.{0}</strong></td>", totalEgresoSoles)
+        resb.AppendFormat("<td  align='center'><strong>$.{0}</strong></td>", totalIngresoDolares)
+        resb.AppendFormat("<td  align='center'><strong>$.{0}</strong></td>", totalEgresoDolares)
+        resb.AppendFormat("<td  align='center'><strong>S/.{0}</strong></td>", totalSaldoSoles)
+        resb.AppendFormat("<td  align='center'><strong>$.{0}</strong></td>", totalSaldoDolares)
+        resb.AppendFormat("</tr>")
+        resb.AppendFormat("<tr>")
+        resb.AppendFormat("<td  align='left'><strong>{0}</strong></td>", "EFECTIVO")
+        resb.AppendFormat("<td  align='center'>S/.{0}</td>", efectivoIngresoSoles)
+        resb.AppendFormat("<td  align='center'>S/.{0}</td>", efectivoEgresoSoles)
+        resb.AppendFormat("<td  align='center'>$.{0}</td>", efectivoIngresoDolares)
+        resb.AppendFormat("<td  align='center'>$.{0}</td>", efectivoEgresoDolares)
+        resb.AppendFormat("<td  align='center'>S/.{0}</td>", saldoEfectivoSoles)
+        resb.AppendFormat("<td  align='center'>$.{0}</td>", saldoEfectivoDolares)
+        resb.AppendFormat("</tr>")
+        resb.AppendFormat("<tr>")
+        resb.AppendFormat("<td  align='left'><strong>{0}</strong></td>", "TARJETA")
+        resb.AppendFormat("<td  align='center'>S/.{0}</td>", TarjetaIngresoSoles)
+        resb.AppendFormat("<td  align='center'>S/.{0}</td>", TarjetaEgresoSoles)
+        resb.AppendFormat("<td  align='center'>$.{0}</td>", TarjetaIngresoDolares)
+        resb.AppendFormat("<td  align='center'>$.{0}</td>", TarjetaEgresoDolares)
+        resb.AppendFormat("<td  align='center'>S/.{0}</td>", saldoTarjetaSoles)
+        resb.AppendFormat("<td  align='center'>$.{0}</td>", saldoTarjetaDolares)
         resb.AppendFormat("</tr>")
         resb.AppendFormat("</table>")
 
-        resb.AppendFormat("<table border=""0"" width=""50%"" align='center' >")
-        resb.AppendFormat("<tr>")
-        resb.AppendFormat("<td  align='left'><strong>{0}</strong></td>", "INGRESOS TOTALES")
-        resb.AppendFormat("<td  align='center'><strong>S/.{0}</strong></td>", efectivoIngresoSoles)
-        resb.AppendFormat("<td  align='center'><strong>$.{0}</strong></td>", efectivoIngresoDolares)
-        resb.AppendFormat("<td  align='right'><strong>{0}</strong></td>", "SALDO EFECTIVO")
-        resb.AppendFormat("<td  align='right'><strong>S/.{0}</strong></td>", saldoefectivo)
-        resb.AppendFormat("<td  align='right'><strong>$.{0}</strong></td>", saldoefectivoDol)
-        resb.AppendFormat("</tr>")
-        resb.AppendFormat("</table>")
+        'resb.AppendFormat("<table border=""0"" width=""50%"" align='center' >")
+        'resb.AppendFormat("<tr>")
+        'resb.AppendFormat("<td  align='left'><strong>{0}</strong></td>", "INGRESOS TOTALES")
+        'resb.AppendFormat("<td  align='center'><strong>S/.{0}</strong></td>", efectivoIngresoSoles)
+        'resb.AppendFormat("<td  align='center'><strong>$.{0}</strong></td>", efectivoIngresoDolares)
+        'resb.AppendFormat("<td  align='right'><strong>{0}</strong></td>", "SALDO EFECTIVO")
+        'resb.AppendFormat("<td  align='right'><strong>S/.{0}</strong></td>", saldoefectivo)
+        'resb.AppendFormat("<td  align='right'><strong>$.{0}</strong></td>", saldoefectivoDol)
+        'resb.AppendFormat("</tr>")
+        'resb.AppendFormat("</table>")
 
         resb.AppendFormat("<br/>")
 

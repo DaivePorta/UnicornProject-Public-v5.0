@@ -270,9 +270,9 @@
                                         PRODUCTO/SERVICIO</th>
                                     <th>PRODUCTO/SERVICIO</th>
                                     <th>CENTRO COSTO</th>
-                                    <th>GRUPO</th>
+                                   <%-- <th>GRUPO</th>
                                     <th>SUB-GRUPO</th>
-                                    <th>MARCA</th>
+                                    <th>MARCA</th>--%>
                                     <th>ALMACÉN</th>
                                     <th>UNIDAD</th>
                                     <th>CANTIDAD</th>

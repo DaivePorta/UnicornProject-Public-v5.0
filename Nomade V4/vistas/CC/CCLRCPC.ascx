@@ -62,7 +62,7 @@
 
                 <div class="rwo-fluid" id="bloqueTipoCambio" style="display:none;" >
                     <div class="span4 offset1">
-                        <strong>TIPO DE CAMBIO: </strong><span>INTERNO - VENTA</span>
+                        <strong>TIPO DE CAMBIO: </strong><span>OFICIAL - VENTA</span>
                     </div>
                     <div class="span3" style="">
                          <strong>AL: </strong><span id="fechaTipoCambio"></span> 

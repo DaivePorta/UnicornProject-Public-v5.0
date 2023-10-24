@@ -205,7 +205,7 @@
                                 <div class="control-group">
                                     <div class="controls">
                                         <select id="cboMotivo" class="span12" data-placeholder="Motivo">
-                                            <option value=""></option>
+                                            <option></option>
                                         </select>
                                     </div>
                                 </div>

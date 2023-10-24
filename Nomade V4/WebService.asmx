@@ -50,7 +50,7 @@ Public Class WebService
         End If
 
         Dim establecimiento As New NOMADE.NC.NCSucursal("bn")
-        Dim dt As DataTable = establecimiento.ListarSucursal(empresa, "", "")
+        Dim dt As DataTable = establecimiento.ListarSucursalFast(empresa, "", "")
         establecimiento = Nothing
 
 

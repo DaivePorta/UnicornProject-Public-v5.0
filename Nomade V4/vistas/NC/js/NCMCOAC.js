@@ -589,6 +589,7 @@ var NCMCOAC = function () {
                             var fecha_vencimiento = dcto.FECHA_VENCIMIENTO;
                             var fecha_detraccion = dcto.FECHA_DETRA;
                             var numero_detraccion = dcto.NUMERO_DETRA;
+                            var nc_indicador = dcto.NOTA_CREDITO_IND;
 
                             if (cod_doc.length !== 0) {
 
@@ -635,10 +636,14 @@ var NCMCOAC = function () {
                                 $("#lblEstadoGasto").html(estado_descripcion);
                                 $("#hfcod_gasto").val(cod_doc);
 
-                                if (estado_code == '2') {
+                                if ((estado_code == '1' || estado_code == '2') && nc_indicador == 'N') {
                                     $("#btnAnularGasto").show();
                                 } else {
                                     $("#btnAnularGasto").hide();
+                                }
+
+                                if (nc_indicador == 'S') {
+                                    $("#lblEstadoGasto").html("TIENE N.CRÉD. PROV.");
                                 }
 
                                 if (ind_compra == "S") {
@@ -665,37 +670,43 @@ var NCMCOAC = function () {
                                                 $(".slt_periodo").show();
                                                 $("#cboPeriodoG").removeAttr("disabled");
                                             } else {                                                
-                                                $("#cboPeriodoG").attr("disabled", "disabled");
-                                                $(".slt_periodo").hide();
-                                                $(".lb_periodo").show();
-                                                $(".cbo_periodo").show();
-                                                if ($("#txtAnioPeriodo").length && $("#txtMesPeriodo").length) {
-                                                    $("#txtAnioPeriodo").val(anio_trib);
-                                                    $("#txtMesPeriodo").val(mes_trib);
+                                                if ($("#cboPeriodoG").val().split("-")[1] == anio_trib && $("#cboPeriodoG").val().split("-")[0] > mes_trib) {//SI EL PERIODO DEL GASTO ES MENOR AL PERIODO ACTUAL DPORTA 19/09/2023
+                                                    $(".lb_periodo").show();
+                                                    $(".slt_periodo").show();
+                                                    $("#cboPeriodoG").removeAttr("disabled");
+                                                    $("#cboPeriodoG").select2("val", "");
                                                 } else {
-                                                    $('<input/>', {
-                                                        'id': 'txtAnioPeriodo',
-                                                        'type': 'hidden',
-                                                        'value': anio_trib
-                                                    }).appendTo('#data_transaction');
-                                                    $('<input/>', {
-                                                        'id': 'txtMesPeriodo',
-                                                        'type': 'hidden',
-                                                        'value': mes_trib
-                                                    }).appendTo('#data_transaction');
+                                                    $("#cboPeriodoG").attr("disabled", "disabled");
+                                                    $(".slt_periodo").hide();
+                                                    $(".lb_periodo").show();
+                                                    $(".cbo_periodo").show();
+                                                    if ($("#txtAnioPeriodo").length && $("#txtMesPeriodo").length) {
+                                                        $("#txtAnioPeriodo").val(anio_trib);
+                                                        $("#txtMesPeriodo").val(mes_trib);
+                                                    } else {
+                                                        $('<input/>', {
+                                                            'id': 'txtAnioPeriodo',
+                                                            'type': 'hidden',
+                                                            'value': anio_trib
+                                                        }).appendTo('#data_transaction');
+                                                        $('<input/>', {
+                                                            'id': 'txtMesPeriodo',
+                                                            'type': 'hidden',
+                                                            'value': mes_trib
+                                                        }).appendTo('#data_transaction');
+                                                    }
+                                                    if ($("#txtPeriodoNoActual").length) {
+                                                        $("#txtPeriodoNoActual").val(periodo);
+                                                    } else {
+                                                        $('<input/>', {
+                                                            'id': 'txtPeriodoNoActual',
+                                                            'type': 'text',
+                                                            'class': 'span12',
+                                                            'value': periodo
+                                                        }).appendTo('.cbo_periodo');
+                                                    }
+                                                    $("#txtPeriodoNoActual").attr("disabled", "disabled");
                                                 }
-                                                if ($("#txtPeriodoNoActual").length) {
-                                                    $("#txtPeriodoNoActual").val(periodo);
-                                                } else {
-                                                    $('<input/>', {
-                                                        'id': 'txtPeriodoNoActual',
-                                                        'type': 'text',
-                                                        'class': 'span12',
-                                                        'value': periodo
-                                                    }).appendTo('.cbo_periodo');
-                                                }
-                                                
-                                                $("#txtPeriodoNoActual").attr("disabled", "disabled");
                                             }
                                         } else {
                                             $("#cboPeriodoG").select2("val", "");

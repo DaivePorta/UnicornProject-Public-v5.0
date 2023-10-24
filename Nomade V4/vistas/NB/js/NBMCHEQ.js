@@ -111,7 +111,7 @@ var NBMCHEQ = function () {
 
         $.ajax({
             type: "post",
-            url: "vistas/GL/ajax/GLMLETR.ashx?flag=L",
+            url: "vistas/GL/ajax/GLMLETR.ashx?flag=L-2",
             contenttype: "application/json;",
             datatype: "json",
             async: true,

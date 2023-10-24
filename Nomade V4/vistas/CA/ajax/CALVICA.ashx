@@ -62,9 +62,9 @@ Public Class CALVICA : Implements IHttpHandler
                     res = resb.ToString()
                 Case "1" 'lista sucursales
                     context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = ncSucursal.ListarSucursal(p_CTLG_CODE, "", "A")
+                    dt = ncSucursal.ListarSucursalFast(p_CTLG_CODE, "", "A")
                     If Not (dt Is Nothing) Then
-                        dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
+                        'dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
                         resb.Append("[")
                         For Each MiDataRow As DataRow In dt.Rows
                             resb.Append("{")
@@ -85,6 +85,7 @@ Public Class CALVICA : Implements IHttpHandler
 
                     dt = caja.ListarCajerosCaja(" ", p_USUA_ID, p_CTLG_CODE, If(p_FILTRO = "CAJAS", "", p_SCSL_CODE), If(p_FILTRO = Nothing, "NORMAL", p_FILTRO))
                     If Not (dt Is Nothing) Then
+                        dt = SortDataTableColumn(dt, "DESCRIPCION_CAJA", "ASC")
                         resb.Append("[")
                         For Each row As DataRow In dt.Rows
                             resb.Append("{")
@@ -99,6 +100,40 @@ Public Class CALVICA : Implements IHttpHandler
                             End If
                             resb.Append("""TIPO_CAJA"":""" & row("TIPO_CAJA").ToString & """,")
                             If p_FILTRO = "CAJAS" Then
+                                resb.Append("""ESTADO"":""" & row("ESTADO").ToString & """,")
+                                resb.Append("""SUCURSAL"":""" & row("SUCURSAL").ToString & """")
+                            Else
+                                resb.Append("""ESTADO"":""" & row("ESTADO").ToString & """")
+                            End If
+                            resb.Append("},")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
+                Case "2.5" 'Listar Cajas POR USUARIO DPORTA 08/08/2023
+                    Dim caja As New Nomade.NC.NCCaja("BN")
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    p_FILTRO = context.Request("p_FILTRO")
+
+                    dt = caja.ListarCajerosCaja_FAST(" ", p_USUA_ID, p_CTLG_CODE, If(p_FILTRO = "CAJAS_FAST", "", p_SCSL_CODE), If(p_FILTRO = Nothing, "NORMAL_FAST", p_FILTRO))
+                    If Not (dt Is Nothing) Then
+                        dt = SortDataTableColumn(dt, "DESCRIPCION_CAJA", "ASC")
+                        resb.Append("[")
+                        For Each row As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""CAJA_CODE"":""" & row("CAJA_CODE").ToString & """,")
+                            resb.Append("""DESCRIPCION_CAJA"":""" & row("DESCRIPCION_CAJA").ToString & """,")
+                            resb.Append("""ESTADO_CAJA"":""" & row("ESTADO_CAJA").ToString & """,")
+
+                            If p_FILTRO <> "CAJAS_FAST" Then
+                                resb.Append("""MONTO_CAJA"":""" & row("MONTO_CAJA").ToString & """,")
+                            Else
+                                resb.Append("""MONTO_CAJA"":""0"",")
+                            End If
+                            resb.Append("""TIPO_CAJA"":""" & row("TIPO_CAJA").ToString & """,")
+                            If p_FILTRO = "CAJAS_FAST" Then
                                 resb.Append("""ESTADO"":""" & row("ESTADO").ToString & """,")
                                 resb.Append("""SUCURSAL"":""" & row("SUCURSAL").ToString & """")
                             Else

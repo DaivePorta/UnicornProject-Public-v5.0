@@ -427,7 +427,7 @@
 
                                         <div class="span12" style="margin-left: 0" id="documentosadd">
                                             <div class="span12" id="div_mas_dctoreg_0" style="margin-left: 0">
-                                                <div class="span2">
+                                                <div class="span1">
                                                     <div class="control-group">
                                                         <label class="control-label" for="cboDctoOrigen">
                                                             Doc. Origen</label>
@@ -447,13 +447,26 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="span1" id="NroKardex">
+                                                    <div class="control-group">
+                                                        <label class="span12 control-label" for="txt_kardex_orig_0">
+                                                            ID Kardex</label>
+                                                    </div>
+                                                </div>
+                                                <div class="span2" id="txtKardex">
+                                                    <div class="control-group">
+                                                        <div class="controls">
+                                                            <input id="txtKardexDctoOrigen_1" class="txtKardexDctoOrigen inputOrigenKardex numeros span12" type="text" disabled style="text-align: center" />                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="span1" id="NroDocs">
                                                     <div class="control-group">
                                                         <label class="span12 control-label" for="txt_num_ser_orig_0">
                                                             Nro</label>
                                                     </div>
                                                 </div>
-                                                <div class="span3" id="txtDocs">
+                                                <div class="span2" id="txtDocs">
                                                     <div class="control-group">
                                                         <div class="controls">
                                                             <input id="txtCodDctoOrigen_1" class="txtCodDctoOrigen inputOrigen" type="hidden" />
@@ -461,8 +474,8 @@
                                                             <input id="txtNroDctoOrigen_1" class="txtNroDctoOrigen inputOrigen numeros span8" type="text" disabled style="text-align: center; margin-left: -2px;" />
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="span3" id="btnsDocs">
+                                                </div>                                                
+                                                <div class="span2" id="btnsDocs">
                                                     <div class="control-group">
                                                         <div class="controls">
                                                             <a id="btnBuscarDctoOrigen" onclick='BuscarDocumentoOrigen(this)' class="btn blue buscar"><i class="icon-search" style="line-height: initial;"></i></a>
@@ -1710,11 +1723,12 @@
                         <tr>
                             <%--<th>NRO. ATENCION</th>    --%>                        
                             <th>NRO. ATENCIÓN</th>
+                            <th>ID KARDEX</th>
                             <th>CLIENTE</th>
                             <th>MONTO</th>
                             <th>ABOGADO</th>
                             <th>FECHA EMISIÓN</th>                            
-                            <th>PIDM ABOGADO</th>
+                            <th>PIDM ABOGADO</th>                            
                         </tr>
                     </thead>
                     <tbody></tbody>

@@ -2,7 +2,7 @@
 var arrayActividad = [];
 DatosReniecCargados = new Array();
 var ide;
-var city = '';//dporta
+//var city = '';//dporta
 var token_migo = '';//dporta
 var NCMCLIR = function () {
 
@@ -838,7 +838,7 @@ function CargarDatosCliente(nuevoInd, datos) {
     } else {
         $("#divPersonaNatural").slideDown();
         $("#divPersonaJuridica").hide();
-        $("#txtDireccionN").val(city); //DPORTA
+        $("#txtDireccionN").val("TRUJILLO"); //DPORTA
     }
 }
 
@@ -1126,7 +1126,7 @@ function validarPersonaJuridica() {
         var jsonActividades = arrayActividad;
         var existeActividad = false;
         for (var i = 0; i < jsonActividades.length; i++) {
-            if (actividad == jsonActividades[i]) {
+            if (actividad == $.trim(jsonActividades[i].replace('(', '').replace(')', ''))) {
                 existeActividad = true;
                 break;
             }
@@ -1493,25 +1493,25 @@ function cargarParametrosSistema() {
     });
 
     //DIRECCION(CIUDAD) POR DEFECTO
-    $.ajax({
-        type: "post",
-        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=CIDE",
-        contenttype: "application/json;",
-        datatype: "json",
-        async: true,
-        success: function (datos) {
-            if (datos != null) {
-                if (datos[0].VALOR == "SI") {
-                    city = datos[0].DESCRIPCION_DETALLADA;
+    //$.ajax({
+    //    type: "post",
+    //    url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=CIDE",
+    //    contenttype: "application/json;",
+    //    datatype: "json",
+    //    async: true,
+    //    success: function (datos) {
+    //        if (datos != null) {
+    //            if (datos[0].VALOR == "SI") {
+    //                city = datos[0].DESCRIPCION_DETALLADA;
 
-                } else {
-                    city = "TRUJILLO";
-                }
-            } else {
-                city = "TRUJILLO";
-            }
-        },
-    });
+    //            } else {
+    //                city = "TRUJILLO";
+    //            }
+    //        } else {
+    //            city = "TRUJILLO";
+    //        }
+    //    },
+    //});
 
     //TOKEN PARA PODER HACER LAS CONSULTAS DE LOS N° DE DOCS. A SUNAT
     $.ajax({
@@ -1565,7 +1565,7 @@ function CargarDatosSunat() {
 
 
     $("#txtRazonSocial").val(eliminarDiacriticos(DatosSunatCargados.nombre_o_razon_social));
-    $("#txtDireccionJ").val(DatosSunatCargados.direccion == ('-' || '') ? city : eliminarDiacriticos(DatosSunatCargados.direccion));
+    $("#txtDireccionJ").val(DatosSunatCargados.direccion == '-' || DatosSunatCargados.direccion == '' ? "TRUJILLO" : eliminarDiacriticos(DatosSunatCargados.direccion));
     //$("#txtTelefonoJ").val(DatosSunatCargados.TELEFONO);
     $("#txtNombreComercial").val(eliminarDiacriticos(DatosSunatCargados.nombre_o_razon_social));
     //$("#txtUbigeo").val((DatosSunatCargados.direccion == ('-' || '') ? "130101": DatosSunatCargados.ubigeo));

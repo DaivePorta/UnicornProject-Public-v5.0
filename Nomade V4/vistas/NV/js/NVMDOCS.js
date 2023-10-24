@@ -228,7 +228,7 @@ var NVMDOCS = function () {
         if (dPermanente == null) {
             $.ajax({
                 type: "post",
-                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CTLG&USUA_ID=" + $('#ctl00_txtus').val(),
+                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=CTLG_SHORT&USUA_ID=" + $('#ctl00_txtus').val(),
                 contenttype: "application/json;",
                 datatype: "json",
                 async: false,
@@ -1070,33 +1070,74 @@ var NVMDOCS = function () {
         $("#btnAgregarDivOrigen").on("click", function () {
             if (vErrors(['cboDctoOrigen'])) {
                 if ($("#cboDctoOrigen").val() != "P0027") {
-                    nroFilasDctos++;
-                    $("#documentosadd").append("<div class='span12 divDctoOrigenExtra' style='margin-left: 0px'>" +
-                        "<div class='span5'></div>" +
-                        "<div class='span1'>" +
-                        "<div class='control-group'>" +
-                        "<label class='span12 control-label'>Nro</label>" +
-                        "</div>" +
-                        "</div>" +
-                        "<div class='span3'>" +
-                        "<div class='control-group'>" +
-                        "<div class='controls'>" +
-                        "<input id='txtCodDctoOrigen_" + nroFilasDctos + "' class='txtCodDctoOrigen inputOrigen' type='hidden' />" +
-                        "<input id='txtSerieDctoOrigen_" + nroFilasDctos + "' class='txtSerieDctoOrigen inputOrigen numeros span4' type='text' disabled style='text-align: center'/>" +
-                        "<input id='txtNroDctoOrigen_" + nroFilasDctos + "' class='txtNroDctoOrigen inputOrigen numeros span8' type='text' style='margin-left: 2px; text-align: center' disabled/>" +
-                        "</div>" +
-                        "</div>" +
-                        "</div>" +
-                        "<div class='span3'>" +
-                        "<div class='control-group'>" +
-                        "<div class='controls'>" +
-                        "<a onclick='BuscarDocumentoOrigen(this)' class='btn blue buscar'><i class='icon-search' style='line-height: initial;'></i></a>" +
-                        "&nbsp;<a class='btn red remove btnRemoverDctoOrigen' onclick='EliminarDatosDocumentoOrigen(this)'><i class='icon-minus' style='line-height: initial;'></i></a>" +
-                        "</div>" +
-                        "</div>" +
-                        "</div>" +
-                        "</div>");
-
+                    if ($("#cboDctoOrigen").val() == "XXXX") {
+                        nroFilasDctos++;
+                        $("#documentosadd").append("<div class='span12 divDctoOrigenExtra' style='margin-left: 0px'>" +
+                            "<div class='span4'></div>" +
+                            "<div class='span1'>" +
+                            "<div class='control-group'>" +
+                            "<label class='span12 control-label'>ID Kardex</label>" +
+                            "</div>" +
+                            "</div>" +
+                            "<div class='span2'>" +
+                            "<div class='control-group'>" +
+                            "<div class='controls'>" +
+                            //"<input id='txtCodKardexOrigen_" + nroFilasDctos + "' class='txtCodKardexOrigen inputOrigenKardex' type='hidden' />" +
+                            "<input id='txtKardexDctoOrigen_" + nroFilasDctos + "' class='txtKardexDctoOrigen inputOrigenKardex numeros span12' type='text' disabled style='text-align: center'/>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>" +
+                            "<div class='span1'>" +
+                            "<div class='control-group'>" +
+                            "<label class='span12 control-label'>Nro</label>" +
+                            "</div>" +
+                            "</div>" +
+                            "<div class='span2'>" +
+                            "<div class='control-group'>" +
+                            "<div class='controls'>" +
+                            "<input id='txtCodDctoOrigen_" + nroFilasDctos + "' class='txtCodDctoOrigen inputOrigen' type='hidden' />" +
+                            "<input id='txtSerieDctoOrigen_" + nroFilasDctos + "' class='txtSerieDctoOrigen inputOrigen numeros span4' type='text' disabled style='text-align: center'/>" +
+                            "<input id='txtNroDctoOrigen_" + nroFilasDctos + "' class='txtNroDctoOrigen inputOrigen numeros span8' type='text' style='margin-left: 2px; text-align: center' disabled/>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>" +
+                            "<div class='span2'>" +
+                            "<div class='control-group'>" +
+                            "<div class='controls'>" +
+                            "<a onclick='BuscarDocumentoOrigen(this)' class='btn blue buscar'><i class='icon-search' style='line-height: initial;'></i></a>" +
+                            "&nbsp;<a class='btn red remove btnRemoverDctoOrigen' onclick='EliminarDatosDocumentoOrigen(this)'><i class='icon-minus' style='line-height: initial;'></i></a>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>");
+                    } else {
+                        nroFilasDctos++;
+                        $("#documentosadd").append("<div class='span12 divDctoOrigenExtra' style='margin-left: 0px'>" +
+                            "<div class='span4'></div>" +
+                            "<div class='span1'>" +
+                            "<div class='control-group'>" +
+                            "<label class='span12 control-label'>Nro</label>" +
+                            "</div>" +
+                            "</div>" +
+                            "<div class='span2'>" +
+                            "<div class='control-group'>" +
+                            "<div class='controls'>" +
+                            "<input id='txtCodDctoOrigen_" + nroFilasDctos + "' class='txtCodDctoOrigen inputOrigen' type='hidden' />" +
+                            "<input id='txtSerieDctoOrigen_" + nroFilasDctos + "' class='txtSerieDctoOrigen inputOrigen numeros span4' type='text' disabled style='text-align: center'/>" +
+                            "<input id='txtNroDctoOrigen_" + nroFilasDctos + "' class='txtNroDctoOrigen inputOrigen numeros span8' type='text' style='margin-left: 2px; text-align: center' disabled/>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>" +
+                            "<div class='span2'>" +
+                            "<div class='control-group'>" +
+                            "<div class='controls'>" +
+                            "<a onclick='BuscarDocumentoOrigen(this)' class='btn blue buscar'><i class='icon-search' style='line-height: initial;'></i></a>" +
+                            "&nbsp;<a class='btn red remove btnRemoverDctoOrigen' onclick='EliminarDatosDocumentoOrigen(this)'><i class='icon-minus' style='line-height: initial;'></i></a>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>");
+                    }                   
                 } else {
                     infoCustom2("Para agregar otra plantilla sólo vueva a realizar la búsqueda.");
                 }
@@ -1118,14 +1159,15 @@ var NVMDOCS = function () {
             if ($("#cboDctoOrigen").val() == "XXXX") {//SI EL DOCUMENTO DE ORIGEN ES ATENCIONES DE SISNOT
                 $("#divFilaCliente2").show();
                 $("#txtClienteReferencial").val("");
-                $("#NroDocs, #txtDocs, #btnsDocs").show();
+                $("#NroDocs, #txtDocs, #btnsDocs,  #NroKardex, #txtKardex").show();
             } else {
                 $("#divFilaCliente2").hide();
                 $("#txtClienteReferencial").val("");
                 if ($("#cboDctoOrigen").val() == "") {
-                    $("#NroDocs, #txtDocs, #btnsDocs").hide();
+                    $("#NroDocs, #txtDocs, #btnsDocs, #NroKardex, #txtKardex").hide();
                 } else {
                     $("#NroDocs, #txtDocs, #btnsDocs").show();
+                    $("#NroKardex, #txtKardex").hide();
                 }
             }
 
@@ -2541,7 +2583,7 @@ var NVMDOCS = function () {
             //Bloquear("ventana");
             $.ajax({
                 type: "POST",
-                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LDOCC&p_FVBVTAC_CODE=" + cod,
+                url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LVU_CAB&p_FVBVTAC_CODE=" + cod,
                 contentType: "application/json;",
                 dataType: "json",
                 success: function (datos) {
@@ -2562,7 +2604,7 @@ var NVMDOCS = function () {
                     $("#txtNumDctoComp").val(datos[0].CODIGO);
                     $("#txtNumSec").val(datos[0].SECUENCIA);
                     //DPORTA
-                    $("#txtNumAt").val(datos[0].DCTO_CODE_REF);
+                    //$("#txtNumAt").val(datos[0].DCTO_CODE_REF);
                     $("#divFilaCliente2").hide();
                     if ($("#hfCompletoInd").val() == "S") {
                         $("#div_chk_descuento,#div_chk_AplicaDescuento").hide();
@@ -2595,7 +2637,7 @@ var NVMDOCS = function () {
 
 
                     //F4 - Documento venta
-                    $("#cboDocumentoVenta").select2("val", datos[0].DCTO_CODE).change();
+                    //$("#cboDocumentoVenta").select2("val", datos[0].DCTO_CODE).change();
                     //F5                     
                     if ($("#hfCompletoInd").val() == "S") {
                         $("#txt_fec_emision").val(datos[0].FECHA_EMISION);
@@ -2613,6 +2655,8 @@ var NVMDOCS = function () {
                     var codigos = (datos[0].DCTO_CODE_REF).split(",");
                     var series = (datos[0].DCTO_REF_SERIE).split(",");
                     var nros = (datos[0].DCTO_REF_NRO).split(",");
+                    var kardex = (datos[0].KARDEX).split(",");
+
                     var c = 0;
                     nroFilasDctos = 1;
                     for (var i = 0; i < codigos.length; i++) {
@@ -2623,6 +2667,7 @@ var NVMDOCS = function () {
                         $("#txtCodDctoOrigen_" + c + "").val(codigos[i]);
                         $("#txtSerieDctoOrigen_" + c + "").val(series[i]);
                         $("#txtNroDctoOrigen_" + c + "").val(nros[i]);
+                        $("#txtKardexDctoOrigen_" + c + "").val(kardex[i]);
                     }
                     if ($("#hfCompletoInd").val() == "S") {
                         $('.buscar, .add, .remove').css('display', 'none');//OCULTA LOS BOTONES DE DOC. ORIGEN
@@ -2666,11 +2711,11 @@ var NVMDOCS = function () {
                         $("#divBtnsMantenimiento,#btnBuscadocs").attr("style", "display:none");
 
                         //F4-DG
-                        $("#cboSerieDocVenta").empty();
-                        $("#cboSerieDocVenta").append('<option value="' + datos[0].CODIGO + '" data-ticket="' + datos[0].FORMATO_TICKET_IND + '" >' + datos[0].DCTO_SERIE + '</option>');
-                        $("#cboSerieDocVenta").select2("val", datos[0].CODIGO);
-                        $("#txtNroDocVenta").val(datos[0].DCTO_NRO);
-                        $("#lblTipoCorrelativo").html("[" + datos[0].COD_AUT + "]");
+                        //$("#cboSerieDocVenta").empty();
+                        //$("#cboSerieDocVenta").append('<option value="' + datos[0].CODIGO + '" data-ticket="' + datos[0].FORMATO_TICKET_IND + '" >' + datos[0].DCTO_SERIE + '</option>');
+                        //$("#cboSerieDocVenta").select2("val", datos[0].CODIGO);
+                        //$("#txtNroDocVenta").val(datos[0].DCTO_NRO);
+                        //$("#lblTipoCorrelativo").html("[" + datos[0].COD_AUT + "]");
 
                         //F5 DC
                         var estado = "";
@@ -2773,10 +2818,10 @@ var NVMDOCS = function () {
                     $("#lblImporteTotal").html(datos[0].VALOR);
                     //FIN CARGA TOTALES
 
-                    var validarDoc = $('#cboSerieDocVenta').text();
-                    if (validarDoc.substring(0, 1) == 'F' || validarDoc.substring(0, 1) == 'B') {
-                        //$('#btnEFac').removeClass('hidden');
-                    }
+                    //var validarDoc = $('#cboSerieDocVenta').text();
+                    //if (validarDoc.substring(0, 1) == 'F' || validarDoc.substring(0, 1) == 'B') {
+                    //    //$('#btnEFac').removeClass('hidden');
+                    //}
 
                     var monedaCabecera = datos[0].MONEDA;
                     var cont = 0;
@@ -2930,6 +2975,13 @@ var NVMDOCS = function () {
                                     $(".btnEliminarDetalle").remove();
                                     $("#tabla_det").DataTable().column(0).visible(false);
                                     $(".slcNombProd").attr("disabled", "disabled");
+                                    $("#cboDocumentoVenta").select2("val", datos[0].DCTO_CODE).change();
+                                    $("#cboSerieDocVenta").empty();
+                                    $("#cboSerieDocVenta").append('<option value="' + datos[0].CODIGO + '" data-ticket="' + datos[0].FORMATO_TICKET_IND + '" >' + datos[0].DCTO_SERIE + '</option>');
+                                    $("#cboSerieDocVenta").select2("val", datos[0].CODIGO);
+                                    $("#txtNroDocVenta").val(datos[0].DCTO_NRO);
+                                    $("#lblTipoCorrelativo").html("[" + datos[0].COD_AUT + "]");
+                                    $('#cboSerieDocVenta').attr('disabled', true);
                                 } else {
                                     $("#rbRedondeo,#rbDonacion").removeAttr("disabled");
                                     $(".btnEliminarDetalle").remove();
@@ -6206,7 +6258,7 @@ function AgregarDetalleVenta() {
     var unidadMedidaCode = $("#cbo_und_medida :selected").val();
     var unidadMedida = $("#cbo_und_medida :selected").html();
     var precioUnidad = $("#txtPrecioUnitario").val().replace(",", ".");
-    var glosa = $.trim($("#txt_glosa_det").val());
+    var glosa = $.trim($("#txt_glosa_det").val().replace(/<\/?[^>]+(>|$)/gi, ""));
 
     //Guardar Almacen
     var almacenCode = $("#cbo_Sucursal :selected").val();
@@ -8017,7 +8069,7 @@ function GrabarDctoVenta() {
     }
 
     if ($("#cboDctoOrigen").val() != "") {
-        if (vErrors(['cboDocumentoVenta', 'cbo_direccion', 'cboVendedor', 'txtClientes', 'txtNroDctoCliente', 'cbo_Empresa', 'cbo_Sucursal', 'txt_valor_cambio_Oficial', 'txt_valor_cambio', 'txtCodDctoOrigen_1', 'txtSerieDctoOrigen_1', 'txtNroDctoOrigen_1'])) {
+        if (vErrors(['cboDocumentoVenta', 'cbo_direccion', 'cboVendedor', 'txtClientes', 'txtNroDctoCliente', 'cbo_Empresa', 'cbo_Sucursal', 'txt_valor_cambio_Oficial', 'txt_valor_cambio', 'txtCodDctoOrigen_1', 'txtSerieDctoOrigen_1', 'txtNroDctoOrigen_1','txtKardexDctoOrigen_1'])) {
             continuar = true;
         } else {
             continuar = false;
@@ -8250,7 +8302,7 @@ function GrabarDctoVenta() {
             data.append('p_FECHA_EMISION', $("#txt_fec_emision").val());
             data.append('p_FECHA_TRANS', $("#txt_fec_transaccion").val());
             data.append('p_FECHA_VENCIMIENTO', $("#txt_fec_vencimiento").val());
-            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val());
+            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val().replace(/<\/?[^>]+(>|$)/gi, ""));
             data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
             data.append('p_SCSL_CODE', $("#cbo_Sucursal").val());
             // data.append('p_CAJA_CODE', '');
@@ -8309,6 +8361,21 @@ function GrabarDctoVenta() {
                         nros += $(inputs3[i]).val() + ",";
                     }
                 }
+
+                if ($("#cboDctoOrigen").val() == "XXXX") {
+                    var kardex = "";
+                    var inputs4 = $(".txtKardexDctoOrigen")
+
+                    for (var i = 0; i < inputs4.length; i++) {
+                        if (i == inputs4.length - 1) {
+                            kardex += $(inputs4[i]).val();
+                        } else {
+                            kardex += $(inputs4[i]).val() + ",";
+                        }
+                    }
+                }
+                data.append('p_KARDEX', kardex);
+
                 data.append('p_CODE_REF', cods);
                 data.append('p_DCTO_CODE_REF', $("#cboDctoOrigen").select2("val"));
                 data.append('p_DCTO_SERIE_REF', series);
@@ -8427,7 +8494,7 @@ function ActualizarDctoVenta() {
     //Validaciones iniciales antes de guardado
     var continuar = false;
     if ($("#cboDctoOrigen").val() != "") {
-        if (vErrors(['cboDocumentoVenta', 'cboVendedor', 'cbo_direccion', 'txtClientes', 'txtNroDctoCliente', 'cbo_Empresa', 'cbo_Sucursal', 'txt_valor_cambio_Oficial', 'txt_valor_cambio', 'txtCodDctoOrigen_1', 'txtSerieDctoOrigen_1', 'txtNroDctoOrigen_1'])) {
+        if (vErrors(['cboDocumentoVenta', 'cboVendedor', 'cbo_direccion', 'txtClientes', 'txtNroDctoCliente', 'cbo_Empresa', 'cbo_Sucursal', 'txt_valor_cambio_Oficial', 'txt_valor_cambio', 'txtCodDctoOrigen_1', 'txtSerieDctoOrigen_1', 'txtNroDctoOrigen_1', 'txtKardexDctoOrigen_1'])) {
             continuar = true;
         } else {
             continuar = false;
@@ -8659,7 +8726,7 @@ function ActualizarDctoVenta() {
             data.append('p_FECHA_EMISION', $("#txt_fec_emision").val());
             data.append('p_FECHA_TRANS', $("#txt_fec_transaccion").val());
             data.append('p_FECHA_VENCIMIENTO', $("#txt_fec_vencimiento").val());
-            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val());
+            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val().replace(/<\/?[^>]+(>|$)/gi, ""));
             data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
             data.append('p_SCSL_CODE', $("#cbo_Sucursal").val());
             // data.append('p_CAJA_CODE', '');
@@ -8718,6 +8785,21 @@ function ActualizarDctoVenta() {
                         nros += $(inputs3[i]).val() + ",";
                     }
                 }
+
+                if ($("#cboDctoOrigen").val() == "XXXX") {
+                    var kardex = "";
+                    var inputs4 = $(".txtKardexDctoOrigen")
+
+                    for (var i = 0; i < inputs4.length; i++) {
+                        if (i == inputs4.length - 1) {
+                            kardex += $(inputs4[i]).val();
+                        } else {
+                            kardex += $(inputs4[i]).val() + ",";
+                        }
+                    }
+                }
+                data.append('p_KARDEX', kardex);
+
                 data.append('p_CODE_REF', cods);
                 data.append('p_DCTO_CODE_REF', $("#cboDctoOrigen").select2("val"));
                 data.append('p_DCTO_SERIE_REF', series);
@@ -8822,7 +8904,7 @@ function CompletarDctoVenta() {
 
 
     if ($("#cboDctoOrigen").val() != "") {
-        if (vErrors(['cboDocumentoVenta', 'cboVendedor', 'cbo_direccion', 'txtClientes', 'cboDocumentoVenta', 'cbo_Empresa', 'txtNroDctoCliente', 'cbo_Sucursal', 'cboSerieDocVenta', 'txtNroDocVenta', 'txt_valor_cambio_Oficial', 'txt_valor_cambio', 'txtCodDctoOrigen_1', 'txtSerieDctoOrigen_1', 'txtNroDctoOrigen_1'])) {
+        if (vErrors(['cboDocumentoVenta', 'cboVendedor', 'cbo_direccion', 'txtClientes', 'cboDocumentoVenta', 'cbo_Empresa', 'txtNroDctoCliente', 'cbo_Sucursal', 'cboSerieDocVenta', 'txtNroDocVenta', 'txt_valor_cambio_Oficial', 'txt_valor_cambio', 'txtCodDctoOrigen_1', 'txtSerieDctoOrigen_1', 'txtNroDctoOrigen_1', 'txtKardexDctoOrigen_1'])) {
             continuar = true;
         } else {
             continuar = false;
@@ -8885,7 +8967,7 @@ function CompletarDctoVenta() {
             var detalles = "";
             var detalles_bon = "";
             var detalles_mue = "";
-            Bloquear("ventana");
+            //Bloquear("ventana");
             if ($("#cbo_moneda :selected").attr("data-tipo") == "MOBA") {
                 for (var i = 0; i < detallesVenta.length; i++) {
                     detalles += ValidaCaracter(detallesVenta[i].ITEM) + ";" +
@@ -9045,7 +9127,7 @@ function CompletarDctoVenta() {
             data.append('p_FECHA_EMISION', $("#txt_fec_emision").val());
             data.append('p_FECHA_TRANS', $("#txt_fec_transaccion").val());
             data.append('p_FECHA_VENCIMIENTO', $("#txt_fec_vencimiento").val());
-            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val());
+            data.append('p_CMNT_DCTO', ($("#txt_comentario").val() == "" || $("#txt_comentario").val().length == 0) ? "Venta de Mercaderia" : $("#txt_comentario").val().replace(/<\/?[^>]+(>|$)/gi, ""));
             data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
             data.append('p_SCSL_CODE', $("#cbo_Sucursal").val());
             // data.append('p_CAJA_CODE', '');
@@ -9105,6 +9187,21 @@ function CompletarDctoVenta() {
                         nros += $(inputs3[i]).val() + ",";
                     }
                 }
+
+                if ($("#cboDctoOrigen").val() == "XXXX") {
+                    var kardex = "";
+                    var inputs4 = $(".txtKardexDctoOrigen")
+
+                    for (var i = 0; i < inputs4.length; i++) {
+                        if (i == inputs4.length - 1) {
+                            kardex += $(inputs4[i]).val();
+                        } else {
+                            kardex += $(inputs4[i]).val() + ",";
+                        }
+                    }
+                }
+                data.append('p_KARDEX', kardex);
+
                 data.append('p_CODE_REF', cods);
                 data.append('p_DCTO_CODE_REF', $("#cboDctoOrigen").select2("val"));
                 data.append('p_DCTO_SERIE_REF', series);
@@ -9216,42 +9313,82 @@ function CompletarDctoVenta() {
     }
 }
 
-function guardarQR() {
-    //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 
-    var NombreQR = $('#codigoQR img').attr('src');
+//function guardarQR() {
+//    //CAPTURA LA IMAGEN DEL QR CODIFICADA EN BASE64 
+//    var NombreQR = $('#codigoQR img').attr('src');
 
-    var qrData = new FormData();
-    qrData.append('p_IMGQR', NombreQR);
+//    var qrData = new FormData();
+//    qrData.append('p_IMGQR', NombreQR);
 
-    $.ajax({
-        type: "post",
-        url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=GQR_VENTA&p_FVBVTAC_CODE=" + $("#txtNumDctoComp").val(),
-        data: qrData,
-        async: false,
-        contentType: false,
-        processData: false,
-        success: function (res) {
-            if (res != "OK") {
-                noexito();
-            }
-        },
-        error: function () {
-            alertCustom("No se guardaron correctamente los datos!")
-        }
-    });
-}
+//    $.ajax({
+//        type: "post",
+//        url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=GQR_VENTA&p_FVBVTAC_CODE=" + $("#txtNumDctoComp").val(),
+//        data: qrData,
+//        async: false,
+//        contentType: false,
+//        processData: false,
+//        success: function (res) {
+//            if (res != "OK") {
+//                noexito();
+//            }
+//        },
+//        error: function () {
+//            alertCustom("No se guardaron correctamente los datos!")
+//        }
+//    });
+//}
 
-function verificarFormatoTicket(tipoDoc) {
-    //Bloquear("ventana");
+//function verificarFormatoTicket(tipoDoc) {
+//    //Bloquear("ventana");
+
+//    var data = new FormData();
+//    data.append('DOC_CODE', tipoDoc);
+//    data.append('CTLG', $("#cbo_Empresa").val());
+//    data.append('SCSL', $("#cbo_Sucursal").val());
+
+//    var jqxhr = $.ajax({
+//        type: "POST",
+//        url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=FORTICK",
+//        contentType: false,
+//        data: data,
+//        processData: false,
+//        async: false,
+//        cache: false
+//    })
+//        .success(function (datos) {
+//            //Desbloquear("ventana");
+//            if (datos != null) {
+//                if (datos[0].FORMATO_TICKET == "SI") {
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            } else {
+//                return false;
+//                //noexito();
+//            }
+//        })
+//        .error(function () {
+//            //Desbloquear("ventana");
+//            //noexito();
+//        });
+//    return jqxhr.responseText;
+
+//}
+
+//Imprimir dcto venta
+function ImprimirDctoVenta() {
 
     var data = new FormData();
-    data.append('DOC_CODE', tipoDoc);
-    data.append('CTLG', $("#cbo_Empresa").val());
-    data.append('SCSL', $("#cbo_Sucursal").val());
+    data.append('p_CODE', $("#txtNumDctoComp").val());
+    data.append('p_CTA_DETRACCION', cta_detraccion.toString())
+    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    //data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+    data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
 
     var jqxhr = $.ajax({
         type: "POST",
-        url: "vistas/nv/ajax/NVMDOCV.ashx?OPCION=FORTICK",
+        url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
         contentType: false,
         data: data,
         processData: false,
@@ -9259,103 +9396,96 @@ function verificarFormatoTicket(tipoDoc) {
         cache: false
     })
         .success(function (datos) {
-            //Desbloquear("ventana");
             if (datos != null) {
-                if (datos[0].FORMATO_TICKET == "SI") {
-                    return true;
-                } else {
-                    return false;
-                }
+
+                $("#divDctoImprimir").html(datos);
+                setTimeout(function () {
+                    window.print();
+                }, 0.0000000000000001)
+
             } else {
-                return false;
-                //noexito();
+                noexito();
             }
         })
         .error(function () {
-            //Desbloquear("ventana");
-            //noexito();
+            noexito();
         });
-    return jqxhr.responseText;
 
-}
-
-//Imprimir dcto venta
-function ImprimirDctoVenta() {
     //Bloquear("ventana");
-    let ticket = $("#cboSerieDocVenta :selected").attr("data-ticket");//DPORTA
+    //let ticket = $("#cboSerieDocVenta :selected").attr("data-ticket");//DPORTA
 
-    if (ticket == 'SI') {
-        //if (verificarFormatoTicket($("#cboDocumentoVenta").val()) == '[{"FORMATO_TICKET" :"SI"}]') {
-        var data = new FormData();
-        data.append('p_CODE', $("#txtNumDctoComp").val());
-        data.append('p_CTA_DETRACCION', cta_detraccion.toString())
-        data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
-        //data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
-        data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
+    //if (ticket == 'SI') {
+    //    //if (verificarFormatoTicket($("#cboDocumentoVenta").val()) == '[{"FORMATO_TICKET" :"SI"}]') {
+    //    var data = new FormData();
+    //    data.append('p_CODE', $("#txtNumDctoComp").val());
+    //    data.append('p_CTA_DETRACCION', cta_detraccion.toString())
+    //    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    //    //data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+    //    data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
 
-        var jqxhr = $.ajax({
-            type: "POST",
-            url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
-            contentType: false,
-            data: data,
-            processData: false,
-            async: false,
-            cache: false
-        })
-            .success(function (datos) {
-                if (datos != null) {
+    //    var jqxhr = $.ajax({
+    //        type: "POST",
+    //        url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
+    //        contentType: false,
+    //        data: data,
+    //        processData: false,
+    //        async: false,
+    //        cache: false
+    //    })
+    //        .success(function (datos) {
+    //            if (datos != null) {
 
-                    $("#divDctoImprimir").html(datos);
-                    setTimeout(function () {
-                        window.print();
-                    }, 0.0000000000000001)
+    //                $("#divDctoImprimir").html(datos);
+    //                setTimeout(function () {
+    //                    window.print();
+    //                }, 0.0000000000000001)
 
-                } else {
-                    noexito();
-                }
-            })
-            .error(function () {
-                noexito();
-            });
-        //ImprimirDctoVentaTicket();
-    } else {
-        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101' || $("#cboDocumentoVenta").val() == '0001' || $("#cboDocumentoVenta").val() == '0003') {
-            var data = new FormData();
-            data.append('p_CODE', $("#txtNumDctoComp").val());
-            data.append('p_CTA_DETRACCION', cta_detraccion.toString())
-            data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
-            //data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
-            data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
-            var jqxhr = $.ajax({
-                type: "POST",
-                url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
-                contentType: false,
-                data: data,
-                processData: false,
-                async: false,
-                cache: false
-            })
-                .success(function (datos) {
-                    if (datos != null) {
+    //            } else {
+    //                noexito();
+    //            }
+    //        })
+    //        .error(function () {
+    //            noexito();
+    //        });
+    //    //ImprimirDctoVentaTicket();
+    //} else {
+    //    //if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101' || $("#cboDocumentoVenta").val() == '0001' || $("#cboDocumentoVenta").val() == '0003') {
+    //    //    var data = new FormData();
+    //    //    data.append('p_CODE', $("#txtNumDctoComp").val());
+    //    //    data.append('p_CTA_DETRACCION', cta_detraccion.toString())
+    //    //    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    //    //    //data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+    //    //    data.append('p_CTLG_CODE', $("#cbo_Empresa").val());
+    //    //    var jqxhr = $.ajax({
+    //    //        type: "POST",
+    //    //        url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
+    //    //        contentType: false,
+    //    //        data: data,
+    //    //        processData: false,
+    //    //        async: false,
+    //    //        cache: false
+    //    //    })
+    //    //        .success(function (datos) {
+    //    //            if (datos != null) {
 
+    //    //                $("#divDctoImprimir").html(datos);
+    //    //                setTimeout(function () {
+    //    //                    window.print();
+    //    //                }, 0.0000000000000001)
 
-                        $("#divDctoImprimir").html(datos);
-                        setTimeout(function () {
-                            window.print();
-                        }, 0.0000000000000001)
-
-                    } else {
-                        noexito();
-                    }
-                })
-                .error(function () {
-                    noexito();
-                });
-            //ImprimirDctoVentaTicket();
-        } else {
-            crearImpresion($("#txtNumDctoComp").val());
-        }
-    }
+    //    //            } else {
+    //    //                noexito();
+    //    //            }
+    //    //        })
+    //    //        .error(function () {
+    //    //            noexito();
+    //    //        });
+    //    //    //ImprimirDctoVentaTicket();
+    //    //} else {
+    //    //    crearImpresion($("#txtNumDctoComp").val());
+    //    //}
+    //    crearImpresion($("#txtNumDctoComp").val());
+    //}
 }
 
 //function ImprimirDctoVentaTicket() {
@@ -9422,9 +9552,14 @@ function BuscarDocumentoOrigen(btn) {
             var inputCod = $($(btn).parent().parent().parent().parent().find(".inputOrigen")[0])
             var inputSerie = $($(btn).parent().parent().parent().parent().find(".inputOrigen")[1])
             var inputNro = $($(btn).parent().parent().parent().parent().find(".inputOrigen")[2])
+
+            var inputKardex = $($(btn).parent().parent().parent().parent().find(".inputOrigenKardex")[0])
+
             var cod = $(inputCod).val()
+
             var serie = $(inputSerie).val()
             var nro = $(inputNro).val()
+            var kardex = $(inputKardex).val()
 
             if (cod == "") {
                 $('#tblDocumentosOS').DataTable().destroy();
@@ -9445,7 +9580,7 @@ function BuscarDocumentoOrigen(btn) {
                         if (datos != null) {
                             for (var i = 0; i < datos.length; i++) {
                                 //tbody.append('<tr><td style="text-align: center">' + datos[i].CODIGO + '</td><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].CLIENTE + '</td><td style="text-align: center">' + datos[i].VALOR_TOTAL_OS + '</td><td style="text-align: center">' + datos[i].NOMBRE_ABOGADO + '</td><td style="text-align: center">' + datos[i].FECHA + '</td><td style="text-align: center">' + datos[i].PIDM_ABOGADO + '</td></tr>');
-                                tbody.append('<tr><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].CLIENTE + '</td><td style="text-align: center">' + datos[i].VALOR_TOTAL_OS + '</td><td style="text-align: center">' + datos[i].NOMBRE_ABOGADO + '</td><td style="text-align: center">' + datos[i].FECHA + '</td><td style="text-align: center">' + datos[i].PIDM_ABOGADO + '</td></tr>');
+                                tbody.append('<tr><td style="text-align: center">' + datos[i].NRO_DOCUMENTO + '</td><td style="text-align: center">' + datos[i].KARDEX + '</td><td style="text-align: center">' + datos[i].CLIENTE + '</td><td style="text-align: center">' + datos[i].VALOR_TOTAL_OS + '</td><td style="text-align: center">' + datos[i].NOMBRE_ABOGADO + '</td><td style="text-align: center">' + datos[i].FECHA + '</td><td style="text-align: center">' + datos[i].PIDM_ABOGADO + '</td></tr>');
                             }
                         }
                     },
@@ -9481,8 +9616,10 @@ function BuscarDocumentoOrigen(btn) {
                         var cod_doc = nro_doc[1];
                         var serie = nro_doc[0];
                         var nro = nro_doc[1];
-                        var clinteRef = fila[1];
-                        var pidm_abogado = fila[5];
+
+                        var kardex = fila[1];
+                        var clinteRef = fila[2];
+                        var pidm_abogado = fila[6];
 
                         if (typeof cod_doc != "undefined") {
 
@@ -9499,6 +9636,7 @@ function BuscarDocumentoOrigen(btn) {
                                     inputCod.val(cod_doc);
                                     inputSerie.val(serie);
                                     inputNro.val(nro);
+                                    inputKardex.val(kardex);
                                     $('#divBuscarDocOS').modal('hide');
                                     $('#txtClienteReferencial').val(clinteRef);
                                     $("#cboVendedor").select2("val", pidm_abogado).change(); //AQUÍ IRAN LOS ABOGADOS 
@@ -10032,8 +10170,13 @@ function CargarDatosDocumentoOrigen(inputCod, btn) {
                                                 objProd.PU = parseFloat(valor_producto).toFixed(prmtDIGP);
                                                 objProd.TOTAL_BRUTO = (parseFloat(cantidad_producto) * parseFloat(valor_producto)).toFixed(prmtDIGP);
                                                 objProd.TOTAL_NETO = (parseFloat(cantidad_producto) * parseFloat(valor_producto)).toFixed(prmtDIGP);
-                                                objProd.MONTO_DETRAC = parseFloat(datos2[i].DETRACCION_DECIMALES * objProd.TOTAL_NETO).toFixed(prmtDIGP);
-                                                objProd.DETRACCION = datos2[i].DETRACCION_DECIMALES;
+                                                if (tipoDocCode == '0001') {
+                                                    objProd.MONTO_DETRAC = parseFloat(datos2[i].DETRACCION_DECIMALES * objProd.TOTAL_NETO).toFixed(prmtDIGP);
+                                                    objProd.DETRACCION = datos2[i].DETRACCION_DECIMALES;
+                                                } else {
+                                                    objProd.MONTO_DETRAC = parseFloat(datos2[i].DETRACCION_DECIMALES * 0).toFixed(prmtDIGP);
+                                                    objProd.DETRACCION = datos2[i].DETRACCION_DECIMALES;
+                                                }                                                
                                                 objProd.MONTO_ISC = datos2[i].ISC;
 
                                                 //objProd.MONTO_DESCUENTO = datos2[i].DESCUENTO;
@@ -10052,8 +10195,13 @@ function CargarDatosDocumentoOrigen(inputCod, btn) {
                                                 objProd.PU = (datos2[i].PU / parseFloat($("#txt_valor_cambio").val())).toFixed(prmtDIGP);
                                                 objProd.TOTAL_BRUTO = (parseFloat(cantidad_producto) * parseFloat(datos2[i].PU / parseFloat($("#txt_valor_cambio").val()))).toFixed(prmtDIGP);
                                                 objProd.TOTAL_NETO = (datos2[i].TOTAL / parseFloat($("#txt_valor_cambio").val())).toFixed(prmtDIGP);
-                                                objProd.MONTO_DETRAC = parseFloat((datos2[i].DETRACCION_DECIMALES * datos2[i].TOTAL) / parseFloat($("#txt_valor_cambio").val())).toFixed(prmtDIGP);
-                                                objProd.DETRACCION = datos2[i].DETRACCION_DECIMALES;
+                                                if (tipoDocCode == '0001') {
+                                                    objProd.MONTO_DETRAC = parseFloat((datos2[i].DETRACCION_DECIMALES * datos2[i].TOTAL) / parseFloat($("#txt_valor_cambio").val())).toFixed(prmtDIGP);
+                                                    objProd.DETRACCION = datos2[i].DETRACCION_DECIMALES;
+                                                } else {
+                                                    objProd.MONTO_DETRAC = parseFloat((datos2[i].DETRACCION_DECIMALES * 0) / parseFloat($("#txt_valor_cambio").val())).toFixed(prmtDIGP);
+                                                    objProd.DETRACCION = datos2[i].DETRACCION_DECIMALES;
+                                                }
                                                 objProd.MONTO_ISC = (datos2[i].ISC / parseFloat($("#txt_valor_cambio").val())).toFixed(2);
                                             }
                                         } else {
@@ -10186,7 +10334,7 @@ function CargarDatosDocumentoOrigen(inputCod, btn) {
                         }
                         var precioUnidad = $("#txtPrecioUnitario").val();
                         var descuento = $("#txt_descuento_det").val();
-                        var glosa = $.trim($("#txt_glosa_det").val());
+                        var glosa = $.trim($("#txt_glosa_det").val().replace(/<\/?[^>]+(>|$)/gi, ""));
                         //Guardar Almacen
                         var almacenCode = $("#cbo_Sucursal :selected").val();
                         var almacen = $("#cbo_Sucursal :selected").html();
@@ -10514,7 +10662,7 @@ function EliminarDatosDocumentoOrigen(btn, first) {
         cod = $("#txtCodDctoOrigen_1").val();
         serie = $("#txtSerieDctoOrigen_1").val();
         nro = $("#txtNroDctoOrigen_1").val();
-        $("#txtCodDctoOrigen_1,#txtSerieDctoOrigen_1,#txtNroDctoOrigen_1").val("");
+        $("#txtCodDctoOrigen_1,#txtSerieDctoOrigen_1,#txtNroDctoOrigen_1,#txtKardexDctoOrigen_1").val("");
 
         var detallesNuevo = [];
         var cantActual = detallesVenta.length
@@ -11410,70 +11558,101 @@ function enviarWhatsapp() {
 };
 
 var DescargarPDFAlt = function (sCodVenta) {
+
     $("#ctl00_cph_ctl00_PCONGEN1_ctl00_CodDoc").val(sCodVenta);
-    let ticket = $("#cboSerieDocVenta :selected").attr("data-ticket");
-    if (ticket == 'SI') {
-        var data = new FormData();
-        data.append("OPCION", "pdfAlternativo");
-        data.append("p_CODE", sCodVenta);
-        data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
-        data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
-        data.append("p_PLAZO", $("#txt_plazo_pago").val());
-        data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
 
-        $.ajax({
-            type: "POST",
-            url: "vistas/nv/ajax/nvmdocv.ashx",
-            contentType: false,
-            data: data,
-            processData: false,
-            async: false,
-            success: function (data) {
-                if (data == "OK") {
-                    $("[id*=btnDescPDF]").click();
-                } else {
-                    noexito();
-                    return;
-                }
-            },
-            error: function (msg) {
-                noexitoCustom("No se pudo generar el PDF.");
+    var data = new FormData();
+    data.append("OPCION", "pdfAlternativo");
+    data.append("p_CODE", sCodVenta);
+    data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
+    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    data.append("p_PLAZO", $("#txt_plazo_pago").val());
+    data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
+
+    $.ajax({
+        type: "POST",
+        url: "vistas/nv/ajax/nvmdocv.ashx",
+        contentType: false,
+        data: data,
+        processData: false,
+        async: false,
+        success: function (data) {
+            if (data == "OK") {
+                $("[id*=btnDescPDF]").click();
+            } else {
+                noexito();
+                return;
             }
-        });
-
-    } else {
-        if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101') {
-
-            var data = new FormData();
-            data.append("OPCION", "pdfAlternativo");
-            data.append("p_CODE", sCodVenta);
-            data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
-            data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
-            data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
-
-            $.ajax({
-                type: "POST",
-                url: "vistas/nv/ajax/nvmdocv.ashx",
-                contentType: false,
-                data: data,
-                processData: false,
-                async: false,
-                success: function (data) {
-                    if (data == "OK") {
-                        $("[id*=btnPdf_Click]").click();
-                    } else {
-                        noexito();
-                        return;
-                    }
-                },
-                error: function (msg) {
-                    noexitoCustom("No se pudo generar el PDF.");
-                }
-            });
-        } else {
-            crearImpresion($("#txtNumDctoComp").val());
+        },
+        error: function (msg) {
+            noexitoCustom("No se pudo generar el PDF.");
         }
-    }
+    });
+
+    //let ticket = $("#cboSerieDocVenta :selected").attr("data-ticket");
+    //if (ticket == 'SI') {
+    //    var data = new FormData();
+    //    data.append("OPCION", "pdfAlternativo");
+    //    data.append("p_CODE", sCodVenta);
+    //    data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
+    //    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    //    data.append("p_PLAZO", $("#txt_plazo_pago").val());
+    //    data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "La operación NO se ha realizado correctamente!")
+
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "vistas/nv/ajax/nvmdocv.ashx",
+    //        contentType: false,
+    //        data: data,
+    //        processData: false,
+    //        async: false,
+    //        success: function (data) {
+    //            if (data == "OK") {
+    //                $("[id*=btnDescPDF]").click();
+    //            } else {
+    //                noexito();
+    //                return;
+    //            }
+    //        },
+    //        error: function (msg) {
+    //            noexitoCustom("No se pudo generar el PDF.");
+    //        }
+    //    });
+
+    //} else {
+    //    console.log(sCodVenta);
+    //    //if ($("#cboDocumentoVenta").val() == '0012' || $("#cboDocumentoVenta :selected").html().indexOf("TICKET") >= 0 || $("#cboDocumentoVenta").val() == '0101' || $("#cboDocumentoVenta").val() == '0001' || $("#cboDocumentoVenta").val() == '0003') {
+
+    //    //    var data = new FormData();
+    //    //    data.append("OPCION", "pdfAlternativo");
+    //    //    data.append("p_CODE", sCodVenta);
+    //    //    data.append("p_CTLG_CODE", $("#cbo_Empresa").val());
+    //    //    data.append('USAR_IGV_IND', ($("#chk_inc_igv").is(":checked")) ? "S" : "N")
+    //    //    data.append('COPIA_IND', ($("#chkCopia").is(":checked")) ? "S" : "N")
+
+    //    //    $.ajax({
+    //    //        type: "POST",
+    //    //        url: "vistas/nv/ajax/nvmdocv.ashx",
+    //    //        contentType: false,
+    //    //        data: data,
+    //    //        processData: false,
+    //    //        async: false,
+    //    //        success: function (data) {
+    //    //            if (data == "OK") {
+    //    //                $("[id*=btnPdf_Click]").click();
+    //    //            } else {
+    //    //                noexito();
+    //    //                return;
+    //    //            }
+    //    //        },
+    //    //        error: function (msg) {
+    //    //            noexitoCustom("No se pudo generar el PDF.");
+    //    //        }
+    //    //    });
+    //    //} else {
+    //    //    crearImpresion($("#txtNumDctoComp").val());
+    //    //}
+    //}
 }
 
 //-------------------------------------------------

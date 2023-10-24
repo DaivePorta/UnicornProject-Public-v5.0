@@ -159,9 +159,6 @@ Public Class CAMCPOS : Implements IHttpHandler
                     Else
 
                     End If
-
-
-
                 Case "4"
                     Dim p As New Nomade.NC.NCPOS("Bn")
                     dt = p.ListarPOS("", empresa, establecimiento, "", "A")
@@ -170,7 +167,28 @@ Public Class CAMCPOS : Implements IHttpHandler
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "codigo", "DESCRIPCION", "POS")
                     End If
-
+                Case "4.5"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    Dim p As New Nomade.NC.NCPOS("Bn")
+                    dt = p.ListarPOS("", empresa, establecimiento, "", "A")
+                    If Not (dt Is Nothing) Then
+                        dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""CODIGO"" :" & """" & MiDataRow("CODIGO").ToString & """,")
+                            resb.Append("""CODIGO_OPERADOR"" :" & """" & MiDataRow("CODIGO_OPERADOR").ToString & """,")
+                            resb.Append("""MONEDA"" :" & """" & MiDataRow("MONEDA").ToString & """,")
+                            resb.Append("""SCSL_CODE"" :" & """" & MiDataRow("SCSL_CODE").ToString & """,")
+                            resb.Append("""DESCRIPCION"" :" & """" & MiDataRow("DESCRIPCION").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
                 Case "5"
                     Dim p As New Nomade.NC.NCEmpresa("BN")
                     dt = p.ListarEmpresa(String.Empty, "A", HttpContext.Current.User.Identity.Name)

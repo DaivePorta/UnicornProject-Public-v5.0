@@ -93,7 +93,7 @@
                        ]
                    }
                })
-
+               oTableTReg.fnSort([[4, "desc"]]);
 
                $(".ColVis_Button, .TableTools_Button ColVis_MasterButton").css("margin-bottom", "10px");
                $(".ColVis_Button, .TableTools_Button ColVis_MasterButton").addClass("btn green");

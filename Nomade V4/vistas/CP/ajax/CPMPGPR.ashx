@@ -106,12 +106,23 @@ Public Class CPMPGPR : Implements IHttpHandler
 
                     resArray = PagoProveedor.PagarProveedorCaja(detalle, caja, usuario, codigo_apertura, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, tipo_cambio, VALIDAR_IMG, "CAJ", notaCredito, "", "", "", "", "", "", monto_total)
 
+                    Dim batchSize As Integer = 5
+                    Dim totalDocs As String() = detalle.Split("|")
+                    Dim total As Integer = totalDocs.Length
+                    Dim batches As Integer = Math.Ceiling(total / batchSize)
+
                     If asiento_contable = "SI" Then
                         Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
                         Dim strCodAsientoPagoDocCompra As String
-                        For Each item As String In detalle.Split("|")
-                            Dim strCodDocCompra As String = item.Split(",")(0)
-                            strCodAsientoPagoDocCompra = oCTGeneracionAsientos.GenerarAsientoPagoDocCompra(strCodDocCompra)
+                        For b As Integer = 0 To batches - 1
+                            Dim start As Integer = b * batchSize
+                            Dim endCount As Integer = Math.Min(start + batchSize, total)
+                            Dim batch As String() = totalDocs.Skip(start).Take(endCount - start).ToArray()
+
+                            For Each item As String In batch
+                                Dim strCodDocCompra As String = item.Split(",")(0)
+                                strCodAsientoPagoDocCompra = oCTGeneracionAsientos.GenerarAsientoPagoDocCompra(strCodDocCompra)
+                            Next
                         Next
                     End If
 
@@ -137,12 +148,23 @@ Public Class CPMPGPR : Implements IHttpHandler
 
                     resArray = PagoProveedor.PagarProveedorBanco(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, tipo_cambio, VALIDAR_IMG, adicional, caja, notaCredito)
 
+                    Dim batchSize As Integer = 5
+                    Dim totalDocs As String() = detalle.Split("|")
+                    Dim total As Integer = totalDocs.Length
+                    Dim batches As Integer = Math.Ceiling(total / batchSize)
+
                     If asiento_contable = "SI" Then
                         Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
                         Dim strCodAsientoPagoDocCompra As String
-                        For Each item As String In detalle.Split("|")
-                            Dim strCodDocCompra As String = item.Split(",")(0)
-                            strCodAsientoPagoDocCompra = oCTGeneracionAsientos.GenerarAsientoPagoDocCompra(strCodDocCompra)
+                        For b As Integer = 0 To batches - 1
+                            Dim start As Integer = b * batchSize
+                            Dim endCount As Integer = Math.Min(start + batchSize, total)
+                            Dim batch As String() = totalDocs.Skip(start).Take(endCount - start).ToArray()
+
+                            For Each item As String In batch
+                                Dim strCodDocCompra As String = item.Split(",")(0)
+                                strCodAsientoPagoDocCompra = oCTGeneracionAsientos.GenerarAsientoPagoDocCompra(strCodDocCompra)
+                            Next
                         Next
                     End If
 

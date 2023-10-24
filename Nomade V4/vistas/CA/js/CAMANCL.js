@@ -595,6 +595,12 @@ var CALNCCL = function () {
                      }
                  },
                  {
+                    data: "EMISION", createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center')
+                    },
+                    type: "fecha"
+                 },
+                 {
                      data: "MOTIVO_DESC", createdCell: function (td, cellData, rowData, row, col) {
                          $(td).attr('align', 'left')
                      }
@@ -615,13 +621,7 @@ var CALNCCL = function () {
                      data: "RAZON_SOCIAL", createdCell: function (td, cellData, rowData, row, col) {
                          $(td).attr('align', 'left')
                      },
-                 },
-                 {
-                     data: "EMISION", createdCell: function (td, cellData, rowData, row, col) {
-                         $(td).attr('align', 'center')
-                     },
-                     type: "fecha"
-                 },
+                 },                 
                  {
                      data: "USADO", createdCell: function (td, cellData, rowData, row, col) {
                          $(td).attr('align', 'center')
@@ -635,9 +635,15 @@ var CALNCCL = function () {
                              $(td).html("NINGUNO");
                          }
                      },
+                 },
+                 {
+                     data: "EMISION_REF", createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'center')
+                    },
+                    type: "fecha"
                  }
             ],
-            order: [[7, 'desc']],
+            order: [[3, 'desc']],
             sDom: 'T<"clear">lfrtip',
             oTableTools: {
                 sSwfPath: "recursos/plugins/swf/copy_csv_xls_pdf.swf",
@@ -721,7 +727,8 @@ var CALNCCL = function () {
                 mes = 12;
                 ano = ano - 1
             } else {
-                mes = mes - 1;
+                //mes = mes - 1;
+                mes = mes ;
             }
 
             if (mes >= 10)

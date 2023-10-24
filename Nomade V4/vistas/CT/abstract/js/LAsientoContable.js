@@ -270,6 +270,11 @@
                 break; 
             case "0003": /* GASTO*/
                 sUrl = "vistas/CP/ajax/CPMAGAS.ashx";
+                // Para asientos con retencion de renta
+                data.append("p_indRR", LAsientoContable.indRR || 'N');
+                if (LAsientoContable.prmtSURE != null && LAsientoContable.prmtSURE !== '') {
+                    data.append("p_SURE", LAsientoContable.prmtSURE);
+                }
                 break;
             case "0009": /* ANTICIPO*/
                 sUrl = "vistas/NV/ajax/NVMANTI.ashx";

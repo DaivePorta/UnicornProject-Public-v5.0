@@ -6,7 +6,7 @@ Imports System.Data
 
 Public Class NPMCCEM : Implements IHttpHandler
 
-    Dim OPCION, CTLG_CODE, PTVCECD_CODE, PORCENTAJE, USUARIO, NRO_CONTRATO, CECC_CODE As String
+    Dim OPCION, CTLG_CODE, SCSL_CODE, PTVCECD_CODE, PORCENTAJE, USUARIO, NRO_CONTRATO, CECC_CODE As String
     Dim PIDM As String
 
     Dim res As String
@@ -21,6 +21,7 @@ Public Class NPMCCEM : Implements IHttpHandler
             'context.Response.Write("Hello World")
             OPCION = context.Request("OPCION")
             CTLG_CODE = context.Request("CTLG_CODE")
+            SCSL_CODE = context.Request("SCSL_CODE")
             PIDM = context.Request("PIDM")
             PTVCECD_CODE = context.Request("PTVCECD_CODE")
             PORCENTAJE = context.Request("PORCENTAJE")
@@ -33,8 +34,17 @@ Public Class NPMCCEM : Implements IHttpHandler
                 Case "1"
                     context.Response.ContentType = "application/text; charset=utf-8"
                     Dim pemp As New Nomade.NC.NCEEmpleado("BN")
-                    dt = pemp.Lista_Empl_Centro_Costos(PIDM)
+                    dt = pemp.Lista_Empl_Centro_Costos(PIDM, Nothing, Nothing)
                     res = GenerarTablaCentroCosto(dt)
+                Case "1.5" 'PARA NPLCCEM
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    Dim pemp As New Nomade.NC.NCEEmpleado("BN")
+                    dt = pemp.Lista_Empl_Centro_Costos(PIDM, CTLG_CODE, SCSL_CODE)
+                    If Not (dt Is Nothing) Then
+                        res = Utilities.Datatable2Json(dt)
+                    Else
+                        res = "[]"
+                    End If
                 Case "2"
                     context.Response.ContentType = "application/json; charset=utf-8"
                     Dim pemp As New Nomade.NF.NFPeriodo("BN")
@@ -185,8 +195,6 @@ Public Class NPMCCEM : Implements IHttpHandler
         res = resb.ToString()
         Return res
     End Function
-
-
 
     Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
         Get

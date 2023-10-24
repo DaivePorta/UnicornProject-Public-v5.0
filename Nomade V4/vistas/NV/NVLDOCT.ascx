@@ -390,17 +390,17 @@
                               <tr>
                                 <th colspan="2" width="20%" class="centro">
                                     <strong>
-                                        <label style="font-weight: 600; color:black;"><i class="icon-pushpin" style="color: black"></i>&nbsp;VENTA REGULAR</label>
+                                        <label style="font-weight: 600; color:black;"><i class="icon-pushpin" style="color: black"></i>&nbsp;VENTAS REGULARES</label>
                                     </strong>
                                 </th>
                                 <th colspan="2" width="20%" class="centro">
                                     <strong>
-	                                    <label style="font-weight: 600; color:#094CB4;"><i class="icon-pushpin" style="color: #094CB4"></i>&nbsp;VENTA RAPIDA</label>
+	                                    <label style="font-weight: 600; color:#094CB4;"><i class="icon-pushpin" style="color: #094CB4"></i>&nbsp;VENTAS RÁPIDAS</label>
                                     </strong>
                                 </th>
                                 <th colspan="2" width="20%" class="centro">
                                     <strong>
-	                                    <label style="font-weight: 600; color:#AD193E;"><i class="icon-pushpin" style="color: #AD193E"></i>&nbsp;ANULADA</label>
+	                                    <label style="font-weight: 600; color:#AD193E;"><i class="icon-pushpin" style="color: #AD193E"></i>&nbsp;VENTAS ANULADAS</label>
                                     </strong>
                                 </th>
                                 <th colspan="2" width="20%" class="centro">
@@ -410,14 +410,14 @@
                                 </th>
                                 <th colspan="2" width="20%" class="centro">
                                     <strong>
-                                        <label style="font-weight: 600; color:#00A300;"><i class="icon-pushpin" style="color: #00A300"></i>&nbsp;ORDEN DE SERVICIO</label>
+                                        <label style="font-weight: 600; color:#00A300;"><i class="icon-pushpin" style="color: #00A300"></i>&nbsp;ORDENES DE SERVICIO</label>
                                     </strong>
                                 </th>
-                                 <%--<th colspan="2" width="17%" class="centro">
+                                 <th colspan="2" width="17%" class="centro">
                                     <strong>
-                                        <label style="font-weight: 600; color: #00839A;"><i class="icon-pushpin" style="color: #00839A"></i>&nbsp;TOMA PEDIDO</label>
+                                        <label style="font-weight: 600; color: #00839A;"><i class="icon-pushpin" style="color: #00839A"></i>&nbsp;NOTAS DE CRÉDITO APLICADAS</label>
                                     </strong>
-                                </th>--%>
+                                </th>
                               </tr>
                             </thead>
                             <tbody>
@@ -439,6 +439,8 @@
 
                                 <%--<td id="tdVtaTomPedSol" width="8.5%" class="derecha"></td>
                                 <td id="tdVtaTomPedDol" width="8.5%" class="derecha"></td>--%>
+                                <td id="tdNCSol" width="8.5%" class="derecha"></td>
+                                <td id="tdNCDol" width="8.5%" class="derecha"></td>
                               </tr>
                               <tr border="0">
                                 <td id="tdTotales" colspan="12" width="100%" class="centro"></td>
@@ -458,6 +460,7 @@
                                     <th></th>
                                     <th>CÓDIGO</th>
                                     <th>DOCUMENTO</th>
+                                    <th>SUCURSAL</th>
                                     <th>FECHA<br />
                                         EMISIÓN</th>
                                     <th>NRO. DOC.</th>

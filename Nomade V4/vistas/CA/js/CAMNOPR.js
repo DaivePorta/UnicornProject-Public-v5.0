@@ -699,7 +699,7 @@ var CAMNOPR = function () {
 
 
 function mostrarModalBuscarDocumento() {
-    Bloquear("ventana")
+    //Bloquear("ventana")
     var html =
         '<div id="_buscarDocumento"  style="display: block; width: 850px; left: 45%;" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="false" style="display: none;">' +
         '<div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color:#ffffff;">' +
@@ -754,6 +754,13 @@ function mostrarModalBuscarDocumento() {
     oTable.fnSort([[0, "desc"]]);
 
     $("#_buscarDocumento").modal('show');
+
+    if ($("#_buscarDocumento").hasClass('in') == true) {
+        $('#tblBuscarDocumento_filter.dataTables_filter input[type=search]').focus();
+    }
+    $('#_buscarDocumento').on('shown.bs.modal', function () {
+        $('#tblBuscarDocumento_filter.dataTables_filter input[type=search]').focus();
+    });
 }
 vg_importe_de_notas = 0.00;
 vg_notacredito = false;

@@ -719,6 +719,32 @@
                                         </div>
                                         <div class="row-fluid" style="margin-top: 10px;">
                                             <div class="span8"></div>
+                                            <div id="div_retencion" style="display: none;">
+                                                <div class="span2">
+                                                    <div class="control-group">
+                                                        <label id="lbl_retencion" class="control-label" for="txt_monto">
+                                                            <b>RETENCION DE LA RENTA (8%) (<span id="simbMoneda4"></span>)</b>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="span2" style="display: flex;">
+                                                    <div class="control-group">
+                                                        <div class="controls" style="flex: 1;">
+                                                            <input id="txt_retencion" class="limpiar span11" type="text" onkeypress="return ValidaDecimales(event,this)" style="text-align: end; font-weight: bold;" disabled="disabled"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="checker" id="uniform-chk_retencionrenta">
+                                                        <span class="">
+                                                            <input type="checkbox" id="chk_retencionrenta" name="chk_retencionrenta" class="b limpiar" style="opacity: 0;" disabled="disabled">
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>  
+                                        </div>
+
+
+                                        <div class="row-fluid" style="margin-top: 10px;">
+                                            <div class="span8"></div>
                                             <div id="div_importePagar" style="display: none;">
                                                 <div class="span2">
                                                     <div class="control-group">
@@ -758,7 +784,7 @@
 
                                 <div class="form-actions" id="acciones_generales" style="display: block;">
                                     <a id="btn_aprobar" class="btn green div_documentos" href="javascript:Aprobar();"><i class="icon-ok-circle"></i>&nbsp;Guardar y Aprobar</a>
-                                    <a id="guardar" class="btn blue" href="javascript:Guardar();"><i class="icon-save"></i>&nbsp;Guardar</a>
+                                    <a id="guardar" class="btn blue" href="javascript:confirmarGuardar();"><i class="icon-save"></i>&nbsp;Guardar</a>
                                     <a id="cancelar" class="btn" href="?f=CPMPGAS"><i class="icon-remove"></i>&nbsp;Cancelar</a>
                                 </div>
                             </div>
@@ -950,6 +976,37 @@
         </div>
     </div>
 </div>
+
+<div id="ModalRetencion" style="width: 650px; display: none;" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="myModalLabel">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close" type="button" aria-hidden="true"></button>
+                <h3>¡ADVERTENCIA!</h3>
+            </div>
+            <div class="modal-body" aria-hidden="true">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label" for="">
+                                        Sujeto a Retención: Verificar si tiene suspensión de Renta</label>
+                                    <label class="control-label" for="" style="text-align:center; color:red; font-weight:bold; font-size:15px;">
+                                        <span id="montoRetencion"></span></label>
+                                </div>
+                            </div>                            
+                        </div>
+                        <div class="row-fluid" style="text-align:center;">
+                            <div class="">                                   
+                                <button id="btnOk" type="button" class="btn green"><i class="icon-ok"></i>&nbsp;SI</button> 
+                                <button id="btnNO" type="button" class="btn red"><i class="icon-remove"></i>&nbsp;NO</button> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <input id="hfParamDetraccion" type="hidden" value="0" />
 <input id="hfMontoDetraccion" type="hidden" value="0" />

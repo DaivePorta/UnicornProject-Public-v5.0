@@ -311,6 +311,7 @@ Public Class NAMINSA : Implements IHttpHandler
                     Dim almc As New Nomade.NA.NAConfAlmacenes("Bn")
                     dt = almc.ListarAlmacenesUsuario(USUA_ID, CTLG_CODE)
                     If Not (dt Is Nothing) Then
+                        dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
                         resb.Append("[")
                         For Each row As DataRow In dt.Rows
                             resb.Append("{")
@@ -2987,6 +2988,12 @@ Public Class NAMINSA : Implements IHttpHandler
             res = ""
         End Try
         Return res
+    End Function
+
+    Private Function SortDataTableColumn(ByVal dt As DataTable, ByVal column As String, ByVal sort As String) As DataTable
+        Dim dtv As New DataView(dt)
+        dtv.Sort = column & " " & sort
+        Return dtv.ToTable()
     End Function
 
     Private Function fnGetCodigoQR_fast(ByVal informacionQR As String) As String 'DPORTA 07/12/2022

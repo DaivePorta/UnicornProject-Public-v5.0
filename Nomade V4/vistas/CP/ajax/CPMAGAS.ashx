@@ -14,6 +14,7 @@ Public Class CPMAGAS : Implements IHttpHandler
         p_FACGADI_FECHA_VENCIMIENTO, p_FACGADI_FECHA_TRANSACCION, p_ESTADO, p_FECHA_APROBACION,
         p_FACGADI_MODULO_CODE, p_FECHA_OPERACION, p_ANIO_TRIB, p_MES_TRIB, p_USUA_ID, p_FACGADI_MONE_CODE, p_FACGADI_MONTO, p_SIN_DCTO, p_DETALLE_GASTO,
         p_HABIDO_IND, p_TIPO_BIEN, p_OPERACION, p_CODE, p_NCMOCONT_CODIGO, USUA_ID, p_IND_DEDUCIBLE, p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_IMPORTE_PAGAR, p_FACGADI_IMPORTE_PAGAR As String
+    Dim p_indRR, p_SURE As String
     Dim dt As DataTable
     Dim p_MONTO As Decimal
     Dim res As String
@@ -77,6 +78,9 @@ Public Class CPMAGAS : Implements IHttpHandler
         p_IMPORTE_DETRACCION = context.Request("p_IMPORTE_DETRACCION")
         p_IMPORTE_PAGAR = context.Request("p_IMPORTE_PAGAR")
         p_FACGADI_IMPORTE_PAGAR = context.Request("p_FACGADI_IMPORTE_PAGAR")
+
+        p_indRR = context.Request("p_indRR")
+        p_SURE = context.Request("p_SURE")
 
         p_SIN_DCTO = context.Request("p_SIN_DCTO")
         p_MES_TRIB = context.Request("p_MES_TRIB")
@@ -270,11 +274,17 @@ Public Class CPMAGAS : Implements IHttpHandler
                     'Dim oDT_Asiento As New DataTable
 
                     'oDT_Asiento = oCTMovimientoContable.fnGetAsientoContDocGasto(p_CODE)
+
                     Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
                     Dim sCodMovCont As String = ""
                     Dim sCodMovContDest As String = ""
 
-                    sCodMovCont = oCTGeneracionAsientos.GenerarAsientoGasto(p_CODE, p_NCMOCONT_CODIGO, USUA_ID) 'DPORTA 02/02/2023
+
+                    If p_indRR = "S" And p_SURE IsNot Nothing Then 'Si se cumple la retencion de renta se traeran otros valores junto al codigo del documento
+                        sCodMovCont = oCTGeneracionAsientos.GenerarAsientoGastoRetencionRenta(p_CODE, p_SURE, p_indRR, p_NCMOCONT_CODIGO, USUA_ID) 'ASIENTO RETENCION DE RENTA PARA RECIBOS POR HONORARIO
+                    Else
+                        sCodMovCont = oCTGeneracionAsientos.GenerarAsientoGasto(p_CODE, p_NCMOCONT_CODIGO, USUA_ID) 'DPORTA 02/02/2023
+                    End If
 
                     sCodMovContDest = oCTGeneracionAsientos.GenerarAsientoGastoDestino(p_CODE, p_NCMOCONT_CODIGO, USUA_ID) 'DPORTA 02/02/2023
                     'Dim oNCFactura As New Nomade.NC.NCFactura("Bn")

@@ -38,7 +38,7 @@ Public Class NVMDOVS : Implements IHttpHandler
         SERIE_DCTO, VENDEDOR, CLIENTE, PRODUCTO, ESTADO,
         DESDE, HASTA, CODE_VTA, NUM_DOC_COM As String
 
-    Dim p_NRO_ATENCION, CANTIDAD_PROD As String 'ID_KARDEX DE SISNOT
+    Dim p_NRO_ATENCION, CANTIDAD_PROD, p_KARDEX As String 'SISNOT
 
     Dim ncSucursal As New Nomade.NC.NCSucursal("Bn")
     Dim g As New Nomade.NC.NCGrupos("Bn")
@@ -100,9 +100,10 @@ Public Class NVMDOVS : Implements IHttpHandler
         CTLG = context.Request("CTLG")
         SCSL = context.Request("SCSL")
         ALMC_CODE = context.Request("ALMC_CODE")
-        'ID_KARDEX DE SISNOT
+        'SISNOT
         p_NRO_ATENCION = context.Request("p_NRO_ATENCION")
         CANTIDAD_PROD = context.Request("CANTIDAD_PROD")
+        p_KARDEX = context.Request("p_KARDEX")
 
         ALMC = context.Request("ALMC")
         DESC_ALMC = context.Request("DESC_ALMC")
@@ -241,11 +242,8 @@ Public Class NVMDOVS : Implements IHttpHandler
                                                                  If(p_FECHA_EMISION_RETEN = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_RETEN)),
                                                                  p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_DETALLES, p_DCTO_SERIE_REF, p_DCTO_NUM_REF, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND,
                                                                  p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_DETALLES_PAGO, p_DETALLES_PAGO2, p_DETALLES_PAGO3, p_DESPACHO_VENTA_IND,
-                                                                 p_COBRAR_IND, p_EFECTIVO_RECIBIDO, p_EFECTIVO_RECIBIDO_ALTERNO, p_VUELTO, p_VUELTO_ALTERNO, p_AUTODETRACCION, If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_VALIDAR_STOCK_IND, p_DETALLES_BONI, p_DIRECCION,
-                                                                 IIf(p_LATITUD = "null", Nothing, p_LATITUD),
-                                                                 IIf(p_LONGITUD = "null", Nothing, p_LONGITUD), p_DETALLES_MUESTRA, p_TOTAL_GRATUITAS)
-
-
+                                                                 p_COBRAR_IND, p_EFECTIVO_RECIBIDO, p_EFECTIVO_RECIBIDO_ALTERNO, p_VUELTO, p_VUELTO_ALTERNO, p_AUTODETRACCION, p_KARDEX, If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_VALIDAR_STOCK_IND,
+                                                                 p_DETALLES_BONI, p_DIRECCION, IIf(p_LATITUD = "null", Nothing, p_LATITUD), IIf(p_LONGITUD = "null", Nothing, p_LONGITUD), p_DETALLES_MUESTRA, p_TOTAL_GRATUITAS)
                     If Not (array Is Nothing) Then
                         Dim msgError As String = "OK"
                         'If array(0).ToString.Length = 9 And p_COMPLETO_IND = "S" Then
@@ -474,7 +472,7 @@ Public Class NVMDOVS : Implements IHttpHandler
         dtDetalles = nvVenta.ListarDetDctoVentaImpresion(p_CODE)
         'dtParametroLogo = New Nomade.NC.NCParametros("Bn").ListarParametros("LOVE", "")
 
-        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "")
+        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "XXX")
 
         If dtCabecera IsNot Nothing Then
             Dim decimalIGV As Decimal = Decimal.Parse(dtCabecera.Rows(0)("PCTJ_IGV")) / 100
@@ -1239,6 +1237,7 @@ Public Class NVMDOVS : Implements IHttpHandler
             tabla.AppendFormat("<tr><td style='vertical-align: top;'>{0}<span style='float:right;clear:both;'>:</span></td><td colspan='3'>{1}</td></tr>", dtCabecera.Rows(0)("CLIE_DCTO_DESC"), dtCabecera.Rows(0)("CLIE_DCTO_NRO"))
             tabla.AppendFormat("<tr><td style='vertical-align: top;'>Dirección<span style='float:right;clear:both;'>:</span></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("DIRECCION_CLIENTE"))
             tabla.AppendFormat("<tr><td style='vertical-align: top;'>Orden de Servicio<span style='float:right;clear:both;'>:</span></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("ORDEN_SERVICIO"))
+            tabla.AppendFormat("<tr><td style='vertical-align: top;'>ID Kardex<span style='float:right;clear:both;'>:</span></td><td colspan='3'>{0}</td></tr>", dtCabecera.Rows(0)("KARDEX"))
 
             tabla.Append("<tr><td colspan='4'>&nbsp;</td></tr>")
             tabla.Append("<tr style='border-top: 1px dashed black;'>")
@@ -1439,6 +1438,7 @@ Public Class NVMDOVS : Implements IHttpHandler
         resb.AppendFormat("<table id=""tblBuscarDocumento"" class=""display DTTT_selectable"" border=""0"">")
         resb.AppendFormat("<thead>")
         resb.AppendFormat("<th>NRO. ATENCIÓN</th>")
+        resb.AppendFormat("<th>ID KARDEX</th>")
         resb.AppendFormat("<th>CLIENTE</th>")
         resb.AppendFormat("<th>MONTO</th>")
         resb.AppendFormat("<th>ABOGADO</th>")
@@ -1448,8 +1448,9 @@ Public Class NVMDOVS : Implements IHttpHandler
 
         If Not (dt Is Nothing) Then
             For i As Integer = 0 To dt.Rows.Count - 1
-                resb.AppendFormat("<tr class='doc_fila' onclick=""setSeleccionDocumento('{0}','{1}','{2}','{3}','{4}')"" id='doc_fila_{0}'>", dt.Rows(i)("NRO_ATENCION").ToString(), dt.Rows(i)("NOMBRE_CLIENTE").ToString(), dt.Rows(i)("PIDM_ABOGADO").ToString(), dt.Rows(i)("VALOR_TOTAL_OS").ToString(), dt.Rows(i)("NOMBRE_ABOGADO").ToString())
+                resb.AppendFormat("<tr class='doc_fila' onclick=""setSeleccionDocumento('{0}','{1}','{2}','{3}','{4}','{5}')"" id='doc_fila_{0}'>", dt.Rows(i)("NRO_ATENCION").ToString(), dt.Rows(i)("NOMBRE_CLIENTE").ToString(), dt.Rows(i)("PIDM_ABOGADO").ToString(), dt.Rows(i)("VALOR_TOTAL_OS").ToString(), dt.Rows(i)("NOMBRE_ABOGADO").ToString(), dt.Rows(i)("KARDEX").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_ATENCION").ToString())
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("KARDEX").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NOMBRE_CLIENTE").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("VALOR_TOTAL_OS").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NOMBRE_ABOGADO").ToString())
@@ -1472,6 +1473,7 @@ Public Class NVMDOVS : Implements IHttpHandler
         resb.AppendFormat("<thead>")
         resb.AppendFormat("<th style='max-width:52px;'>CÓDIGO</th>")
         resb.AppendFormat("<th style='max-width:250px;'>ORDEN DE SERVICIO</th>")
+        resb.AppendFormat("<th style='max-width:250px;'>ID KARDEX</th>")
         resb.AppendFormat("<th style='max-width:70px;'>DOCUMENTO</th>")
         resb.AppendFormat("<th style='max-width:52px;'>FECHA<br/>EMISIÓN</th>")
         resb.AppendFormat("<th style='max-width:90px;'>NRO. DOC.</th>")
@@ -1493,6 +1495,7 @@ Public Class NVMDOVS : Implements IHttpHandler
                 resb.AppendFormat("<tr>")
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CODE").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("ORDEN_SERVICIO").ToString())
+                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("KARDEX").ToString())
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("DOCUMENTO").ToString())
                 resb.AppendFormat("<td align='left' data-order='" + ObtenerFecha(dt.Rows(i)("EMISION").ToString) + "'>{0}<br/><small style='color:#6C7686;'>{1}</small></td>", dt.Rows(i)("EMISION").ToString(), dt.Rows(i)("FECHA_ACTV").ToString())
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("CLIE_DOID_NRO").ToString())
@@ -1785,7 +1788,7 @@ Public Class NVMDOVS : Implements IHttpHandler
 
         dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "C")
         dtDetalles = nvVenta.ListarDetDctoVentaImpresion(p_CODE)
-        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "")
+        dtParametroPiePagina = New Nomade.NC.NCParametros("Bn").ListarParametros("PPAG", "XXX")
 
         If dtCabecera IsNot Nothing Then
             Dim decimalIGV As Decimal = Decimal.Parse(dtCabecera.Rows(0)("PCTJ_IGV")) / 100

@@ -1,4 +1,15 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="NBMMOCB.ascx.vb" Inherits="vistas_NB_NBMMOCB" %>
+<style type="text/css">
+    #divBuscarTicket{
+        margin-left: 0px !important;
+    }
+    @media (max-width:900px) {
+        #divBuscarTicket{
+            left: 5% !important;
+            width: 90% !important;
+        }
+    }
+</style>
 
 <div id="modalconfir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
     <div class="modal-header">
@@ -167,7 +178,7 @@
 
                     <div class="span1">
                         <div class="control-group ">
-                            <label class="control-label" for="slcOperacionTipo">Operación Efectuada</label>
+                            <label class="control-label" for="slcOperacionEfectuada">Operación Efectuada</label>
 
                         </div>
                     </div>
@@ -176,7 +187,7 @@
                         <div class="control-group">
                             <div class="controls">
 
-                                <select class="span12" data-placeholder="OPERACION EFECTUADA POR:" id="slcOperacionTipo">
+                                <select class="span12" data-placeholder="OPERACION EFECTUADA POR:" id="slcOperacionEfectuada">
                                     <option></option>
 
                                 </select>
@@ -198,7 +209,7 @@
                         <div class="control-group">
                             <div class="controls">
 
-                                <select class="span10 bl obligatorio" data-placeholder="TIPO" id="slcTipo">
+                                <select autocomplete="off" class="span10 bl obligatorio" data-placeholder="TIPO" id="slcTipo">
                                     <option></option>
                                     <option value="I">ABONO</option>
                                     <option value="E">CARGO</option>
@@ -228,9 +239,7 @@
 
 
                 </div>
-
-                <!---fin linea -->
-
+                <!-- FIN LINEA -->
 
                 <!-- INICIO  LINEA -->
                 <div class="row-fluid">
@@ -288,8 +297,7 @@
 
 
                 </div>
-
-
+                <!-- FIN LINEA -->
 
                 <div class="row-fluid">
 
@@ -343,8 +351,9 @@
                     </div>
 
                 </div>
+                <!-- FIN LINEA -->
 
-                <div class="row-fluid">
+                <div class="row-fluid" style="margin-bottom: 10px;">
                     <div class="span1">
                         <div class="control-group ">
                             <label class="control-label" for="slcOperacion">Tipo Operacion</label>
@@ -373,8 +382,32 @@
                             </div>
                         </div>
                     </div>
+                    <div class="span2">
+                        <a id="btnBuscarTicket" class="btn black pull-left" style="display: none"><i class=" icon-plus-sign"></i>&nbsp;Buscar Ticket(s)</a>
+                        <a id="btnNuevaPersona" href="?f=NKMGECL" target="_blank" title="Nuevo" class="btn green" style="display: none; margin-bottom: 2px;"><i class="icon-plus"></i></a>
+                        <a id="btnRecargarPersona" title="Recargar" class="btn blue" style="display: none;margin-bottom: 2px;"><i class="icon-refresh"></i></a>
+                        <a id="btnNuevoClienteRapido" onclick="NuevoClienteRapido();" title="Nuevo Cliente Rápido" class="btn red" style="display: none; margin-bottom: 2px;"><i class="icon-plus"></i></a>
+                    </div>
                 </div>
-                <!---fin linea -->
+                <!-- FIN LINEA -->
+                <div class="row-fluid">
+                    <div class="span12" id="divInfoTicket">
+                        <table id="tblInfoTicket" border="0" class="display DTTT_selectable">
+                            <thead>
+                                <tr> 
+                                    <th></th>
+                                    <th>TICKET</th>
+                                    <th>SERIE-DCTO</th>
+                                    <th>CODIGO</th>
+                                    <th>DESCRIPCION</th>
+                                    <th>RAZON SOCIAL</th>
+                                    <th>MONTO</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>                       
+                    </div>
+                </div>
 
                 <div class="form-actions">
                     <a id="grabar" class="btn blue" href="javascript:crearMovimiento();"><i class="icon-save"></i> Grabar</a>
@@ -387,8 +420,43 @@
     </div>
 </div>
 
+<div id="divBuscarTicket" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="width: 50%; left: 25%;" aria-hidden="true">
+    <div class="modal-header" style="padding: 1px 15px; background: #4b8df8; color: #ffffff;">
+        <button type="button" class="btn red" data-dismiss="modal" style="margin-top: 6px; float: right;" aria-hidden="true">
+            <i class="icon-remove"></i>
+        </button>
+        <h4 id="divBuscarTicket_title"><i class="icon-search" style="line-height: initial;"></i>&nbsp;BUSCAR TICKET</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row-fluid">
+            <div class="span12" id="divBuscarTicket_body">
+                <table class="display DTTT_selectable" id="tblTicket" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="chkTodos"></th>
+                            <th style="text-align: center">TICKET</th>                            
+                            <th style="text-align: center">DESCRIPCION</th>
+                            <th style="text-align: center">CLIENTE</th>
+                            <th style="text-align: center">MONTO</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <label class="control-label" style="font-style: italic;text-align: left">Clic en un Ticket para seleccionarlo</label>
+        <button class="btn green" type="button" onclick="AgregarTicket()" id="btnAgregarTicket">&nbsp;Agregar Seleccionado(s)</button>
+    </div>
+</div>
+
 <script type="text/javascript" src="../vistas/NB/js/NBMMOCB.js"></script>
 <input id="hfPIDM" type="hidden" />
+<input id="hfCODTIPODOC" type="hidden" />
+<input id="hfNRODOCCLIENTE" type="hidden" />
+<input id="hfESTADO" type="hidden" />
 <script>
 
     jQuery(document).ready(function () {

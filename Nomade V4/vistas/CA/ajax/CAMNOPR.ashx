@@ -327,6 +327,7 @@ Public Class CAMNOPR : Implements IHttpHandler
                 Case "GEN_ASIENTO"
                     Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
                     res = oCTGeneracionAsientos.GenerarAsientoNotaCreditoProveedor(p_CODE, USUA_ID)
+                    oCTGeneracionAsientos.GenerarAsientoReversionAlmacenNotaCreditoProveedor(p_CODE, USUA_ID)
 
                 Case Else
 
