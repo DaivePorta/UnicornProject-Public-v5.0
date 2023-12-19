@@ -43,13 +43,15 @@
                                     </th>
                                     <th>CATEGORIA
                                     </th>
-                                    <th>FEC. INICIO
+                                    <th>FECHA INICIO
                                     </th>
                                     <th>EMPRESA
                                     </th>
                                     <th>NIVEL
                                     </th>
-                                    <th>DIRECCION
+                                    <th>DIRECCIÓN
+                                    </th>
+                                    <th>ESTADO
                                     </th>
                                     <th>EMPRESA
                                     </th>

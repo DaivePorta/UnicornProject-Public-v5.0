@@ -1400,12 +1400,22 @@
                                 <div id="codigoQR" style="display: none"></div>                                                                
 
                                 <div class="form-actions" id="acciones_generales" style="display: block;">
-                                    <div class="span4">
+                                    <div class="span2">
                                         <div class="control-group">
                                             <div class="controls" style="height: 30px;">
                                                 <label class="control-label" for="chk_inc_igv">
                                                     <input id="chk_inc_igv" type="checkbox" class="span12" style="opacity: 0;" checked="checked">
                                                     Precios inc IGV en impresión
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span2">
+                                        <div class="control-group">
+                                            <div class="controls" style="height: 30px;">
+                                                <label class="control-label" for="chk_Autodetraccion">
+                                                    <input id="chk_Autodetraccion" type="checkbox" class="span6" disabled="disabled" style="opacity: 0;">
+                                                    Autodetracción
                                                 </label>
                                             </div>
                                         </div>
@@ -1421,8 +1431,9 @@
                                         <a class="btn" href="javascript:Cancelar();"><i class="icon-remove"></i>&nbsp;Cancelar</a>
 
                                     </div>
-                                    <div class="span2">
-                                        <a id="btnImprimir" class="btn black" href="javascript:ImprimirDctoVenta();" style="display: none; margin-top: 5px;"><i class="icon-print"></i>&nbsp;Imprimir</a>
+                                    <div class="span3">
+                                        <a id="btnImprimir" class="btn black" href="javascript:ImprimirDctoVenta();" style="display: none; margin-top: 5px;"><i class="icon-print"></i>&nbsp;Imprimir Doc.</a>
+                                        <a id="btnImprimirST" class="btn black" href="javascript:ImprimirDctoVentaTicket();" style="display: none; margin-top: 5px;"><i class="icon-print"></i>&nbsp;Imprimir Ticket</a>
                                         <label id="lblCopia" class="control-label" for="chkCopia" style="display: none; margin-right: 15px; margin-bottom: 0px;">
                                             <input type="checkbox" id="chkCopia" name="chkCopia" style="display: inline-block;" />
                                             Copia</label>

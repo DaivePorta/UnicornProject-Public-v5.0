@@ -79,15 +79,23 @@ var NRLGEPR = function () {
                  },
                 { data: "EMPRESA.NOMBRE" },
                 { data: "NICA_DESC" },
-            { data: "DIRECCION" }
-            , { data: "EMPRESA.CODIGO" }
+                { data: "DIRECCION" },
+                {
+                    data: "ESTADO",
+                    createdCell: function (td, cellData, rowData, row, col) {
+
+                        $(td).attr('align', 'center')
+
+                    }
+                },
+                { data: "EMPRESA.CODIGO" }
             ],
             "sDom": 'C<"clear">lfrtip'
         }
 
         oTablePersonas = iniciaTabla('tblPersonas', parms);
 
-        oTablePersonas.fnSetColumnVis(8, false, true);
+        oTablePersonas.fnSetColumnVis(9, false, true);
 
         $(".ColVis_Button").addClass("btn blue").css("margin-bottom", "10px");
 

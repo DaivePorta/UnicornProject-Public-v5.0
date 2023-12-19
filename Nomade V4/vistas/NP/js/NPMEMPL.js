@@ -133,7 +133,13 @@ function crearTablaVacia() {
             ]
         },
         columns: [
-
+            {
+                data: "PIDM",
+                visible: false,
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).css('text-align', 'center')
+                }
+            },
             {
                 data: "NOMBRE_EMPLEADO",
                 createdCell: function (td, cellData, rowData, row, col) {
@@ -165,12 +171,12 @@ function crearTablaVacia() {
                     $(td).css('text-align', 'left')
                 }
             },
-             {
-                 data: "ESTADO",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center')
-                 }
-             },
+             //{
+             //    data: "ESTADO",
+             //    createdCell: function (td, cellData, rowData, row, col) {
+             //        $(td).attr('align', 'center')
+             //    }
+             //},
 
             {
                 data: "REG_SALUD_DESC",
@@ -181,15 +187,48 @@ function crearTablaVacia() {
             {
                 data: "CTLG_CODE",
                 visible: false
+            },
+            //DPORTA
+            {
+                 data: "ESTADO",
+                 createdCell: function (td, cellData, rowData, row, col) {
+                     $(td).attr('align', 'center')
+                 }
+             },
+            {
+                data: null,
+                defaultContent: '<a class="btn green"><i class="icon-refresh"></i></a>',
+                createdCell: function (td, cellData, rowData, row, col) {
+
+                    $(td).attr('align', 'center')
+
+                }
             }
-
         ]
-
     }
 
-
     oTableEmp = iniciaTabla('tblEmpleados', parms);
+    //DPORTA
+    $('#tblEmpleados tbody').on('click', 'a', function () {
+        $(this).parent().parent().addClass('selected');
+        var pos = $('#tblEmpleados').DataTable().row($(this).parent().parent()).index();
+        var row = $('#tblEmpleados').DataTable().row(pos).data();
+        var code = row.PIDM;
 
+        Bloquear("ventana");
+        $.ajaxSetup({ async: false });
+        $.post("vistas/NP/ajax/NPMEMPL.ASHX",
+            { OPCION: 'CAMBIO_ESTADO', P_CODE: code, USUA_ID: $('#ctl00_txtus').val(), CTLG_CODE: $('#ctl00_hddctlg').val() },
+            function (res) {
+                Desbloquear("ventana");
+                if (res !== null) {
+                    res = (res === 'I') ? 'INACTIVO' : 'ACTIVO';
+                    $('#tblEmpleados').DataTable().cell(pos, 8).data(res).draw();
+                    exito();
+                } else { noexito(); }
+            });
+        $.ajaxSetup({ async: true });
+    });
 
     $('#tblEmpleados tbody').on('click', 'tr', function () {
         if ($(this).hasClass('selected')) {

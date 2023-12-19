@@ -414,15 +414,12 @@
     Public Function ReprocesarDeudasGastosAprobados() As String
         Try
             Dim msg As String
-
             Dim cmd As IDbCommand
-            Dim cmd1 As IDbCommand
 
             cmd = cn.GetNewCommand("SP_JOB_CREAR_REGISTRO_EN_FABCRED_DE_GASTO_APROBADO", CommandType.StoredProcedure)
-
-            cmd1 = cn.Ejecuta_parms(cmd)
-
-            msg = "OK"
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RPTA", String.Empty, ParameterDirection.Output, 253))
+            cmd = cn.Ejecuta_parms(cmd)
+            msg = cmd.Parameters("@p_RPTA").Value
 
             Return msg
 

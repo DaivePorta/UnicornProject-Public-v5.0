@@ -478,6 +478,7 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc, electronicInd) {
         var data = new FormData();
         data.append('p_CODE', codigo);
         data.append('USAR_IGV_IND', "S")
+        data.append("p_CTLG_CODE", $("#cboEmpresa").val());
         var jqxhr = $.ajax({
             type: "POST",
             url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
@@ -509,6 +510,7 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc, electronicInd) {
             var data = new FormData();
             data.append('p_CODE', codigo);
             data.append('USAR_IGV_IND', "S")
+            data.append("p_CTLG_CODE", $("#cboEmpresa").val());
             var jqxhr = $.ajax({
                 type: "POST",
                 url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRT",
@@ -540,6 +542,43 @@ function imprimirDetalle(codigo, nroDoc, tipoDoc, electronicInd) {
             //Desbloquear("ventana");
         }
     }  
+}
+
+function imprimirDetalleTicket(codigo, nroDoc, tipoDoc, electronicInd) {
+    //Bloquear("ventana");
+
+    //if (verificarFormatoTicket(tipoDoc) == '[{"FORMATO_TICKET" :"SI"}]') {
+    if (electronicInd == 'S') {
+        var data = new FormData();
+        data.append('p_CODE', codigo);
+        data.append('USAR_IGV_IND', "S")
+        data.append("p_CTLG_CODE", $("#cboEmpresa").val());
+
+        var jqxhr = $.ajax({
+            type: "POST",
+            url: "vistas/nv/ajax/nvmdovs.ashx?OPCION=IMPRTICKET",
+            contentType: false,
+            data: data,
+            processData: false,
+            async: true,
+            cache: false
+        })
+            .success(function (datos) {
+                if (datos != null) {
+
+                    $("#divDctoImprimir").html(datos);
+                    setTimeout(function () {
+                        window.print();
+                    }, 0.0000000000000001)
+                } else {
+                    noexito();
+                }
+            })
+            .error(function () {
+                noexito();
+            });
+
+    } 
 }
 
 //function ImprimirDctoVentaTicket(codigo) {

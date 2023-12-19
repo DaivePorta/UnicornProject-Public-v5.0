@@ -501,7 +501,7 @@ var CAMDIFE = function () {
                     cache: false
                 }).success(function (datos) {
                     Desbloquear("ventana");
-                    if (datos != null && datos[0].RESPUESTA != undefined) {
+                    if (datos != null && datos[0].RESPUESTA != undefined && datos[0].RESPUESTA != 'ERROR') {
                         if (datos[0].RESPUESTA == "OK") {
                             //Refrescar
                             exito();
@@ -529,6 +529,8 @@ var CAMDIFE = function () {
                         } else {
                             alertCustom(datos[0].RESPUESTA);
                         }
+                    } else {
+                        alertCustom("Parece que hubo un error al realizar la transferencia. Intente nuevamente!");
                     }
                 }).error(function () {
                     Desbloquear("ventana");

@@ -378,7 +378,15 @@
                     <div class="span4">
                         <div class="control-group">
                             <div class="controls" id="inputPersona">
-                                <input id="slcPersona" class="span11" type="text" placeholder="Persona" />
+                                <select id="slcEstereotipo" class="span3" data-placeholder="Estereotipo" disabled="disabled">
+                                    <option></option>
+                                    <option value="CLIEN">Cliente</option>
+                                    <option value="EMPL">Empleado</option>
+                                    <option value="PROV">Proveedor</option>
+                                    <option value="BANC">Banco</option>
+                                    <option value="PERS">Persona</option>
+                                </select>
+                                <input id="slcPersona" class="span9" type="text" placeholder="CLIENTES VARIOS ." disabled="disabled"/>
                             </div>
                         </div>
                     </div>

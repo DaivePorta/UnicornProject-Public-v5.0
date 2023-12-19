@@ -12,6 +12,7 @@ var prmtSURE;
 var p_indRR;
 var token_migo = '';//dporta
 var count = 0;
+var jsonBeneficiarios = new Array();
 var CPLPGAS = function () {
 
     var plugin = function () {
@@ -1220,7 +1221,6 @@ var CPMPGAS = function () {
         });
     };
 
-
     var fnCargarParametros = function (psPlanCostos) {
         aoNiveles = CargarNivelesCentroCostos(psPlanCostos);
     };
@@ -1258,6 +1258,8 @@ var CPMPGAS = function () {
         $("#cbo_mes").select2();
         $("#cbo_semana").select2();
         $('#cbo_moneda').select2();
+        $('#cbo_tipo_persona').select2();
+        $('#cbo_tipo_documento').select2();
         $('#cbo_documento').select2();
         $('#cboRegistroInterno').select2();
         $('#cbo_periodo').select2();
@@ -1469,6 +1471,46 @@ var CPMPGAS = function () {
         });
     };
 
+    var fillCbo_Tipo_Persona = function () {
+        $('#cbo_tipo_persona').empty();
+
+        $('#cbo_tipo_persona').append('<option value=""></option>');
+        $('#cbo_tipo_persona').append('<option value="P">Proveedor</option>');
+        $('#cbo_tipo_persona').append('<option value="E">Empleado</option>');
+        $('#cbo_tipo_persona').append('<option value="T">Persona</option>');
+        $('#cbo_tipo_persona').select2("val", "P");
+    };
+
+    var fillCbo_Tipo_Documento = function () {
+        var tipoPersona = $('#cbo_tipo_persona').val();
+        var opcionHtml = '';
+
+        switch (tipoPersona) {
+            case 'P':
+                opcionHtml += '<option value="6">RUC</option>'; //CODIGOS DOID SUNAT
+                opcionHtml += '<option value="0">OTROS</option>';
+                break;
+
+            case 'E':
+                opcionHtml += '<option value="1">DNI</option>';
+                opcionHtml += '<option value="4">CARNÉ EXTRAN.</option>';
+                opcionHtml += '<option value="7">PASAPORTE</option>';
+                opcionHtml += '<option value="0">OTROS</option>';
+                break;
+
+            default:
+                opcionHtml += '<option value="6">RUC</option>';
+                opcionHtml += '<option value="1">DNI</option>';
+                opcionHtml += '<option value="4">CARNÉ EXTRAN.</option>';
+                opcionHtml += '<option value="7">PASAPORTE</option>';
+                opcionHtml += '<option value="0">OTROS</option>';
+        }
+
+        $('#cbo_tipo_documento').empty().append(opcionHtml);
+
+        $('#cbo_tipo_documento').select2("val", "6");
+    };
+
     var fillCbo_Periodo = function () {
         $.ajax({
             type: "post",
@@ -1618,6 +1660,184 @@ var CPMPGAS = function () {
         $("#div_declara").attr("style", "display:" + valor);
     };
 
+    function BuscarBeneficiarioxDocumento() {
+        if (vErrors(['cbo_tipo_documento'])) {
+            var tipoDoc = $("#cbo_tipo_documento").val();
+            var numeroDoc = $("#txtNroDctoProveedor").val();
+            var tipoPer = $("#cbo_tipo_persona").val();
+
+            if (jsonBeneficiarios != null && jsonBeneficiarios.length > 0) {
+                for (var i = 0; i < jsonBeneficiarios.length; i++) {
+                    var beneficiario = jsonBeneficiarios[i];
+
+                    if ((tipoDoc === '6' && beneficiario.RUC === numeroDoc) || // RUC
+                        (tipoDoc === '1' && beneficiario.DNI === numeroDoc) || // DNI
+                        (tipoDoc === '4' && beneficiario.CARNET === numeroDoc) || // CARNET
+                        (tipoDoc === '7' && beneficiario.PASAPORTE === numeroDoc) || // PASAPORTE
+                        (tipoDoc === '0' && beneficiario.OTROS === numeroDoc) // OTROS
+                    ) {
+                        actualizarInformacionBeneficiario(beneficiario);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    function actualizarInformacionBeneficiario(beneficiario) {
+        limpiarHf();
+        $("#hfpidm").val(beneficiario.PIDM);
+        rucSeleccionado = beneficiario.RUC;
+        var tipoPersona = $('#cbo_tipo_persona').val();
+        $('#txt_beneficiario').val() === '' ? $('#txt_beneficiario').val(beneficiario.PERSONA) : $('#txt_beneficiario').val();
+
+        switch (tipoPersona) {
+            case 'P':
+                $("#hfRUCPER").val(beneficiario.RUC);
+                $("#hfOTROSPER").val(beneficiario.OTROS);
+
+                if (beneficiario.RUC) {
+                    $("#cbo_tipo_documento").val('6');
+                } else if (beneficiario.OTROS) {
+                    $("#cbo_tipo_documento").val('0');
+                }
+
+                break;
+
+            case 'E':
+                $("#hfDNIPER").val(beneficiario.DNI);
+                $("#hfCARNETPER").val(beneficiario.CARNET);
+                $("#hfPASAPORTEPER").val(beneficiario.PASAPORTE);
+                $("#hfOTROSPER").val(beneficiario.OTROS);
+
+                if (beneficiario.DNI) {
+                    $("#cbo_tipo_documento").val('1');
+                } else if (beneficiario.PASAPORTE) {
+                    $("#cbo_tipo_documento").val('7');
+                } else if (beneficiario.CARNET) {
+                    $("#cbo_tipo_documento").val('4');
+                } else if (beneficiario.OTROS) {
+                    $("#cbo_tipo_documento").val('0');
+                }
+
+                break;
+
+            default:
+                $("#hfRUCPER").val(beneficiario.RUC);
+                $("#hfDNIPER").val(beneficiario.DNI);
+                $("#hfCARNETPER").val(beneficiario.CARNET);
+                $("#hfPASAPORTEPER").val(beneficiario.PASAPORTE);
+                $("#hfDNIPER").val(beneficiario.DNI);
+
+                if (beneficiario.RUC) {
+                    $("#cbo_tipo_documento").val('6'); 
+                } else if (beneficiario.DNI) {
+                    $("#cbo_tipo_documento").val('1');
+                } else if (beneficiario.PASAPORTE) {
+                    $("#cbo_tipo_documento").val('7');
+                } else if (beneficiario.CARNET) {
+                    $("#cbo_tipo_documento").val('4'); 
+                } else if (beneficiario.OTROS) {
+                    $("#cbo_tipo_documento").val('0');
+                }
+
+        }
+        $("#cbo_tipo_documento").trigger('change');
+        actualizarNroDctoProveedor();
+
+        $("#lblHabido").html("");
+        $("#lblEstado").html("");
+        $("#lblRucSeleccionado").html("");
+        if (rucSeleccionado != "") {
+            $("#lblRucSeleccionado").html("RUC: " + rucSeleccionado + "");
+            $("#cbo_documento option[value=0001]").removeAttr("disabled");
+            $("#cbo_documento option[value=0002]").removeAttr("disabled");
+            $("#cbo_documento option[value=0003]").removeAttr("disabled");
+            $("#cbo_documento option[value=0005]").removeAttr("disabled");
+            $("#cbo_documento option[value=0009]").removeAttr("disabled");
+            $("#cbo_documento option[value=0010]").removeAttr("disabled");
+            $("#cbo_documento option[value=0014]").removeAttr("disabled");
+        } else {
+            $("#cbo_documento option[value=0001]").attr("disabled", "disabled");
+            $("#cbo_documento option[value=0002]").attr("disabled", "disabled");
+            $("#cbo_documento option[value=0003]").attr("disabled", "disabled");
+            $("#cbo_documento option[value=0005]").attr("disabled", "disabled");
+            $("#cbo_documento option[value=0009]").attr("disabled", "disabled");
+            $("#cbo_documento option[value=0010]").attr("disabled", "disabled");
+            $("#cbo_documento option[value=0014]").attr("disabled", "disabled");
+            $("#lblRucSeleccionado").html("");
+        }
+
+        if (rucSeleccionado == "") {
+            $("#chk_compras").attr("disabled", "disabled");
+            $('#uniform-chk_compras span').removeClass();
+            $('#chk_compras').attr('checked', false);
+            $(".divDestinoTipo").hide();
+            $("#btnHabido").hide();
+            MuestraPeriodo("none")
+        } else {
+            $("#btnHabido").show();
+            if (!$("#chk_sindcto").is(":checked")) {
+                $("#chk_compras").removeAttr("disabled");
+            }
+        }
+
+        if (beneficiario.PPBIDEN_CONDICION_SUNAT != "") {
+            HABIDO_IND = "1";
+            $("#lblHabido").html("CONDICIÓN: " + "<b>" + beneficiario.PPBIDEN_CONDICION_SUNAT + "</b>");
+        }
+        if (beneficiario.PPBIDEN_ESTADO_SUNAT != "") {
+            $("#lblEstado").html("ESTADO: " + "<b>" + beneficiario.PPBIDEN_ESTADO_SUNAT + "</b>");
+        }
+
+        $("#hfPIDM").val(beneficiario.PIDM);
+    }
+
+    function actualizarNroDctoProveedor() {
+        var tipo_documento = $("#cbo_tipo_documento").val();
+        var nroDoc;
+        switch (tipo_documento) {
+            case '6':
+                nroDoc = $("#hfRUCPER").val();
+                break;
+
+            case '0':
+                nroDoc = $("#hfOTROSPER").val();
+                break;
+
+            case '1':
+                nroDoc = $("#hfDNIPER").val();
+                break;
+
+            case '4':
+                nroDoc = $("#hfCARNETPER").val();
+                break;
+
+            case '7':
+                nroDoc = $("#hfPASAPORTEPER").val();
+                break;
+
+            default:
+                nroDoc = $("#hfRUCPER").val();
+        }
+
+        if (nroDoc === "" || nroDoc === "0") {
+            $("#txtNroDctoProveedor").val("");
+            $("#txtNroDctoProveedor").attr("placeholder", "Nro. ");
+        } else {
+            $("#txtNroDctoProveedor").val(nroDoc);
+        }
+    }
+
+    function limpiarHf() {
+        $("#hfRUCPER").val("");
+        $("#hfOTROSPER").val("");
+        $("#hfDNIPER").val("");
+        $("#hfCARNETPER").val("");
+        $("#hfPASAPORTEPER").val("");
+        $("#txtNroDctoProveedor").val("");
+    }
+
     var ListarSucursales = function (ctlg) {
         var bool = false;
         $.ajax({
@@ -1708,10 +1928,58 @@ var CPMPGAS = function () {
         });
     };
 
+    function nuevoProveedor() {
+        var tp, td, d;
+        var continuar = false;
+        var enlace; 
+        personaSeleccionada = {};
 
+        if (vErrorsNotMessage(['txtNroDctoProveedor'])) {
+            continuar = true;
+            td = $("#cbo_tipo_documento").val();
+            d = $("#txtNroDctoProveedor").val()
+        }
 
-    function filltxtBeneficiario(v_ID, v_value, estado_ind) {
+        switch ($("#cbo_tipo_persona").val()) {
+            case "P":
+                enlace = "?f=nrmgepr&tp=";
+                break;
+            case "E":
+                enlace = "?f=npmempl&tp=";
+                break;
+            default:
+                enlace = "?f=ncmpers&tp=";
+                break;
+
+        }
+
+        if (continuar) {
+            if (td == "6") {//JURIDICA         
+                if (d.length == 11) {
+                    if (d.toString().substring(0, 1) == "1") {
+                        //PERSONA NATURAL CON RUC    
+                        tp = "N";
+                        window.open(enlace + tp + "&td=" + td + "&d=" + d + "", "_blank");
+                    } else {
+                        //PERSONA JURÍDICA  
+                        tp = "J";
+                        window.open(enlace + tp + "&td=" + td + "&d=" + d + "&ctlg=" + $("#slcEmpresa").val() + "", "_blank");
+                    }
+                } else {
+                    alertCustom("Ingrese un número de documento válido");
+                }
+            } else {//PERSONA NATURAL
+                tp = "N";
+                window.open(enlace + tp + "&td=" + td + "&d=" + d + "&ctlg=" + $("#slcEmpresa").val() + "", "_blank");
+            }
+        }
+    }
+
+    function filltxtBeneficiario(v_ID, v_value) {
+        limpiarHf()
+
         var selectBeneficiario = $(v_ID);
+
         $("#hfpidm").val("");
         rucSeleccionado = "";
         $("#lblRucSeleccionado").html("");
@@ -1719,12 +1987,15 @@ var CPMPGAS = function () {
         $("#lblEstado").html("");
         $.ajax({
             type: "post",
-            url: "vistas/cp/ajax/CPMPGAS.ashx?OPCION=PER",
+            url: "vistas/cp/ajax/CPMPGAS.ashx?OPCION=PER_PROV&p_CTLG_CODE=" + $('#slcEmpresa').val() + "&p_TIPO_PER=" + $("#cbo_tipo_persona").val(),
             cache: false,
             datatype: "json",
             async: false,
             success: function (datos) {
                 if (datos !== null && datos !== '') {
+                    $('.typeahead.dropdown-menu').html('');
+                    $('#txt_beneficiario').attr("placeholder", "Nombre proveedor");
+                    jsonBeneficiarios = datos;
                     selectBeneficiario.typeahead({
                         source: function (query, process) {
                             items: 20,
@@ -1737,6 +2008,9 @@ var CPMPGAS = function () {
                                 obj.RAZON_SOCIAL = datos[i].PERSONA;
                                 obj.DNI = datos[i].DNI;
                                 obj.RUC = datos[i].RUC;
+                                obj.CARNET = datos[i].CARNET;
+                                obj.PASAPORTE = datos[i].PASAPORTE;
+                                obj.OTROS = datos[i].OTROS;
                                 obj.PIDM = datos[i].PIDM;
                                 obj.PPBIDEN_CONDICION_SUNAT = datos[i].PPBIDEN_CONDICION_SUNAT;
                                 obj.PPBIDEN_ESTADO_SUNAT = datos[i].PPBIDEN_ESTADO_SUNAT;
@@ -1747,44 +2021,10 @@ var CPMPGAS = function () {
                                 map[objeto.RAZON_SOCIAL] = objeto;
                             });
                             process(arrayProveedores);
-                            //Desbloquear("ventana");
+
                         },
                         updater: function (item) {
-                            $("#hfpidm").val(map[item].PIDM);
-                            rucSeleccionado = map[item].RUC;
-                            $("#lblHabido").html("");
-                            $("#lblEstado").html("");
-                            $("#lblRucSeleccionado").html("");
-                            if (rucSeleccionado != "") {
-                                $("#lblRucSeleccionado").html("RUC: " + rucSeleccionado + "");
-                                $("#cbo_documento option[value=0001]").removeAttr("disabled");
-                            } else {
-                                $("#cbo_documento option[value=0001]").attr("disabled", "disabled");
-                                $("#lblRucSeleccionado").html("");
-                            }
-
-                            if (rucSeleccionado == "") {
-                                $("#chk_compras").attr("disabled", "disabled");
-                                $('#uniform-chk_compras span').removeClass();
-                                $('#chk_compras').attr('checked', false);
-                                $(".divDestinoTipo").hide();
-                                MuestraPeriodo("none")
-                            } else {
-                                if (!$("#chk_sindcto").is(":checked")) {
-                                    $("#chk_compras").removeAttr("disabled");
-                                }
-                            }
-
-                            if (map[item].PPBIDEN_CONDICION_SUNAT != "") {
-                                HABIDO_IND = "1";
-                                $("#lblHabido").html("CONDICIÓN: " + "<b>" + map[item].PPBIDEN_CONDICION_SUNAT + "</b>");
-                            }
-                            if (map[item].PPBIDEN_ESTADO_SUNAT != "") {
-                                $("#lblEstado").html("ESTADO: " + "<b>" + map[item].PPBIDEN_ESTADO_SUNAT + "</b>");
-                            }
-
-
-                            $("#hfPIDM").val(map[item].PIDM);
+                            actualizarInformacionBeneficiario(map[item]);
                             return item;
                         },
                         keyup: function () {
@@ -1814,7 +2054,6 @@ var CPMPGAS = function () {
                     arrayProveedores.val(v_value);
                     rucSeleccionado = "";
                     $("#lblRucSeleccionado").html("");
-
                     //Desbloquear("ventana");
                 }
                 Desbloquear("ventana");
@@ -1873,6 +2112,40 @@ var CPMPGAS = function () {
             }, 500);
         });
 
+        $('#cbo_tipo_persona').on('change', function () {
+            limpiarHf();
+            $('#txt_beneficiario').remove();
+            $('#input').append('<input id="txt_beneficiario" class="limpiar span12 " type="text" />');
+
+            var estereotipo = $("#cbo_tipo_persona").val();
+            filltxtBeneficiario('#txt_beneficiario', '');
+            if (estereotipo === "P") {
+                $('#txt_beneficiario').attr("placeholder", "Nombre proveedor");
+            } else if (estereotipo === "E") {
+                $('#txt_beneficiario').attr("placeholder", "Nombre empleado");
+            } else {
+                $('#txt_beneficiario').attr("placeholder", "Nombre persona"); 
+            }
+            fillCbo_Tipo_Documento();
+            actualizarNroDctoProveedor();
+
+            oTable.fnClearTable();
+            detallesGasto = [];
+            dTotal = 0;
+            $("#txt_monto, #txt_detraccion, #txt_importePagar").val("");
+            actualizarRetencionRenta();
+            $("#txt_retencion, #txt_nroSuspencion").val("");
+            $("#txt_nroSuspencion").attr("disabled", true);
+        });
+
+        $("#cbo_tipo_documento").on('change', function () {
+            actualizarNroDctoProveedor();
+        });
+
+        $("#btn_origen_destino").on("click", function (e) {
+            nuevoProveedor();
+        });
+
         var emp_ant = "";
         $('#slcEmpresa').on('change', function () {
             if (emp_ant != $(this).val()) {
@@ -1883,6 +2156,7 @@ var CPMPGAS = function () {
                     ListarGasto($('#slcEmpresa').val());
                     $("#input").empty();
                     $("#input").html('<input id="txt_beneficiario" class="limpiar span12" type="text" >');
+                    actualizarNroDctoProveedor();
                     filltxtBeneficiario('#txt_beneficiario', '');
                     fnlimpiaCentroCostos();
                     fillCbo_Periodo();
@@ -2074,9 +2348,9 @@ var CPMPGAS = function () {
                 $('#txt_retencion').val(0);
 
                 actualizarRetencionRenta();
+                habilitarNroSuspencion($('#chk_retencionrenta').prop('checked'));
             }
         });
-
 
         $('#chkactivo').on('click', function () {
             if ($("#chkactivo").is(':checked')) {
@@ -2109,8 +2383,6 @@ var CPMPGAS = function () {
 
             }
         });
-
-
 
         $('#cbo_subgasto').on('change', function () {
             var cta = $('#cbo_subgasto :selected').attr('cta');
@@ -2305,13 +2577,15 @@ var CPMPGAS = function () {
                 oTable.fnClearTable();
                 detallesGasto = [];
                 dTotal = 0;
-                $("#txt_monto, #txt_detraccion, #txt_retencion, #txt_importePagar").val("")
+                $("#txt_monto, #txt_detraccion, #txt_retencion, #txt_nroSuspencion, #txt_importePagar").val("")
+                $("#txt_nroSuspencion").attr("disabled", true);
             } else {
                 $('#cbx_destino').select2('val', 'DSTGRA');
                 oTable.fnClearTable();
                 detallesGasto = [];
                 dTotal = 0;
-                $("#txt_monto, #txt_detraccion, txt_retencion, #txt_importePagar").val("")
+                $("#txt_monto, #txt_detraccion, txt_retencion, #txt_nroSuspencion, #txt_importePagar").val("")
+                $("#txt_nroSuspencion").attr("disabled", true);
             }
 
         });
@@ -2365,7 +2639,8 @@ var CPMPGAS = function () {
                 dTotal = 0;
                 $("#txt_monto, #txt_detraccion, #txt_importePagar").val("");
                 actualizarRetencionRenta();
-                $("#txt_retencion").val("");
+                $("#txt_retencion, #txt_nroSuspencion").val("");
+                $("#txt_nroSuspencion").attr("disabled", true);
 
             } else { // CON DOCUMENTO
                 $('#chk_sindcto').prop('checked', false).parent().removeClass('checked');
@@ -2402,9 +2677,124 @@ var CPMPGAS = function () {
             var txtretencion = parseFloat($('#txt_retencion').val());
             var importe = !this.checked ? (importePago + txtretencion) : importePago;
             calcularRetencionRenta(importe)
+            habilitarNroSuspencion($('#chk_retencionrenta').prop('checked'));
             $.uniform.update('#chk_retencionrenta');
         });
 
+        //$("#txtNroDctoProveedor").live("keyup", function (e) {
+        //    var key = e.keyCode ? e.keyCode : e.which;
+        //    if ($(this).val() != "") {
+        //        let beneficiary = beneficiariesData.find(b => b.docNumber === docNumber);
+        //        if (beneficiary) {
+        //            $('#txt_beneficiario').val(beneficiary.name);
+        //        } else {
+        //            $('#txt_beneficiario').val(''); 
+        //        }
+        //    }
+        //});
+
+        //$('#cbo_tipo_documento').change(function () {
+        //    $("#txtNroDctoProveedor").focus();
+        //    var valor = $(this).val();
+        //    switch (valor) {
+        //        case "1": //DNI                            
+        //            var numDoc = $("#txtNroDctoProveedor").val().substring(0, 1);
+        //            if (numDoc == 2) {
+        //                $("#lblHabido").html("");
+        //                $("#lblEstado").html("");
+        //                //$('#cboDocumentoVenta').val("").change();
+        //                $("#hfPIDM").val("");
+        //                $("#hfAgenteRetencionCliente").val("");
+        //                $("#hfCodigoCategoriaCliente").val("");
+        //                $("#hfCodigoTipoDocumento").val("");
+        //                $("#hfTipoDocumento").val("");
+        //                $("#hfNroDocumento").val("");
+        //                $("#hfRUC").val("");
+        //                $("#hfDIR").val("");
+        //                $("#txtNroDctoProveedor").val("");
+        //                $("#txt_beneficiario").val("");
+        //                //$('#cbo_direccion').val("").change();
+
+        //            } else {
+        //                $("#txtNroDctoProveedor").inputmask({ "mask": "9", "repeat": 8, "greedy": false });
+        //            }
+        //            break;
+        //        case "6": //RUC
+        //            $("#txtNroDctoProveedor").inputmask({ "mask": "9", "repeat": 11, "greedy": false });
+        //            break;
+        //        case "4": //CARNE EXTRANJ.
+        //            $("#txtNroDctoProveedor").inputmask({ "mask": "9", "repeat": 9, "greedy": false });
+        //            break;
+        //        case "7": //PASAPORTE
+        //            $("#txtNroDctoProveedor").inputmask({ "mask": "#", "repeat": 9, "greedy": false });
+        //            break;
+        //        case "11"://PARTIDA
+        //            $("#txtNroDctoProveedor").inputmask({ "mask": "9", "repeat": 8, "greedy": false });
+        //            break;
+        //        case "0"://OTROS
+        //            $("#txtNroDctoProveedor").inputmask({ "mask": "9", "repeat": 11, "greedy": false });
+        //            break;
+        //    }
+
+        //    var tipo = $(this).val();
+        //    $('#cboDocumentoVenta').val("").change();//DPORTA
+        //    if (tipo === '6') {
+        //        $('#txtNroDctoProveedor').val($("#hfRUC").val());
+        //    } else {
+        //        if ($("#hfCodigoTipoDocumento").val() == tipo) {
+        //            $('#txtNroDctoProveedor').val($("#hfNroDocumento").val());
+        //        } else {
+        //            $('#txtNroDctoProveedor').val("");
+        //        }
+        //    }
+
+        //    if ($('#cbo_tipo_documento').val() == '6') {
+        //        $("#cboDocumentoVenta option:not([value=0001])").attr("disabled", "disabled");
+        //        $("#cboDocumentoVenta option[value=0012]").removeAttr("disabled");
+        //        $("#cboDocumentoVenta option[value=0101]").removeAttr("disabled"); 
+        //        $("#cboDocumentoVenta option[value=0001]").removeAttr("disabled");
+
+        //        var oItems = $('#cboDocumentoVenta option');
+        //        for (var i = 0; i < oItems.length; i++) {
+        //            if (oItems[i].value != "" && oItems[i].value != "0003") {
+        //                if (oItems[i].value === "0012" && $("#txtNroDocVenta").val() == "") {
+        //                    $("#cboDocumentoVenta").select2("val", "0012").change();
+        //                } else if (oItems[i].value === "0001" && $("#txtNroDocVenta").val() == "") {
+        //                    $("#cboDocumentoVenta").select2("val", "0001").change();
+        //                } else if (oItems[i].value === "0101" && $("#txtNroDocVenta").val() == "") {
+        //                    $("#cboDocumentoVenta").select2("val", "0101").change();
+        //                }
+        //            }
+        //        }
+        //    } else {
+        //        $("#cboDocumentoVenta option:not([value=0001])").removeAttr("disabled");
+        //        $("#cboDocumentoVenta option[value=0001]").attr("disabled", "disabled");
+
+        //        var oItems = $('#cboDocumentoVenta option');
+        //        for (var i = 0; i < oItems.length; i++) {
+        //            if (oItems[i].value != "" && oItems[i].value != "0001") {
+        //                if (oItems[i].value === "0012" && $("#txtNroDocVenta").val() == "") {
+        //                    $("#cboDocumentoVenta").select2("val", "0012").change();
+        //                } else if (oItems[i].value === "0003" && $("#txtNroDocVenta").val() == "") {
+        //                    $("#cboDocumentoVenta").select2("val", "0003").change();
+        //                } else if (oItems[i].value === "0101" && $("#txtNroDocVenta").val() == "") {
+        //                    $("#cboDocumentoVenta").select2("val", "0101").change();
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //});
+
+        $("#txtNroDctoProveedor").live("keyup", function (e) {
+            var key = e.keyCode ? e.keyCode : e.which;
+            if ($(this).val() != "") {
+                if (key === 13) {
+                    BuscarBeneficiarioxDocumento();
+                }
+            }
+        });
+        
         $('#txt_descripcion').bind('keypress', function (e) {
             var code = e.keyCode || e.which;
             if (code == 13) { //Enter keycode
@@ -2447,6 +2837,7 @@ var CPMPGAS = function () {
 
             $("#btn_aprobar").remove();
             Bloquear("ventana")
+            var estado_ind;
 
             var data = new FormData();
             data.append('OPCION', '4');
@@ -2508,7 +2899,7 @@ var CPMPGAS = function () {
                             if (datos[0].RUC != "") {
                                 rucSeleccionado = datos[0].RUC;
                                 $("#lblRucSeleccionado").html("RUC: " + rucSeleccionado + "");
-                            }
+                            } 
 
                             $('#cbo_moneda').select2("val", datos[0].MONEDA_CODE).change();
                             $('#txt_monto').val(formatoMiles(datos[0].MONTO));
@@ -2533,10 +2924,12 @@ var CPMPGAS = function () {
 
 
                             $("#div_per_tri").remove();
-                            $("#acciones_generales").html("<a id='guardar' class='btn blue' href='javascript:Modificar();'><i class='icon-pencil'></i> Modificar</a>&nbsp;&nbsp;<a id='cancelar' class='btn' href='?f=CPMPGAS'><i class='icon-remove'></i>&nbsp;Cancelar</a>")
+                            $("#acciones_generales").html("<a id='guardar' class='btn blue' href='javascript:confirmarModificar();'><i class='icon-pencil'></i> Modificar</a>&nbsp;&nbsp;<a id='cancelar' class='btn' href='?f=CPMPGAS'><i class='icon-remove'></i>&nbsp;Cancelar</a>")
 
                             $("#guardar").html("<i class='icon-pencil'></i> Modificar");
-                            $("#guardar").attr("href", "javascript:ModificarP();");
+                            $("#guardar").attr("href", "javascript:confirmarModificarP();");
+
+                            $('#cbo_tipo_persona').val(datos[0].TIPO_PERSONA).trigger('change');
 
                             if (datos[0].ESTADO_A_I == 'A') {
                                 $('#chkactivo').prop('checked', true).parent().addClass('checked');
@@ -2582,6 +2975,7 @@ var CPMPGAS = function () {
 
                             $("#cbx_destino").select2("val", datos[0].OPERACION_ORG);
                             fillCboTipoBien(datos[0].TIPO_BIEN_ORG);
+                            actualizarNroDctoProveedor()
 
                             $("#add_detalle").attr("disabled", true);
                             $("#btnBuscarCentroCto").attr("disabled", true);
@@ -2665,7 +3059,7 @@ var CPMPGAS = function () {
                                 $(".divDestinoTipo").show();
                                 if ($("#hf_permiso").val() != 0) {
                                     MuestraPeriodo("display");
-                                }                                
+                                }
                                 //llenar combo
                                 if (datos[0].MES_TRIB != "") {
                                     var oMes = Devuelve_Desc_MES(datos[0].MES_TRIB);
@@ -2763,7 +3157,9 @@ var CPMPGAS = function () {
                                 $('#chkcompras').attr('checked', false);
                                 $(".divDestinoTipo").hide();
                                 //MuestraPeriodo("none");
-                            } 
+                            }
+
+                            $('#cbo_tipo_persona').val(datos[0].TIPO_PERSONA).trigger('change');
 
                             if (datos[0].EST_IND == "ANU" || datos[0].EST_IND == "PAG"
                                 || datos[0].EST_IND == "AMOR" || datos[0].EST_IND == "REC"
@@ -2777,8 +3173,12 @@ var CPMPGAS = function () {
                                 $("#txtSubTotal").attr("disabled", true);
                                 $("#btnGenerarAsiento").attr("style", "display:display");
                             } else {
+                                //$("#cbo_documento").attr("disabled", false);
+                                //if (datos[0].RUC != "") {
+                                //    $("#cbo_documento").val("default").trigger('change');
+                                //}
                                 $("#div_per_tri").remove();
-                                $("#acciones_generales").html("<a id='guardar' class='btn blue' href='javascript:Modificar();'><i class='icon-pencil'></i> Modificar</a>&nbsp;&nbsp;<a id='cancelar' class='btn' href='?f=CPMPGAS'><i class='icon-remove'></i>&nbsp;Cancelar</a>")
+                                $("#acciones_generales").html("<a id='guardar' class='btn blue' href='javascript:confirmarModificar();'><i class='icon-pencil'></i> Modificar</a>&nbsp;&nbsp;<a id='cancelar' class='btn' href='?f=CPMPGAS'><i class='icon-remove'></i>&nbsp;Cancelar</a>")
                                 filltxtBeneficiario('#txt_beneficiario', '');
                                 if ($("#hf_permiso").val() != 0) {
                                     MuestraPeriodo("display");
@@ -2790,6 +3190,7 @@ var CPMPGAS = function () {
                             $('#txt_beneficiario').val(datos[0].NOMBRES);
                             $("#txt_beneficiario").keyup().siblings("ul").children("li").click();
                             $('#hfpidm').val(datos[0].PIDM_BENE);
+                            actualizarNroDctoProveedor();
                             //---------------------------
                             HABIDO_IND = datos[0].HABIDO_IND;
 
@@ -2821,7 +3222,7 @@ var CPMPGAS = function () {
 
                             //----------------------------
                             $("#guardar").html("<i class='icon-pencil'></i> Modificar");
-                            $("#guardar").attr("href", "javascript:Modificar();");
+                            $("#guardar").attr("href", "javascript:confirmarModificar();");
 
                             if (datos[0].ESTADO_A_I == 'A') {
 
@@ -2833,6 +3234,11 @@ var CPMPGAS = function () {
                             }
 
                             listarDetallesGasto(CODE);
+
+                            if (!$("#chk_retencionrenta").is(':checked') && $("#cbo_documento").val() === "0002" && prmtSURE <= parseFloat($('#txt_monto').val())) {
+                                $("#txt_nroSuspencion").val(datos[0].NRO_SUSPENCION);
+                            }
+
                             if (datos[0].EST_IND == "ANU" || datos[0].EST_IND == "PAG"
                                 || datos[0].EST_IND == "AMOR" || datos[0].EST_IND == "REC"
                                 || datos[0].EST_IND == "APRO") {
@@ -2840,6 +3246,10 @@ var CPMPGAS = function () {
                                 $('#chk_retencionrenta').prop('checked', false);
                                 $('#chk_retencionrenta').prop('disabled', true);
                                 $('#txt_retencion').prop('disabled', true);
+                                habilitarNroSuspencion($("#chk_retencionrenta").is(':checked'));
+                                $("#txt_nroSuspencion").prop('disabled', true);
+                            } else {
+                                habilitarNroSuspencion($("#chk_retencionrenta").is(':checked'));
                             }
 
                             if (prmtACON == "SI") {
@@ -2934,6 +3344,8 @@ var CPMPGAS = function () {
             fillCboEmpresa();
             fillCbo_Gasto();
             fillCbo_Moneda();
+            fillCbo_Tipo_Persona();
+            fillCbo_Tipo_Documento();
             fillCboOperacion();
             fillCboDcto_Emite();
             ListarSucursales($('#slcEmpresa').val());
@@ -3065,6 +3477,153 @@ function cargarParametrosSistema() {
     //});
 }
 
+function BuscarBeneficiarioxDocumento() {
+    if (vErrors(['cbo_tipo_documento'])) {
+        var tipoDoc = $("#cbo_tipo_documento").val();
+        var numeroDoc = $("#txtNroDctoProveedor").val();
+        var tipoPer = $("#cbo_tipo_persona").val();
+
+        if (jsonBeneficiarios != null && jsonBeneficiarios.length > 0) {
+            for (var i = 0; i < jsonBeneficiarios.length; i++) {
+                var beneficiario = jsonBeneficiarios[i];
+
+                if ((tipoDoc === '6' && beneficiario.RUC === numeroDoc) || // RUC
+                    (tipoDoc === '1' && beneficiario.DNI === numeroDoc) || // DNI
+                    (tipoDoc === '4' && beneficiario.CARNET === numeroDoc) || // CARNET
+                    (tipoDoc === '7' && beneficiario.PASAPORTE === numeroDoc) || // PASAPORTE
+                    (tipoDoc === '0' && beneficiario.OTROS === numeroDoc) // OTROS
+                ) {
+                    actualizarInformacionBeneficiario(beneficiario);
+                    return;
+                }
+            }
+        }
+    }
+}
+
+function actualizarInformacionBeneficiario(beneficiario) {
+    limpiarHf();
+    $("#hfpidm").val(beneficiario.PIDM);
+    rucSeleccionado = beneficiario.RUC;
+    var tipoPersona = $('#cbo_tipo_persona').val();
+    $('#txt_beneficiario').val() === '' ? $('#txt_beneficiario').val(beneficiario.PERSONA) : $('#txt_beneficiario').val();
+
+    switch (tipoPersona) {
+        case 'P':
+            $("#hfRUCPER").val(beneficiario.RUC);
+            $("#hfOTROSPER").val(beneficiario.OTROS);
+            break;
+
+        case 'E':
+            $("#hfDNIPER").val(beneficiario.DNI);
+            $("#hfCARNETPER").val(beneficiario.CARNET);
+            $("#hfPASAPORTEPER").val(beneficiario.PASAPORTE);
+            $("#hfOTROSPER").val(beneficiario.OTROS);
+            break;
+
+        default:
+            $("#hfRUCPER").val(beneficiario.RUC);
+            $("#hfDNIPER").val(beneficiario.DNI);
+            $("#hfCARNETPER").val(beneficiario.CARNET);
+            $("#hfPASAPORTEPER").val(beneficiario.PASAPORTE);
+            $("#hfDNIPER").val(beneficiario.DNI);
+    }
+
+    actualizarNroDctoProveedor();
+
+    $("#lblHabido").html("");
+    $("#lblEstado").html("");
+    $("#lblRucSeleccionado").html("");
+    if (rucSeleccionado != "") {
+        $("#lblRucSeleccionado").html("RUC: " + rucSeleccionado + "");
+        $("#cbo_documento option[value=0001]").removeAttr("disabled");
+        $("#cbo_documento option[value=0002]").removeAttr("disabled");
+        $("#cbo_documento option[value=0003]").removeAttr("disabled");
+        $("#cbo_documento option[value=0005]").removeAttr("disabled");
+        $("#cbo_documento option[value=0009]").removeAttr("disabled");
+        $("#cbo_documento option[value=0010]").removeAttr("disabled");
+        $("#cbo_documento option[value=0014]").removeAttr("disabled");
+    } else {
+        $("#cbo_documento option[value=0001]").attr("disabled", "disabled");
+        $("#cbo_documento option[value=0002]").attr("disabled", "disabled");
+        $("#cbo_documento option[value=0003]").attr("disabled", "disabled");
+        $("#cbo_documento option[value=0005]").attr("disabled", "disabled");
+        $("#cbo_documento option[value=0009]").attr("disabled", "disabled");
+        $("#cbo_documento option[value=0010]").attr("disabled", "disabled");
+        $("#cbo_documento option[value=0014]").attr("disabled", "disabled");
+        $("#lblRucSeleccionado").html("");
+    }
+
+    if (rucSeleccionado == "") {
+        $("#chk_compras").attr("disabled", "disabled");
+        $('#uniform-chk_compras span').removeClass();
+        $('#chk_compras').attr('checked', false);
+        $(".divDestinoTipo").hide();
+        $("#btnHabido").hide();
+        MuestraPeriodo("none")
+    } else {
+        $("#btnHabido").show();
+        if (!$("#chk_sindcto").is(":checked")) {
+            $("#chk_compras").removeAttr("disabled");
+        }
+    }
+
+    if (beneficiario.PPBIDEN_CONDICION_SUNAT != "") {
+        HABIDO_IND = "1";
+        $("#lblHabido").html("CONDICIÓN: " + "<b>" + beneficiario.PPBIDEN_CONDICION_SUNAT + "</b>");
+    }
+    if (beneficiario.PPBIDEN_ESTADO_SUNAT != "") {
+        $("#lblEstado").html("ESTADO: " + "<b>" + beneficiario.PPBIDEN_ESTADO_SUNAT + "</b>");
+    }
+
+    $("#hfPIDM").val(beneficiario.PIDM);
+}
+
+function actualizarNroDctoProveedor() {
+    var tipo_documento = $("#cbo_tipo_documento").val();
+    var nroDoc;
+    switch (tipo_documento) {
+        case '6':
+            nroDoc = $("#hfRUCPER").val();
+            break;
+
+        case '0':
+            nroDoc = $("#hfOTROSPER").val();
+            break;
+
+        case '1':
+            nroDoc = $("#hfDNIPER").val();
+            break;
+
+        case '4':
+            nroDoc = $("#hfCARNETPER").val();
+            break;
+
+        case '7':
+            nroDoc = $("#hfPASAPORTEPER").val();
+            break;
+
+        default:
+            nroDoc = $("#hfRUCPER").val();
+    }
+
+    if (nroDoc === "" || nroDoc === "0") {
+        $("#txtNroDctoProveedor").val("");
+        $("#txtNroDctoProveedor").attr("placeholder", "Nro. ");
+    } else {
+        $("#txtNroDctoProveedor").val(nroDoc);
+    }
+}
+
+function limpiarHf() {
+    $("#hfRUCPER").val("");
+    $("#hfOTROSPER").val("");
+    $("#hfDNIPER").val("");
+    $("#hfCARNETPER").val("");
+    $("#hfPASAPORTEPER").val("");
+    $("#txtNroDctoProveedor").val("");
+}
+
 var deleteDetalle = function (item) {
     for (var i = 0; i < detallesGasto.length; i++) {
         if (detallesGasto[i].ITEM == item) {
@@ -3080,6 +3639,7 @@ var deleteDetalle = function (item) {
             $('#txt_retencion').val(0);
 
             actualizarRetencionRenta();
+            habilitarNroSuspencion($('#chk_retencionrenta').prop('checked'));
         }
     }
 
@@ -3243,6 +3803,7 @@ var Guardar = function () {
     var p_IMPORTE_DETRACCION = 0;
     var p_RETENCION_IND = 'N';
     var p_IMPORTE_RETENCION = 0;
+    var p_NRO_SUSPENCION = 0;
     var p_IMPORTE_PAGAR = 0;
 
     //var p_COD_OPERACION = "";
@@ -3326,6 +3887,10 @@ var Guardar = function () {
         p_IMPORTE_RETENCION = parseFloat($("#txt_retencion").val()).toFixed(2);
     }
 
+    if (!$("#chk_retencionrenta").is(':checked') && $("#cbo_documento").val() === "0002" && prmtSURE <= parseFloat($('#txt_monto').val())) {
+        p_NRO_SUSPENCION = $("#txt_nroSuspencion").val().toString();
+    }
+
     p_IMPORTE_PAGAR = parseFloat($("#txt_importePagar").val()).toFixed(2);
     var data = new FormData();
 
@@ -3358,6 +3923,7 @@ var Guardar = function () {
     data.append("p_IMPORTE_DETRACCION", p_IMPORTE_DETRACCION);
     data.append("p_RETENCION_IND", p_RETENCION_IND);
     data.append("p_IMPORTE_RETENCION", p_IMPORTE_RETENCION);
+    data.append("p_NRO_SUSPENCION", p_NRO_SUSPENCION);
     data.append("p_IMPORTE_PAGAR", p_IMPORTE_PAGAR);
     //
     if (typeof ($("#cbo_periodo").val()) !== "undefined") {
@@ -3387,9 +3953,9 @@ var Guardar = function () {
     //}
     var arraY = [];
     if ($("#chk_sindcto").is(':checked')) {
-        arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "slcEmpresa", "slcSucural", "txtFechaVenc"];
+        arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "txtNroDctoProveedor", "slcEmpresa", "slcSucural", "txtFechaVenc"];
     } else {
-        arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "slcEmpresa", "slcSucural", "txt_serie", "txt_dcto_ref", "cbo_documento", "txtFechaVenc"];
+        arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "txtNroDctoProveedor", "slcEmpresa", "slcSucural", "txt_serie", "txt_dcto_ref", "cbo_documento", "txtFechaVenc"];
     }
 
     if ($("#rbUnico").is(":checked")) {
@@ -3459,11 +4025,11 @@ var Guardar = function () {
                         var cod = $("#txtCodigo").val().substring(0, 3);
                         if (cod == "PRO") {//GASTO PROGRAMADO
                             $("#guardar").html("<i class='icon-pencil'></i> Modificar");
-                            $("#guardar").attr("href", "javascript:ModificarP();");
+                            $("#guardar").attr("href", "javascript:confirmarModificarP();");
                         }
                         if (cod == "GST") {//GASTO UNICO
                             $("#guardar").html("<i class='icon-pencil'></i> Modificar");
-                            $("#guardar").attr("href", "javascript:Modificar();");
+                            $("#guardar").attr("href", "javascript:confirmarModificar();");
                         }
                         $("#btn_aprobar").hide();
                         $(".btnEliminarDetalle").attr("style", "display:none");
@@ -3510,6 +4076,14 @@ function ReplaceTotal(find, replace, str) {
     return str.replace(new RegExp(find, 'g'), replace);
 }
 
+var confirmarModificar = function () {
+    confirmarRetencion().then(continuar => {
+        if (continuar) {
+            Modificar();
+        }
+    });
+}
+
 //MODIFICAR GASTO  UNICO
 var Modificar = function () {
 
@@ -3542,6 +4116,7 @@ var Modificar = function () {
     var p_IMPORTE_DETRACCION = 0;
     var p_RETENCION_IND = 'N';
     var p_IMPORTE_RETENCION = 0;
+    var p_NRO_SUSPENCION = "";
     var p_IMPORTE_PAGAR = 0;
 
     p_DECLARA = p_DECLARA = (typeof $('#cboDeclara').val() == "undefined" ? "0002" : $('#cboDeclara').val());
@@ -3610,6 +4185,10 @@ var Modificar = function () {
         p_IMPORTE_RETENCION = parseFloat($("#txt_retencion").val()).toFixed(2);
     }
 
+    if (!$("#chk_retencionrenta").is(':checked') && $("#cbo_documento").val() === "0002" && prmtSURE <= parseFloat($('#txt_monto').val())) {
+        p_NRO_SUSPENCION = $("#txt_nroSuspencion").val().toString();
+    }
+
     p_IMPORTE_PAGAR = parseFloat($("#txt_importePagar").val()).toFixed(2);
 
     var data = new FormData();
@@ -3645,6 +4224,7 @@ var Modificar = function () {
     data.append("p_IMPORTE_DETRACCION", p_IMPORTE_DETRACCION);
     data.append("p_RETENCION_IND", p_RETENCION_IND);
     data.append("p_IMPORTE_RETENCION", p_IMPORTE_RETENCION);
+    data.append("p_NRO_SUSPENCION", p_NRO_SUSPENCION);
     data.append("p_IMPORTE_PAGAR", p_IMPORTE_PAGAR);
 
     var p_TIPO_BIEN = "";
@@ -3661,7 +4241,7 @@ var Modificar = function () {
     data.append("p_OPERACION", p_OPERACION);
 
 
-    var arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "slcEmpresa", "slcSucural", "txtFechaVenc"];
+    var arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "txtNroDctoProveedor", "slcEmpresa", "slcSucural", "txtFechaVenc"];
     if ($("#rbUnico").is(":checked")) {
         arraY.slice(arraY.indexOf("cbo_semana"), 1);
         arraY.slice(arraY.indexOf("cbo_mes"), 1);
@@ -3730,6 +4310,14 @@ var Modificar = function () {
     }
 
 };
+
+var confirmarModificarP = function () {
+    confirmarRetencion().then(continuar => {
+        if (continuar) {
+            ModificarP();
+        }
+    });
+}
 
 //MODIFICAR GASTO PROGRAMADO
 var ModificarP = function () {
@@ -3846,7 +4434,7 @@ var ModificarP = function () {
     data.append("p_TIPO_BIEN", p_TIPO_BIEN);
     data.append("p_OPERACION", p_OPERACION);
 
-    var arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "slcEmpresa", "slcSucural", "cbo_gasto", "cbo_subgasto"];
+    var arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "txtNroDctoProveedor", "slcEmpresa", "slcSucural", "cbo_gasto", "cbo_subgasto"];
     if ($("#rbUnico").is(":checked")) {
         arraY.slice(arraY.indexOf("cbo_semana"), 1);
         arraY.slice(arraY.indexOf("cbo_mes"), 1);
@@ -3945,6 +4533,26 @@ function calcularRetencionRenta(importePago) {
     }
 }
 
+function habilitarNroSuspencion(isChecked) {
+    var $nroSuspencion = $("#txt_nroSuspencion");
+
+    if (!isChecked && $("#cbo_documento").val() === "0002" && prmtSURE <= parseFloat($('#txt_monto').val())) {
+        $nroSuspencion.attr("disabled", false);
+        $nroSuspencion.attr({
+            "pattern": "\\d{8}",
+            "title": "Nro operacion formulario 1609",
+            "placeholder": "Nro operacion"
+        });
+    } else {
+        $nroSuspencion.attr("disabled", true);
+        $nroSuspencion.val("")
+            .removeAttr("pattern")
+            .removeAttr("title")
+            .removeAttr("placeholder");
+    }
+}
+
+
 var Aprobar = function () {
 
     if (detallesGasto.length > 0) {
@@ -3979,6 +4587,7 @@ var Aprobar = function () {
         var p_IMPORTE_DETRACCION = 0;
         var p_RETENCION_IND = 'N';
         var p_IMPORTE_RETENCION = 0;
+        var p_NRO_SUSPENCION = "";
         var p_IMPORTE_PAGAR = 0;
 
         p_DECLARA = p_DECLARA = (typeof $('#cboDeclara').val() == "undefined" ? "0002" : $('#cboDeclara').val());
@@ -4073,6 +4682,10 @@ var Aprobar = function () {
         if ($("#chk_retencionrenta").is(':checked') && $("#txt_retencion").val() != '' && $("#txt_retencion").val() != 0 && !isNaN(parseFloat($("#txt_retencion").val()))) {
             p_RETENCION_IND = 'S';
             p_IMPORTE_RETENCION = parseFloat($("#txt_retencion").val()).toFixed(2);
+        } 
+
+        if (!$("#chk_retencionrenta").is(':checked') && $("#cbo_documento").val() === "0002" && prmtSURE <= parseFloat($('#txt_monto').val())) {
+            p_NRO_SUSPENCION = $("#txt_nroSuspencion").val().toString();
         }
 
         p_IMPORTE_PAGAR = parseFloat($("#txt_importePagar").val()).toFixed(2);
@@ -4113,6 +4726,7 @@ var Aprobar = function () {
         data.append("p_IMPORTE_DETRACCION", p_IMPORTE_DETRACCION);
         data.append("p_RETENCION_IND", p_RETENCION_IND);
         data.append("p_IMPORTE_RETENCION", p_IMPORTE_RETENCION);
+        data.append("p_NRO_SUSPENCION", p_NRO_SUSPENCION);
         data.append("p_IMPORTE_PAGAR", p_IMPORTE_PAGAR);
 
         var p_TIPO_BIEN = "";
@@ -4136,9 +4750,9 @@ var Aprobar = function () {
         //}
 
         if ($("#chk_sindcto").is(':checked')) {
-            var arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "slcEmpresa", "slcSucural", "txtFechaVenc"];
+            var arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "txtNroDctoProveedor", "slcEmpresa", "slcSucural", "txtFechaVenc"];
         } else {
-            var arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "slcEmpresa", "slcSucural", "txt_serie", "txt_dcto_ref", "cbo_documento", "txtFechaVenc"];
+            var arraY = ["txt_descripcion", "cbo_moneda", "txt_monto", "txt_beneficiario", "txtNroDctoProveedor", "slcEmpresa", "slcSucural", "txt_serie", "txt_dcto_ref", "cbo_documento", "txtFechaVenc"];
         }
 
         if ($("#rbUnico").is(":checked")) {
@@ -4288,19 +4902,29 @@ var ConfirmarAprobacion = function () {
 }
 
 var confirmarRetencion = function () {
+    var nroDigitos = /^\d{8}$/.test($('#txt_nroSuspencion').val().trim()); 
     return new Promise((resolve) => {
         if ($('#cbo_documento').val() == '0002' && prmtSURE <= parseFloat($('#txt_monto').val())) {
-            $("#ModalRetencion").modal('show');
-
-            $("#btnNO").one("click", function () {
-                $("#ModalRetencion").modal("hide");
+            if (!$("#chk_retencionrenta").is(':checked') && !vErrors("txt_nroSuspencion")) {
                 resolve(false);
-            });
+            }
+            else if (!$("#chk_retencionrenta").is(':checked') && !nroDigitos){
+                alertCustom("La operación <b>NO</b> se realizó!<br/> Ingrese el nro de suspencion en el formato correcto!");
+                resolve(false);
+            }
+            else {
+                $("#ModalRetencion").modal('show');
 
-            $("#btnOk").one("click", function () {
-                $("#ModalRetencion").modal("hide");
-                resolve(true);
-            });
+                $("#btnNO").one("click", function () {
+                    $("#ModalRetencion").modal("hide");
+                    resolve(false);
+                });
+
+                $("#btnOk").one("click", function () {
+                    $("#ModalRetencion").modal("hide");
+                    resolve(true);
+                });
+            }
         } else {
             resolve(true);
         }

@@ -283,6 +283,55 @@ Public Class NVVenta
         End Try
     End Function
 
+    Public Function ListarOrdenesAtencion(p_CTLG_CODE As String, p_SCSL_CODE As String, p_VENDEDOR As String, p_ESTADO As String,
+                                          p_DESDE As String, p_HASTA As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_LISTAR_ORDENES_DE_ATENCION", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VENDEDOR", p_VENDEDOR, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", p_ESTADO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function CambiarEstadoAtencion(ByVal P_CODE As String, ByVal P_USUA_ID As String, P_CTLG_CODE As String) As String
+        Try
+            Dim estado As String
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("PFC_CAMBIAR_ESTADO_NRO_ATENCION", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@P_CODE", P_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@P_USUA_ID", P_USUA_ID, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@P_CTLG_CODE", P_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@P_ESTADO", String.Empty, ParameterDirection.Output, 253))
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+
+            estado = cmd1.Parameters("@P_ESTADO").Value
+
+            Return estado
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
     Public Function ListarDocumentosCanjeablesAplicables(ByVal p_DESDE As String, p_HASTA As String, p_CTLG_CODE As String, p_SCSL_CODE As String, p_ESTADO As String) As DataTable
         Try
             Dim dt As DataTable
@@ -1051,6 +1100,23 @@ Public Class NVVenta
         End Try
         Return msg
     End Function
+
+    Public Function verificarNroOperacionVenta(ByVal p_NRO_OPERA As String, ByVal p_ORIGEN_OPERA As String) As String
+        Dim msg As String
+        Dim cmd As IDbCommand
+        Try
+
+            cmd = cn.GetNewCommand("PFS_VERIFICAR_NRO_OPERACION_VENTA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NRO_OPERA", p_NRO_OPERA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ORIGEN_OPERA", p_ORIGEN_OPERA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RPTA", String.Empty, ParameterDirection.Output, 253))
+            cmd = cn.Ejecuta_parms(cmd)
+            msg = cmd.Parameters("@p_RPTA").Value
+        Catch ex As Exception
+            msg = ex.Message
+        End Try
+        Return msg
+    End Function
     'Crea el QR con todos los parametros requeridos
     'Public Function ListarParametrosQR(ByVal p_codigo As String) As DataTable
     '    Try
@@ -1172,7 +1238,8 @@ Public Class NVVenta
             Dim cmd As IDbCommand
 
             'Los valores monetarios se ingresan en moneda base y en el procedimiento se calculan a moneda alterna 
-            cmd = cn.GetNewCommand("PFV_CREAR_DCTO_VENTA_RAPIDA_WEB", CommandType.StoredProcedure)
+            'cmd = cn.GetNewCommand("PFV_CREAR_DCTO_VENTA_RAPIDA_WEB", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFV_CREAR_DCTO_VENTA_RAPIDA_WEB_NEW", CommandType.StoredProcedure)
             'Correlativo mostrado en pantalla, puede cambiar en BD
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SERIE", p_NUM_SERIE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
@@ -1312,7 +1379,8 @@ Public Class NVVenta
             Dim cmd As IDbCommand
 
             'Los valores monetarios se ingresan en moneda base y en el procedimiento se calculan a moneda alterna 
-            cmd = cn.GetNewCommand("PFV_CREAR_VENTA_RAPIDA_SERVICIOS_WEB", CommandType.StoredProcedure)
+            'cmd = cn.GetNewCommand("PFV_CREAR_VENTA_RAPIDA_SERVICIOS_WEB", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFV_CREAR_VENTA_RAPIDA_SERVICIOS_WEB_NEW", CommandType.StoredProcedure)
             'Correlativo mostrado en pantalla, puede cambiar en BD
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SERIE", p_NUM_SERIE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
@@ -1436,7 +1504,7 @@ Public Class NVVenta
                                            ByVal p_DCTO_SERIE_REF As String, ByVal p_DCTO_NUM_REF As String,
                                            ByVal p_SCSL_EXONERADA_IND As String, ByVal p_IGV_IMPR_IND As String,
                                            ByVal p_VALOR_CAMBIO_OFI As String, ByVal p_COD_AUT As String, ByVal p_PCTJ_IGV As String,
-                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_KARDEX As String,
+                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_KARDEX As String, ByVal p_AUTODETRACCION As String,
                                            Optional p_RESP_PIDM As String = Nothing, Optional p_DETALLES_BONI As String = "", Optional p_DETALLES_MUESTRA As String = "",
                                            Optional p_DIRECCION As String = "",
                                            Optional p_LATITUD As String = "",
@@ -1447,7 +1515,8 @@ Public Class NVVenta
             Dim cmd As IDbCommand
 
             'Los valores monetarios se ingresan en moneda base y en el procedimiento se calculan a moneda alterna 
-            cmd = cn.GetNewCommand("PFV_CREAR_DCTO_VENTA_SERVICIOS_WEB", CommandType.StoredProcedure)
+            'cmd = cn.GetNewCommand("PFV_CREAR_DCTO_VENTA_SERVICIOS_WEB", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFV_CREAR_DCTO_VENTA_SERVICIOS_WEB_NEW", CommandType.StoredProcedure)
             'Correlativo mostrado en pantalla, puede cambiar en BD
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SERIE", p_NUM_SERIE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
@@ -1515,7 +1584,7 @@ Public Class NVVenta
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_KARDEX", p_KARDEX, ParameterDirection.Input, 253))
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_AUTODETRACCION", p_AUTODETRACCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_NUM_SEQ_DOC", String.Empty, ParameterDirection.Output, 253))
 
@@ -1559,7 +1628,7 @@ Public Class NVVenta
                                            ByVal p_DCTO_SERIE_REF As String, ByVal p_DCTO_NUM_REF As String,
                                            ByVal p_SCSL_EXONERADA_IND As String, ByVal p_IGV_IMPR_IND As String,
                                            ByVal p_VALOR_CAMBIO_OFI As String, ByVal p_COD_AUT As String, ByVal p_PCTJ_IGV As String,
-                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_KARDEX As String,
+                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_KARDEX As String, ByVal p_AUTODETRACCION As String,
                                            Optional p_EFECTIVO_RECIBIDO As String = "", Optional p_EFECTIVO_RECIBIDO_ALTERNO As String = "", Optional p_VUELTO As String = "", Optional p_VUELTO_ALTERNO As String = "",
                                            Optional p_RESP_PIDM As String = Nothing, Optional p_DETALLES_BONI As String = "", Optional p_DETALLES_MUESTRA As String = "",
                                            Optional p_DIRECCION As String = "",
@@ -1571,7 +1640,8 @@ Public Class NVVenta
             Dim cmd As IDbCommand
 
             'Los valores monetarios se ingresan en moneda base y en el procedimiento se calculan a moneda alterna 
-            cmd = cn.GetNewCommand("PFV_ACTUALIZAR_DCTO_VENTA_SERVICIOS_WEB", CommandType.StoredProcedure)
+            'cmd = cn.GetNewCommand("PFV_ACTUALIZAR_DCTO_VENTA_SERVICIOS_WEB", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFV_ACTUALIZAR_DCTO_VENTA_SERVICIOS_WEB_NEW", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SERIE", p_NUM_SERIE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
@@ -1646,7 +1716,7 @@ Public Class NVVenta
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_KARDEX", p_KARDEX, ParameterDirection.Input, 253))
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_AUTODETRACCION", p_AUTODETRACCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_BONI", p_DETALLES_BONI, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_MUESTRA", p_DETALLES_MUESTRA, ParameterDirection.Input, 253))
 
@@ -1691,7 +1761,7 @@ Public Class NVVenta
                                           ByVal p_DCTO_SERIE_REF As String, ByVal p_DCTO_NUM_REF As String,
                                           ByVal p_SCSL_EXONERADA_IND As String, ByVal p_IGV_IMPR_IND As String,
                                           ByVal p_VALOR_CAMBIO_OFI As String, ByVal p_COD_AUT As String, ByVal p_PCTJ_IGV As String,
-                                          ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_KARDEX As String,
+                                          ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_KARDEX As String, ByVal p_AUTODETRACCION As String,
                                           Optional p_EFECTIVO_RECIBIDO As String = "", Optional p_EFECTIVO_RECIBIDO_ALTERNO As String = "", Optional p_VUELTO As String = "", Optional p_VUELTO_ALTERNO As String = "",
                                           Optional p_RESP_PIDM As String = Nothing, Optional p_DETALLES_BONI As String = "", Optional p_DETALLES_MUESTRA As String = "",
                                           Optional p_DIRECCION As String = "",
@@ -1701,7 +1771,8 @@ Public Class NVVenta
             Dim msg(3) As String
             Dim cmd As IDbCommand
             'Los valores monetarios se ingresan en moneda base y en el procedimiento se calculan a moneda alterna 
-            cmd = cn.GetNewCommand("PFV_COMPLETAR_DCTO_VENTA_SERVICIOS_WEB", CommandType.StoredProcedure)
+            'cmd = cn.GetNewCommand("PFV_COMPLETAR_DCTO_VENTA_SERVICIOS_WEB", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFV_COMPLETAR_DCTO_VENTA_SERVICIOS_WEB_NEW", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SERIE", p_NUM_SERIE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
@@ -1773,7 +1844,7 @@ Public Class NVVenta
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_KARDEX", p_KARDEX, ParameterDirection.Input, 253))
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_AUTODETRACCION", p_AUTODETRACCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_BONI", p_DETALLES_BONI, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES_MUESTRA", p_DETALLES_MUESTRA, ParameterDirection.Input, 253))
 
@@ -2175,7 +2246,7 @@ Public Class NVVenta
                                            ByVal p_DCTO_SERIE_REF As String, ByVal p_DCTO_NUM_REF As String,
                                            ByVal p_SCSL_EXONERADA_IND As String, ByVal p_IGV_IMPR_IND As String,
                                            ByVal p_VALOR_CAMBIO_OFI As String, ByVal p_COD_AUT As String, ByVal p_PCTJ_IGV As String,
-                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String,
+                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_AUTODETRACCION As String,
                                            Optional p_RESP_PIDM As String = Nothing, Optional p_DETALLES_BONI As String = "", Optional p_DETALLES_MUESTRA As String = "",
                                            Optional p_DIRECCION As String = "",
                                            Optional p_LATITUD As String = "",
@@ -2186,7 +2257,8 @@ Public Class NVVenta
             Dim cmd As IDbCommand
 
             'Los valores monetarios se ingresan en moneda base y en el procedimiento se calculan a moneda alterna 
-            cmd = cn.GetNewCommand("PFV_CREAR_DCTO_VENTA_WEB", CommandType.StoredProcedure)
+            'cmd = cn.GetNewCommand("PFV_CREAR_DCTO_VENTA_WEB", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFV_CREAR_DCTO_VENTA_WEB_NEW", CommandType.StoredProcedure)
             'Correlativo mostrado en pantalla, puede cambiar en BD
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SERIE", p_NUM_SERIE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
@@ -2250,6 +2322,7 @@ Public Class NVVenta
             cmd.Parameters.Add(cn.GetNewParameter("@p_PCTJ_IGV", p_PCTJ_IGV, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_FACTOR_RENTA", p_FACTOR_RENTA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMPUESTO_RENTA", p_IMPUESTO_RENTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_AUTODETRACCION", p_AUTODETRACCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESP_PIDM", p_RESP_PIDM, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLES", p_DETALLES, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", String.Empty, ParameterDirection.Output, 253))
@@ -2296,7 +2369,7 @@ Public Class NVVenta
                                            ByVal p_DCTO_SERIE_REF As String, ByVal p_DCTO_NUM_REF As String,
                                            ByVal p_SCSL_EXONERADA_IND As String, ByVal p_IGV_IMPR_IND As String,
                                            ByVal p_VALOR_CAMBIO_OFI As String, ByVal p_COD_AUT As String, ByVal p_PCTJ_IGV As String,
-                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String,
+                                           ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_AUTODETRACCION As String,
                                             Optional p_EFECTIVO_RECIBIDO As String = "", Optional p_EFECTIVO_RECIBIDO_ALTERNO As String = "", Optional p_VUELTO As String = "", Optional p_VUELTO_ALTERNO As String = "",
                                            Optional p_RESP_PIDM As String = Nothing, Optional p_DETALLES_BONI As String = "", Optional p_DETALLES_MUESTRA As String = "",
                                            Optional p_DIRECCION As String = "",
@@ -2308,7 +2381,8 @@ Public Class NVVenta
             Dim cmd As IDbCommand
 
             'Los valores monetarios se ingresan en moneda base y en el procedimiento se calculan a moneda alterna 
-            cmd = cn.GetNewCommand("PFV_ACTUALIZAR_DCTO_VENTA_WEB", CommandType.StoredProcedure)
+            'cmd = cn.GetNewCommand("PFV_ACTUALIZAR_DCTO_VENTA_WEB", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFV_ACTUALIZAR_DCTO_VENTA_WEB_NEW", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SERIE", p_NUM_SERIE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
@@ -2373,7 +2447,7 @@ Public Class NVVenta
             cmd.Parameters.Add(cn.GetNewParameter("@p_PCTJ_IGV", p_PCTJ_IGV, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_FACTOR_RENTA", p_FACTOR_RENTA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMPUESTO_RENTA", p_IMPUESTO_RENTA, ParameterDirection.Input, 253))
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_AUTODETRACCION", p_AUTODETRACCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_EFECTIVO_RECIBIDO", p_EFECTIVO_RECIBIDO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_EFECTIVO_RECIBIDO_ALTERNO", p_EFECTIVO_RECIBIDO_ALTERNO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VUELTO", p_VUELTO, ParameterDirection.Input, 253))
@@ -2427,7 +2501,7 @@ Public Class NVVenta
                                           ByVal p_DCTO_SERIE_REF As String, ByVal p_DCTO_NUM_REF As String,
                                           ByVal p_SCSL_EXONERADA_IND As String, ByVal p_IGV_IMPR_IND As String,
                                           ByVal p_VALOR_CAMBIO_OFI As String, ByVal p_COD_AUT As String, ByVal p_PCTJ_IGV As String,
-                                          ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String,
+                                          ByVal p_FACTOR_RENTA As String, ByVal p_IMPUESTO_RENTA As String, ByVal p_AUTODETRACCION As String,
                                           Optional p_EFECTIVO_RECIBIDO As String = "", Optional p_EFECTIVO_RECIBIDO_ALTERNO As String = "", Optional p_VUELTO As String = "", Optional p_VUELTO_ALTERNO As String = "",
                                           Optional p_RESP_PIDM As String = Nothing, Optional p_DETALLES_BONI As String = "", Optional p_DETALLES_MUESTRA As String = "",
                                           Optional p_DIRECCION As String = "",
@@ -2437,7 +2511,8 @@ Public Class NVVenta
             Dim msg(3) As String
             Dim cmd As IDbCommand
             'Los valores monetarios se ingresan en moneda base y en el procedimiento se calculan a moneda alterna 
-            cmd = cn.GetNewCommand("PFV_COMPLETAR_DCTO_VENTA_WEB", CommandType.StoredProcedure)
+            'cmd = cn.GetNewCommand("PFV_COMPLETAR_DCTO_VENTA_WEB", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFV_COMPLETAR_DCTO_VENTA_WEB_NEW", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SERIE", p_NUM_SERIE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_DCTO", p_NUM_DCTO, ParameterDirection.Input, 253))
@@ -2499,7 +2574,7 @@ Public Class NVVenta
             cmd.Parameters.Add(cn.GetNewParameter("@p_PCTJ_IGV", p_PCTJ_IGV, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_FACTOR_RENTA", p_FACTOR_RENTA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMPUESTO_RENTA", p_IMPUESTO_RENTA, ParameterDirection.Input, 253))
-
+            cmd.Parameters.Add(cn.GetNewParameter("@p_AUTODETRACCION", p_AUTODETRACCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_EFECTIVO_RECIBIDO", p_EFECTIVO_RECIBIDO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_EFECTIVO_RECIBIDO_ALTERNO", p_EFECTIVO_RECIBIDO_ALTERNO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_VUELTO", p_VUELTO, ParameterDirection.Input, 253))

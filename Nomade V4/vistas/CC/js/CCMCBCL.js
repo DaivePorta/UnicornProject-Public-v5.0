@@ -2662,7 +2662,9 @@ function pagarRetencion() {
     //if ($("#cboMedioPago").val() == '0001' || $("#cboMedioPago").val() == '0003' || $("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006' || $("#cboMedioPago").val() == '0020') {
     if (mediosPago.includes($("#cboMedioPago").val())) {
 
-        verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
+        //verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
+        verificaNroOpera = verificarNroOperacionVenta(($("#txtDestino").val() === undefined || $("#txtDestino").val() === "" ? "-" : $("#txtDestino").val()),
+            $("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
 
         if (verificaNroOpera == 'OK') {
             let continuar = true;
@@ -2750,6 +2752,8 @@ function pagarRetencion() {
         var nMontoDeudaItem = 0; // monto deuda del item
         var nMontoCobrarItem = 0;
         var sIndPago = "";
+        let vMontoDeudaItemMOBA = 0; // variable monto deuda del item moneda base
+        let vMontoDeudaItemMOAL = 0; // variable monto deuda del item moneda alternativa
 
         let oItem;
         for (let i = 0; i < json_ordenado.length && nTotalMontoPagarTemp > 0; i++) {
@@ -2776,14 +2780,19 @@ function pagarRetencion() {
             //}
 
             if (moneda_activa_tipo === "MOBA") {
+                vMontoDeudaItemMOBA = nMontoDeudaItemMOBA;
+                vMontoDeudaItemMOAL = 0;
                 nMontoDeudaItemMOBA = nMontoCobrarItem;
                 nMontoDeudaItemMOAL = 0;
             } else {
+                vMontoDeudaItemMOBA = 0;
+                vMontoDeudaItemMOAL = nMontoDeudaItemMOAL;
                 nMontoDeudaItemMOBA = 0;
                 nMontoDeudaItemMOAL = nMontoCobrarItem;
             }
 
-            cade_pagar += ("|" + oItem.CODIGO + "," + oItem.DOCUMENTO + "," + nMontoDeudaItemMOBA + "," + nMontoDeudaItemMOAL + "," + sIndPago + "," + oItem.SUCURSAL_CODE + "," + oItem.PAGO_RETENCION);
+            //cade_pagar += ("|" + oItem.CODIGO + "," + oItem.DOCUMENTO + "," + nMontoDeudaItemMOBA + "," + nMontoDeudaItemMOAL + "," + sIndPago + "," + oItem.SUCURSAL_CODE + "," + oItem.PAGO_RETENCION);
+            cade_pagar += ("|" + oItem.CODIGO + "," + oItem.DOCUMENTO + "," + nMontoDeudaItemMOBA + "," + nMontoDeudaItemMOAL + "," + sIndPago + "," + oItem.SUCURSAL_CODE + "," + oItem.PAGO_RETENCION + "," + vMontoDeudaItemMOBA + "," + vMontoDeudaItemMOAL);
 
             nTotalMontoPagarTemp = nTotalMontoPagarTemp - parseFloat(nMontoCobrarItem);
         }
@@ -2794,7 +2803,7 @@ function pagarRetencion() {
         medio_pa = $("#cboMedioPago").val();
         var ind_tipo = $("#cbo_OrigenPago").val().substring(0, 1);
         p_origen = $("#txtDestino").val();
-        var p_flag = 1;
+        var p_flag = 1.7;  //1;
         var adicional = "";
 
         if (medio_pa == "0020") {
@@ -2809,7 +2818,7 @@ function pagarRetencion() {
             pidm_cta = $("#cbo_Det_Origen :selected").attr("pidm");
             cta = $("#cbo_Det_Origen").val();
             compl = "S";
-            p_flag = 1.5;
+            p_flag = 1.8;  //1.5;
 
             switch ($("#cboMedioPago").val()) {
                 case "0003": //transferencia
@@ -2854,7 +2863,7 @@ function pagarRetencion() {
         var descripcion = ind_tipo == "C" ? "COBRO A CLIENTE" : det_desc;
 
     } else {
-        var p_flag = 1.6;
+        var p_flag = 1.9;  //1.6;
     }
     
     var data = new FormData();
@@ -2913,6 +2922,18 @@ function pagarRetencion() {
                     case "SI": // Saldo insuficiente caja/banco
                         alertCustom("No posee saldo suficiente en la " + ($("#cbo_OrigenPago").val().substring(0, 1) === "B" ? "cuenta" : "caja") + " seleccionada!");
                         break;
+                    case "B": // Cobro en banco                       
+                        alertCustom("Error al registrar cobro bancario!");
+                        break;
+                    case "C": // Cobro en caja
+                        alertCustom("Error al registrar cobro en caja!");
+                        break;
+                    case "P": // Error INSERT en FABCRED o FABAMPR
+                        alertCustom("Error al procesar el cobro. Intente nuevamente!");
+                        break;
+                    case "TI": // Transacción incompleta
+                        alertCustom("Parece que hubo un error en el cobro. Intente nuevamente!");
+                        break;
                     case "TC": // Transaccion realizada correctamente 
                         if (datos[0].CODE_GENERADO != "") {
                             consultaDeudas();
@@ -2960,12 +2981,46 @@ function pagarRetencion() {
 }
 
 // VERIFICACIÓN DE COD. OP Y COD. AUT.
-function verificarNroOperacion(nroOpera) { //DPORTA 21/04/2021
+//function verificarNroOperacion(nroOpera) { //DPORTA 21/04/2021
+//    //var respuesta = false;
+
+//    $.ajax({
+//        type: "post",
+//        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOpera,
+//        contenttype: "application/json;",
+//        datatype: "json",
+//        async: false,
+//        success: function (datos) {
+//            //respuesta = datos;
+//            if (datos == 'OK') {
+//                respuesta = datos;
+//            } else {
+//                respuesta = datos;
+//            };
+//        },
+//        error: function (msg) {
+//            alertCustom("Error");
+//        }
+//    });
+//    return respuesta;
+
+//}
+
+// VERIFICACIÓN DE COD. OP Y COD. AUT.
+function verificarNroOperacionVenta(origen, nroOpera) { //DPORTA 21/04/2021
     //var respuesta = false;
+    if ($("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006') {
+        if (origen.length == 16) {
+            origen = origen.substring(12);
+        }
+    } else if ($("#cboMedioPago").val() == '0008') {
+        origen = "-";
+        nroOpera = '%';
+    }
 
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOpera,
+        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.6&p_NRO_OPERA=" + nroOpera + "&p_ORIGEN_OPERA=" + origen,
         contenttype: "application/json;",
         datatype: "json",
         async: false,
@@ -2982,7 +3037,6 @@ function verificarNroOperacion(nroOpera) { //DPORTA 21/04/2021
         }
     });
     return respuesta;
-
 }
 
 function pagar() {
@@ -3161,7 +3215,9 @@ function pagar() {
             //if ($("#cboMedioPago").val() == '0001' || $("#cboMedioPago").val() == '0003' || $("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006' || $("#cboMedioPago").val() == '0020') {
             if (mediosPago.includes($("#cboMedioPago").val())) {
 
-                verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
+                //verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
+                verificaNroOpera = verificarNroOperacionVenta(($("#txtDestino").val() === undefined || $("#txtDestino").val() === "" ? "-" : $("#txtDestino").val()),
+                    $("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
 
                 if (verificaNroOpera == 'OK') {
                     let continuar = true;
@@ -3250,6 +3306,8 @@ function pagar() {
             var nMontoDeudaItem = 0; // monto deuda del item
             var nMontoCobrarItem = 0;
             var sIndPago = "";
+            let vMontoDeudaItemMOBA = 0; // variable monto deuda del item moneda base
+            let vMontoDeudaItemMOAL = 0; // variable monto deuda del item moneda alternativa
 
             let oItem;
             for (let i = 0; i < json_ordenado.length && nTotalMontoPagarTemp > 0; i++) {
@@ -3276,15 +3334,19 @@ function pagar() {
                 }
 
                 if (moneda_activa_tipo === "MOBA") {
+                    vMontoDeudaItemMOBA = nMontoDeudaItemMOBA;
+                    vMontoDeudaItemMOAL = 0;
                     nMontoDeudaItemMOBA = nMontoCobrarItem;
                     nMontoDeudaItemMOAL = 0;
                 } else {
+                    vMontoDeudaItemMOBA = 0;
+                    vMontoDeudaItemMOAL = nMontoDeudaItemMOAL;
                     nMontoDeudaItemMOBA = 0;
                     nMontoDeudaItemMOAL = nMontoCobrarItem;
                 }
 
-                cade_pagar += ("|" + oItem.CODIGO + "," + oItem.DOCUMENTO + "," + nMontoDeudaItemMOBA + "," + nMontoDeudaItemMOAL + "," + sIndPago + "," + oItem.SUCURSAL_CODE);
-
+                //cade_pagar += ("|" + oItem.CODIGO + "," + oItem.DOCUMENTO + "," + nMontoDeudaItemMOBA + "," + nMontoDeudaItemMOAL + "," + sIndPago + "," + oItem.SUCURSAL_CODE);
+                cade_pagar += ("|" + oItem.CODIGO + "," + oItem.DOCUMENTO + "," + nMontoDeudaItemMOBA + "," + nMontoDeudaItemMOAL + "," + sIndPago + "," + oItem.SUCURSAL_CODE + "," + "" + "," + vMontoDeudaItemMOBA + "," + vMontoDeudaItemMOAL);
                 nTotalMontoPagarTemp = nTotalMontoPagarTemp - nMontoCobrarItem;
             }
 
@@ -3294,7 +3356,7 @@ function pagar() {
             medio_pa = $("#cboMedioPago").val();
             var ind_tipo = $("#cbo_OrigenPago").val().substring(0, 1);
             p_origen = $("#txtDestino").val();
-            var p_flag = 1;
+            var p_flag = 1.7;  //1;
             var adicional = "";
             if (medio_pa == "0020") {
                 p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
@@ -3308,7 +3370,7 @@ function pagar() {
                 pidm_cta = $("#cbo_Det_Origen :selected").attr("pidm");
                 cta = $("#cbo_Det_Origen").val();
                 compl = "S";
-                p_flag = 1.5;
+                p_flag = 1.8;  //1.5;
 
                 switch ($("#cboMedioPago").val()) {
                     case "0003": //transferencia
@@ -3353,7 +3415,7 @@ function pagar() {
             var descripcion = ind_tipo == "C" ? "COBRO A CLIENTE" : det_desc;
 
    } else {
-       var p_flag = 1.6;
+            var p_flag = 1.9;  //1.6;
    }
 
 
@@ -3413,6 +3475,18 @@ function pagar() {
                            break;
                        case "SI": // Saldo insuficiente caja/banco
                            alertCustom("No posee saldo suficiente en la " + ($("#cbo_OrigenPago").val().substring(0, 1) === "B" ? "cuenta" : "caja") + " seleccionada!");
+                           break;
+                       case "B": // Cobro en banco                       
+                           alertCustom("Error al registrar cobro bancario!");
+                           break;
+                       case "C": // Cobro en caja
+                           alertCustom("Error al registrar cobro en caja!");
+                           break;
+                       case "P": // Error INSERT en FABCRED o FABAMPR
+                           alertCustom("Error al procesar el cobro. Intente nuevamente!");
+                           break;
+                       case "TI": // Transacción incompleta
+                           alertCustom("Parece que hubo un error en el cobro. Intente nuevamente!");
                            break;
                        case "TC": // Transaccion realizada correctamente
                            if (datos[0].CODE_GENERADO != "") {

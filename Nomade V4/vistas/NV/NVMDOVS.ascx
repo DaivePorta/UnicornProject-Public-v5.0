@@ -1604,8 +1604,9 @@
                                         <a class="btn" href="javascript:Cancelar();"><i class="icon-remove"></i>&nbsp;Cancelar</a>
                                         <a class="btn" id="btnLimpiarCobro"><i class="icon-file"></i>&nbsp;Limpiar Datos Cobro</a>
                                     </div>
-                                    <div class="span2">
-                                        <a id="btnImprimir" class="btn black" href="javascript:ImprimirDctoVenta();" style="display: none; margin-top: 5px;"><i class="icon-print"></i>&nbsp;Imprimir</a>                                       
+                                    <div class="span3">
+                                        <a id="btnImprimir" class="btn black" href="javascript:ImprimirDctoVenta();" style="display: none; margin-top: 5px;"><i class="icon-print"></i>&nbsp;Imprimir Doc.</a>
+                                        <a id="btnImprimirST" class="btn black" href="javascript:ImprimirDctoVentaTicket();" style="display: none; margin-top: 5px;"><i class="icon-print"></i>&nbsp;Imprimir Ticket</a>
                                         <label id="lblCopia" class="control-label" for="chkCopia" style="display: none; margin-right: 15px; margin-bottom: 0px;">
                                             <input type="checkbox" id="chkCopia" name="chkCopia" style="display: inline-block;" />
                                             Copia</label>

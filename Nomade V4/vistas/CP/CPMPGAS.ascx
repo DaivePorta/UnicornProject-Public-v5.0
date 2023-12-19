@@ -85,8 +85,8 @@
                                                     <div class="control-group">
                                                         <label class="span2 control-label" for="txtSerieRegistroInterno">
                                                             Nro</label>
-                                                        <input id="txtSerieRegistroInterno" placeholder="SERIE" class="span4 m-wrap" type="text" disabled style="text-align: right" />
-                                                        <input id="txtNroRegistroInterno" placeholder="NUMERO" class="span6 m-wrap" type="text" disabled />
+                                                        <input id="txtSerieRegistroInterno" placeholder="SERIE" class="span4" type="text" disabled style="text-align: right" />
+                                                        <input id="txtNroRegistroInterno" placeholder="NUMERO" class="span6" type="text" disabled />
                                                         <input type="hidden" id="txtLineasRegistroInterno" />
                                                     </div>
                                                 </div>
@@ -147,37 +147,57 @@
                                             </div>
                             
                                             <div class="row-fluid">
-                                                <div class="span1">
+                                                <div class="span12">
                                                     <div class="control-group">
                                                         <label class="control-label" for="txt_beneficiario">
                                                             Pagar a</label>
                                                     </div>
                                                 </div>
-                                                <div class="span3">
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span4">
+                                                    <div class="control-group">
+                                                        <div class="controls">
+                                                            <select id="cbo_tipo_persona" class="limpiar combo m-wrap span4 required" data-placeholder="Selecciona"></select>
+                                                            <select id="cbo_tipo_documento" class="limpiar combo m-wrap span3 required" data-placeholder="Tipo Dcto."></select>
+                                                            <input id="txtNroDctoProveedor" class="limpiar span5 " type="text" placeholder="Nro. " onkeypress="return ValidaNumeros(event,this)" style="margin-left: 9px;"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="span4">
                                                     <div class="control-group ">
                                                         <div class="controls" id="input">
                                                             <input id="txt_beneficiario" class="limpiar span12 " type="text" />
                                                         </div>
                                                     </div>                                                    
                                                 </div>
-
-                                                <div class="span2">
+                                                <div class="span4">
                                                     <div class="control-group">
                                                         <div class="controls">
-                                                            <a id="btn_origen_destino" class="btn green" target="_blank" href="?f=nrmgepr"><i class="icon-plus" style="line-height: initial"></i></a>
+                                                            <a id="btn_origen_destino" class="btn green"><i class="icon-plus" style="line-height: initial"></i></a>
                                                             <a id="btn_refresh" class="btn blue"><i class="icon-refresh" style="line-height: initial;"></i></a>
                                                             <button type="button" id="btnHabido" class="btn orange" style="height: 27px; padding: 0px 5px; font-size: 11px;">¿Habido?</button>
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
 
+                                            <div class="span12" style="margin-top: -15px; margin-left: 1%;">
+                                                <small id="lblRucSeleccionado" style="color: gray"></small>
+                                                <small style="color: gray">&nbsp;&nbsp;&nbsp;&nbsp;</small>
+                                                <small id="lblHabido" style="color: gray"></small>
+                                                <small style="color: gray">&nbsp;&nbsp;&nbsp;&nbsp;</small>
+                                                <small id="lblEstado" style="color: gray"></small>
+                                            </div>
+
+                                            <div class="row-fluid">
                                                 <div id="div_fec_unica_0" style="display: none;" class="span1">
                                                     <div class="control-group">
                                                         <label class="control-label" for="txt_fec_unica">
                                                             F. Emisión</label>
                                                     </div>
                                                 </div>
-                                                <div class="span1" id="div_fec_unica_1" style="display: none;">
+                                                <div class="span2" id="div_fec_unica_1" style="display: none;">
                                                     <div class="control-group ">
                                                         <div class="controls">
                                                             <div class="input-append date date-picker fecha" data-date-format="dd/mm/yyyy">
@@ -196,7 +216,7 @@
                                                 </div>
 
 
-                                                <div class="span1">
+                                                <div class="span2">
                                                     <div class="control-group ">
                                                         <div class="controls">
                                                             <input type="text" disabled="disabled" id="txt_fec_reg" class="span10 date-picker" placeholder="dd/mm/yyyy" id=">" data-date-format="dd/mm/yyyy" style="text-align: left">
@@ -209,7 +229,7 @@
                                                         <label id="Label3" class="control-label" for="txtFechaVenc" style="text-align: center;">F. Venci</label>
                                                     </div>
                                                 </div>
-                                                <div class="span1">
+                                                <div class="span2">
                                                     <div class="control-group">
                                                         <div class="controls">
                                                             <input type="text" class="span10 date-picker" placeholder="dd/mm/yyyy" id="txtFechaVenc" data-date-format="dd/mm/yyyy" maxlength="10" />
@@ -217,14 +237,6 @@
                                                     </div>
                                                 </div>
                                 
-                                            </div>
-
-                                            <div class="span6" style="margin-top: -15px; margin-left: 9%;">
-                                                <small id="lblRucSeleccionado" style="color: gray"></small>
-                                                <small style="color: gray">&nbsp;&nbsp;&nbsp;&nbsp;</small>
-                                                <small id="lblHabido" style="color: gray"></small>
-                                                <small style="color: gray">&nbsp;&nbsp;&nbsp;&nbsp;</small>
-                                                <small id="lblEstado" style="color: gray"></small>
                                             </div>
                                                         
                                             <div class="row-fluid" style="display:none;">
@@ -718,11 +730,27 @@
                                             </div>                            
                                         </div>
                                         <div class="row-fluid" style="margin-top: 10px;">
-                                            <div class="span8"></div>
+                                            <div class="span5"></div>
+                                            <div class="span3">
+                                                <div class="span5">
+                                                    <div class="control-group">
+                                                        <label id="lbl_suspencion" class="control-label" for="txt_monto">
+                                                            <b>NRO SUSPENCION</b></label>
+
+                                                    </div>
+                                                </div>
+                                                <div class="span7">
+                                                    <div class="control-group ">
+                                                        <div class="controls">
+                                                            <input id="txt_nroSuspencion" class="limpiar span11" type="text" onkeypress="return ValidaDecimales(event,this)" style="font-weight: bold;" disabled="disabled"/>
+                                                        </div>
+                                                    </div>
+                                                </div>                      
+                                            </div>
                                             <div id="div_retencion" style="display: none;">
                                                 <div class="span2">
                                                     <div class="control-group">
-                                                        <label id="lbl_retencion" class="control-label" for="txt_monto">
+                                                        <label id="lbl_retencion" class="control-label" for="txt_retencion">
                                                             <b>RETENCION DE LA RENTA (8%) (<span id="simbMoneda4"></span>)</b>
                                                         </label>
                                                     </div>
@@ -1014,6 +1042,14 @@
 <input type="hidden" id="hfmonto" />
 
 <input type="hidden" id="hf_permiso" />
+
+<input id="hfRUCPER" type="hidden" value="0" />
+<input id="hfOTROSPER" type="hidden" value="0" />
+<input id="hfDNIPER" type="hidden" value="0" />
+<input id="hfCARNETPER" type="hidden" value="0" />
+<input id="hfPASAPORTEPER" type="hidden" value="0" />
+
+
 <%--<input type="hidden" id="hf_existe" />--%>
 
 <script type="text/javascript" src="../../recursos/plugins/bootstrap-treeview/bootstrap-treeview.js"></script>

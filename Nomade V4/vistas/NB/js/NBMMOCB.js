@@ -1,19 +1,22 @@
 ﻿var op_op = '<option value="" oficina="">OPERACIONES EN FORMA AUTOMATICA</option>' +
-            '<option value="VEN" oficina="(NOMBRE DE OFICINA)">VENTANILLA</option>' +
-            '<option value="ATM" oficina="(NOMBRE DEL CAJERO)">CAJERO AUTOMATICO</option>' +
-            '<option value="BIE" oficina="BCA. INTERNET">BANCA POR INTERNET EMPRESAS</option>' +
-            '<option value="BIN" oficina="BCA. INTERNET">BANCA POR INTERNET PERSONAS NATURALES</option>' +
-            '<option value="BIN" oficina="BCA. INTERNET">BANCA POR INTERNET VIP</option>' +
-            '<option value="SAX" oficina="(NOMBRE DE OFICINA)">SALDO EXPRESS</option>' +
-            '<option value="AGX" oficina="AGTE. EXPRESS">AGENTE EXPRESS</option>' +
-            '<option value="BTE" oficina="BCA. TELEFONO">BANCA POR TELEFONO</option>' +
-            '<option value="SCA" oficina="BCA. AUTOMATIC.">SISTEMA CASH</option>';
+    '<option value="VEN" oficina="(NOMBRE DE OFICINA)">VENTANILLA</option>' +
+    '<option value="ATM" oficina="(NOMBRE DEL CAJERO)">CAJERO AUTOMATICO</option>' +
+    '<option value="BIE" oficina="BCA. INTERNET">BANCA POR INTERNET EMPRESAS</option>' +
+    '<option value="BIN" oficina="BCA. INTERNET">BANCA POR INTERNET PERSONAS NATURALES</option>' +
+    '<option value="BIN" oficina="BCA. INTERNET">BANCA POR INTERNET VIP</option>' +
+    '<option value="SAX" oficina="(NOMBRE DE OFICINA)">SALDO EXPRESS</option>' +
+    '<option value="AGX" oficina="AGTE. EXPRESS">AGENTE EXPRESS</option>' +
+    '<option value="BTE" oficina="BCA. TELEFONO">BANCA POR TELEFONO</option>' +
+    '<option value="SCA" oficina="BCA. AUTOMATIC.">SISTEMA CASH</option>';
 
 _u_monto = 0;
 _CERRADO_IND = "";
 
+var v_nro_operacion_inicial;
+var v_monto_inicial; // para movimiento POS
 var v_iItf = 0;
 var v_rpos = 0;
+var operacionEstereotipo;
 
 var NBLMOCB = function () {
 
@@ -170,7 +173,7 @@ var NBLMOCB = function () {
                         if (rowData.TIPO_REG == "M" || rowData.TIPO_REG == "C") {
                             $(td).parent('tr').attr("style", "background-color:#FCF7D7;");
                         }
-                    },                   
+                    },
                 },
                 {
                     data: { _: "FECHA_VALOR.display", sort: parseInt("FECHA_VALOR.order") },
@@ -275,7 +278,7 @@ var NBLMOCB = function () {
 
         oTable = iniciaTabla('tblBandeja', parms);
         actualizarEstilos();
-      //  $('#tblBandeja').removeAttr('style').css("border-collapse", "collapse");
+        //  $('#tblBandeja').removeAttr('style').css("border-collapse", "collapse");
 
     }
 
@@ -323,11 +326,11 @@ function Confirmacion() {
         "<div class='span10'>" +
         "<div class='row-fluid'>" +
         "<div class='span12'>" +
-        "Está a punto de crear un nuevo movimiento en la caja \""+ncaja+"\" por el monto de " + nmonto + ". Desea Continuar?" +
+        "Está a punto de crear un nuevo movimiento en la caja \"" + ncaja + "\" por el monto de " + nmonto + ". Desea Continuar?" +
         "</div>" +
         "</div></div></div>");
 
-        $("#modalconfir").modal('show');
+    $("#modalconfir").modal('show');
 }
 
 var nuevoMovimiento = true;
@@ -368,35 +371,40 @@ var NBMMOCB = function () {
             .blur(function () { $(this).val(formatoMiles($(this).val().split(",").join(""))); });
 
         // $("#txtFeOp, #txtFeVa").datepicker();
-        var date = new Date();
-        $("#txtFeOp").datepicker('setStartDate', '01-' + ("00" + (date.getMonth() + 1).toString()).slice(-2) + '-' + date.getFullYear());
+        //var date = new Date();
+        // $("#txtFeOp").datepicker('setStartDate', '01-' + ("00" + (date.getMonth() + 1).toString()).slice(-2) + '-' + date.getFullYear());
+        $("#txtFeOp").datepicker();
         inifechas("txtFeOp", "txtFeVa");
 
     }
 
     var cargarCombos = function () {
 
-        $("#slcEmpr, #slcCta, #slcMoneda, #slcTipo, #slcOperacion").select2();
-
-        //Se mostrara los botones de nuevaPersona y nuevoClienteRapido solo si se trata de un nuevo movimiento
-        if (nuevoMovimiento) {
-            $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').show();
-        }
+        $("#slcEmpr, #slcCta, #slcMoneda, #slcTipo, #slcOperacion, slcEstereotipo").select2();
 
         $("#slcOperacion").prop("disabled", true);
 
         $('#divInfoTicket').hide()
 
-        $("#inputPersona").html("");
-        $("#inputPersona").html(`<input id="slcPersona" class="span11" type="text" data-provide="typeahead" placeholder="CLIENTES VARIOS ."/>`);
+        operacionEstereotipo = {
+            '1': 'CLIEN', // Anticipo por compensar
+            '2': 'BANC', // Mantenimiento de cuenta (Solo id de la cuenta seleccionada)
+            '3': 'PERS', // Prestamo de terceros
+            '4': 'EMPL', // Prestamo de titular
+            '5': 'PERS', // Dinero por Encargo (Solo opera con un id)
+            '6': 'PERS', // POS (Solo id asociado al POS) (No seleccionable)
+            '7': 'CLIEN', // Abonos bancarios no identificados
+            '8': 'EMPL', // Gastos personales de asociados
+            '9': 'PROV' // Pagos bancarios no identificados
+        };
 
         $("#slcOperacionEfectuada").html(op_op).select2().change(function () {
             $("#txtCanal").val($(this).val());
             var n_of = $("#slcOperacionEfectuada :selected").attr("oficina");
             if (n_of == "") {
                 $("#txtOficina")
-                     .val(n_of).attr("disabled", true)
-                     .attr("placeholder", n_of)
+                    .val(n_of).attr("disabled", true)
+                    .attr("placeholder", n_of)
                     .removeClass("obligatorio");
             } else {
 
@@ -407,15 +415,41 @@ var NBMMOCB = function () {
                 }
             }
         });
-         
-        $("#slcOperacion, #slcCta").on("change", function () {
+
+        $("#slcOperacion").on("change", function () {
             ajustesSecundariosTipoOperacion($("#slcOperacion").val());
+        });
+
+        $("#slcCta").on("change", function () {
+            if ($("#slcOperacion").val() === '2') {
+                var pidm = $("#slcCta :selected").attr("pidm_banco");
+                selectedClient = persona.find(client => client.PIDM == pidm);
+
+                if (selectedClient) {
+                    $("#slcPersona").val(selectedClient.RAZON_SOCIAL);
+                    $("#hfPIDM").val(selectedClient.PIDM);
+                } else {
+                    $("#slcPersona").val('');
+                    $("#hfPIDM").val('');
+                }
+            };
         });
 
         $("#btnRecargarPersona").on("click", function () {
             $("#hfPIDM").val("");
-            $("#inputPersona").empty().html(`<input id="slcPersona" class="span11" type="text" data-provide="typeahead" placeholder="CLIENTES VARIOS ."/>`);
-            fillPersona("#slcPersona", "");
+            var operacion = $("#slcOperacion").val();
+            estereotipo = operacionEstereotipo[operacion];
+
+            //Resetear html
+            var originalHtml = $('#inputPersona').html();
+            $('#inputPersona').empty().html(originalHtml);
+
+            //Establecer el valor del estereotipo
+            if (estereotipo) {
+                $("#slcEstereotipo").val(estereotipo);
+            }
+
+            fillPersona("#slcPersona", "", estereotipo);
             $("#slcPersona").val("").keyup();
         });
 
@@ -465,18 +499,16 @@ var NBMMOCB = function () {
                                 $("#txtMonto").val("").attr("placeholder", "max. " + _u_monto);
 
                                 $.post("vistas/NB/ajax/NBMMOCB.ASHX", { flag: "M", codigo: mone_code },
-                                      function (resp) {
-                                          smoneda = resp;
-                                          $("#lblmonto").html("Monto (" + resp + ")");
-                                      });
+                                    function (resp) {
+                                        smoneda = resp;
+                                        $("#lblmonto").html("Monto (" + resp + ")");
+                                    });
                             });
 
                         });
                     $.ajaxSetup({ async: true });
 
                     cargarJsonEmpleado($(this).val());
-
-                    fillPersona('#slcPersona', '');
 
                     arrayPersonasEmpleado = new Array();
 
@@ -517,11 +549,18 @@ var NBMMOCB = function () {
     var cargainicial = function () {
 
         v_iItf = parseFloat(mGetParametro("ITF", "ITF CONSIDERADO EN OPERACIONES BANCARIAS"));
-        v_rpos = parseFloat(mGetParametro("RPOS", "RPOS RANGO DE POS")/100);
+        v_rpos = parseFloat(mGetParametro("RPOS", "RPOS RANGO DE POS") / 100);
 
         var cod = ObtenerQueryString("codigo");
         var emp = ObtenerQueryString("emp");
         var cta = ObtenerQueryString("cta");
+
+        // Indicador para saber si se trata de un nuevo movimiento o si se esta cargando un mov. existente
+        if (cod != undefined) {
+            nuevoMovimiento = false; // Necesario para el comportamiento de la tabla de tickets
+        } else {
+            nuevoMovimiento = true;
+        }
 
         if (emp != undefined && cta != undefined) {
             $("#slcEmpr").select2("val", emp).change().attr("disabled", true);
@@ -539,10 +578,7 @@ var NBMMOCB = function () {
                 contentType: "application/json;",
                 dataType: "json",
                 success: function (datos) {
-
-                    // Indicador para saber si se trata de un nuevo movimiento o si se esta cargando un mov. existente
-                    nuevoMovimiento = false; // Necesario para el comportamiento de la tabla de tickets
-
+                    //Establecer datos
                     $("#hddauxiliar").val(datos[0].CODIGO);
                     $("#slcOperacionEfectuada").select2("val", datos[0].CANAL.toUpperCase());
                     $("#slcEmpr").select2("val", $("#slcEmpr [pidm=" + datos[0].PIDM + "]").val());
@@ -551,56 +587,54 @@ var NBMMOCB = function () {
                     $("#txtDescripcion").val(datos[0].DESCRIPCION);
                     $("#txtCanal").val(datos[0].CANAL);
                     $("#txtFeOp").val(datos[0].FECHA_OPERACION);
-                    
-
-                    if (datos[0].TIPO == "E") {
-                        _u_monto += parseFloat((parseFloat(datos[0].MONTO) + parseFloat(datos[0].MONTO_ITF)).toFixed(2));
-                        $("#txtMonto").attr("placeholder", "max." + _u_monto);
-                    }
-
                     $("#txtFeVa").val(datos[0].FECHA_VALOR);
                     if ($("#txtFeVa").val() != "") { $("#txtFeVa").attr("disabled", true); }
-
                     $("#txtNroOpe").val(datos[0].NRO_OPERACION);
+                    v_nro_operacion_inicial = $("#txtNroOpe").val();
+                    $("#slcTipo").select2("val", datos[0].TIPO);
 
                     $("#slcCta").prop("disabled", true);
-
-                    $("#slcTipo").select2("val", datos[0].TIPO);
                     $("#slcTipo").prop("disabled", true);
 
+                    //Seleccionar tipo operacion
                     if (datos[0].CODIGO_OPERACION !== undefined && datos[0].CODIGO_OPERACION !== '') {
                         filtrarTipoOperacion(datos[0].TIPO, datos[0].CODIGO_OPERACION);
-
-                        if (datos[0].CODIGO_OPERACION === '5') {
-                            cargarTickets(cod);
-                            $("#txtMonto").html('').prop("disabled", true);
-                            $("#slcPersona").html('').prop("disabled", true);
-                        } else if (datos[0].CODIGO_OPERACION === '2') {
-                            $("#slcPersona").html('').prop("disabled", true);
-                        }
                     } else {
                         $("#slcOperacion").empty().val('');
                     }
-
                     $("#slcOperacion").select2().prop("disabled", true);
 
-                    //Mostrar cliente/persona
-                    $("#hfPIDM").val(datos[0].PERSONA)
+                    //Seleccionar el estereotipo
+                    estereotipo = operacionEstereotipo[$("#slcOperacion").val()];
+                    if (estereotipo) {
+                        $("#slcEstereotipo").val(estereotipo);
+                    }
 
-                    var pidm = $("#hfPIDM").val();
+                    //Seleccionar persona
+                    $("#hfPIDM").val(datos[0].PERSONA)
+                    //datos[0].CODIGO_OPERACION === "6" || datos[0].CODIGO_OPERACION === "2" ? persona_unica = true : persona_unica = false; //Para movimientos que no deben cambiar de cliente
+                    //var pidm = persona_unica ? $("#hfPIDM").val() : "";
+
+                    //fillPersona("#slcPersona", pidm, estereotipo)
+
                     var selectedClient = persona.find(function (client) {
-                        return client.PIDM == pidm;
+                        return client.PIDM == $("#hfPIDM").val();
                     });
 
                     if (selectedClient) {
                         $("#slcPersona").val(selectedClient.RAZON_SOCIAL);
                     }
 
-                    if (datos[0].TIPO_REG != "M" && datos[0].TIPO_REG != "C" && datos[0].CODIGO_OPERACION !== '6') {
+                    //Establecer otros
+                    if (datos[0].TIPO == "E") {
+                        _u_monto += parseFloat((parseFloat(datos[0].MONTO) + parseFloat(datos[0].MONTO_ITF)).toFixed(2));
+                        $("#txtMonto").attr("placeholder", "max." + _u_monto);
+                    }
+
+                    if (datos[0].TIPO_REG != "M" && datos[0].TIPO_REG != "C" && datos[0].CODIGO_OPERACION != '6') {
                         $(".bl").attr("disabled", true);
 
-                        $("#slcPersona").html('').prop("disabled", true);
-                        $("#txtMonto").html('').prop("disabled", true);
+                        $("#slcPersona, #txtDescripcion, #txtMonto").html('').prop("disabled", true);
                         $("#hfPIDM").val(""); //Los movimientos automaticos no tienen un PIDM cliente asociado
                         //Con esto el cliente sera mostrado de manera visual, pero no hará cambios en la BD incluso si se utiliza la opcion modificar
                     } else {
@@ -612,17 +646,15 @@ var NBMMOCB = function () {
                                 $("#slcResp").val(datos[0].RESPONSABLE)
 
                                 setTimeout(function () {
-                                    $("#ventana input, #ventana select").attr("disabled", true);                                    
+                                    $("#ventana input, #ventana select").attr("disabled", true);
                                 }, 100);
-                                
+
                             }, 500);
                         }
                     }
                     setTimeout(function () {
                         $("#txtMonto").val(datos[0].MONTO);
-                        //if (datos[0].CODIGO_OPERACION === '6') {
-                        //    rangoPOS($("#txtMonto").val());
-                        //}
+                        v_monto_inicial = $("#txtMonto").val();
                     }, 550);
                 },
                 error: function (msg) {
@@ -643,46 +675,33 @@ var NBMMOCB = function () {
     }
 }();
 
-//function rangoPOS(montoInicial) {
-//    montoInicial = parseFloat(montoInicial).toFixed(2);
+$("#txtMonto").on('change', function () {
+    if ($("#slcOperacion").val() === '6') { //Cierra el rango de variabilidad del monto
+        var montoNuevo = parseFloat($(this).val().replace(/,/g, ''));
+        var adjustedValue = rangoPOS(montoNuevo, v_monto_inicial);
+        $(this).val(adjustedValue);
+    }
+});
 
-//    var valorMax = parseFloat((montoInicial * (1 + v_rpos)).toFixed(2));
-//    var valorMin = parseFloat((montoInicial * (1 - v_rpos)).toFixed(2));
-//    var montoNuevo = 0;
+function rangoPOS(montoNuevo, montoInicial) {
+    montoNuevo = parseFloat(montoNuevo);
 
-//    console.log("Initial Types and Values:");
-//    console.log("montoInicial:", typeof montoInicial, montoInicial);
-//    console.log("valorMax:", typeof valorMax, valorMax);
-//    console.log("valorMin:", typeof valorMin, valorMin);
+    var valorMax = montoInicial * (1 + v_rpos);
+    var valorMin = montoInicial * (1 - v_rpos);
 
-//    $("#txtMonto").change('input', function () {
-//        montoNuevo = $(this).val().toFixed(2);
-//    });
+    console.log("monto inicial:" + montoInicial);
+    console.log("monto nuevo:" + montoNuevo);
+    console.log("monto maximo:" + valorMax);
+    console.log("monto minimo:" + valorMin);
 
-//    $("#txtMonto").keyup('input', function () {
-//        if (montoNuevo > valorMax) {
-//            $(this).val(valorMax);
-//        } else if (montoNuevo < valorMin) {
-//            $(this).val(valorMin);
-//        }
-//    });
-   
-//    //$("#txtEfectivo").change(function () {
-//    //    var valor = $(this).val();
-//    //    $(this).val(formatoMiles(valor));
-//    //});
-
-//    //$('#txtEfectivo').keyup(function () {
-//    //    var monto_cobrar = $('#txtMonto').val();
-
-//    //    monto_cobrar = parseFloat(monto_cobrar);
-
-//    //    var efectivo_recibido = $(this).val();
-
-//    //    efectivo_recibido = parseFloat(efectivo_recibido);
-//    //});
-//}
-
+    if (montoNuevo > valorMax) {
+        return valorMax.toFixed(2);
+    } else if (montoNuevo < valorMin || isNaN(montoNuevo)) {
+        return valorMin.toFixed(2);
+    } else {
+        return montoNuevo.toFixed(2);
+    }
+}
 
 //Funcion para verificar que el nro de operacion no sea repetido
 function verificarNroOperacion(nroOpera) {
@@ -710,18 +729,21 @@ function verificarNroOperacion(nroOpera) {
 
 //Tipo de operacion que estará disponible dependiendo si es Abono o Cargo
 function filtrarTipoOperacion(tipoOperacion, valorOperacion) {
-    $("#slcOperacion").empty(); 
+    $("#slcOperacion").empty();
     var filtered_op = "";
     if (tipoOperacion === "I") {
         filtered_op = '<option value="1" data-value="12.2.1.1.12">ANTICIPO POR COMPENSAR - 12.2.1.1.12</option>' +
             '<option value="3" data-value="45.1.2.1.11">PRESTAMO DE TERCEROS - 45.1.2.1.11</option>' +
-            '<option value="4" data-value="45.1.2.1.12">PRESTAMO DE TITULAR - 45.1.2.1.12</option>' + 
-            (!nuevoMovimiento ? '<option value="6" data-value="42.2.1.1.11">CIERRE DE LOTE POS - 42.2.1.1.11</option>' : '');
+            '<option value="4" data-value="45.1.2.1.12">PRESTAMO DE TITULAR - 45.1.2.1.12</option>' +
+            (!nuevoMovimiento ? '<option value="6" data-value="42.2.1.1.11">CIERRE DE LOTE POS - 42.2.1.1.11</option>' : '') +
+            '<option value="7" data-value="46.1.1.1.19">ABONOS BANCARIOS NO IDENTIFICADOS - 46.1.1.1.19</option>';
     } else if (tipoOperacion === "E") {
         filtered_op = '<option value="2" data-value="94.3.9.1.13">MANTENIMIENTO CUENTA - 94.3.9.1.13</option>' +
             '<option value="3" data-value="45.1.2.1.11">PRESTAMO DE TERCEROS  - 45.1.2.1.11</option>' +
-            '<option value="4" data-value="45.1.2.1.12">PRESTAMO DE TITULAR - 45.1.2.1.12</option>' + 
-            '<option value="5" data-value="10.3.1.1.11">PAGAR DINERO POR ENCARGO - 10.3.1.1.11</option>';
+            '<option value="4" data-value="45.1.2.1.12">PRESTAMO DE TITULAR - 45.1.2.1.12</option>' +
+            '<option value="5" data-value="10.3.1.1.11">PAGAR DINERO POR ENCARGO - 10.3.1.1.11</option>' + 
+            '<option value="8" data-value="14.9.1.1.11">GASTOS PERSONALES DE ASOCIADOS - 14.9.1.1.11</option>' + 
+            '<option value="9" data-value="16.9.1.1.11">PAGOS BANCARIOS NO IDENTIFICADOS - 16.9.1.1.11</option>';
     }
     $("#slcOperacion").html(filtered_op);
     $("#slcOperacion").prop("disabled", false);
@@ -731,54 +753,93 @@ function filtrarTipoOperacion(tipoOperacion, valorOperacion) {
 
 //Ajustes necesarios dependiendo del tipo de operacion
 function ajustesSecundariosTipoOperacion(valorOperacion) {
+    var estereotipo, pidm, selectedClient;
+
     if (valorOperacion && valorOperacion !== '') {
         $("#slcOperacion").val(valorOperacion);
-        resetearCampos(); //Los campos deben reiniciarse para no traer informacion de unos tipos de operacion a otros
+        resetearCampos(); 
     }
 
-    if ($("#slcOperacion").val() === '2') { //Mantenimiento de cuenta
-        var pidm = $("#slcCta :selected").attr("pidm_banco");
-        var selectedClient = persona.find(function (client) {
-            return client.PIDM == pidm;
-        });
-        if (selectedClient) {
-            $("#slcPersona").val(selectedClient.RAZON_SOCIAL)
-            $("#hfPIDM").val(selectedClient.PIDM);
-        }
-        $("#slcPersona").html('').prop("disabled", true);
-        $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').hide();
+    var operacion = $("#slcOperacion").val();
+    estereotipo = operacionEstereotipo[operacion];
 
-    } else if ($("#slcOperacion").val() === '5' && nuevoMovimiento) { //Dinero por Encargo para un nuevo movimiento
-        var pidm = '12330';
-        var selectedClient = persona.find(function (client) {
-            return client.PIDM == pidm;
-        });
-        if (selectedClient) {
-            $("#slcPersona").val(selectedClient.RAZON_SOCIAL)
-            $("#hfPIDM").val(selectedClient.PIDM);
-        }
-        $("#slcPersona").html('').prop("disabled", true);
-        $("#txtMonto").html('').prop("disabled", true);
-        $("#txtMonto").val("");
-        $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').hide();
-        $('#btnBuscarTicket').show();
-        btnBuscarTicket.click();
+    //Resetear html
+    var originalHtml = $('#inputPersona').html();
+    $('#inputPersona').empty().html(originalHtml);
 
-    } else if ($("#slcOperacion").val() === '6') {
-        $("#slcPersona").html('').prop("disabled", true);
-        $("#txtMonto").html('').prop("disabled", true);
-        $("#txtNroOpe").html('').prop("disabled", true);
-        $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').hide();
+    //Establecer el valor del estereotipo
+    if (estereotipo) {
+        $("#slcEstereotipo").val(estereotipo);
+    }
 
-    } else { //Otras operaciones
-        var pidm = '1'; //PIDM por defecto
-        var selectedClient = persona.find(function (client) {
-            return client.PIDM == pidm;
-        });
-        if (nuevoMovimiento) {
-            $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').show();
-        }
-        $("#hfPIDM").val(selectedClient.PIDM);
+    //Traer personas
+    if (operacion === '5') {
+        pidm = '12330';
+    } else {
+        pidm = $("#hfPIDM").val();
+    }
+
+    fillPersona('#slcPersona', pidm, estereotipo);
+
+    switch (operacion) {
+        case '2': //Mantenimiento de cuenta
+            $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').hide();
+            pidm = $("#slcCta :selected").attr("pidm_banco");
+            $("#slcPersona").html('').prop("disabled", true);
+            selectedClient = persona.find(client => client.PIDM == pidm);
+            if (selectedClient) {
+                $("#slcPersona").val(selectedClient.RAZON_SOCIAL);
+                $("#hfPIDM").val(selectedClient.PIDM);
+            }
+            break;
+
+        case '5':
+            var cod = ObtenerQueryString("codigo");
+            pidm = '12330';
+            selectedClient = persona.find(client => client.PIDM == pidm);
+
+            if (selectedClient) {
+                $("#slcPersona").val(selectedClient.RAZON_SOCIAL);
+                $("#hfPIDM").val(selectedClient.PIDM);
+            }
+
+            if (nuevoMovimiento) {  //Dinero por Encargo 
+                $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').hide();
+                $("#slcPersona, #txtMonto").html('').prop("disabled", true);
+                $("#txtMonto").val("");
+                $('#btnBuscarTicket').show();
+                btnBuscarTicket.click();
+            } else {
+                $("#slcPersona, #txtMonto, #txtNroOpe").html('').prop("disabled", true);
+                cargarTickets(cod);
+            }
+
+            break;
+
+        case '6': //POS
+            $("#slcPersona, #slcPersona, #txtNroOpe, #txtDescripcion").html('').prop("disabled", true);
+            $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').hide();
+            break;
+
+        default: // Otras operaciones
+            if (nuevoMovimiento) {
+                $('#btnNuevaPersona, #btnRecargarPersona').show();
+                $("#slcPersona").removeAttr("disabled");
+
+                estereotipo == 'CLIEN' ? $("#btnNuevoClienteRapido").show() : $("#btnNuevoClienteRapido").hide(); 
+
+                // PIDM por defecto. Empleados y Proveedores no tienen PIDM 1
+                if (estereotipo !== 'EMPL' && estereotipo !== 'PROV') {
+                    pidm = '1';
+                    selectedClient = persona.find(client => client.PIDM == pidm);
+                    $("#hfPIDM").val(selectedClient.PIDM);
+                    console.log($("#hfPIDM").val());
+                }
+            } else {
+                $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').show();
+                $("#slcPersona").removeAttr("disabled");
+            }
+            break;
     }
 }
 
@@ -802,26 +863,26 @@ $("#chkRCaja").click(function () {
 
         $("#slcTipo").val("E").change()
             .attr("disabled", true);
-     
+
         $("#slcCaja, #slcResp").addClass("obligatorio");
-       // $.ajaxSetup({ async: false });
+        // $.ajaxSetup({ async: false });
         $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: 7, empresa: $("#slcEmpr").val(), usua_id: $("#ctl00_txtus").val() },
-             function (res) {
-                 if (res != null && res != "" && res.indexOf("error") < 0) {
-                     
-                     $("#slcCaja").html(res).select2().attr("disabled", false);
-                     $("#slcCaja,#slcResp").attr("disabled", false);
+            function (res) {
+                if (res != null && res != "" && res.indexOf("error") < 0) {
 
-                     if ($("#slcCaja option").length > 1) {
-                         $("#slcCaja").select2("val", $($("#slcCaja option")[1]).val()).change();
-                     }
+                    $("#slcCaja").html(res).select2().attr("disabled", false);
+                    $("#slcCaja,#slcResp").attr("disabled", false);
 
-                 } else {
+                    if ($("#slcCaja option").length > 1) {
+                        $("#slcCaja").select2("val", $($("#slcCaja option")[1]).val()).change();
+                    }
 
-                     $("#slcCaja").html("").attr("disabled", true);
+                } else {
 
-                 }
-             });
+                    $("#slcCaja").html("").attr("disabled", true);
+
+                }
+            });
         //$.ajaxSetup({ async: true });
 
 
@@ -829,14 +890,14 @@ $("#chkRCaja").click(function () {
         $("#slcCaja, #slcResp").removeClass("obligatorio");
         // $("#divCheque").css("display","none");
         if ($("#chkChqPag").is(":checked")) {
-         
+
             $("#chkChqPag").click().click();
             $("#chkChqPag").attr("checked", false);
         }
         $("#divRCaja").slideUp();
         $("#slcTipo").val("").change()
-         .attr("disabled", false);
-       
+            .attr("disabled", false);
+
     }
 
 });
@@ -846,34 +907,34 @@ $("#chkChqPag").click(function () {
     if ($(this).is(":checked")) {
 
         $("#slcResp").val("").attr("disabled", true);
-         $("#slcResp").removeClass("obligatorio");
+        $("#slcResp").removeClass("obligatorio");
 
         $("#txtDescripcion").val("CHEQUE PAGADOR N°:");
         $("#slcOperacionEfectuada").val("VEN").change();
         $("#slcOperacionEfectuada,#txtDescripcion,#txtMonto").attr("disabled", true);
         $("#slcChq").addClass("obligatorio");
         $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 8, cuenta: $("#slcCta").val(), pidmcuenta: $("#slcEmpr :selected").attr("pidm") },
-         function (res) {
-            if (res != null && res != "" && res.indexOf("error") < 0) {
-            $("#slcChq").html(res).select2().change(function () {
+            function (res) {
+                if (res != null && res != "" && res.indexOf("error") < 0) {
+                    $("#slcChq").html(res).select2().change(function () {
 
-                $("#txtMonto")
-                    .val($("#slcChq :selected").attr("monto"))
-                    .change();
+                        $("#txtMonto")
+                            .val($("#slcChq :selected").attr("monto"))
+                            .change();
 
-                $("#txtDescripcion").val("CHEQUE PAGADOR N°:" + $(this).val());
-                $("#lblGiradoA").html($("#slcChq :selected").attr("ngiradoa"));
-            }
+                        $("#txtDescripcion").val("CHEQUE PAGADOR N°:" + $(this).val());
+                        $("#lblGiradoA").html($("#slcChq :selected").attr("ngiradoa"));
+                    }
 
-            );
-         } else {
-                $("#slcChq").html("<option></option>").select2();
-       
-         }
+                    );
+                } else {
+                    $("#slcChq").html("<option></option>").select2();
 
-        });
+                }
+
+            });
         $.ajaxSetup({ async: true });
-     
+
         $("#divCheque").slideDown();
     } else {
         $("#slcChq").removeClass("obligatorio");
@@ -887,11 +948,11 @@ $("#chkChqPag").click(function () {
 
 });
 
-function fillPersona(v_ID, v_value) {
+function fillPersona(v_ID, v_value, v_estereotipo) {
     var selectRazonSocial = $(v_ID);
     $.ajax({
         type: "post",
-        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.7&p_CTLG_CODE=" + $("#slcEmpr").val(),
+        url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.7&p_CTLG_CODE=" + $("#slcEmpr").val() + "&p_PERS_PIDM=" + v_value + "&p_ESTEREOTIPO=" + v_estereotipo,
         contentType: "application/json;",
         dataType: "json",
         async: false,
@@ -899,7 +960,6 @@ function fillPersona(v_ID, v_value) {
             console.log(datos)
             if (datos != null) {
                 persona = datos;
-
                 var map = {};
 
                 selectRazonSocial.typeahead({
@@ -926,6 +986,17 @@ function fillPersona(v_ID, v_value) {
                         return item;
                     },
                 });
+
+                selectRazonSocial.on('change', function () {
+                    if ($("#slcEstereotipo").val() === "CLIEN" || $("#slcEstereotipo").val() === "PERS") {
+                        if (!$(this).val()) {
+                            $("#hfPIDM").val("1");
+                        }
+                    } else {
+                        $("#hfPIDM").val(""); 
+                    }
+                });
+
             } else {
                 persona = [];
             }
@@ -994,7 +1065,7 @@ function confirmarClienteAnticipo() {
         error: function (msg) {
             alert(msg);
         }
-        });
+    });
     return continuar;
 }
 
@@ -1093,8 +1164,7 @@ $('#tblInfoTicket tbody').on('click', '.btnEliminarDetalle', function () {
 });
 
 //Carga de los tickets al modal para su posterior seleccion. Solo se efectua al crear movimientos. Se llaman a TODOS los tickets disponibles (Canjeados/Aplicables).
-//Los tickets ya asociados a un movimiento bancario no van a mostrarse.
-//Los usuarios pueden elegir multiples tickets para un movimiento.
+//Los tickets ya asociados a un movimiento bancario no van a mostrarse. Los usuarios pueden elegir multiples tickets por movimiento.
 var buscarTicket = function () {
     $('#tblTicket').DataTable().destroy();
     var data = new FormData();
@@ -1257,57 +1327,40 @@ function poblarTabla(datosTicket, columnaEliminar) {
 }
 
 function crearMovimiento() {
-    var verificaNroOpera = '';
-    var continuar = false;
+    if (vErrorBodyAnyElement(".obligatorio")) {
+        alertCustom("La operación <b>NO</b> se realizó!<br/> Ingrese los campos obligatorios!");
+        return;
+    }
 
-    if (!vErrorBodyAnyElement(".obligatorio")) {
-        //Verifica si el Nro. Operacion es unico
-        verificaNroOpera = verificarNroOperacion($("#txtNroOpe").val())
-        if (verificaNroOpera == 'OK') {
-            continuar = true;
-        } else {
-            continuar = false;
-            $("#A4").attr("disabled", false);
-            infoCustom2("El Nro. de Op. " + verificaNroOpera.split("@")[0].substring(2).replace("OP", '') + " ya se encuentra registrado en el sistema");
-            if (verificaNroOpera.split("@")[1] == "1") {
-                $("#txtNroOpe").pulsate({
-                    color: "#FF0000",
-                    reach: 20,
-                    repeat: 3,
-                    glow: true
-                });
-            }
-        }
+    var estereotipoVal = $("#slcEstereotipo").val();
+    if (((estereotipoVal === "EMPL" || estereotipoVal === "PROV") && !vErrorsNotMessage(['slcPersona']))) {
+        alertCustom("La operación <b>NO</b> se realizó!<br/> Debe asignarse una persona");
+        return;
+    }
 
-        //Verifica si la persona seleccionada puede emitir anticipos
-        if ($("#slcOperacion").val() === '1' && !confirmarClienteAnticipo()) {
-            continuar = false;
-            if ($("#hfESTADO").val() === 'I' || $("#hfESTADO").val() === '') {
-                alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> La persona seleccionada debe ser un cliente activo!");
-            } else {
-                alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> La persona seleccionada debe ser cliente para generar anticipos!");
-            }
+    var verificaNroOpera = verificarNroOperacion($("#txtNroOpe").val());
+    if (verificaNroOpera !== 'OK') {
+        $("#A4").attr("disabled", false);
+        var splitResult = verificaNroOpera.split("@");
+        infoCustom2("El Nro. de Op. " + splitResult[0].substring(2).replace("OP", '') + " ya se encuentra registrado en el sistema");
+        if (splitResult[1] === "1") {
+            $("#txtNroOpe").pulsate({ color: "#FF0000", reach: 20, repeat: 3, glow: true });
         }
+        return;
+    }
 
-        //Verifica que el monto no sea 0.00
-        var monto = $("#txtMonto").val();
-        if (parseFloat(monto) === 0.00) {
-            continuar = false
-            alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> El monto no puede ser 0.00!");
-        }
+    if (parseFloat($("#txtMonto").val()) === 0.00) {
+        alertCustom("La operación <b>NO</b> se realizó!<br/> El monto no puede ser 0.00!");
+        return;
+    }
 
-        var codigo = "";
-        if (continuar) {
-            if ($("#chkRCaja").is(":checked")) {
-                Confirmacion();
-            } else {
-                ejecutaMovimiento(); // Se crea el movimiento bancario
-            }
-        }
+    if ($("#chkRCaja").is(":checked")) {
+        Confirmacion();
     } else {
-        alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> Ingrese los campos obligatorios!");
+        ejecutaMovimiento();
     }
 }
+
 
 function ejecutaMovimiento() {
 
@@ -1358,6 +1411,7 @@ function ejecutaMovimiento() {
                 $("#slcCta, #slcEmpr, #slcOperacion").attr("disabled", true);
                 $("#grabar").html("<i class='icon-pencil'></i> Modificar");
                 $("#grabar").attr("href", "javascript:actualizarMovimiento();");
+                v_nro_operacion_inicial = $("#txtNroOpe").val();
 
                 $("#hddauxiliar").val(res);
                 _u_monto += p_mont;
@@ -1373,99 +1427,74 @@ function ejecutaMovimiento() {
 }
 
 function actualizarMovimiento() {
-
-    var verificaNroOpera = '';
-    var continuar = false;
-
-    var p_codigo = $("#hddauxiliar").val();
-    var p_tipo = $("#slcTipo").val();
-    var p_ofic = $("#txtOficina").val();
-    var p_desc = $("#txtDescripcion").val();
-    var p_cana = $("#txtCanal").val();
-    var p_nuop = $("#txtNroOpe").val();
-    var p_feop = $("#txtFeOp").val();
-    var p_mont = $("#txtMonto").val().split(",").join("");
-    var p_feva = $("#txtFeVa").val();
-    var p_pidm = $("#slcEmpr :selected").attr("pidm");
-    var p_ctco = $("#slcCta").val();
-
-    var p_tipoOperacion = $("#slcOperacion").val();
-    var p_persona = $("#hfPIDM").val();
-
-    var p_user = $('#ctl00_lblusuario').html();
-
-    if (!vErrorBodyAnyElement(".obligatorio")) {
-
-        //Confirmar que el Nro de Operacion sea unico
-        //Tambien evita que se cambie el nro de operacion de una transaccion amortizada
-        var verificaNroOpera = verificarNroOperacion($("#txtNroOpe").val())
-        if (verificaNroOpera == 'OK') {
-            continuar = true;
-        } else {
-            continuar = false;
-            $("#A4").attr("disabled", false);
-            infoCustom2("El Nro. de Op. " + verificaNroOpera.split("@")[0].substring(2).replace("OP", '') + " ya se encuentra registrado en el sistema");
-            if (verificaNroOpera.split("@")[1] == "1") {
-                $("#txtNroOpe").pulsate({
-                    color: "#FF0000",
-                    reach: 20,
-                    repeat: 3,
-                    glow: true
-                });
-            }
-        }
-
-        //Confirmar que el cliente pueda emitir anticipo
-        if ($("#slcOperacion").val() === '1' && !confirmarClienteAnticipo()) {
-            continuar = false;
-            if ($("#hfESTADO").val() === 'I' || $("#hfESTADO").val() === '') {
-                alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> La persona seleccionada debe ser un cliente activo!");
-            } else {
-                alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> La persona seleccionada debe ser cliente para generar anticipos!");
-            }
-        }
-
-        //Confirmar que el Monto no sea 0
-        var monto = $("#txtMonto").val();
-        if (parseFloat(monto) === 0.00) {
-            continuar = false
-            alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> El monto no puede ser 0.00!");
-        }
-
-        if (continuar) {
-            Bloquear("ventana");
-            $.post("vistas/NB/ajax/NBMMOCB.ASHX", {
-                flag: 2,
-                codigo: p_codigo,
-                oficina: p_ofic,
-                descripcion: p_desc,
-                canal: p_cana,
-                nro_operacion: p_nuop,
-                fecha_ope: p_feop,
-                monto: p_mont,
-                fecha_valor: p_feva,
-                user: p_user,
-                tipo: p_tipo,
-                pidm: p_pidm,
-                cta_code: p_ctco,
-                tipoOperacion: p_tipoOperacion,
-                persona: p_persona,
-            },
-                function (res) {
-                    Desbloquear("ventana");
-                    if (res == "OK") {
-                        exito();
-                        _u_monto += p_mont;
-
-                    } else {
-                        noexito();
-                    }
-                });
-        }
-    } else {
-        alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> Ingrese los campos obligatorios!");
+    if (vErrorBodyAnyElement(".obligatorio")) {
+        alertCustom("La operación <b>NO</b> se realizó!<br/> Ingrese los campos obligatorios!");
+        return;
     }
+
+    var estereotipoVal = $("#slcEstereotipo").val();
+    if (((estereotipoVal === "EMPL" || estereotipoVal === "PROV") && !vErrorsNotMessage(['slcPersona']))) {
+        alertCustom("La operación <b>NO</b> se realizó!<br/> Debe asignarse una persona");
+        return;
+    }
+
+    var v_nro_operacion_actual = $("#txtNroOpe").val();
+    if (v_nro_operacion_actual !== v_nro_operacion_inicial) {
+        var verificaNroOpera = verificarNroOperacion(v_nro_operacion_actual);
+        if (verificaNroOpera !== 'OK') {
+            $("#A4").attr("disabled", false);
+            var splitResult = verificaNroOpera.split("@");
+            infoCustom2("El Nro. de Op. " + splitResult[0].substring(2).replace("OP", '') + " ya se encuentra registrado en el sistema");
+            if (splitResult[1] === "1") {
+                $("#txtNroOpe").pulsate({ color: "#FF0000", reach: 20, repeat: 3, glow: true });
+            }zz
+            return;
+        }
+    }
+
+    if ($("#slcOperacion").val() === '1' && !confirmarClienteAnticipo()) {
+        var estadoVal = $("#hfESTADO").val();
+        alertCustom("La operación <b>NO</b> se realizó!<br/>" +
+            (estadoVal === 'I' || estadoVal === '' ? " La persona seleccionada debe ser un cliente activo!" :
+                " La persona seleccionada debe ser cliente para generar anticipos!"));
+        return;
+    }
+
+    if (parseFloat($("#txtMonto").val()) === 0.00) {
+        alertCustom("La operación <b>NO</b> se realizó!<br/> El monto no puede ser 0.00!");
+        return;
+    }
+
+    Bloquear("ventana");
+    $.post("vistas/NB/ajax/NBMMOCB.ASHX", {
+        flag: 2,
+        codigo: $("#hddauxiliar").val(),
+        oficina: $("#txtOficina").val(),
+        descripcion: $("#txtDescripcion").val(),
+        canal: $("#txtCanal").val(),
+        nro_operacion: v_nro_operacion_actual,
+        fecha_ope: $("#txtFeOp").val(),
+        monto: $("#txtMonto").val().split(",").join(""),
+        fecha_valor: $("#txtFeVa").val(),
+        user: $('#ctl00_lblusuario').html(),
+        stbl: $("#chkRCaja").is(":checked") ? $("#slcCaja :selected").attr("stbl") : $("#ctl00_hddestablecimiento").val(),
+        tipo: $("#slcTipo").val(),
+        pidm: $("#slcEmpr :selected").attr("pidm"),
+        cta_code: $("#slcCta").val(),
+        tipoOperacion: $("#slcOperacion").val(),
+        persona: $("#hfPIDM").val(),
+    },
+        function (res) {
+            Desbloquear("ventana");
+            if (res === "OK") {
+                exito();
+                _u_monto += parseFloat($("#txtMonto").val());
+            } else {
+                noexito();
+            }
+        });
 }
+
 
 function agregarTipoOperacionYPersona(codigo) {
     var p_tipoOperacion = $("#slcOperacion").val();
@@ -1483,15 +1512,15 @@ function agregarTipoOperacionYPersona(codigo) {
             Desbloquear("ventana");
             if (res === "OK") {
                 generarAsiento($("#hddauxiliar").val());
-            } 
+            }
         });
 }
 
 function generarAsiento(p_codigo) {
     var opcion = $("#slcOperacion option:selected");
- 
+
     var p_tipoOpeCta = opcion.data("value"); //cta contable asociada al tipo de operacion
-    
+
     Bloquear("ventana");
     $.post("vistas/NB/ajax/NBMMOCB.ASHX", {
         flag: "GEN_ASIENTO",

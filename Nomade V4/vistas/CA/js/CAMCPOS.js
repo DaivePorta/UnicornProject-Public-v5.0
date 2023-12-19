@@ -1,7 +1,7 @@
 ﻿
 var CALCPOS = function () {
 
-    var cargarCombos = function () { 
+    var cargarCombos = function () {
 
         $("#slcEmpr, #slcEstb,#slcMoneda,#slcPOS").select2();
 
@@ -36,7 +36,7 @@ var CALCPOS = function () {
                     if (datos != null) {
                         for (var i = 0; i < datos.length; i++) {
                             select.append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
-                        }                        
+                        }
                     }
                 },
                 error: function (msg) {
@@ -45,7 +45,7 @@ var CALCPOS = function () {
             });
             select.select2('val', $('#ctl00_hddestablecimiento').val()).change(function () { $("#slcPOS").select2("val", ""); cargarPOS(); });
         }
-        
+
         function cargarMoneda(codMoneda) {
             var select = $('#slcMoneda');
             $.ajax({
@@ -53,7 +53,7 @@ var CALCPOS = function () {
                 url: "vistas/ca/ajax/camcpos.ashx?flag=MO&empresa=" + $('#slcEmpr').val(),
                 success: function (datos) {
                     select.empty();
-                    select.html(datos);                    
+                    select.html(datos);
                 },
                 error: function (msg) {
                     alert(msg);
@@ -63,8 +63,7 @@ var CALCPOS = function () {
                 var v_monedas = $('#slcPOS :selected').attr("moneda");
                 $("#slcMoneda option").filter(function (e, d) {
                     var val0r = $(d).val();
-                    if (v_monedas.indexOf(val0r) < 0)
-                    {
+                    if (v_monedas.indexOf(val0r) < 0) {
                         $("#slcMoneda option[value=" + val0r + "]").remove();
                         select.select2('val', codMoneda);
                         cargarSimboloMoneda()
@@ -90,7 +89,7 @@ var CALCPOS = function () {
             $.ajax({
                 type: "post",
                 url: "vistas/ca/ajax/camcpos.ashx?flag=4.5&empresa=" + $('#slcEmpr').val() + "&establecimiento=" + $('#slcEstb').val(),
-                success: function (datos) { 
+                success: function (datos) {
                     select.empty();
                     if (datos != null) {
                         for (var i = 0; i < datos.length; i++) {
@@ -104,7 +103,7 @@ var CALCPOS = function () {
                         select.select2('val', "");
                         $('#slcMoneda').select2('val', "");
                         select.change();
-                    }                    
+                    }
                 },
                 error: function (msg) {
                     alert(msg);
@@ -133,15 +132,15 @@ var CALCPOS = function () {
         var parms = {
             data: null,
             columns: [
-             {
-                 data: null,
-                 defaultContent: "  <img src='recursos/img/details_open.png' class='detDoc' />",
-                 createdCell: function (td, cellData, rowData, row, col) {
+                {
+                    data: null,
+                    defaultContent: "  <img src='recursos/img/details_open.png' class='detDoc' />",
+                    createdCell: function (td, cellData, rowData, row, col) {
 
-                     $(td).attr('align', 'center')
+                        $(td).attr('align', 'center')
 
-                 }
-             },
+                    }
+                },
 
                 {
                     data: "CODIGO",
@@ -157,13 +156,13 @@ var CALCPOS = function () {
                         $(td).attr('align', 'center')
                     }
                 },
-                 {
-                     data: "CANTIDAD_ORDENES", createdCell: function (td, cellData, rowData, row, col) {
+                {
+                    data: "CANTIDAD_ORDENES", createdCell: function (td, cellData, rowData, row, col) {
 
-                         $(td).attr("align", "right");
+                        $(td).attr("align", "right");
 
-                     }
-                 },
+                    }
+                },
                 {
                     data: "MONTO_CIERRE", createdCell: function (td, cellData, rowData, row, col) {
 
@@ -177,7 +176,7 @@ var CALCPOS = function () {
                         $(td).html(simbolo + formatoMiles(cellData)).attr("align", "right");
 
                     }
-                },                  
+                },
                 { data: "USUARIO" },
             ]
 
@@ -186,7 +185,7 @@ var CALCPOS = function () {
 
         table = iniciaTabla('tblBandeja', parms);
         $("#tblBandeja").removeAttr("style");
-    
+
         $('#tblBandeja tbody').on('click', 'tr', function () {
 
             if ($(this).hasClass('selected')) {
@@ -416,7 +415,7 @@ var CAMCPOS = function () {
                                 //select.change();
                             }
                         }
-                    }                                       
+                    }
                 });
 
                 if ($('#slcEstb').val() == "") {
@@ -450,7 +449,7 @@ var CAMCPOS = function () {
                         select.select2('val', "");
                         $('#slcMoneda').select2('val', "");
                         select.change();
-                    }                   
+                    }
                 },
                 error: function (msg) {
                     alert(msg);
@@ -564,14 +563,12 @@ var CAMCPOS = function () {
             if (!$(this).is(":checked")) {
 
                 $('#tblBandeja tbody .selecChk').each(function () {
-                    if (!$(this).is(":checked"))
-                    { $(this).click(); }
+                    if (!$(this).is(":checked")) { $(this).click(); }
 
                 });
             } else {
                 $('#tblBandeja tbody .selecChk').each(function () {
-                    if ($(this).is(":checked"))
-                    { $(this).click(); }
+                    if ($(this).is(":checked")) { $(this).click(); }
 
                 });
 
@@ -615,7 +612,7 @@ function cargarSimboloMoneda() {
                 alert(msg);
             }
         });
-    }   
+    }
 }
 
 function cargarTabla() {
@@ -639,44 +636,44 @@ function cargarTabla() {
 
                 }
             },
-             {
-                 data: "DOCUMENTO.valor",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center');
-                 }
-             },
-             {
-                 data: "CLIENTE.valor",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center');
-                 }
-             },
-               {
-                   data: "BANCO.valor",
-                   createdCell: function (td, cellData, rowData, row, col) {
-                       $(td).attr('align', 'center');
-                   }
-               },
-                 {
-                     data: "MARCA.valor",
-                     createdCell: function (td, cellData, rowData, row, col) {
-                         $(td).attr('align', 'center');
-                     }
-                 },
-             {
-                 data: "ULT_DIGITOS",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center');
+            {
+                data: "DOCUMENTO.valor",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "CLIENTE.valor",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "BANCO.valor",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "MARCA.valor",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "ULT_DIGITOS",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
 
-                 }
-             },
-             {
-                 data: "CODIGO_AUTORIZACION",
-                 createdCell: function (td, cellData, rowData, row, col) {
+                }
+            },
+            {
+                data: "CODIGO_AUTORIZACION",
+                createdCell: function (td, cellData, rowData, row, col) {
 
 
-                 }
-             },
+                }
+            },
 
             {
                 data: "MONTO",
@@ -697,8 +694,6 @@ function cargarTabla() {
 }
 
 function cerrarLote() {
-
-
     var p_numero = $("#txtNroLote").val();
     var p_fecha = $("#txtFecha").val();
     var p_monto_cierre = $("#txtMontoCierre").attr("monto");
@@ -709,53 +704,67 @@ function cerrarLote() {
     var p_detalle = "";
     var p_transaccion = "PAGO POR POS";
 
-    json_selec.filter(function (e) {
+    var verificaNroOpera = '';
+    var continuar = false;
 
-
-        if (p_detalle == "") {
-
-            p_detalle = e.CODIGO_MCAJA;
-
-        } else {
-
-            p_detalle += ("," + e.CODIGO_MCAJA);
-
-        }
-
-
-
-    });
-
-    var p_user = $('#ctl00_lblusuario').html();
-
-    if (!vErrorBodyAnyElement(".obligatorio")) {
-        Bloquear("ventana");
-        $.post("vistas/CA/ajax/CAMCPOS.ashx", {
-            flag: 1,
-            numero: p_numero,
-            fecha: p_fecha,
-            monto_cierre: p_monto_cierre,
-            pos: p_pos,
-            moneda: p_moneda,
-            empresa: p_empresa,
-            establecimiento: p_establecimiento,
-            detalle: p_detalle,
-            usuario: p_user,
-            ttransaccion: p_transaccion
-        },
-            function (res) {
-                Desbloquear("ventana");
-                if (res != "" && res != "ERROR") {
-                    exito();
-                    $("#txtNroLote").val("");
-                    $("#btnFiltrar").click();
-                    json_selec = new Array();
-                } else {
-                    noexito();
-                }
+    verificaNroOpera = verificarNroOperacion($("#txtNroLote").val())
+    if (verificaNroOpera == 'OK') {
+        continuar = true;
+    } else {
+        continuar = false;
+        $("#A4").attr("disabled", false);
+        infoCustom2("El Nro. de Op. " + verificaNroOpera.split("@")[0].substring(2).replace("OP", '') + " ya se encuentra registrado en el sistema");
+        if (verificaNroOpera.split("@")[1] == "1") {
+            $("#txtNroOpe").pulsate({
+                color: "#FF0000",
+                reach: 20,
+                repeat: 3,
+                glow: true
             });
+        }
     }
 
+    if (continuar) {
+        json_selec.filter(function (e) {
+            if (p_detalle == "") {
+                p_detalle = e.CODIGO_MCAJA;
+            } else {
+                p_detalle += ("," + e.CODIGO_MCAJA);
+            }
+        });
+
+        var p_user = $('#ctl00_lblusuario').html();
+
+        if (!vErrorBodyAnyElement(".obligatorio")) {
+            Bloquear("ventana");
+            $.post("vistas/CA/ajax/CAMCPOS.ashx", {
+                flag: 1,
+                numero: p_numero,
+                fecha: p_fecha,
+                monto_cierre: p_monto_cierre,
+                pos: p_pos,
+                moneda: p_moneda,
+                empresa: p_empresa,
+                establecimiento: p_establecimiento,
+                detalle: p_detalle,
+                usuario: p_user,
+                ttransaccion: p_transaccion
+            },
+                function (res) {
+                    Desbloquear("ventana");
+                    if (res != "" && res != "ERROR") {
+                        exito();
+                        $("#txtNroLote").val("");
+                        $("#btnFiltrar").click();
+                        json_selec = new Array();
+                    } else {
+                        noexito();
+                    }
+                });
+        }
+    } else {
+        noexito();
+    }
 }
 
 function cargatablavaciaDetalleF(id, json) {
@@ -763,51 +772,51 @@ function cargatablavaciaDetalleF(id, json) {
     oTableDeudasDetalle = iniciaTabla(id, {
         data: json,
         columns: [
-          {
-              data: { _: "FECHA.display", sort: "FECHA.order" },
-              createdCell: function (td, cellData, rowData, row, col) {
-                  $(td).attr('align', 'center');
+            {
+                data: { _: "FECHA.display", sort: "FECHA.order" },
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
 
-              }
-          },
-             {
-                 data: "DOCUMENTO.valor",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center');
-                 }
-             },
-             {
-                 data: "CLIENTE.valor",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center');
-                 }
-             },
-               {
-                   data: "BANCO.valor",
-                   createdCell: function (td, cellData, rowData, row, col) {
-                       $(td).attr('align', 'center');
-                   }
-               },
-                 {
-                     data: "MARCA.valor",
-                     createdCell: function (td, cellData, rowData, row, col) {
-                         $(td).attr('align', 'center');
-                     }
-                 },
-             {
-                 data: "ULT_DIGITOS",
-                 createdCell: function (td, cellData, rowData, row, col) {
-                     $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "DOCUMENTO.valor",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "CLIENTE.valor",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "BANCO.valor",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "MARCA.valor",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
+                }
+            },
+            {
+                data: "ULT_DIGITOS",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('align', 'center');
 
-                 }
-             },
-             {
-                 data: "CODIGO_AUTORIZACION",
-                 createdCell: function (td, cellData, rowData, row, col) {
+                }
+            },
+            {
+                data: "CODIGO_AUTORIZACION",
+                createdCell: function (td, cellData, rowData, row, col) {
 
 
-                 }
-             },
+                }
+            },
 
             {
                 data: "MONTO",
@@ -828,4 +837,26 @@ function cargatablavaciaDetalleF(id, json) {
     });
 
 
+}
+
+function verificarNroOperacion(nroOpera) {
+    var nroOperacionCodificado = encodeURIComponent("B-" + nroOpera + "/-/-"); //encodeURIComponent en caso se utilicen caracteres especiales
+    $.ajax({
+        type: "post",
+        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOperacionCodificado,
+        contenttype: "application/json;",
+        datatype: "json",
+        async: false,
+        success: function (datos) {
+            if (datos == 'OK') {
+                respuesta = datos;
+            } else {
+                respuesta = datos;
+            };
+        },
+        error: function (msg) {
+            alertCustom("Error");
+        }
+    });
+    return respuesta;
 }

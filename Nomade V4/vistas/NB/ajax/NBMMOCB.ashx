@@ -124,7 +124,7 @@ Public Class NBMMOCB : Implements IHttpHandler
                     tc = q.TipoCambioHoy().Rows(0)("Venta").ToString
 
                     Dim P As New Nomade.NB.NBMovimientoBancario("Bn")
-                    res = P.ActualizarMovimientoBancarioDetalle(codigo, oficina, descripcion, canal, nro_operacion, fecha_ope, monto, tc, fecha_valor, "S", user, String.Empty, tipo, pidm, cta_code, tipoOperacion, persona)
+                    res = P.ActualizarMovimientoBancarioDetalle(codigo, oficina, descripcion, canal, nro_operacion, fecha_ope, monto, tc, fecha_valor, "S", user, stbl, tipo, pidm, cta_code, tipoOperacion, persona)
 
                 Case "3"
                     Dim p As New Nomade.NB.NBMovimientoBancario("BN")
@@ -140,7 +140,7 @@ Public Class NBMMOCB : Implements IHttpHandler
                             resb.Append("{")
                             resb.Append("""CODIGO"" :" & """" & row("CODIGO") & """,")
                             resb.Append("""NRO_OPERACION"" :" & """" & row("NRO_OPERACION") & """,")
-                            resb.Append("""MONTO_CIERRE"" :" & """" & If(row("MONTO_CIERRE") IsNot DBNull.Value, row("MONTO_CIERRE"), row("MONTO")) & """,")
+                            resb.Append("""MONTO"" :" & """" & row("MONTO") & """,")
                             resb.Append("""PIDM_CLIENTE"" :" & """" & row("PIDM_CLIENTE") & """,")
                             resb.Append("""CERRADO_IND"" :" & """" & row("CERRADO_IND") & """")
                             resb.Append("},")

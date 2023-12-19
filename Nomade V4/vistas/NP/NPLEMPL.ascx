@@ -53,6 +53,8 @@
                         <table id="tblEmpleados" border="0" class="display DTTT_selectable">
                             <thead>
                                 <tr> 
+                                    <th>CODIGO
+                                    </th>
                                     <th>EMPLEADO
                                     </th>
                                     <th>DNI
@@ -63,12 +65,17 @@
                                     </th>    
                                     <th>CARGO
                                     </th>                                      
-                                    <th>ESTADO
-                                    </th>                                                                                                              
+                                    <%--<th>ESTADO
+                                    </th> --%>                                                                                                             
                                     <th>REG. SALUD
                                     </th>  
                                     <th >CTLG_CODE
-                                    </th>                              
+                                    </th>
+                                    <%--DPORTA--%>
+                                    <th>ESTADO 
+                                    </th>
+                                    <th>Cambio Estado
+                                    </th>
                                 </tr>
                             </thead>
                         </table>                       

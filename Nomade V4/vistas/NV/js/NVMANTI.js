@@ -151,7 +151,7 @@ var NVMANTI = function () {
             sHtml += "<th style='text-align:center;font-weight: 600;'>Persona</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Cuenta</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>Descripción</th>";
-            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";            
+            sHtml += "<th style='text-align:center;font-weight: 600;'>Centro de Costos</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>HaberMN</th>";
             sHtml += "<th style='text-align:center;font-weight: 600;'>DebeME</th>";
@@ -173,7 +173,7 @@ var NVMANTI = function () {
                     var sPersona = value.PERSONA;
                     var sCuenta = value.CTAS_CODE;
                     var sDescripcionItem = value.CTAS;
-                    var sCCosto = value.CCOSTO_DET;                    
+                    var sCCosto = value.CCOSTO_DET;
                     var nDebeMN = value.DEBE_MN;
                     var nHaberMN = value.HABER_MN;
                     var nDebeME = value.DEBE_ME;
@@ -187,7 +187,7 @@ var NVMANTI = function () {
                     sHtml += ("<td>" + sPersona + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + sCuenta + "</td>");
                     sHtml += ("<td>" + sDescripcionItem + "</td>");
-                    sHtml += ("<td>" + sCCosto + "</td>");                    
+                    sHtml += ("<td>" + sCCosto + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nHaberMN) + "</td>");
                     sHtml += ("<td style='text-align:right;'>" + formatoMiles(nDebeME) + "</td>");
@@ -235,7 +235,7 @@ var NVMANTI = function () {
         $('#cboCtaEmpresa').select2();
         $("#txtMonto,  #txtEfectivo, #txtVuelto").keypress(function (e) { return (ValidaDecimales(e, this, 2)); })
     }
-    
+
     var fillCboEmpresa = function () {
         var select = $('#cbo_Empresa').select2('destroy');
         var dPermanente = ObtenerDatoPermanente("jsonEmpresaNVMDOCV");
@@ -454,7 +454,7 @@ var NVMANTI = function () {
                     alertCustom("La Serie y Número correlativos no se obtuvieron correctamente.");
                 }
             });
-        }        
+        }
     }
 
     var limpiarCorrelativo = function () {
@@ -525,7 +525,7 @@ var NVMANTI = function () {
                 llenarDetalleCotizaciones();
             }
 
-            
+
         });
 
         $('#chx_sin_origen').on('change', function () {
@@ -557,7 +557,7 @@ var NVMANTI = function () {
                 $(".simboloMoneda4").html("");
                 $("#lbltexto_sin_origen").html("");
             }
-           
+
 
             /*var montocobraaux;
             if ($("#cbo_moneda").val() == $("#cbo_moneda2").val()) {
@@ -942,7 +942,7 @@ var NVMANTI = function () {
                 if (key === 13) {
                     BuscarClientexDocumento();
                     $("#cbo_coti").attr('disabled', false);
-                    $('#chx_sin_origen').attr('disabled', false);                    
+                    $('#chx_sin_origen').attr('disabled', false);
                     llenaCotizaciones();
                 }
             }
@@ -1030,7 +1030,7 @@ var NVMANTI = function () {
                 $("#p_Anteriores .portlet-title i").addClass("icon-chevron-down");
                 $("#p_Anteriores .portlet-title i").removeClass("icon-chevron-up");
             }
-        });     
+        });
 
         $("#div_detcoti .portlet-title").on("click", function () {
             $("#div_detcoti .portlet-body").slideToggle();
@@ -1043,7 +1043,7 @@ var NVMANTI = function () {
                 $("#div_detcoti .portlet-title i").removeClass("icon-chevron-up");
             }*/
         });
-        
+
         $("#p_DatCobro .portlet-title").on("click", function () {
             $("#p_DatCobro .portlet-body").slideToggle();
             if ($("#p_DatCobro .portlet-title i").hasClass("icon-chevron-down")) {
@@ -1213,7 +1213,7 @@ var NVMANTI = function () {
                         if ($("#hfCompletoInd").val() != "S") {
                             llenaCotizaciones();
                             $("#cbo_coti").val(datos[0].DCTO_CODE_REF).change();
-                        }                      
+                        }
 
                         //$("#cbo_moneda").val(datos[0].MONEDA).change();
                         /*$('#uniform-chkactivo span').removeClass();
@@ -1477,7 +1477,7 @@ var NVMANTI = function () {
 
                         //fnCargaTablaCuentasC(sCodVenta, oDocVta, datos[0].MOVCONT_CODE);
                         fnCargaTablaCuentasC(sCodVenta, oDocVta, sCodVenta); //AVENGER
-                    }                    
+                    }
                 },
                 error: function (msg) {
                     alertCustom(msg);
@@ -1492,7 +1492,7 @@ var NVMANTI = function () {
                 $("#asientos_contables").hide();
             }
         }
-    };   
+    };
 
     var fnCargaTablaCuentasC = function (sCodVenta, oDocVta, sCodAsiento) {
         $("#asientos_contables").load('../../vistas/CT/abstract/LAsientoContable.html', function (html) {
@@ -1513,7 +1513,7 @@ var NVMANTI = function () {
             //No usan CTLG
             cargarParametrosSistema();
             plugins();
-            eventoControles();            
+            eventoControles();
             fillCboModoPago();
             //fillcboUniMedida();
             fillCboTipoDoc();
@@ -1523,10 +1523,10 @@ var NVMANTI = function () {
             //if (ObtenerQueryString("codigo") == undefined) {
             //    fillCboVendedor($('#cbo_Empresa').val(), $('#cbo_Sucursal').val(), "A", true);
             //}
-            
+
             fillcboMoneda();
             $("#cboSerieDocVenta").select2("val", "");
-            CargarDatosCobro();            
+            CargarDatosCobro();
             $('#cbo_moneda').attr('disabled', true);
             $('#chx_sin_origen').attr('disabled', true);
             //if ($("#chx_sin_origen").is(":checked")) {
@@ -1538,7 +1538,7 @@ var NVMANTI = function () {
             cargaInicial();
             fnFillBandejaCtas();
         }
-    };    
+    };
 
 }();
 
@@ -2040,7 +2040,7 @@ var ajaxProducto = null;
 //    $('#input_cod_prod').html('<input id="txt_cod_producto" disabled="disabled" class="span6" type="text" style="margin-right: 4px" /><input id="txt_cod_a_producto" class="span6" type="text" style="margin-left:-2px;" placeholder="Código"/>');
 //    $("#input_desc_prod").html("<input id='txt_desc_producto' class='span12' type='text' placeholder='Nombre' />");
 
-    
+
 //    //Bloquear("form_add_prod")
 //    Bloquear("input_cod_prod");
 //    Bloquear("input_desc_prod");
@@ -2231,7 +2231,7 @@ var ajaxProducto = null;
 //                            $("#hfporcentaje_detraccion").val(map[item].DETRACCION)
 //                            $("#txt_cantidad").val("");
 //                            $("#txt_cantidad").focus();
-                            
+
 
 //                            if (map[item].SERVICIO == "S") {
 //                                //stockReal = map[item].STOCK_REAL;
@@ -2512,6 +2512,14 @@ function fillTxtCliente(v_ID, v_value) {
                         process(arrayRazonSocial);
                     },
                     updater: function (item) {
+                        if (map[item].RUC != "") {
+                            $('#cboTipoDoc').select2("val", "6").change();
+                            $("#txtNroDctoCliente").val(map[item].RUC);
+
+                        } else {
+                            $('#cboTipoDoc').select2("val", map[item].CODIGO_TIPO_DOCUMENTO).change();
+                            $("#txtNroDctoCliente").val(map[item].NRO_DOCUMENTO);
+                        }
 
                         $('#cboDocumentoVenta').removeAttr("disabled");
                         //$('#cboTipoDoc').empty();
@@ -2527,17 +2535,7 @@ function fillTxtCliente(v_ID, v_value) {
                         $("#hfTipoDocumento").val(map[item].TIPO_DOCUMENTO);
                         $("#hfNroDocumento").val(map[item].NRO_DOCUMENTO);
                         $("#hfRUC").val(map[item].RUC);
-                        //$("#hfDIR").val(map[item].DIRECCION);
-
-
-                        if (map[item].RUC != "") {
-                            $('#cboTipoDoc').select2("val", "6").change();
-                            $("#txtNroDctoCliente").val(map[item].RUC);
-
-                        } else {
-                            $('#cboTipoDoc').select2("val", map[item].CODIGO_TIPO_DOCUMENTO).change();
-                            $("#txtNroDctoCliente").val(map[item].NRO_DOCUMENTO);
-                        }
+                        //$("#hfDIR").val(map[item].DIRECCION);                       
 
                         //if (map[item].RUC === '' || map[item].NRO_DOCUMENTO === '') {
                         //    $('#cboTipoDoc').prop('disabled', true);
@@ -2837,7 +2835,7 @@ function CamposProductosSeriados() {
         if (prodActual != null) {
 
             if (parseFloat($("#txtStockReal").val()) <= 0) {
-                $("#cboBuscar").attr("disabled", "disabled"); 
+                $("#cboBuscar").attr("disabled", "disabled");
                 $("#txt_serie").attr("disabled", "disabled");
             } else {
                 $("#cboBuscar").removeAttr("disabled");
@@ -2886,7 +2884,7 @@ function AgregarDetalleVenta(datos2) {
 
         objProd.MONEDA = $('#cbo_moneda').val();
         objProd.PRECIO_IND = datos2[i].PRECIO_IND;
-       
+
 
         objProd.PRECIO_VENTA = datos2[i].PU;
         objProd.PRECIO_MINIMO = datos2[i].PU;
@@ -2899,7 +2897,7 @@ function AgregarDetalleVenta(datos2) {
 
 
 
-        
+
         if ($('#cbo_moneda option:selected').attr('data-tipo') == "MOBA") {
 
             objProd.MONTO_DESCUENTO = datos2[i].DESCUENTO;
@@ -3301,7 +3299,7 @@ function ObtenerTablaDetalles() {
             res += '<td class="precio' + detallesVenta[i].ITEM + '" align="center"><input class="input2" type="text" onblur="ActualizaPrecioEstandarDetalle(this,this.value,\'' + i + '\')" value="' + detallesVenta[i].PRECIO_DETALLE + '" onkeypress="return ValidaDecimales(event,this,3)"/></td>'
         }
         else {*/
-            res += '<td class="precio' + detallesVenta[i].ITEM + '" align="center">' + detallesVenta[i].PRECIO_DETALLE + '</td>'
+        res += '<td class="precio' + detallesVenta[i].ITEM + '" align="center">' + detallesVenta[i].PRECIO_DETALLE + '</td>'
         //}
 
         res += '<td class="bruto' + detallesVenta[i].ITEM + '" align="center">' + detallesVenta[i].TOTAL_BRUTO + '</td>'
@@ -3499,7 +3497,7 @@ function CalcularDetraccion() {
                 }
                 else
                     $("#hfmontagrup").val(detraccionActual);
-                
+
             }
         });
 
@@ -3507,7 +3505,7 @@ function CalcularDetraccion() {
         //montagrup = detraccionActual - parseFloat(montagrup * relacion);
 
         $("#hfmontorestadetraccion").val(detraccionActual);
-        
+
 
         /// Cálculo para el monto que se pagará ///
 
@@ -3517,7 +3515,7 @@ function CalcularDetraccion() {
         else
             montxx = parseFloat($("#txtMonto").val());
 
-        var montofactor = parseFloat(montxx*relacion);
+        var montofactor = parseFloat(montxx * relacion);
 
         detraccionActual = 0;//montofactor;
         montoParaDetraccion = 0;//montxx;
@@ -3605,8 +3603,7 @@ function CalcularDatosMonetarios() {
 
         //calculando correctamente
         for (var i = 0; i < 2; i++) {
-            if (i > 0)
-            {
+            if (i > 0) {
                 importeCobrar -= parseFloat($("#hfmontagrup").val());
                 //$("#lblImporteCobrar").html(importeCobrar.toFixed(2));
 
@@ -3697,7 +3694,7 @@ function CalcularDatosMonetarios() {
 
             //Importe cobrar
             importeCobrar = parseFloat(importeTotal);
-            if (i > 0) {                                        
+            if (i > 0) {
                 if (parseFloat($("#txt_detraccion").val()) > parseFloat(retencion)) {
                     importeCobrar -= parseFloat($("#txt_detraccion").val());
                 } else {
@@ -3708,8 +3705,8 @@ function CalcularDatosMonetarios() {
 
         }
 
-        
-            
+
+
 
 
 
@@ -3799,7 +3796,7 @@ function ValidaPrecioCantidad() {
                 if (prodActual.MONEDA == $("#cbo_moneda").val()) {
                     //Moneda de producto coincide con la de cbo_moneda
                     var pLength = prodActual.RANGOS_PRECIO.length;
-                    for (var i = pLength - 1 ; i >= 0 ; i--) {
+                    for (var i = pLength - 1; i >= 0; i--) {
                         if (parseFloat($("#txt_cantidad").val()) >= prodActual.RANGOS_PRECIO[i].RANGO) {
                             $("#txtPrecioUnitario").val(prodActual.RANGOS_PRECIO[i].PRECIO)
                             break;
@@ -3818,7 +3815,7 @@ function ValidaPrecioCantidad() {
                     if (prodActual.MONEDA == $("#cbo_moneda [data-tipo='MOBA']").val()) {
                         //Si es moneda base: convertir a MOAL
                         var pLength = prodActual.RANGOS_PRECIO.length;
-                        for (var i = pLength - 1 ; i >= 0; i--) {
+                        for (var i = pLength - 1; i >= 0; i--) {
 
                             if (parseFloat($("#txt_cantidad").val()) >= parseFloat(prodActual.RANGOS_PRECIO[i].RANGO)) {
 
@@ -3867,7 +3864,7 @@ function ValidaPrecioCantidad() {
         }
     }
 }
-    
+
 
 var NuevaVenta = function () {
     window.location.href = '?f=NVMANTI';
@@ -3966,12 +3963,12 @@ var NuevaVenta = function () {
     //CalcularDatosMonetarios();
 
     //llenaCotizaciones();
-    
+
     //$('#cbo_coti').empty();
 
     //$('#cbo_moneda,#cbo_coti').attr('disabled', true);
     //$("#cbo_moneda2").attr('disabled', false);
-    
+
     //$('#uniform-chx_sin_origen span').removeClass();
     //$('#chx_sin_origen').attr('checked', false);
     //$("#lblImporteCobrar").html("0.00");
@@ -3996,21 +3993,21 @@ function CargarFactorImpuestoRentaVenta() {
         processData: false,
         cache: false
     })
-    .success(function (datos) {
-        if (datos != null && datos != "") {
-            if (parseFloat(datos[0].FACTOR) < parseFloat($("#hfFactorImpuestoRenta").val())) {
-                $("#hfFactorImpuestoRentaVenta").val($("#hfFactorImpuestoRenta").val());
-            } else {
-                $("#hfFactorImpuestoRentaVenta").val(datos[0].FACTOR);
+        .success(function (datos) {
+            if (datos != null && datos != "") {
+                if (parseFloat(datos[0].FACTOR) < parseFloat($("#hfFactorImpuestoRenta").val())) {
+                    $("#hfFactorImpuestoRentaVenta").val($("#hfFactorImpuestoRenta").val());
+                } else {
+                    $("#hfFactorImpuestoRentaVenta").val(datos[0].FACTOR);
+                }
             }
-        }
-        else {
-            //infoCustom2("No se encontró datos de impuesto a la renta para la fecha de emisión indicada. Se considerará factor mínimo:" + $("#hfFactorImpuestoRenta").val());
-            $("#hfFactorImpuestoRentaVenta").val($("#hfFactorImpuestoRenta").val());
-        }
-    })
-    .error(function () {
-    });
+            else {
+                //infoCustom2("No se encontró datos de impuesto a la renta para la fecha de emisión indicada. Se considerará factor mínimo:" + $("#hfFactorImpuestoRenta").val());
+                $("#hfFactorImpuestoRentaVenta").val($("#hfFactorImpuestoRenta").val());
+            }
+        })
+        .error(function () {
+        });
 }
 
 //Imprimir dcto venta
@@ -4032,33 +4029,66 @@ function ImprimirDctoVenta() {
         async: false,
         cache: false
     })
-   .success(function (datos) {
-       if (datos != null) {
+        .success(function (datos) {
+            if (datos != null) {
 
 
-           $("#divDctoImprimir").html(datos);
-           setTimeout(function () {
-               window.print();
-           }, 0.0000000000000001)
+                $("#divDctoImprimir").html(datos);
+                setTimeout(function () {
+                    window.print();
+                }, 0.0000000000000001)
 
-       } else {
-           noexito();
-       }
-       //Desbloquear("ventana");
-   })
-   .error(function () {
-       //Desbloquear("ventana");
-       noexito();
-   });
+            } else {
+                noexito();
+            }
+            //Desbloquear("ventana");
+        })
+        .error(function () {
+            //Desbloquear("ventana");
+            noexito();
+        });
 }
 
 // VERIFICACIÓN DE COD. OP Y COD. AUT.
-function verificarNroOperacion(nroOpera, nroOpera2, nroOpera3) { //DPORTA 21/04/2021
+//function verificarNroOperacion(nroOpera) { //DPORTA 21/04/2021
+//    //var respuesta = false;
+
+//    $.ajax({
+//        type: "post",
+//        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOpera,
+//        contenttype: "application/json;",
+//        datatype: "json",
+//        async: false,
+//        success: function (datos) {
+//            //respuesta = datos;
+//            if (datos == 'OK') {
+//                respuesta = datos;
+//            } else {
+//                respuesta = datos;
+//            };
+//        },
+//        error: function (msg) {
+//            alertCustom("Error");
+//        }
+//    });
+//    return respuesta;
+//}
+
+// VERIFICACIÓN DE COD. OP Y COD. AUT.
+function verificarNroOperacionVenta(origen, nroOpera) { //DPORTA 21/04/2021
     //var respuesta = false;
+    if ($("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006') {
+        if (origen.length == 16) {
+            origen = origen.substring(12);
+        }
+    } else if ($("#cboMedioPago").val() == '0008') {
+        origen = "-";
+        nroOpera = '%';
+    }
 
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOpera + "/" + nroOpera2 + "/" + nroOpera3,
+        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.6&p_NRO_OPERA=" + nroOpera + "&p_ORIGEN_OPERA=" + origen,
         contenttype: "application/json;",
         datatype: "json",
         async: false,
@@ -4163,7 +4193,7 @@ function GrabarCompletarDctoVenta() {
 
             //Fin validaciones iniciales
             var camposCompletos; // (N)inguno, (P)arcial, (T)odos
-            if ($("#cbo_OrigenPago").val() != 'Debe'){
+            if ($("#cbo_OrigenPago").val() != 'Debe') {
                 if (continuar) {
                     var nroCamposOblig = $(".obligatorio").length - $("#p_DatCobro div.obligatorio").length;
                     vErrorBodyAnyElement(".obligatorio")
@@ -4235,7 +4265,9 @@ function GrabarCompletarDctoVenta() {
                     //No debe verificarse cuando es un anticipo por compensar
                     //Anticipo por compensar requiere que exista un nro de operacion con el que vincularse
                     if ($("#cboMedioPago").val() != '0021') {
-                        verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
+                        //verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
+                        verificaNroOpera = verificarNroOperacionVenta(($("#txtDestino").val() === undefined || $("#txtDestino").val() === "" ? "-" : $("#txtDestino").val()),
+                            $("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
                     };
 
                     if (verificaNroOpera == 'OK') {
@@ -4275,66 +4307,66 @@ function GrabarCompletarDctoVenta() {
                     if ($("#cbo_moneda2 :selected").attr("data-tipo") == "MOBA") {
                         for (var i = 0; i < detallesVenta.length; i++) {
                             detalles += ValidaCaracter(detallesVenta[i].ITEM) + ";" +
-                            detallesVenta[i].CODIGO + ";" + ValidaCaracter(detallesVenta[i].NOMBRE_IMPRESION) + ";" +
-                            detallesVenta[i].CODE_UNIDAD + ";" +
-                            detallesVenta[i].CANTIDAD + ";" +
-                            detallesVenta[i].PRECIO_DETALLE + ";" +
-                            detallesVenta[i].MONTO_DESCUENTO + ";" +
-                            detallesVenta[i].TOTAL_NETO + ";" +
-                            detallesVenta[i].MONTO_DETRAC + ";" +
-                            detallesVenta[i].MONTO_ISC + ";" +
-                            //10
-                            ValidaCaracter(detallesVenta[i].GLOSA) + ";" +
-                            detallesVenta[i].TIPO_BIEN + ";" +
-                            detallesVenta[i].PRECIO_IND + ";" +
-                            //Montos convertidos:
-                            (parseFloat(detallesVenta[i].MONTO_ISC) / valorCambio).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].MONTO_DETRAC) / valorCambioOfi).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].PRECIO_DETALLE) / valorCambio).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].MONTO_DESCUENTO) / valorCambio).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].TOTAL_NETO) / valorCambio).toFixed(2) + ";" +
-                            detallesVenta[i].CTAS_CODE + ";" +
-                            detallesVenta[i].CECO_CODE + ";" +
-                            //20
-                            detallesVenta[i].ALMACENABLE + ";" +
-                            detallesVenta[i].TIPO_PROD + ";" +
-                            detallesVenta[i].SERIADO + ";" +
-                            detallesVenta[i].CODE_DCTO_ORIGEN +  //DCTO_ORGN_CODE
-                            "|";
+                                detallesVenta[i].CODIGO + ";" + ValidaCaracter(detallesVenta[i].NOMBRE_IMPRESION) + ";" +
+                                detallesVenta[i].CODE_UNIDAD + ";" +
+                                detallesVenta[i].CANTIDAD + ";" +
+                                detallesVenta[i].PRECIO_DETALLE + ";" +
+                                detallesVenta[i].MONTO_DESCUENTO + ";" +
+                                detallesVenta[i].TOTAL_NETO + ";" +
+                                detallesVenta[i].MONTO_DETRAC + ";" +
+                                detallesVenta[i].MONTO_ISC + ";" +
+                                //10
+                                ValidaCaracter(detallesVenta[i].GLOSA) + ";" +
+                                detallesVenta[i].TIPO_BIEN + ";" +
+                                detallesVenta[i].PRECIO_IND + ";" +
+                                //Montos convertidos:
+                                (parseFloat(detallesVenta[i].MONTO_ISC) / valorCambio).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].MONTO_DETRAC) / valorCambioOfi).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].PRECIO_DETALLE) / valorCambio).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].MONTO_DESCUENTO) / valorCambio).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].TOTAL_NETO) / valorCambio).toFixed(2) + ";" +
+                                detallesVenta[i].CTAS_CODE + ";" +
+                                detallesVenta[i].CECO_CODE + ";" +
+                                //20
+                                detallesVenta[i].ALMACENABLE + ";" +
+                                detallesVenta[i].TIPO_PROD + ";" +
+                                detallesVenta[i].SERIADO + ";" +
+                                detallesVenta[i].CODE_DCTO_ORIGEN +  //DCTO_ORGN_CODE
+                                "|";
                         }
                     } else {
                         //Si los valores estan en MonedaAlterna
                         for (var i = 0; i < detallesVenta.length; i++) {
                             detalles += detallesVenta[i].ITEM + ";" +
-                            detallesVenta[i].CODIGO + ";" +
-                            detallesVenta[i].NOMBRE_IMPRESION + ";" +
-                            detallesVenta[i].CODE_UNIDAD + ";" +
-                            detallesVenta[i].CANTIDAD + ";" +
-                            (parseFloat(detallesVenta[i].PRECIO_DETALLE) * valorCambio).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].MONTO_DESCUENTO) * valorCambio).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].TOTAL_NETO) * valorCambio).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].MONTO_DETRAC) * valorCambioOfi).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].MONTO_ISC) * valorCambio).toFixed(2) + ";" +
-                            //10
-                            detallesVenta[i].GLOSA + ";" +
-                            detallesVenta[i].TIPO_BIEN + ";" +
-                            detallesVenta[i].PRECIO_IND + ";" +
-                            //Montos convertidos:
-                            (parseFloat(detallesVenta[i].MONTO_ISC)).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].MONTO_DETRAC)).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].PRECIO_DETALLE)).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].MONTO_DESCUENTO)).toFixed(2) + ";" +
-                            (parseFloat(detallesVenta[i].TOTAL_NETO)).toFixed(2) + ";" +
-                            detallesVenta[i].CTAS_CODE + ";" +
-                            detallesVenta[i].CECO_CODE + ";" +
-                            //20
-                            detallesVenta[i].ALMACENABLE + ";" +
-                            detallesVenta[i].TIPO_PROD + ";" +
-                            detallesVenta[i].SERIADO + ";" +
-                            detallesVenta[i].CODE_DCTO_ORIGEN +  //DCTO_ORGN_CODE
-                            "|";
+                                detallesVenta[i].CODIGO + ";" +
+                                detallesVenta[i].NOMBRE_IMPRESION + ";" +
+                                detallesVenta[i].CODE_UNIDAD + ";" +
+                                detallesVenta[i].CANTIDAD + ";" +
+                                (parseFloat(detallesVenta[i].PRECIO_DETALLE) * valorCambio).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].MONTO_DESCUENTO) * valorCambio).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].TOTAL_NETO) * valorCambio).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].MONTO_DETRAC) * valorCambioOfi).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].MONTO_ISC) * valorCambio).toFixed(2) + ";" +
+                                //10
+                                detallesVenta[i].GLOSA + ";" +
+                                detallesVenta[i].TIPO_BIEN + ";" +
+                                detallesVenta[i].PRECIO_IND + ";" +
+                                //Montos convertidos:
+                                (parseFloat(detallesVenta[i].MONTO_ISC)).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].MONTO_DETRAC)).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].PRECIO_DETALLE)).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].MONTO_DESCUENTO)).toFixed(2) + ";" +
+                                (parseFloat(detallesVenta[i].TOTAL_NETO)).toFixed(2) + ";" +
+                                detallesVenta[i].CTAS_CODE + ";" +
+                                detallesVenta[i].CECO_CODE + ";" +
+                                //20
+                                detallesVenta[i].ALMACENABLE + ";" +
+                                detallesVenta[i].TIPO_PROD + ";" +
+                                detallesVenta[i].SERIADO + ";" +
+                                detallesVenta[i].CODE_DCTO_ORIGEN +  //DCTO_ORGN_CODE
+                                "|";
                         }
-                    }                    
+                    }
 
                 } else {
                     if (origenpago == 'N')
@@ -4431,88 +4463,88 @@ function GrabarCompletarDctoVenta() {
                     processData: false,
                     cache: false
                 })
-               .success(function (datos) {
-                   if (datos != null) {
-                       if (typeof datos[0].CODIGO != "undefined") { // && datos[0].CODIGO != 'ERROR') {
-                           var caderesp = datos[0].CODIGO;
+                    .success(function (datos) {
+                        if (datos != null) {
+                            if (typeof datos[0].CODIGO != "undefined") { // && datos[0].CODIGO != 'ERROR') {
+                                var caderesp = datos[0].CODIGO;
 
-                           if (caderesp.length == 9) {
-                               exito();
-                               //if (datos[0].MSGERROR.indexOf("ERROR") >= 0) {
-                               //    alertCustom(datos[0].MSGERROR);
-                               //}
-                               //COMPLETAR
-                               $("#hfCompletoInd").val("S")
-                               //$("#grabar").attr("href", "javascript:ActualizarDctoVenta();");
-                               $("#divBtnsMantenimiento").attr("style", "display:none");
-                               $("#cbo_moneda2").attr('disabled', true);
-                               $('#chx_sin_origen').attr('disabled', true);
+                                if (caderesp.length == 9) {
+                                    exito();
+                                    //if (datos[0].MSGERROR.indexOf("ERROR") >= 0) {
+                                    //    alertCustom(datos[0].MSGERROR);
+                                    //}
+                                    //COMPLETAR
+                                    $("#hfCompletoInd").val("S")
+                                    //$("#grabar").attr("href", "javascript:ActualizarDctoVenta();");
+                                    $("#divBtnsMantenimiento").attr("style", "display:none");
+                                    $("#cbo_moneda2").attr('disabled', true);
+                                    $('#chx_sin_origen').attr('disabled', true);
 
-                               //$(".btnEliminarDetalle").attr("style", "display:none");
+                                    //$(".btnEliminarDetalle").attr("style", "display:none");
 
-                               $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
-                               $(".btnImprimir").show();
-                               $('#btnMail').removeClass('hidden');
-                               $('#btnWhatsapp').removeClass('hidden');
-                               $("#lblCopia").css("display", "inline-block");
-                               $("#lblCopia").css("display", "inline-block");
-                               $("#txtNumDctoComp").val(datos[0].CODIGO);
-                               //let formato = $("#cboSerieDocVenta :selected").attr("data-formato");//DPORTA
-                               //if (formato == 'E') {//DPORTA
-                               //    var miCodigoQR = new QRCode("codigoQR");
-                               //    miCodigoQR.makeCode(datos[0].DATOS_QR);
-                               //    $('#codigoQR').hide();
-                               //    //setTimeout(guardarQR, 0.0000000000000001);
-                               //    setTimeout(guardarQR, 500);
-                               //}
-                               BloquearCampos();
-                               $("#cbo_appPago").attr('disabled', true);
-                               if (prmtACON == "SI") {
-                                   var sCodVenta = $("#txtNumDctoComp").val();
-                                   sCodVenta = $.trim(sCodVenta);
-                                   var oDocVta = fnGetDocAnti(sCodVenta);
-                                   vAsientoContable.sCodDoc = sCodVenta;
-                                   vAsientoContable.objDoc = oDocVta;
+                                    $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
+                                    $(".btnImprimir").show();
+                                    $('#btnMail').removeClass('hidden');
+                                    $('#btnWhatsapp').removeClass('hidden');
+                                    $("#lblCopia").css("display", "inline-block");
+                                    $("#lblCopia").css("display", "inline-block");
+                                    $("#txtNumDctoComp").val(datos[0].CODIGO);
+                                    //let formato = $("#cboSerieDocVenta :selected").attr("data-formato");//DPORTA
+                                    //if (formato == 'E') {//DPORTA
+                                    //    var miCodigoQR = new QRCode("codigoQR");
+                                    //    miCodigoQR.makeCode(datos[0].DATOS_QR);
+                                    //    $('#codigoQR').hide();
+                                    //    //setTimeout(guardarQR, 0.0000000000000001);
+                                    //    setTimeout(guardarQR, 500);
+                                    //}
+                                    BloquearCampos();
+                                    $("#cbo_appPago").attr('disabled', true);
+                                    if (prmtACON == "SI") {
+                                        var sCodVenta = $("#txtNumDctoComp").val();
+                                        sCodVenta = $.trim(sCodVenta);
+                                        var oDocVta = fnGetDocAnti(sCodVenta);
+                                        vAsientoContable.sCodDoc = sCodVenta;
+                                        vAsientoContable.objDoc = oDocVta;
 
-                                   $('#btnGenerarAsiento').click();
+                                        $('#btnGenerarAsiento').click();
 
-                                   var p_COMPENSADO_IND = $('#cboMedioPago').val() === '0021' ? "S" : "N";
-                                   $.ajax({
-                                       type: "post",
-                                       url: "vistas/nv/ajax/NVMANTI.ashx?OPCION=GEN_ASIENTO_2&p_CODE=" + sCodVenta + "&p_CTLG" + $("#cbo_Empresa").val() + "&p_COMPENSADO_IND=" + p_COMPENSADO_IND,
-                                       contenttype: "application/json;",
-                                       datatype: "json",
-                                       async: false,
-                                       success: function (datos) {
-                                           if (datos != null && datos.length != 0) {
-                                               descuentoCliente = (datos[0].DESCUENTO == "") ? 0 : parseFloat(datos[0].DESCUENTO);
-                                           }
-                                       },
-                                       error: function (msg) {
-                                           alertCustom("No se obtuvo correctamente descuento por Categoría de cliente.");
-                                       }
-                                   });
-                               }
-                           }
-                           else {
-                               alertCustom(caderesp);
-                           }
-                       }
-                       else {
-                           noexito();
-                           $("#A4").attr("disabled", false);
-                       }
-                   } else {
-                       noexito();
-                       $("#A4").attr("disabled", false);
-                   }
-                   Desbloquear("ventana");
-               })
-        .error(function () {
-            noexito();
-            Desbloquear("ventana");
-            $("#A4").attr("disabled", false);
-        });
+                                        var p_COMPENSADO_IND = $('#cboMedioPago').val() === '0021' ? "S" : "N";
+                                        $.ajax({
+                                            type: "post",
+                                            url: "vistas/nv/ajax/NVMANTI.ashx?OPCION=GEN_ASIENTO_2&p_CODE=" + sCodVenta + "&p_CTLG" + $("#cbo_Empresa").val() + "&p_COMPENSADO_IND=" + p_COMPENSADO_IND,
+                                            contenttype: "application/json;",
+                                            datatype: "json",
+                                            async: false,
+                                            success: function (datos) {
+                                                if (datos != null && datos.length != 0) {
+                                                    descuentoCliente = (datos[0].DESCUENTO == "") ? 0 : parseFloat(datos[0].DESCUENTO);
+                                                }
+                                            },
+                                            error: function (msg) {
+                                                alertCustom("No se obtuvo correctamente descuento por Categoría de cliente.");
+                                            }
+                                        });
+                                    }
+                                }
+                                else {
+                                    alertCustom(caderesp);
+                                }
+                            }
+                            else {
+                                noexito();
+                                $("#A4").attr("disabled", false);
+                            }
+                        } else {
+                            noexito();
+                            $("#A4").attr("disabled", false);
+                        }
+                        Desbloquear("ventana");
+                    })
+                    .error(function () {
+                        noexito();
+                        Desbloquear("ventana");
+                        $("#A4").attr("disabled", false);
+                    });
 
             }
         }
@@ -4857,16 +4889,16 @@ function CargarDatosCobro() {
                     //LISTAR CAJAS APERTURADAS
                     $.ajaxSetup({ async: false });
                     $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: 7, empresa: $("#cbo_Empresa").val(), scsl: $("#cbo_Sucursal").val(), usua_id: $("#ctl00_lblusuario").html() },
-                         function (res) {
-                             if (res != null && res != "" && res.indexOf("error") < 0) {
+                        function (res) {
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
 
-                                 $("#cbo_Det_Origen").html(res).attr("disabled", false);
+                                $("#cbo_Det_Origen").html(res).attr("disabled", false);
 
-                             } else {
-                                 $("#cbo_Det_Origen").html("").attr("disabled", true);
+                            } else {
+                                $("#cbo_Det_Origen").html("").attr("disabled", true);
 
-                             }
-                         });
+                            }
+                        });
                     $.ajaxSetup({ async: true });
 
                     $("#cboMedioPago").html(StringMediosPago);
@@ -4891,20 +4923,20 @@ function CargarDatosCobro() {
 
                     $.ajaxSetup({ async: false });
                     $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: 6, empresapidm: $("#cbo_Empresa :selected").attr("data-pidm"), banco: "", moneda: $("#cbo_moneda").val() },
-                      function (res) {
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#cbo_Det_Origen").html(res).attr("disabled", false).change(function () {
-                                  $("#cboMedioPago").change();
-                                  var mone_code = $("#cbo_Det_Origen :selected").attr("moneda");
+                        function (res) {
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
+                                $("#cbo_Det_Origen").html(res).attr("disabled", false).change(function () {
+                                    $("#cboMedioPago").change();
+                                    var mone_code = $("#cbo_Det_Origen :selected").attr("moneda");
 
-                                  $("#cbo_moneda").select2("val", mone_code).change();
-                              }
-                              );
-                          } else {
-                              $("#cbo_Det_Origen").html("<option></option>").change();
-                          }
+                                    $("#cbo_moneda").select2("val", mone_code).change();
+                                }
+                                );
+                            } else {
+                                $("#cbo_Det_Origen").html("<option></option>").change();
+                            }
 
-                      });
+                        });
                     $.ajaxSetup({ async: true });
 
                     $("#cboMedioPago").html(StringMediosPago);
@@ -4921,7 +4953,7 @@ function CargarDatosCobro() {
                     $("#ocultar4").hide();
                     $('#chkDespachoVenta').prop('checked', true).parent().addClass('checked');
                     $('#chkDespachoVenta').change();
-                    
+
                     break;
             }
         });
@@ -4991,29 +5023,29 @@ function CargarDatosCobro() {
                     $.ajaxSetup({ async: false });
 
                     $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
-                      function (res) {
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#cbDestino").html(res).select2();
-                          } else {
-                              $("#cbDestino").html("<option></option>").select2();
-                          }
+                        function (res) {
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
+                                $("#cbDestino").html(res).select2();
+                            } else {
+                                $("#cbDestino").html("<option></option>").select2();
+                            }
 
-                      });
+                        });
                     $.ajaxSetup({ async: true });
                     $.ajaxSetup({ async: false });
 
                     $.post("vistas/CP/ajax/CPMPGPR.ASHX", { flag: 6, banco: $("#cbo_Det_Origen :selected").attr("banco"), moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: $("#hfPIDM").val() },
-                      function (res) {
-                          if (res != null && res != "" < 0) {
-                              $("#cbDestino option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
-                              if (res != "error") {
-                                  $("#cbDestino").append(res.split("<option></option")[1]);
-                              }
-                          } else {
-                              $("#cbDestino").html("<option></option>").change();
-                          }
+                        function (res) {
+                            if (res != null && res != "" < 0) {
+                                $("#cbDestino option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
+                                if (res != "error") {
+                                    $("#cbDestino").append(res.split("<option></option")[1]);
+                                }
+                            } else {
+                                $("#cbDestino").html("<option></option>").change();
+                            }
 
-                      });
+                        });
                     $.ajaxSetup({ async: true });
 
                     $("#cbDestino").attr("disabled", false).change();
@@ -5058,69 +5090,68 @@ function CargarDatosCobro() {
                     $("#slcPos, #slcBco,#slcTarjeta").attr("disabled", true);
 
                     $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
-                      function (res) {
-                          Bloquear($($("#slcBco").siblings("div")).attr("id"));
-                          $("#slcBco").attr("disabled", false);
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#slcBco").addClass("obligatorio").html(res);
+                        function (res) {
+                            Bloquear($($("#slcBco").siblings("div")).attr("id"));
+                            $("#slcBco").attr("disabled", false);
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
+                                $("#slcBco").addClass("obligatorio").html(res);
 
-                          } else {
-                              $("#slcBco").html("").attr("disabled", true);
-                          }
+                            } else {
+                                $("#slcBco").html("").attr("disabled", true);
+                            }
 
-                      }).done(function () { Desbloquear($($("#slcBco").siblings("div")).attr("id")); });
+                        }).done(function () { Desbloquear($($("#slcBco").siblings("div")).attr("id")); });
 
                     $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
-                      function (res) {
-                          Bloquear($($("#slcTarjeta").siblings("div")).attr("id"));
-                          $("#slcTarjeta").attr("disabled", false);
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              listaTarjetas = res;
-                              $("#slcTarjeta").addClass("obligatorio").html(res);
+                        function (res) {
+                            Bloquear($($("#slcTarjeta").siblings("div")).attr("id"));
+                            $("#slcTarjeta").attr("disabled", false);
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
+                                listaTarjetas = res;
+                                $("#slcTarjeta").addClass("obligatorio").html(res);
 
-                          } else {
-                              $("#slcTarjeta").html("").attr("disabled", true);
-                          }
+                            } else {
+                                $("#slcTarjeta").html("").attr("disabled", true);
+                            }
 
-                      }).done(function () { Desbloquear($($("#slcTarjeta").siblings("div")).attr("id")); });;
+                        }).done(function () { Desbloquear($($("#slcTarjeta").siblings("div")).attr("id")); });;
 
                     $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen :selected").attr("stbl") },
-                      function (res) {
-                          Bloquear($($("#slcPos").siblings("div")).attr("id"));
-                          $("#slcPos").attr("disabled", false);
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
+                        function (res) {
+                            Bloquear($($("#slcPos").siblings("div")).attr("id"));
+                            $("#slcPos").attr("disabled", false);
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
 
-                              $("#slcPos").addClass("obligatorio").html(res).change(function () {
+                                $("#slcPos").addClass("obligatorio").html(res).change(function () {
 
-                                  var mone_pos = $("#slcPos :selected").attr("moneda");
+                                    var mone_pos = $("#slcPos :selected").attr("moneda");
 
-                                  if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
-                                      $("#slcPos").select2("val", "");
-                                      infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
-                                  }
+                                    if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
+                                        $("#slcPos").select2("val", "");
+                                        infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
+                                    }
 
-                                  //$("#cbo_moneda").select2("val", "");
-                                  //$("#cbo_moneda option").filter(function (e, d) {
-                                  //    var val0r = $(d).val();
-                                  //    if (mone_pos.indexOf(val0r) < 0)
-                                  //    { $("#cbo_moneda option[value=" + val0r + "]").remove(); }
+                                    //$("#cbo_moneda").select2("val", "");
+                                    //$("#cbo_moneda option").filter(function (e, d) {
+                                    //    var val0r = $(d).val();
+                                    //    if (mone_pos.indexOf(val0r) < 0)
+                                    //    { $("#cbo_moneda option[value=" + val0r + "]").remove(); }
 
-                                  //});
+                                    //});
 
-                                  var tarj_pos = $("#slcPos :selected").attr("tarjetas");
-                                  $("#slcTarjeta").html(listaTarjetas).select2("val", "");
-                                  $("#slcTarjeta option").filter(function (e, d) {
-                                      var val0r = $(d).val();
-                                      if (tarj_pos.indexOf(val0r) < 0)
-                                      { $("#slcTarjeta option[value=" + val0r + "]").remove(); }
+                                    var tarj_pos = $("#slcPos :selected").attr("tarjetas");
+                                    $("#slcTarjeta").html(listaTarjetas).select2("val", "");
+                                    $("#slcTarjeta option").filter(function (e, d) {
+                                        var val0r = $(d).val();
+                                        if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta option[value=" + val0r + "]").remove(); }
 
-                                  });
-                                  $("#slcTarjeta").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
-                              });
+                                    });
+                                    $("#slcTarjeta").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
+                                });
 
-                          } else {
-                              $("#slcPos").html("").attr("disabled", true);
-                          }
+                            } else {
+                                $("#slcPos").html("").attr("disabled", true);
+                            }
 
                         }).done(function () //DPORTA 24/06/2021
                         {
@@ -5166,66 +5197,65 @@ function CargarDatosCobro() {
                     $("#slcPos, #slcBco,#slcTarjeta").attr("disabled", true);
 
                     $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "BCO" },
-                      function (res) {
-                          Bloquear($($("#slcBco").siblings("div")).attr("id"));
-                          $("#slcBco").attr("disabled", false);
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#slcBco").addClass("obligatorio").html(res);
+                        function (res) {
+                            Bloquear($($("#slcBco").siblings("div")).attr("id"));
+                            $("#slcBco").attr("disabled", false);
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
+                                $("#slcBco").addClass("obligatorio").html(res);
 
-                          } else {
-                              $("#slcBco").html("").attr("disabled", true);
-                          }
+                            } else {
+                                $("#slcBco").html("").attr("disabled", true);
+                            }
 
-                      }).done(function () { Desbloquear($($("#slcBco").siblings("div")).attr("id")); });
+                        }).done(function () { Desbloquear($($("#slcBco").siblings("div")).attr("id")); });
 
                     $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "MTAR" },
-                      function (res) {
-                          Bloquear($($("#slcTarjeta").siblings("div")).attr("id"));
-                          $("#slcTarjeta").attr("disabled", false);
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
-                              $("#slcTarjeta").addClass("obligatorio").html(res);
+                        function (res) {
+                            Bloquear($($("#slcTarjeta").siblings("div")).attr("id"));
+                            $("#slcTarjeta").attr("disabled", false);
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
+                                $("#slcTarjeta").addClass("obligatorio").html(res);
 
-                          } else {
-                              $("#slcTarjeta").html("").attr("disabled", true);
-                          }
+                            } else {
+                                $("#slcTarjeta").html("").attr("disabled", true);
+                            }
 
-                      }).done(function () { Desbloquear($($("#slcTarjeta").siblings("div")).attr("id")); });;
+                        }).done(function () { Desbloquear($($("#slcTarjeta").siblings("div")).attr("id")); });;
 
                     $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: "POS", caja: $("#cbo_Det_Origen").val(), empresa: $("#cbo_Empresa").val(), estable: $("#cbo_Det_Origen :selected").attr("stbl") },
-                      function (res) {
-                          Bloquear($($("#slcPos").siblings("div")).attr("id"));
-                          $("#slcPos").attr("disabled", false);
-                          if (res != null && res != "" && res.indexOf("error") < 0) {
+                        function (res) {
+                            Bloquear($($("#slcPos").siblings("div")).attr("id"));
+                            $("#slcPos").attr("disabled", false);
+                            if (res != null && res != "" && res.indexOf("error") < 0) {
 
-                              $("#slcPos").addClass("obligatorio").html(res).change(function () {
+                                $("#slcPos").addClass("obligatorio").html(res).change(function () {
 
-                                  var mone_pos = $("#slcPos :selected").attr("moneda");
+                                    var mone_pos = $("#slcPos :selected").attr("moneda");
 
-                                  if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
-                                      $("#slcPos").select2("val", "");
-                                      infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
-                                  }
+                                    if (mone_pos.indexOf($("#cbo_moneda").val()) < 0) {
+                                        $("#slcPos").select2("val", "");
+                                        infoCustom2("Moneda de POS no coincide con moneda del Documento de Venta")
+                                    }
 
-                                  //$("#cbo_moneda").select2("val", "");
-                                  //$("#cbo_moneda option").filter(function (e, d) {
-                                  //    var val0r = $(d).val();
-                                  //    if (mone_pos.indexOf(val0r) < 0)
-                                  //    { $("#cbo_moneda option[value=" + val0r + "]").remove(); }
+                                    //$("#cbo_moneda").select2("val", "");
+                                    //$("#cbo_moneda option").filter(function (e, d) {
+                                    //    var val0r = $(d).val();
+                                    //    if (mone_pos.indexOf(val0r) < 0)
+                                    //    { $("#cbo_moneda option[value=" + val0r + "]").remove(); }
 
-                                  //});
-                                  var tarj_pos = $("#slcPos :selected").attr("tarjetas");
-                                  $("#slcTarjeta").html(listaTarjetas).select2("val", "");
-                                  $("#slcTarjeta option").filter(function (e, d) {
-                                      var val0r = $(d).val();
-                                      if (tarj_pos.indexOf(val0r) < 0)
-                                      { $("#slcTarjeta option[value=" + val0r + "]").remove(); }
-                                  });
-                                  $("#slcTarjeta").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
-                              });
+                                    //});
+                                    var tarj_pos = $("#slcPos :selected").attr("tarjetas");
+                                    $("#slcTarjeta").html(listaTarjetas).select2("val", "");
+                                    $("#slcTarjeta option").filter(function (e, d) {
+                                        var val0r = $(d).val();
+                                        if (tarj_pos.indexOf(val0r) < 0) { $("#slcTarjeta option[value=" + val0r + "]").remove(); }
+                                    });
+                                    $("#slcTarjeta").select2("val", "00006");//DPORTA 08/07/2021 PARA QUE CARGUE POR DEFECTO LA MARCA "VISA"
+                                });
 
-                          } else {
-                              $("#slcPos").html("").attr("disabled", true);
-                          }
+                            } else {
+                                $("#slcPos").html("").attr("disabled", true);
+                            }
 
                         }).done(function () //DPORTA 24/06/2021
                         {
@@ -5353,7 +5383,7 @@ function CargarDatosCobro() {
                 CalcularDetraccion();
                 CalcularDatosMonetarios();
 
-                
+
                 if (montoCobrar == "") {
                     montoCobrar = 0;
                 }
@@ -5384,11 +5414,11 @@ function CargarDatosCobro() {
         function cargaMediosDePago() {
             $.ajaxSetup({ async: false });
             $.post("vistas/CC/ajax/CCMCBCL.ASHX", { flag: 2 },
-              function (res) {
-                  if (res != null && res != "" && res.indexOf("error") < 0) {
-                      StringMediosPago = res;
-                  }
-              });
+                function (res) {
+                    if (res != null && res != "" && res.indexOf("error") < 0) {
+                        StringMediosPago = res;
+                    }
+                });
             $.ajaxSetup({ async: true });
         }
 
@@ -5439,7 +5469,7 @@ function CargarDatosCobro() {
 //Se llama una lista de numeros de operacion asociadas a la cuenta seleccionada
 function listarNroOperacion(cliente_pidm, listaNumeroOperacion) {
     $.ajaxSetup({ async: true });
-    $.post("/vistas/NB/ajax/NBMMOCB.ASHX", { flag: 3.5, cuenta: $("#cbo_Det_Origen :selected").attr("value"), empresapidm: $('#hfPIDM').val()})
+    $.post("/vistas/NB/ajax/NBMMOCB.ASHX", { flag: 3.5, cuenta: $("#cbo_Det_Origen :selected").attr("value"), empresapidm: $('#hfPIDM').val() })
         .success(function (res) {
             if (res != null && res != "" && res.indexOf("error") < 0) {
                 var jsonResponse = JSON.parse(res);
@@ -5453,12 +5483,12 @@ function listarNroOperacion(cliente_pidm, listaNumeroOperacion) {
 
                 if (filteredResponse.length > 0) {
                     filteredResponse.forEach(function (row) {
-                        listaNumeroOperacion[row.NRO_OPERACION] = row.MONTO_CIERRE;
+                        listaNumeroOperacion[row.NRO_OPERACION] = row.MONTO;
                     });
                 }
             }
         })
-        .error( function (msg) {
+        .error(function (msg) {
             alert(msg);
         });
 }
@@ -5468,17 +5498,17 @@ function confirmarNroOperacion(numeroOperacion, listaNumeroOperacion) {
     var montoCierre = listaNumeroOperacion[numeroOperacion];
 
     if (montoCierre !== undefined) {
-        $("#txtNroOpe").css("border", "2px solid green"); 
+        $("#txtNroOpe").css("border", "2px solid green");
         $("#txtMonto").val(parseFloat(montoCierre).toFixed(2));
     } else {
-        $("#txtNroOpe").css("border", "2px solid red"); 
+        $("#txtNroOpe").css("border", "2px solid red");
         $("#txtMonto").val("");
     }
 }
 
 //Se quitan los efectos del borde en caso se elija una opcion diferente
 function reiniciarNroOp() {
-    $("#txtNroOpe").css("border", ""); 
+    $("#txtNroOpe").css("border", "");
     $("#txtMonto").val("");
 }
 
@@ -5529,7 +5559,7 @@ function pagar() {
                 var p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
             } else {
                 var p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
-            }  
+            }
             var adicional = "";
             var cod_ape = "";
             var det_desc = "", pidm_cta = "", cta = "", compl = "";

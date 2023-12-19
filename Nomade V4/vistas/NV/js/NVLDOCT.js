@@ -2388,6 +2388,8 @@ function obtenerCabeceraAnticipo(codigo) {
 
                     if (datos[0].ANULADO == 'ANULADO') {
                         $("#tblEstado").html(datos[0].ANULADO);
+                        $("#tblInfo").css('background-color', '#F5C4C4');
+                        $("#tblMontos").css('background-color', '#F5C4C4');
                     } else {
                         $("#tblEstado").html(datos[0].ATENDIDO + "-" + datos[0].PAGADO);
                     }

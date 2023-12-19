@@ -1160,12 +1160,46 @@ function confIniciales(base) {
 }
 
 // VERIFICACIÓN DE COD. OP Y COD. AUT.
-function verificarNroOperacion(nroOpera) { //DPORTA 21/04/2021
+//function verificarNroOperacion(nroOpera) { //DPORTA 21/04/2021
+//    //var respuesta = false;
+
+//    $.ajax({
+//        type: "post",
+//        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOpera,
+//        contenttype: "application/json;",
+//        datatype: "json",
+//        async: false,
+//        success: function (datos) {
+//            //respuesta = datos;
+//            if (datos == 'OK') {
+//                respuesta = datos;
+//            } else {
+//                respuesta = datos;
+//            };
+//        },
+//        error: function (msg) {
+//            alertCustom("Error");
+//        }
+//    });
+//    return respuesta;
+
+//}
+
+// VERIFICACIÓN DE COD. OP Y COD. AUT.
+function verificarNroOperacionVenta(origen, nroOpera) { //DPORTA 21/04/2021
     //var respuesta = false;
+    if ($("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006') {
+        if (origen.length == 16) {
+            origen = origen.substring(12);
+        }
+    } else if ($("#cboMedioPago").val() == '0008') {
+        origen = "-";
+        nroOpera = '%';
+    }
 
     $.ajax({
         type: "post",
-        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOpera,
+        url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.6&p_NRO_OPERA=" + nroOpera + "&p_ORIGEN_OPERA=" + origen,
         contenttype: "application/json;",
         datatype: "json",
         async: false,
@@ -1182,7 +1216,6 @@ function verificarNroOperacion(nroOpera) { //DPORTA 21/04/2021
         }
     });
     return respuesta;
-
 }
 function pagar() {
 
@@ -1191,7 +1224,9 @@ function pagar() {
     //if ($("#cboMedioPago").val() == '0001' || $("#cboMedioPago").val() == '0003' || $("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006' || $("#cboMedioPago").val() == '0020') {
     if (mediosPago.includes($("#cboMedioPago").val())) {
 
-        verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
+        //verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
+        verificaNroOpera = verificarNroOperacionVenta(($("#txtDestino").val() === undefined || $("#txtDestino").val() === "" ? "-" : $("#txtDestino").val()),
+            $("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()));
 
         if (verificaNroOpera == 'OK') {
             let continuar = true;
@@ -1463,6 +1498,8 @@ function ReprocesarDeudasGastosAprobados() {
         success: function (res) {
             if (res == "OK") {
                 consultaDeudas();
+            } else {
+                alertCustom(res);
             }
         },
         error: function (msg) {

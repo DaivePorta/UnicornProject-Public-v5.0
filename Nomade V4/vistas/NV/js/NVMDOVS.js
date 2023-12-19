@@ -1457,6 +1457,7 @@ var NVMDOVS = function () {
                         $("#hfImprimirPreciosIGV").val(datos[0].IGV_IMPR_IND);
                         $("#btnImprimir, #btnImprimirST").attr("style", "display:inline-block;margin-top:2px;");
                         $("#btnImprimir").html("<i class='icon-print'></i> Imprimir Doc.");
+                        $("#btnImprimirST").html("<i class='icon-print'></i> Imprimir Ticket.");
                         $(".btnImprimir").show();
                         $('#btnMail').removeClass('hidden');
                         $('#btnWhatsapp').removeClass('hidden');
@@ -3490,6 +3491,15 @@ function fillTxtCliente(v_ID, v_value) {
                         }
                     },
                     updater: function (item) {
+                        if (map[item].RUC != "") {
+                            $('#cboTipoDoc').select2("val", "6").change();
+                            $("#txtNroDctoCliente").val(map[item].RUC);
+                            $("#btnHabido").show();
+                        } else {
+                            $('#cboTipoDoc').select2("val", map[item].CODIGO_TIPO_DOCUMENTO).change();
+                            $("#txtNroDctoCliente").val(map[item].NRO_DOCUMENTO);
+                            $("#btnHabido").hide();
+                        }
 
                         $("#lblHabido").html("");
                         $("#lblEstado").html("");
@@ -3514,16 +3524,7 @@ function fillTxtCliente(v_ID, v_value) {
                             }
                         }
                         prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
-                        if (map[item].RUC != "") {
-                            $('#cboTipoDoc').select2("val", "6").change();
-                            $("#txtNroDctoCliente").val(map[item].RUC);
-                            $("#btnHabido").show();
-                        } else {
-                            $('#cboTipoDoc').select2("val", map[item].CODIGO_TIPO_DOCUMENTO).change();
-                            $("#txtNroDctoCliente").val(map[item].NRO_DOCUMENTO);
-                            $("#btnHabido").hide();
-                        }
-
+                        
                         //Cargar modo de pago
                         $("#cbo_modo_pago").select2('val', '0001');
                         if ($("#hfPIDM").val() !== '1') {
@@ -3826,6 +3827,15 @@ function fillTxtCliente2(v_ID, v_value) {
                         }
                     },
                     updater: function (item) {
+                        if (map[item].RUC != "") {
+                            $('#cboTipoDoc').select2("val", "6").change();
+                            $("#txtNroDctoCliente").val(map[item].RUC);
+                            $("#btnHabido").show();
+                        } else {
+                            $('#cboTipoDoc').select2("val", map[item].CODIGO_TIPO_DOCUMENTO).change();
+                            $("#txtNroDctoCliente").val(map[item].NRO_DOCUMENTO);
+                            $("#btnHabido").hide();
+                        }
 
                         $("#lblHabido").html("");
                         $("#lblEstado").html("");
@@ -3855,16 +3865,7 @@ function fillTxtCliente2(v_ID, v_value) {
                         }
                         if (map[item].PPBIDEN_ESTADO_SUNAT != "") {
                             $("#lblEstado").html("ESTADO: " + "<b>" + map[item].PPBIDEN_ESTADO_SUNAT + "</b>");
-                        }
-                        if (map[item].RUC != "") {
-                            $('#cboTipoDoc').select2("val", "6").change();
-                            $("#txtNroDctoCliente").val(map[item].RUC);
-                            $("#btnHabido").show();
-                        } else {
-                            $('#cboTipoDoc').select2("val", map[item].CODIGO_TIPO_DOCUMENTO).change();
-                            $("#txtNroDctoCliente").val(map[item].NRO_DOCUMENTO);
-                            $("#btnHabido").hide();
-                        }
+                        }                        
 
                         //Cargar modo de pago
                         $("#cbo_modo_pago").select2('val', '0001');
@@ -5694,8 +5695,71 @@ function ValidaPrecioCantidad() {
 }
 
 // VERIFICACIÓN DE COD. OP Y COD. AUT.
-function verificarNroOperacion(nroOpera, nroOpera2, nroOpera3) { //DPORTA 21/04/2021
+//function verificarNroOperacion(nroOpera, nroOpera2, nroOpera3) { //DPORTA 21/04/2021
 
+//    if (nroOpera2 === '-' && nroOpera3 === '-') {
+//        nroOpera3 = '@';
+//    }
+//    //var respuesta = false;
+//    let arrayCodOperaciones = [nroOpera, nroOpera2, nroOpera3];
+
+//    let duplicados = arrayCodOperaciones =>
+//        new Set(arrayCodOperaciones).size < arrayCodOperaciones.length
+
+//    if (duplicados(arrayCodOperaciones) === true) {
+//        respuesta = "Duplicado";
+//    } else {
+//        $.ajax({
+//            type: "post",
+//            url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOpera + "/" + nroOpera2 + "/" + nroOpera3,
+//            contenttype: "application/json;",
+//            datatype: "json",
+//            async: false,
+//            success: function (datos) {
+//                //respuesta = datos;
+//                if (datos == 'OK') {
+//                    respuesta = datos;
+//                } else {
+//                    respuesta = datos;
+//                };
+//            },
+//            error: function (msg) {
+//                alertCustom("Error");
+//            }
+//        });
+//    }
+//    return respuesta;
+//}
+
+// VERIFICACIÓN DE COD. OP Y COD. AUT.
+function verificarNroOperacionVenta(origen, origen2, origen3, nroOpera, nroOpera2, nroOpera3) { //DPORTA 21/04/2021    
+    if ($("#cboMedioPago").val() == '0005' || $("#cboMedioPago").val() == '0006') {
+        if (origen.length == 16) {
+            origen = origen.substring(12);
+        }        
+    } else if ($("#cboMedioPago").val() == '0008'){
+        origen = "-";
+        nroOpera = '%';
+    }
+
+    if ($("#cboMedioPago2").val() == '0005' || $("#cboMedioPago2").val() == '0006') {
+        if (origen2.length == 16) {
+            origen2 = origen2.substring(12);
+        }
+    } else if ($("#cboMedioPago2").val() == '0008') {
+        origen2 = "-";
+        nroOpera2 = '-';
+    }
+
+    if ($("#cboMedioPago3").val() == '0005' || $("#cboMedioPago3").val() == '0006') {
+        if (origen3.length == 16) {
+            origen3 = origen3.substring(12);
+        }
+    } else if ($("#cboMedioPago3").val() == '0008') {
+        origen3 = "-";
+        nroOpera3 = '-';
+    }   
+    
     if (nroOpera2 === '-' && nroOpera3 === '-') {
         nroOpera3 = '@';
     }
@@ -5710,7 +5774,7 @@ function verificarNroOperacion(nroOpera, nroOpera2, nroOpera3) { //DPORTA 21/04/
     } else {
         $.ajax({
             type: "post",
-            url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.5&p_NRO_OPERA=" + nroOpera + "/" + nroOpera2 + "/" + nroOpera3,
+            url: "vistas/nv/ajax/nvmdovr.ashx?OPCION=4.6&p_NRO_OPERA=" + nroOpera + "/" + nroOpera2 + "/" + nroOpera3 + "&p_ORIGEN_OPERA=" + origen + "/" + origen2 + "/" + origen3,
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -5995,7 +6059,14 @@ function GrabarCompletarDctoVenta() {
             //    $("#cboMedioPago3").val() == '0001' || $("#cboMedioPago3").val() == '0003' || $("#cboMedioPago3").val() == '0005' || $("#cboMedioPago3").val() == '0006' || $("#cboMedioPago3").val() == '0020') {
             if (mediosPago.includes($("#cboMedioPago").val()) || mediosPago.includes($("#cboMedioPago2").val()) || mediosPago.includes($("#cboMedioPago3").val())) {
 
-                verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()),
+                //verificaNroOpera = verificarNroOperacion($("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()),
+                //    $("#cbo_OrigenPago2").val().substring(0, 1) + '-' + ($("#cboMedioPago2").val() == '0020' ? $("#cbo_appPago2").val() + " - " + "OP" + $("#txtNroOpe2").val() : $("#txtNroOpe2").val()),
+                //    $("#cbo_OrigenPago3").val().substring(0, 1) + '-' + ($("#cboMedioPago3").val() == '0020' ? $("#cbo_appPago3").val() + " - " + "OP" + $("#txtNroOpe3").val() : $("#txtNroOpe3").val()));
+
+                verificaNroOpera = verificarNroOperacionVenta(($("#txtDestino").val() === undefined || $("#txtDestino").val() === ""  ? "-" : $("#txtDestino").val()),
+                    ($("#txtDestino2").val() === undefined || $("#txtDestino2").val() === "" ? "-" : $("#txtDestino2").val()),
+                    ($("#txtDestino3").val() === undefined || $("#txtDestino3").val() === "" ? "-" : $("#txtDestino3").val()),
+                    $("#cbo_OrigenPago").val().substring(0, 1) + '-' + ($("#cboMedioPago").val() == '0020' ? $("#cbo_appPago").val() + " - " + "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val()),
                     $("#cbo_OrigenPago2").val().substring(0, 1) + '-' + ($("#cboMedioPago2").val() == '0020' ? $("#cbo_appPago2").val() + " - " + "OP" + $("#txtNroOpe2").val() : $("#txtNroOpe2").val()),
                     $("#cbo_OrigenPago3").val().substring(0, 1) + '-' + ($("#cboMedioPago3").val() == '0020' ? $("#cbo_appPago3").val() + " - " + "OP" + $("#txtNroOpe3").val() : $("#txtNroOpe3").val()));
 
@@ -6259,13 +6330,30 @@ function GrabarCompletarDctoVenta() {
                             if (typeof datos[0].CODIGO != "undefined" && datos[0].CODIGO != 'ERROR') {
                                 if (datos[0].CODIGO == 'LIMITE') {
                                     alertCustom("Se ha excedido el límite de los documentos autorizados. Intente utilizar otra serie o refrescar la página");
-
                                 } else if (datos[0].CODIGO == 'DEST') {
                                     alertCustom("Un documento de origen ya ha sido usado por otro!");
-
                                 } else if (datos[0].CODIGO == 'NOSTOCK') {
                                     alertCustom("No hay stock para los siguientes Items: " + datos[0].SECUENCIA.split("|")[1] + "");
-
+                                } else if (datos[0].CODIGO == 'EXISTE') {
+                                    alertCustom("El nro. de documento ya está registrado en el sistema. Intente nuevamente!");
+                                } else if (datos[0].CODIGO == 'ERROR_CAB') {
+                                    alertCustom("Error al registrar datos de cabecera. Verifique los datos!");
+                                } else if (datos[0].CODIGO == 'ERROR_DET') {
+                                    alertCustom("Error al registrar los detalles. Verifique los datos!");
+                                } else if (datos[0].CODIGO == 'ERROR_B1') {
+                                    alertCustom("Error al registrar pago bancario dentro de cobro venta 1!");
+                                } else if (datos[0].CODIGO == 'ERROR_C1') {
+                                    alertCustom("Error al registrar pago en caja dentro de cobro venta 1!");
+                                } else if (datos[0].CODIGO == 'ERROR_B2') {
+                                    alertCustom("Error al registrar pago bancario dentro de cobro venta 2!");
+                                } else if (datos[0].CODIGO == 'ERROR_C2') {
+                                    alertCustom("Error al registrar pago en caja dentro de cobro venta 2!");
+                                } else if (datos[0].CODIGO == 'ERROR_B3') {
+                                    alertCustom("Error al registrar pago bancario dentro de cobro venta 3!");
+                                } else if (datos[0].CODIGO == 'ERROR_C3') {
+                                    alertCustom("Error al registrar pago en caja dentro de cobro venta 3!");
+                                } else if (datos[0].CODIGO == 'ERROR_P') {
+                                    alertCustom("Error al procesar el cobro. Intente nuevamente!");
                                 } else {
                                     exito();
                                     BloquearCampos();
@@ -6279,7 +6367,7 @@ function GrabarCompletarDctoVenta() {
                                         $("#btnNroAtencion").attr("style", "display:none");
                                         $(".btnEliminarDetalle").attr("style", "display:none");
                                         $("#chk_Autodetraccion").attr('disabled', true);
-                                        $("#btnImprimir").attr("style", "display:inline-block;margin-top:2px;");
+                                        $("#btnImprimir, #btnImprimirST").attr("style", "display:inline-block;margin-top:2px;");
                                         $(".btnImprimir").show();
                                         $('#btnMail').removeClass('hidden');
                                         $('#btnWhatsapp').removeClass('hidden');
@@ -6314,7 +6402,8 @@ function GrabarCompletarDctoVenta() {
                                 }
                             }
                             else {
-                                noexito();
+                                //noexito();
+                                alertCustom("Parece que hubo un error al completar la venta. Intente nuevamente!");
                                 $("#A4").attr("disabled", false);
                             }
                         } else {
@@ -6657,7 +6746,6 @@ function ImprimirDctoVentaTicket() {
         .error(function () {
             noexito();
         });
-
 }
 
 //Devuelve vacio si el descuento es 0, sino devuelve su valor con el signo negativo

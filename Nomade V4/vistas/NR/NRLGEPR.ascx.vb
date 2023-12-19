@@ -38,7 +38,9 @@ Partial Class vistas_NR_NRLGEPR
 
                     sb.Append("""NICA_DESC"":""" & row("NICA_DESC").ToString & """,")
 
-                    sb.Append("""DIRECCION"":""" & row("DIRECCION").ToString & """")
+                    sb.Append("""DIRECCION"":""" & row("DIRECCION").ToString & """,")
+
+                    sb.Append("""ESTADO"":""" & row("ESTADO").ToString & """")
 
                     sb.Append("},")
 

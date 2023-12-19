@@ -246,18 +246,10 @@ Public Class NVMDOVS : Implements IHttpHandler
                                                                  p_DETALLES_BONI, p_DIRECCION, IIf(p_LATITUD = "null", Nothing, p_LATITUD), IIf(p_LONGITUD = "null", Nothing, p_LONGITUD), p_DETALLES_MUESTRA, p_TOTAL_GRATUITAS)
                     If Not (array Is Nothing) Then
                         Dim msgError As String = "OK"
-                        'If array(0).ToString.Length = 9 And p_COMPLETO_IND = "S" Then
-                        '    Try
-                        '        GenerarPDF(array(0).ToString)
-                        '    Catch ex As Exception
-                        '        msgError = "ERROR: " + ex.Message
-                        '    End Try
-                        'End If
                         resb.Append("[")
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
                         resb.Append("""SECUENCIA"" :" & """" & array(1).ToString & """,")
-                        'resb.Append("""DATOS_QR"" :" & """" & array(2).ToString & """,")
                         resb.Append("""MSGERROR"" :" & """" & msgError & """")
                         resb.Append("}")
                         resb.Append("]")
@@ -1514,7 +1506,11 @@ Public Class NVMDOVS : Implements IHttpHandler
                 Else
                     resb.AppendFormat("")
                 End If
-
+                If dt.Rows(i)("COMPLETO").ToString() = "COMPLETO" And dt.Rows(i)("ELECTRONICO_IND") = "S" Then
+                    resb.AppendFormat("<a class='btn black' onclick=""imprimirDetalleTicket('{0}','{1}','{2}','{3}')""><i class='icon-print'></i></a>", dt.Rows(i)("CODE").ToString(), dt.Rows(i)("NUM_DCTO").ToString(), dt.Rows(i)("TIPO_DCTO"), dt.Rows(i)("ELECTRONICO_IND"))
+                Else
+                    resb.AppendFormat("")
+                End If
                 resb.AppendFormat("</td>")
                 resb.AppendFormat("</tr>")
                 'End If

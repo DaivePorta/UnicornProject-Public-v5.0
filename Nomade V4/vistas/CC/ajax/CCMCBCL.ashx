@@ -247,6 +247,113 @@ Public Class CCMCBCL : Implements IHttpHandler
 
                     res = resb.ToString()
 
+                Case "1.7" 'Cobro en caja DPORTA 11/2023
+                    If RUTA_IMAGEN = "../../recursos/img/no_disponible.jpg" Then
+                        VALIDAR_IMG = "NO"
+                    Else
+                        VALIDAR_IMG = "SI"
+                    End If
+
+                    resArray = CobroCliente.CobrarClienteCajaVenta(detalle, origen, usuario, codigo_apertura, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, tipo_cambio, VALIDAR_IMG, efectivo_recibido, efectivo_recibido_alterno, vuelto, vuelto_alterno, adicional, notaCredito)
+
+                    Dim batchSize As Integer = 5
+                    Dim totalDocs As String() = detalle.Split("|")
+                    Dim total As Integer = totalDocs.Length
+                    Dim batches As Integer = Math.Ceiling(total / batchSize)
+
+                    If asiento_contable = "SI" Then
+                        Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                        Dim strCodAsientoCobroVenta As String
+                        For b As Integer = 0 To batches - 1
+                            Dim start As Integer = b * batchSize
+                            Dim endCount As Integer = Math.Min(start + batchSize, total)
+                            Dim batch As String() = totalDocs.Skip(start).Take(endCount - start).ToArray()
+
+                            For Each item As String In batch
+                                Dim strCodVenta As String = item.Split(",")(0)
+                                strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(strCodVenta, "", "")
+                            Next
+                        Next
+                    End If
+
+                    resb.Append("[")
+                    resb.Append("{")
+                    resb.Append("""CODE_GENERADO"" :" & """" & resArray(0).ToString & """,")
+                    resb.Append("""SUCCESS"" :" & """" & resArray(1).ToString & """")
+                    resb.Append("}")
+                    resb.Append("]")
+
+                    If RUTA_IMAGEN <> "" And resArray(1) = "TC" And VALIDAR_IMG = "SI" Then
+                        RUTA = GrabaImagen(RUTA_IMAGEN, context, resArray(0).ToString + ".jpg")
+                    End If
+
+
+                    res = resb.ToString()
+
+                Case "1.8" 'Cobro en banco DPORTA 11/2023
+                    If RUTA_IMAGEN = "../../recursos/img/no_disponible.jpg" Then
+                        VALIDAR_IMG = "NO"
+                    Else
+                        VALIDAR_IMG = "SI"
+                    End If
+
+                    resArray = CobroCliente.CobrarClienteBancoVenta(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, tipo_cambio, VALIDAR_IMG, efectivo_recibido, efectivo_recibido_alterno, vuelto, vuelto_alterno, adicional, origen, notaCredito)
+
+                    Dim batchSize As Integer = 5
+                    Dim totalDocs As String() = detalle.Split("|")
+                    Dim total As Integer = totalDocs.Length
+                    Dim batches As Integer = Math.Ceiling(total / batchSize)
+
+                    If asiento_contable = "SI" Then
+                        Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                        Dim strCodAsientoCobroVenta As String
+                        For b As Integer = 0 To batches - 1
+                            Dim start As Integer = b * batchSize
+                            Dim endCount As Integer = Math.Min(start + batchSize, total)
+                            Dim batch As String() = totalDocs.Skip(start).Take(endCount - start).ToArray()
+
+                            For Each item As String In batch
+                                Dim strCodVenta As String = item.Split(",")(0)
+                                strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(strCodVenta, "", "")
+                            Next
+                        Next
+                    End If
+
+                    resb.Append("[")
+                    resb.Append("{")
+                    resb.Append("""CODE_GENERADO"" :" & """" & resArray(0).ToString & """,")
+                    resb.Append("""SUCCESS"" :" & """" & resArray(1).ToString & """")
+                    resb.Append("}")
+                    resb.Append("]")
+
+                    If RUTA_IMAGEN <> "" And resArray(1) = "TC" And VALIDAR_IMG = "SI" Then
+                        RUTA = GrabaImagen(RUTA_IMAGEN, context, resArray(0).ToString + ".jpg")
+                    End If
+
+                    res = resb.ToString()
+
+                Case "1.9" 'Cobro c/n. de crédito DPORTA 11/2023
+                    If RUTA_IMAGEN = "../../recursos/img/no_disponible.jpg" Then
+                        VALIDAR_IMG = "NO"
+                    Else
+                        VALIDAR_IMG = "SI"
+                    End If
+
+                    resArray = CobroCliente.CobrarClienteNotaCreditoVenta(usuario, empresa, fecha_pago, notaCredito, tipo_cambio, efectivo_recibido, efectivo_recibido_alterno, vuelto, vuelto_alterno, VALIDAR_IMG)
+
+                    resb.Append("[")
+                    resb.Append("{")
+                    resb.Append("""CODE_GENERADO"" :" & """" & resArray(0).ToString & """,")
+                    resb.Append("""SUCCESS"" :" & """" & resArray(1).ToString & """")
+                    resb.Append("}")
+                    resb.Append("]")
+
+                    If RUTA_IMAGEN <> "" And resArray(1) = "TC" And VALIDAR_IMG = "SI" Then
+                        RUTA = GrabaImagen(RUTA_IMAGEN, context, resArray(0).ToString + ".jpg")
+                    End If
+
+                    res = resb.ToString()
+
                 Case "2" 'lista forma de pago
 
                     dt = ccPercepcion.ListarFormasPago("", "", "", "A")
@@ -255,7 +362,6 @@ Public Class CCMCBCL : Implements IHttpHandler
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "descripcion_corta", "ASC"), "codigo", "descripcion_corta", "FOPA")
                     End If
-
 
                 Case "3"
                     dt = CobroCliente.ListarClientesConDeuda(empresa)

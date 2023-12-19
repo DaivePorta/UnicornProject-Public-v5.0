@@ -226,6 +226,25 @@
         End Try
     End Function
 
+    Public Function listar_Persona_Mov_Bancario(ByVal p_CTLG As String, Optional p_PIDM As String = "", Optional p_ESTEREOTIPO As String = "") As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("PFC_LISTAR_PERSONA_MOV_BANCARIO", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG", p_CTLG, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTEREOTIPO", p_ESTEREOTIPO, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
     Public Function listar_Persona_Natural(ByVal p_PPBIDEN_PIDM As String, ByVal P_PPBDOID_DOID_CODE As String, ByVal p_PPBDOID_NRO As String) As DataTable
         Try
             Dim dt As DataTable

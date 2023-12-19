@@ -110,6 +110,7 @@ Public Class CALNOCR : Implements IHttpHandler
         End If
 
         resb.Append("<th>EMISIÓN</th>")
+        resb.Append("<th>VENDEDOR</th>")
         resb.Append("<th>E/D POR <br/> ALMACÉN</th>")
         resb.Append("<th>ESTADO</th>")
         resb.Append("<th>VIGENCIA</th>")
@@ -128,6 +129,7 @@ Public Class CALNOCR : Implements IHttpHandler
                 resb.AppendFormat("<td " + cargar + " align='center' >{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dt.Rows(i)("MONTO_TOTAL").ToString())))
                 resb.AppendFormat("<td " + cargar + " align='center' >{0}</td>", dt.Rows(i)("RAZON_SOCIAL").ToString())
                 resb.AppendFormat("<td " + cargar + " align='center' >{0}</td>", dt.Rows(i)("EMISION").ToString())
+                resb.AppendFormat("<td " + cargar + " align='center' >{0}</td>", dt.Rows(i)("USUA_ID_REG").ToString())
                 If dt.Rows(i)("ENTREGA_DESPACHO_ALMACEN").ToString() = "S" Then
                     resb.AppendFormat("<td " + cargar + " align='center' >{0}</td>", "SI")
                 Else
@@ -135,7 +137,6 @@ Public Class CALNOCR : Implements IHttpHandler
                 End If
                 resb.AppendFormat("<td " + cargar + " align='center' >{0}</td>", dt.Rows(i)("USADO").ToString())
                 resb.AppendFormat("<td " + cargar + " align='center' >{0}</td>", If(dt.Rows(i)("ANULADO_IND").ToString() = "S", "ANULADO", "VIGENTE"))
-
                 resb.Append("</tr>")
             Next
         End If

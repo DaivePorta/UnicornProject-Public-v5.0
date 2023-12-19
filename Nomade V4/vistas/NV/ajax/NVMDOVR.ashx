@@ -38,7 +38,7 @@ Public Class NVMDOVR : Implements IHttpHandler
         SERIE_DCTO, VENDEDOR, CLIENTE, PRODUCTO, ESTADO,
         DESDE, HASTA, CODE_VTA, NUM_DOC_COM As String
 
-    Dim p_NRO_OPERA As String
+    Dim p_NRO_OPERA, p_ORIGEN_OPERA As String
 
     Dim ncSucursal As New Nomade.NC.NCSucursal("Bn")
     Dim g As New Nomade.NC.NCGrupos("Bn")
@@ -192,6 +192,7 @@ Public Class NVMDOVR : Implements IHttpHandler
         p_VALIDAR_STOCK_IND = context.Request("p_VALIDAR_STOCK_IND")
         p_AUTODETRACCION = context.Request("p_AUTODETRACCION") ' DPORTA 25/02/2021
         p_NRO_OPERA = context.Request("p_NRO_OPERA") ' DPORTA 21/04/2021
+        p_ORIGEN_OPERA = context.Request("p_ORIGEN_OPERA") ' DPORTA 10/11/2023
         p_DETALLES_BONI = context.Request("p_DETALLES_BONI")
         p_DETALLES_MUESTRA = context.Request("p_DETALLES_MUESTRA")
         p_DIRECCION = context.Request("p_DIRECCION")
@@ -289,18 +290,10 @@ Public Class NVMDOVR : Implements IHttpHandler
 
                     If Not (array Is Nothing) Then
                         Dim msgError As String = "OK"
-                        'If array(0).ToString.Length = 9 And p_COMPLETO_IND = "S" Then
-                        '    Try
-                        '        GenerarPDF(array(0).ToString)
-                        '    Catch ex As Exception
-                        '        msgError = "ERROR: " + ex.Message
-                        '    End Try
-                        'End If
                         resb.Append("[")
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
                         resb.Append("""SECUENCIA"" :" & """" & array(1).ToString & """,")
-                        'resb.Append("""DATOS_QR"" :" & """" & array(2).ToString & """,")
                         resb.Append("""MSGERROR"" :" & """" & msgError & """")
                         resb.Append("}")
                         resb.Append("]")
@@ -342,8 +335,11 @@ Public Class NVMDOVR : Implements IHttpHandler
                     res = resb.ToString()
                 Case "4.5" 'Obtener si existe el número de operación            
                     context.Response.ContentType = "application/text; charset=utf-8"
-
                     res = nvVenta.verificarNroOperacion(p_NRO_OPERA)
+
+                Case "4.6" 'Obtener si existe el número de operación en la venta  DPORTA 10/11/2023       
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    res = nvVenta.verificarNroOperacionVenta(p_NRO_OPERA, p_ORIGEN_OPERA)
                 'Case "LPCQR" 'Parametros para el QR
                 '    context.Response.ContentType = "application/json; charset=utf-8"
                 '    dt = nvVenta.ListarParametrosQR(If(p_FVBVTAC_CODE = Nothing, "", p_FVBVTAC_CODE))

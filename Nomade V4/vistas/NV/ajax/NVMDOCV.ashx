@@ -26,7 +26,7 @@ Public Class NVMDOCV : Implements IHttpHandler
        p_FECHA_EMISION_PERCEP, p_FECHA_EMISION_DETRAC, p_FECHA_EMISION_RETEN,
        p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND, p_DETALLES, p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DCTO_SERIE_REF,
        p_DCTO_NUM_REF, p_VALOR_CAMBIO_OFI, p_COD_AUT, p_ALMACENABLE, p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_RESP_PIDM, p_DIRECCION,
-      p_LATITUD, p_LONGITUD, P_MES, P_ANIO, P_MONTO, p_DOCUMENTO, p_CODIGO, p_NCMOCONT_CODIGO As String
+      p_LATITUD, p_LONGITUD, P_MES, P_ANIO, P_MONTO, p_DOCUMENTO, p_CODIGO, p_NCMOCONT_CODIGO, p_AUTODETRACCION As String
 
     Dim p_PLAN_CODE, p_DESC_PLAN, p_TIPO_DCTO_PLAN As String
 
@@ -176,7 +176,7 @@ Public Class NVMDOCV : Implements IHttpHandler
 
         p_DETALLES_MUESTRA = vChar(context.Request("p_DETALLES_MUESTRA"))
 
-
+        p_AUTODETRACCION = context.Request("p_AUTODETRACCION") ' DPORTA 25/02/2021
 
         p_RESP_PIDM = context.Request("p_RESP_PIDM")
         p_FACTOR_RENTA = context.Request("p_FACTOR_RENTA")
@@ -587,20 +587,13 @@ Public Class NVMDOCV : Implements IHttpHandler
                     If(p_FECHA_EMISION_DETRAC = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_DETRAC)),
                     If(p_FECHA_EMISION_RETEN = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_RETEN)),
                     p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_DETALLES, p_DCTO_SERIE_REF, p_DCTO_NUM_REF, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND,
-                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
+                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_AUTODETRACCION, If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
                      IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD),
                    IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD),
                    p_TOTAL_GRATUITAS)
 
                     If Not (array Is Nothing) Then
                         Dim msgError As String = "OK"
-                        'If array(0).ToString.Length = 9 And p_COMPLETO_IND = "S" Then
-                        '    Try
-                        '        GenerarPDF(array(0).ToString)
-                        '    Catch ex As Exception
-                        '        msgError = "ERROR: " + ex.Message
-                        '    End Try
-                        'End If
                         resb.Append("[")
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
@@ -689,7 +682,7 @@ Public Class NVMDOCV : Implements IHttpHandler
                     If(p_FECHA_EMISION_DETRAC = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_DETRAC)),
                     If(p_FECHA_EMISION_RETEN = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_RETEN)),
                     p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_DETALLES, p_DCTO_SERIE_REF, p_DCTO_NUM_REF, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND,
-                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, "0.00", "0.00", "0.00", "0.00", If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
+                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_AUTODETRACCION, "0.00", "0.00", "0.00", "0.00", If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
                       IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD),
                    IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD),
                    p_TOTAL_GRATUITAS)
@@ -722,23 +715,15 @@ Public Class NVMDOCV : Implements IHttpHandler
                     If(p_FECHA_EMISION_DETRAC = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_DETRAC)),
                     If(p_FECHA_EMISION_RETEN = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_RETEN)),
                     p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_DETALLES, p_DCTO_SERIE_REF, p_DCTO_NUM_REF, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND,
-                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, "0.00", "0.00", "0.00", "0.00", If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
+                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_AUTODETRACCION, "0.00", "0.00", "0.00", "0.00", If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
                     IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD),
                    IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD))
                     If Not (array Is Nothing) Then
                         Dim msgError As String = "OK"
-                        'If array(0).ToString.Length = 9 And p_COMPLETO_IND = "S" Then
-                        '    Try
-                        '        GenerarPDF(array(0).ToString)
-                        '    Catch ex As Exception
-                        '        msgError = "ERROR: " + ex.Message
-                        '    End Try
-                        'End If
                         resb.Append("[")
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
                         resb.Append("""SECUENCIA"" :" & """" & array(1).ToString & """,")
-                        'resb.Append("""DATOS_QR"" :" & """" & array(2).ToString & """,")
                         resb.Append("""MSGERROR"" :" & """" & msgError & """")
                         resb.Append("}")
                         resb.Append("]")
@@ -2583,17 +2568,17 @@ Public Class NVMDOCV : Implements IHttpHandler
             If dtPago.Rows(0)("MODO_PAGO") = "CREDITO" Then 'Si es al credito
                 If Not IsDBNull(dtPago.Rows(0)("MEDIO_PAGO")) Then 'Si se ha hecho algun pago
                     For Each row As DataRow In dtPago.Rows
-                        tabla.AppendFormat("<tr><td><ul><li>{0}: </span>&nbsp;{1}&nbsp;<span>&nbsp;{2}&nbsp;</span></li>", row.Item("MEDIO_PAGO"), row.Item("CANTIDAD_PAGO"), FormatDateTime(row.Item("FECHA_PAGO"), DateFormat.ShortDate))
+                        tabla.AppendFormat("<tr><td><ul><li>{0}: </span>&nbsp;{1}&nbsp;<span>&nbsp;{2}&nbsp;</span></li>", row.Item("MEDIO_PAGO"), row.Item("CANTIDAD_PAGO"), Format(row.Item("FECHA_PAGO"), "dd/MM/yyyy"))
                         tabla.AppendFormat("</ul></td></tr>")
                     Next
                 Else
                     tabla.AppendFormat("<tr><td>POR COBRAR</tr></td>") 'Si aun no se han hecho pagos
                 End If
             ElseIf Not IsDBNull(dtPago.Rows(0)("MEDIO_PAGO")) Then 'Si es al contado/contraentrega y hay medio de pago (Ej. NVMDOVS)
-                tabla.AppendFormat("<tr><td><ul><li>{0}: </span>&nbsp;{1}&nbsp;<span>&nbsp;{2}&nbsp;</span></li>", dtPago.Rows(0)("MEDIO_PAGO"), dtPago.Rows(0)("CANTIDAD_PAGO"), FormatDateTime(dtPago.Rows(0)("FECHA_PAGO"), DateFormat.ShortDate))
+                tabla.AppendFormat("<tr><td><ul><li>{0}: </span>&nbsp;{1}&nbsp;<span>&nbsp;{2}&nbsp;</span></li>", dtPago.Rows(0)("MEDIO_PAGO"), dtPago.Rows(0)("CANTIDAD_PAGO"), Format(dtPago.Rows(0)("FECHA_PAGO"), "dd/MM/yyyy"))
                 tabla.AppendFormat("</ul></td></tr>")
             Else 'Si es al contado/contraentrega y no hay medio de pago (Ej. NVMDOCV) 
-                tabla.AppendFormat("<tr><td><ul><li>EFECTIVO: </span>&nbsp;{0}&nbsp;<span>&nbsp;{1}&nbsp;</span></li>", dtPago.Rows(0)("CANTIDAD_TOTAL"), FormatDateTime(dtPago.Rows(0)("FECHA_EMISION"), DateFormat.ShortDate))
+                tabla.AppendFormat("<tr><td><ul><li>EFECTIVO: </span>&nbsp;{0}&nbsp;<span>&nbsp;{1}&nbsp;</span></li>", dtPago.Rows(0)("CANTIDAD_TOTAL"), Format(dtPago.Rows(0)("FECHA_EMISION"), "dd/MM/yyyy"))
                 tabla.AppendFormat("</ul></td></tr>")
             End If
 

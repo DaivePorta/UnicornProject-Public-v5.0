@@ -970,4 +970,26 @@
         End Try
     End Function
 
+    Public Function CambiarEstadoEmpleado(ByVal P_CODE As String, ByVal P_USUA_ID As String, P_CTLG_CODE As String) As String
+        Try
+            Dim estado As String
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("PFC_CAMBIAR_ESTADO_EMPLEADO", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@P_CODE", P_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@P_USUA_ID", P_USUA_ID, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@P_CTLG_CODE", P_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@P_ESTADO", String.Empty, ParameterDirection.Output, 253))
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+
+            estado = cmd1.Parameters("@P_ESTADO").Value
+
+            Return estado
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 End Class

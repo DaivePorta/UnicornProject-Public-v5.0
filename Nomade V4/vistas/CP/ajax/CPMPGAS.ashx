@@ -11,11 +11,12 @@ Public Class CPMPGAS : Implements IHttpHandler
         p_FECHA_UNICA, p_FRECUENCIA, p_CONC_CODE, p_PERIOCIDAD, p_CTLG_CODE, p_DESC_GASTO,
         p_SCONC_CODE, p_SCSL_CODE, p_TIPO_IND, p_USUA_ID, p_TIPO_DCTO, p_SERIE, p_NUMERO,
         p_COMPRAS_IND, p_FECHA_FIN_EMI, p_GASTO_CONCATENADO, p_FECHA_INI_EMI, p_CENTRO_COSTOS, p_PERIODO, p_CODIGO, p_MES_TRIB, p_ANIO_TRIB, p_DETALLE_GASTO, p_DEDUCIBLE_IND,
-        p_HABIDO_IND, p_TIPO_BIEN, p_OPERACION, p_DECLARA, p_FECHA_VENCI, p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_IMPORTE_PAGAR, p_SURE, p_indRR, USUA_ID, p_NCMOCONT_CODIGO As String
+        p_HABIDO_IND, p_TIPO_BIEN, p_OPERACION, p_DECLARA, p_FECHA_VENCI, p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_NRO_SUSPENCION, p_IMPORTE_PAGAR, p_SURE, p_indRR, USUA_ID, p_NCMOCONT_CODIGO As String
     Dim dt As DataTable
     Dim p_DATO_FRECUENCIA, p_PIDM_BENEFICIARIO As Integer
     Dim p_GASTO_CODE As String
     Dim p_MONTO As Decimal
+    Dim p_TIPO_PER As Char 'Para traer proveedores o clientes
     Dim res As String
     Dim resb As New StringBuilder
 
@@ -73,11 +74,13 @@ Public Class CPMPGAS : Implements IHttpHandler
             p_IMPORTE_DETRACCION = context.Request("p_IMPORTE_DETRACCION")
             p_RETENCION_IND = context.Request("p_RETENCION_IND")
             p_IMPORTE_RETENCION = context.Request("p_IMPORTE_RETENCION")
+            p_NRO_SUSPENCION = context.Request("p_NRO_SUSPENCION")
             p_IMPORTE_PAGAR = context.Request("p_IMPORTE_PAGAR")
             '---------------------------------------------
             p_GASTO_CODE = context.Request("p_GASTO_CODE")
             p_SURE = context.Request("p_SURE") 'Monto minimo retencion de renta
             p_indRR = context.Request("p_indRR") 'Indicador de retencion de renta
+            p_TIPO_PER = context.Request("p_TIPO_PER")
             USUA_ID = context.Request("USUA_ID")
             p_NCMOCONT_CODIGO = context.Request("p_NCMOCONT_CODIGO")
 
@@ -178,6 +181,11 @@ Public Class CPMPGAS : Implements IHttpHandler
                             resb.Append("""RAZON_SOCIAL"" :" & """" & MiDataRow("RAZON_SOCIAL").ToString & """,")
                             resb.Append("""RUC"" :" & """" & MiDataRow("RUC").ToString & """,")
                             resb.Append("""DNI"" :" & """" & MiDataRow("DNI").ToString & """,")
+                            resb.Append("""OTROS"" :" & """" & MiDataRow("OTROS").ToString & """,")
+                            resb.Append("""PASAPORTE"" :" & """" & MiDataRow("PASAPORTE").ToString & """,")
+                            resb.Append("""CARNET"" :" & """" & MiDataRow("CARNET").ToString & """,")
+                            resb.Append("""TIPO_PERSONA"" :" & """" & MiDataRow("TIPO_PERSONA").ToString & """,")
+                            resb.Append("""NRO_SUSPENCION"" :" & """" & MiDataRow("NRO_SUSPENCION").ToString & """,")
                             resb.Append("""SOLICITA"" :" & """" & MiDataRow("SOLICITA").ToString & """,")
                             resb.Append("""HABIDO_IND_ORG"" :" & """" & MiDataRow("HABIDO_IND_ORG").ToString & """,") ' DATO DE PROVISION
                             resb.Append("""TIPO_BIEN_ORG"" :" & """" & MiDataRow("TIPO_BIEN_ORG").ToString & """,") ' DATO DE PROVISION
@@ -191,6 +199,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                             resb.Append("""DETRACCION_IND"" :" & """" & MiDataRow("DETRACCION_IND").ToString & """,")
                             resb.Append("""IMPORTE_DETRACCION"" :" & """" & MiDataRow("IMPORTE_DETRACCION").ToString & """,")
                             resb.Append("""RETENCION_IND"" :" & """" & MiDataRow("RETENCION_IND").ToString & """,")
+                            resb.Append("""IMPORTE_RETENCION"" :" & """" & MiDataRow("IMPORTE_RETENCION").ToString & """,")
                             resb.Append("""IMPORTE_PAGAR"" :" & """" & MiDataRow("IMPORTE_PAGAR").ToString & """,")
 
                             resb.Append("""MOVCONT_CODE"" :" & """" & MiDataRow("MOVCONT_CODE").ToString & """,")
@@ -316,10 +325,18 @@ Public Class CPMPGAS : Implements IHttpHandler
                             resb.Append("""HABIDO_IND"" :" & """" & MiDataRow("HABIDO_IND").ToString & """,")
                             resb.Append("""TIPO_BIEN"" :" & """" & MiDataRow("TIPO_BIEN").ToString & """,")
                             resb.Append("""DETRACCION_IND"" :" & """" & MiDataRow("DETRACCION_IND").ToString & """,")
+                            resb.Append("""RETENCION_IND"" :" & """" & MiDataRow("RETENCION_IND").ToString & """,")
+                            resb.Append("""IMPORTE_RETENCION"" :" & """" & MiDataRow("IMPORTE_RETENCION").ToString & """,")
                             resb.Append("""IMPORTE_DETRACCION"" :" & """" & MiDataRow("IMPORTE_DETRACCION").ToString & """,")
                             resb.Append("""IMPORTE_PAGAR"" :" & """" & MiDataRow("IMPORTE_PAGAR").ToString & """,")
                             'resb.Append("""OPERACION"" :" & """" & MiDataRow("OPERACION").ToString & """,")
                             resb.Append("""RUC"" :" & """" & MiDataRow("RUC").ToString & """,")
+                            resb.Append("""DNI"" :" & """" & MiDataRow("DNI").ToString & """,")
+                            resb.Append("""OTROS"" :" & """" & MiDataRow("OTROS").ToString & """,")
+                            resb.Append("""PASAPORTE"" :" & """" & MiDataRow("PASAPORTE").ToString & """,")
+                            resb.Append("""CARNET"" :" & """" & MiDataRow("CARNET").ToString & """,")
+                            resb.Append("""TIPO_PERSONA"" :" & """" & MiDataRow("TIPO_PERSONA").ToString & """,")
+                            resb.Append("""NRO_SUSPENCION"" :" & """" & MiDataRow("NRO_SUSPENCION").ToString & """,")
                             resb.Append("""NESTADO"" :" & """" & MiDataRow("NESTADO").ToString & """")
                             resb.Append("}")
                             resb.Append(",")
@@ -381,6 +398,11 @@ Public Class CPMPGAS : Implements IHttpHandler
                             resb.Append("""TIPO_BIEN_ORG"" :" & """" & MiDataRow("TIPO_BIEN_ORG").ToString & """,")
                             resb.Append("""OPERACION_ORG"" :" & """" & MiDataRow("OPERACION_ORG").ToString & """,")
                             resb.Append("""RUC"" :" & """" & MiDataRow("RUC").ToString & """,")
+                            resb.Append("""DNI"" :" & """" & MiDataRow("DNI").ToString & """,")
+                            resb.Append("""OTROS"" :" & """" & MiDataRow("OTROS").ToString & """,")
+                            resb.Append("""PASAPORTE"" :" & """" & MiDataRow("PASAPORTE").ToString & """,")
+                            resb.Append("""CARNET"" :" & """" & MiDataRow("CARNET").ToString & """,")
+                            resb.Append("""TIPO_PERSONA"" :" & """" & MiDataRow("TIPO_PERSONA").ToString & """,")
                             resb.Append("""NESTADO"" :" & """" & MiDataRow("NESTADO").ToString & """")
                             resb.Append("}")
                             resb.Append(",")
@@ -401,7 +423,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                                                p_SCSL_CODE, p_TIPO_IND, p_USUA_ID, p_NRO_DCTO_REF, p_CTA_CONTABLE, p_MONE_CODE, p_CENTRO_COSTO, p_CENTRO_COSTO_CABECERA,
                                                p_TIPO_DCTO, p_SERIE, p_NUMERO, p_COMPRAS_IND, p_MES_TRIB, p_ANIO_TRIB,
                                                p_HABIDO_IND, p_TIPO_BIEN, p_DETALLE_GASTO, p_DEDUCIBLE_IND, p_DECLARA, IIf(Utilities.fechaLocal(p_FECHA_VENCI) = "", Nothing, Utilities.fechaLocal(p_FECHA_VENCI)),
-                                               p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_IMPORTE_PAGAR)
+                                               p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_NRO_SUSPENCION, p_IMPORTE_PAGAR)
                     ElseIf r = "X" Then
                         res = "X"
                     End If
@@ -416,7 +438,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                                              p_PERIOCIDAD, p_PIDM_BENEFICIARIO, p_SCONC_CODE,
                                              p_SCSL_CODE, p_TIPO_IND, p_USUA_ID, p_CTA_CONTABLE, p_MONE_CODE, p_CODE, p_CENTRO_COSTO, p_CENTRO_COSTO_CABECERA,
                                              p_TIPO_DCTO, p_SERIE, p_NUMERO, p_COMPRAS_IND, p_HABIDO_IND, p_TIPO_BIEN, p_OPERACION, p_DETALLE_GASTO, p_DEDUCIBLE_IND, p_DECLARA, IIf(Utilities.fechaLocal(p_FECHA_VENCI) = "", Nothing, Utilities.fechaLocal(p_FECHA_VENCI)),
-                                             p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_IMPORTE_PAGAR)
+                                             p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_NRO_SUSPENCION, p_IMPORTE_PAGAR)
                     ElseIf r = "X" Then
                         res = "X"
                     End If
@@ -452,7 +474,7 @@ Public Class CPMPGAS : Implements IHttpHandler
 
                 Case "PER" 'LISTAR PERSONAS NATURALES
                     context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = New Nomade.NF.NFRecepcion("Bn").ListarPersonaNatural("")
+                    dt = New Nomade.NF.NFRecepcion("Bn").ListarPersonaNatural(p_TIPO_PER)
                     If Not (dt Is Nothing) Then
                         resb.Append("[")
                         For Each MiDataRow As DataRow In dt.Rows
@@ -460,11 +482,45 @@ Public Class CPMPGAS : Implements IHttpHandler
                             resb.Append("""PERSONA"" :" & """" & MiDataRow("PERSONA").ToString & """,")
                             resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
                             resb.Append("""DNI"" :" & """" & MiDataRow("DNI").ToString & """,")
+                            resb.Append("""CARNET"" :" & """" & MiDataRow("DNI").ToString & """,")
 
                             resb.Append("""PPBIDEN_CONDICION_SUNAT"" :" & """" & MiDataRow("PPBIDEN_CONDICION_SUNAT").ToString & """,")
                             resb.Append("""PPBIDEN_ESTADO_SUNAT"" :" & """" & MiDataRow("PPBIDEN_ESTADO_SUNAT").ToString & """,")
 
                             resb.Append("""RUC"" :" & """" & MiDataRow("RUC").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
+
+                Case "PER_PROV" 'LISTAR PERSONAS PROVISION GASTOS
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = New Nomade.NF.NFRecepcion("Bn").ListarPersonaProvisionGastos(p_CTLG_CODE, p_TIPO_PER)
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""PERSONA"" :" & """" & MiDataRow("PERSONA").ToString & """,")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            Select Case p_TIPO_PER
+                                Case "P"
+                                    resb.Append("""RUC"" :" & """" & MiDataRow("RUC").ToString & """,")
+                                    resb.Append("""OTROS"" :" & """" & MiDataRow("OTROS").ToString & """,")
+                                Case Else
+                                    resb.Append("""RUC"" :" & """" & MiDataRow("RUC").ToString & """,")
+                                    resb.Append("""DNI"" :" & """" & MiDataRow("DNI").ToString & """,")
+                                    resb.Append("""CARNET"" :" & """" & MiDataRow("CARNE").ToString & """,")
+                                    resb.Append("""PASAPORTE"" :" & """" & MiDataRow("PASAPORTE").ToString & """,")
+                                    resb.Append("""OTROS"" :" & """" & MiDataRow("OTROS").ToString & """,")
+                            End Select
+
+                            resb.Append("""PPBIDEN_CONDICION_SUNAT"" :" & """" & MiDataRow("PPBIDEN_CONDICION_SUNAT").ToString & """,")
+                            resb.Append("""PPBIDEN_ESTADO_SUNAT"" :" & """" & MiDataRow("PPBIDEN_ESTADO_SUNAT").ToString & """")
+
                             resb.Append("}")
                             resb.Append(",")
                         Next
@@ -555,7 +611,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                                                     p_SCSL_CODE, p_TIPO_IND, p_USUA_ID, p_NRO_DCTO_REF, p_CTA_CONTABLE, p_MONE_CODE, p_CENTRO_COSTO, p_CENTRO_COSTO_CABECERA,
                                                     p_TIPO_DCTO, p_SERIE, p_NUMERO, p_COMPRAS_IND, p_MES_TRIB, p_ANIO_TRIB,
                                                     p_HABIDO_IND, p_TIPO_BIEN, p_DETALLE_GASTO, p_DEDUCIBLE_IND, p_DECLARA, IIf(Utilities.fechaLocal(p_FECHA_VENCI) = "", Nothing, Utilities.fechaLocal(p_FECHA_VENCI)),
-                                                    p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_IMPORTE_PAGAR)
+                                                    p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_NRO_SUSPENCION, p_IMPORTE_PAGAR)
 
 
                         If cod_prov.Length = 15 Then
@@ -773,7 +829,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                                           ByVal p_COMPRAS_IND As String, p_MES_TRIB As String, p_ANIO_TRIB As String,
                                           ByVal p_HABIDO_IND As String, ByVal p_TIPO_BIEN As String, p_DETALLE_GASTO As String, p_DEDUCIBLE_IND As String, ByVal p_DECLARA As String, ByVal p_FECHA_VENCI As String,
                                           ByVal p_DETRACCION_IND As String, ByVal p_IMPORTE_DETRACCION As String,
-                                          ByVal p_RETENCION_IND As String, ByVal p_IMPORTE_RETENCION As String, ByVal p_IMPORTE_PAGAR As String) As String
+                                          ByVal p_RETENCION_IND As String, ByVal p_IMPORTE_RETENCION As String, ByVal p_NRO_SUSPENCION As String, ByVal p_IMPORTE_PAGAR As String) As String
 
         Dim Datos As String
         Dim CPCuentaPorPagar As New Nomade.CP.CPCuentaPorPagar("Bn")
@@ -792,7 +848,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                                                        IIf(p_SERIE = "", Nothing, p_SERIE),
                                                        IIf(p_NUMERO = "", Nothing, p_NUMERO),
                                                        p_COMPRAS_IND, p_MES_TRIB, p_ANIO_TRIB,
-                                                       p_HABIDO_IND, p_TIPO_BIEN, p_DETALLE_GASTO, p_DEDUCIBLE_IND, p_DECLARA, p_FECHA_VENCI, p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_IMPORTE_PAGAR)
+                                                       p_HABIDO_IND, p_TIPO_BIEN, p_DETALLE_GASTO, p_DEDUCIBLE_IND, p_DECLARA, p_FECHA_VENCI, p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_NRO_SUSPENCION, p_IMPORTE_PAGAR)
         CPCuentaPorPagar = Nothing
         Return Datos
     End Function
@@ -833,7 +889,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                                           ByVal p_TIPO_BIEN As String,
                                           ByVal p_OPERACION As String, ByVal p_DETALLE_GASTO As String, ByVal p_DEDUCIBLE_IND As String, ByVal p_DECLARA As String, ByVal p_FECHA_VENCI As String,
                                           ByVal p_DETRACCION_IND As String, ByVal p_IMPORTE_DETRACCION As String,
-                                          ByVal p_RETENCION_IND As String, ByVal p_IMPORTE_RETENCION As String, ByVal p_IMPORTE_PAGAR As String) As String
+                                          ByVal p_RETENCION_IND As String, ByVal p_IMPORTE_RETENCION As String, ByVal p_NRO_SUSPENCION As String, ByVal p_IMPORTE_PAGAR As String) As String
 
         Dim Datos As String
         Dim CPCuentaPorPagar As New Nomade.CP.CPCuentaPorPagar("Bn")
@@ -851,7 +907,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                                                        IIf(p_SERIE = "", Nothing, p_SERIE),
                                                        IIf(p_NUMERO = "", Nothing, p_NUMERO),
                                                        p_COMPRAS_IND, p_HABIDO_IND, p_TIPO_BIEN, p_OPERACION, p_DETALLE_GASTO, p_DEDUCIBLE_IND, p_DECLARA, p_FECHA_VENCI,
-                                                       p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_IMPORTE_PAGAR)
+                                                       p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_NRO_SUSPENCION, p_IMPORTE_PAGAR)
         CPCuentaPorPagar = Nothing
         Return Datos
     End Function

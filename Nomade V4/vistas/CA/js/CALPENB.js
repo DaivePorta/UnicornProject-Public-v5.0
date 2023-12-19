@@ -366,7 +366,7 @@ function AceptarTransferencia(codigo, strDatos) {
             else if (datos[0].RESPUESTA == "EXCESO") {
                 alertCustom("El monto a diferir superó los fondos en la caja origen. Verifique sus datos.");
             } else if (datos[0].RESPUESTA == "ERROR") {
-                noexito();
+                alertCustom("Parece que hubo un error al confirmar la transferencia. Intente nuevamente!");
             } else {
                 alertCustom(datos[0].RESPUESTA);
             }

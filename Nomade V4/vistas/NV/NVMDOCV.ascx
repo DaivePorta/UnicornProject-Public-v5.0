@@ -1288,12 +1288,22 @@
                                 <div id="codigoQR" style="display: none"></div>                                                               
 
                                 <div class="form-actions" id="acciones_generales" style="display: block;">
-                                    <div class="span4">
+                                    <div class="span2">
                                         <div class="control-group">
                                             <div class="controls" style="height: 30px;">
                                                 <label class="control-label" for="chk_inc_igv">
                                                     <input id="chk_inc_igv" type="checkbox" class="span12" style="opacity: 0;" checked="checked">
                                                     Precios inc IGV en impresión
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span2">
+                                        <div class="control-group">
+                                            <div class="controls" style="height: 30px;">
+                                                <label class="control-label" for="chk_Autodetraccion">
+                                                    <input id="chk_Autodetraccion" type="checkbox" class="span6" disabled="disabled" style="opacity: 0;">
+                                                    Autodetracción
                                                 </label>
                                             </div>
                                         </div>

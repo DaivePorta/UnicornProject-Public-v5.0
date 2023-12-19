@@ -25,7 +25,7 @@ Public Class NVMDOCS : Implements IHttpHandler
        p_FECHA_EMISION_PERCEP, p_FECHA_EMISION_DETRAC, p_FECHA_EMISION_RETEN,
        p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND, p_DETALLES, p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DCTO_SERIE_REF,
        p_DCTO_NUM_REF, p_VALOR_CAMBIO_OFI, p_COD_AUT, p_ALMACENABLE, p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_RESP_PIDM, p_DIRECCION,
-      p_LATITUD, p_LONGITUD, P_MES, P_ANIO, P_MONTO, p_DOCUMENTO, p_CODIGO, p_NCMOCONT_CODIGO As String
+      p_LATITUD, p_LONGITUD, P_MES, P_ANIO, P_MONTO, p_DOCUMENTO, p_CODIGO, p_NCMOCONT_CODIGO, p_AUTODETRACCION As String
 
     Dim p_PLAN_CODE, p_DESC_PLAN, p_TIPO_DCTO_PLAN As String
 
@@ -180,7 +180,7 @@ Public Class NVMDOCS : Implements IHttpHandler
         p_PLAN_CODE = context.Request("p_PLAN_CODE")
         p_DESC_PLAN = vChar(context.Request("p_DESC_PLAN"))
         p_TIPO_DCTO_PLAN = context.Request("p_TIPO_DCTO_PLAN")
-
+        p_AUTODETRACCION = context.Request("p_AUTODETRACCION") ' DPORTA 25/02/2021
         p_ESTADO_IND = context.Request("p_ESTADO_IND")
         p_CLIE_DOID_NRO = context.Request("p_CLIE_DOID_NRO")
         'CORREO
@@ -230,19 +230,12 @@ Public Class NVMDOCS : Implements IHttpHandler
                     If(p_FECHA_EMISION_DETRAC = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_DETRAC)),
                     If(p_FECHA_EMISION_RETEN = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_RETEN)),
                     p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_DETALLES, p_DCTO_SERIE_REF, p_DCTO_NUM_REF, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND,
-                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_KARDEX,
+                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_KARDEX, p_AUTODETRACCION,
                     If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
                     IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD), IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD), p_TOTAL_GRATUITAS)
 
                     If Not (array Is Nothing) Then
                         Dim msgError As String = "OK"
-                        'If array(0).ToString.Length = 9 And p_COMPLETO_IND = "S" Then
-                        '    Try
-                        '        GenerarPDF(array(0).ToString)
-                        '    Catch ex As Exception
-                        '        msgError = "ERROR: " + ex.Message
-                        '    End Try
-                        'End If
                         resb.Append("[")
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
@@ -269,7 +262,7 @@ Public Class NVMDOCS : Implements IHttpHandler
                     If(p_FECHA_EMISION_DETRAC = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_DETRAC)),
                     If(p_FECHA_EMISION_RETEN = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_RETEN)),
                     p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_DETALLES, p_DCTO_SERIE_REF, p_DCTO_NUM_REF, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND,
-                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_KARDEX,
+                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_KARDEX, p_AUTODETRACCION,
                     "0.00", "0.00", "0.00", "0.00", If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
                     IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD), IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD), p_TOTAL_GRATUITAS)
                     If Not (array Is Nothing) Then
@@ -301,23 +294,15 @@ Public Class NVMDOCS : Implements IHttpHandler
                     If(p_FECHA_EMISION_DETRAC = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_DETRAC)),
                     If(p_FECHA_EMISION_RETEN = "", Nothing, Utilities.fechaLocal(p_FECHA_EMISION_RETEN)),
                     p_IMPRFAC_PERCEP, p_NRO_CUENTA_DETRAC, p_DETALLES, p_DCTO_SERIE_REF, p_DCTO_NUM_REF, p_SCSL_EXONERADA_IND, p_IGV_IMPR_IND,
-                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_KARDEX,
+                    p_VALOR_CAMBIO_OFI, If(p_COD_AUT = "", "0", p_COD_AUT), p_PCTJ_IGV, p_FACTOR_RENTA, p_IMPUESTO_RENTA, p_KARDEX, p_AUTODETRACCION,
                     "0.00", "0.00", "0.00", "0.00", If(p_RESP_PIDM = "", Nothing, p_RESP_PIDM), p_DETALLES_BONI, p_DETALLES_MUESTRA, p_DIRECCION,
                     IIf(p_LATITUD = "null" Or p_LATITUD = "", Nothing, p_LATITUD), IIf(p_LONGITUD = "null" Or p_LONGITUD = "", Nothing, p_LONGITUD))
                     If Not (array Is Nothing) Then
                         Dim msgError As String = "OK"
-                        'If array(0).ToString.Length = 9 And p_COMPLETO_IND = "S" Then
-                        '    Try
-                        '        GenerarPDF(array(0).ToString)
-                        '    Catch ex As Exception
-                        '        msgError = "ERROR: " + ex.Message
-                        '    End Try
-                        'End If
                         resb.Append("[")
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
                         resb.Append("""SECUENCIA"" :" & """" & array(1).ToString & """,")
-                        'resb.Append("""DATOS_QR"" :" & """" & array(2).ToString & """,")
                         resb.Append("""MSGERROR"" :" & """" & msgError & """")
                         resb.Append("}")
                         resb.Append("]")

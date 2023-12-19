@@ -431,7 +431,7 @@
                                           ByVal p_TIPO_BIEN As String,
                                           ByVal p_DETALLE_GASTO As String, ByVal p_DEDUCIBLE_IND As String, ByVal p_DECLARA As String, ByVal p_FECHA_VENCI As String,
                                           ByVal p_DETRACCION_IND As String, ByVal p_IMPORTE_DETRACCION As String,
-                                          ByVal p_RETENCION_IND As String, ByVal p_IMPORTE_RETENCION As String, ByVal p_IMPORTE_PAGAR As String) As String
+                                          ByVal p_RETENCION_IND As String, ByVal p_IMPORTE_RETENCION As String, ByVal p_NRO_SUSPENCION As String, ByVal p_IMPORTE_PAGAR As String) As String
         Try
             Dim msg As String
 
@@ -473,6 +473,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMPORTE_DETRACCION", p_IMPORTE_DETRACCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RETENCION_IND", p_RETENCION_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMPORTE_RETENCION", p_IMPORTE_RETENCION, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NRO_SUSPENCION", p_NRO_SUSPENCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMPORTE_PAGAR", p_IMPORTE_PAGAR, ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_GENERADO", String.Empty, ParameterDirection.Output, 253))
@@ -943,7 +944,7 @@
                                           ByVal p_TIPO_BIEN As String,
                                       ByVal p_OPERACION As String, ByVal p_DETALLE_GASTO As String, ByVal p_DEDUCIBLE_IND As String, ByVal p_DECLARA As String, ByVal p_FECHA_VENCI As String,
                                       ByVal p_DETRACCION_IND As String, ByVal p_IMPORTE_DETRACCION As String,
-                                      ByVal p_RETENCION_IND As String, ByVal p_IMPORTE_RETENCION As String, ByVal p_IMPORTE_PAGAR As String) As String
+                                      ByVal p_RETENCION_IND As String, ByVal p_IMPORTE_RETENCION As String, ByVal p_NRO_SUSPENCION As String, ByVal p_IMPORTE_PAGAR As String) As String
         Try
             Dim msg As String
 
@@ -985,6 +986,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMPORTE_DETRACCION", p_IMPORTE_DETRACCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RETENCION_IND", p_RETENCION_IND, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMPORTE_RETENCION", p_IMPORTE_RETENCION, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NRO_SUSPENCION", p_NRO_SUSPENCION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_IMPORTE_PAGAR", p_IMPORTE_PAGAR, ParameterDirection.Input, 253))
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESP", String.Empty, ParameterDirection.Output, 253))

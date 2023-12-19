@@ -2306,19 +2306,6 @@ function fillTxtCliente(v_ID, v_value) {
                         process(arrayRazonSocial);
                     },
                     updater: function (item) {
-
-                        $('#cboDocumentoVenta').removeAttr("disabled");
-                        $("#hfPIDM").val(map[item].PIDM);
-
-                        $("#hfAgenteRetencionCliente").val(map[item].AGENTE_RETEN_IND);
-                        $("#hfCodigoCategoriaCliente").val(map[item].CODIGO_CATEGORIA);
-                        $("#hfCodigoTipoDocumento").val(map[item].CODIGO_TIPO_DOCUMENTO);
-                        $("#hfTipoDocumento").val(map[item].TIPO_DOCUMENTO);
-                        $("#hfNroDocumento").val(map[item].NRO_DOCUMENTO);
-                        $("#hfRUC").val(map[item].RUC);
-                        //$("#hfDIR").val(map[item].DIRECCION);
-
-
                         if (map[item].RUC != "") {
                             $('#cboTipoDoc').select2("val", "6").change();
                             $("#txtNroDctoCliente").val(map[item].RUC);
@@ -2330,6 +2317,17 @@ function fillTxtCliente(v_ID, v_value) {
                                 $("#hfRUC").val(map[item].NRO_DOCUMENTO);
                             }
                         }
+
+                        $('#cboDocumentoVenta').removeAttr("disabled");
+                        $("#hfPIDM").val(map[item].PIDM);
+
+                        $("#hfAgenteRetencionCliente").val(map[item].AGENTE_RETEN_IND);
+                        $("#hfCodigoCategoriaCliente").val(map[item].CODIGO_CATEGORIA);
+                        $("#hfCodigoTipoDocumento").val(map[item].CODIGO_TIPO_DOCUMENTO);
+                        $("#hfTipoDocumento").val(map[item].TIPO_DOCUMENTO);
+                        $("#hfNroDocumento").val(map[item].NRO_DOCUMENTO);
+                        $("#hfRUC").val(map[item].RUC);
+                        //$("#hfDIR").val(map[item].DIRECCION);                        
 
                         if ($('#cboTipoDoc').val() == '6') {
                             $("#cboDocumentoVenta option:not([value=0001])").attr("disabled", "disabled");

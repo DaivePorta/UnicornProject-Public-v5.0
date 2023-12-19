@@ -10,6 +10,7 @@ Public Class CCLRFVA : Implements IHttpHandler
     Dim p_PERS_PIDM, p_CTLG_CODE, p_SCSL_CODE, p_USUA_ID, documento As String
     Dim p_DESDE, p_HASTA As String
     Dim p_FACTURA As String
+    Dim p_ESTEREOTIPO As String
 
     Dim ccCuentaPorCobrar As New Nomade.CC.CCCuentaPorCobrar("Bn")
     Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
@@ -39,6 +40,8 @@ Public Class CCLRFVA : Implements IHttpHandler
         p_DESDE = context.Request("p_DESDE")
         p_HASTA = context.Request("p_HASTA")
         p_FACTURA = context.Request("p_FACTURA")
+
+        p_ESTEREOTIPO = context.Request("p_ESTEREOTIPO")
 
         If p_PERS_PIDM = "" Or p_PERS_PIDM Is Nothing Then
             p_PERS_PIDM = "0"
@@ -179,9 +182,10 @@ Public Class CCLRFVA : Implements IHttpHandler
                         resb.Append("]")
                     End If
                     res = resb.ToString()
-                Case "2.7" 'listar persona
+                Case "2.7" 'listar persona mov bancario
                     Dim p As New Nomade.NC.NCPersona("Bn")
-                    dt = p.listar_Persona("Y")
+                    dt = p.listar_Persona_Mov_Bancario(p_CTLG_CODE, p_PERS_PIDM, p_ESTEREOTIPO)
+                    Dim rowCount As Integer = dt.Rows.Count
                     If Not (dt Is Nothing) Then
                         'dt = SortDataTableColumn(dt, "RAZON_SOCIAL", "ASC")
                         resb.Append("[")
