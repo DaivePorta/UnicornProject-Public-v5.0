@@ -236,7 +236,7 @@
         End Try
     End Function
 
-    Public Function ListarVentasContado(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String) As DataTable
+    Public Function ListarVentasContado(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_CAJERO As String) As DataTable
         Try
             Dim cmd As IDbCommand
             Dim dt As DataTable
@@ -246,6 +246,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CAJERO", p_CAJERO, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 
@@ -259,7 +260,7 @@
         End Try
     End Function
 
-    Public Function ListarCobroVentasCredito(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String) As DataTable
+    Public Function ListarCobroVentasCredito(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_CAJERO As String) As DataTable
         Try
             Dim cmd As IDbCommand
             Dim dt As DataTable
@@ -269,6 +270,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CAJERO", p_CAJERO, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 
@@ -282,7 +284,7 @@
         End Try
     End Function
 
-    Public Function ListarPagoGastosPorBanco(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String) As DataTable
+    Public Function ListarPagoGastosPorBanco(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_CAJERO As String) As DataTable
         Try
             Dim cmd As IDbCommand
             Dim dt As DataTable
@@ -292,6 +294,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CAJERO", p_CAJERO, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 
@@ -305,7 +308,7 @@
         End Try
     End Function
 
-    Public Function ListarDetGastos(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String) As DataTable
+    Public Function ListarDetGastos(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_CAJERO As String) As DataTable
         Try
             Dim cmd As IDbCommand
             Dim dt As DataTable
@@ -315,6 +318,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CAJERO", p_CAJERO, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 
@@ -328,7 +332,7 @@
         End Try
     End Function
 
-    Public Function ListarVentasArea(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String) As DataTable
+    Public Function ListarVentasArea(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_CAJERO As String) As DataTable
         Try
             Dim cmd As IDbCommand
             Dim dt As DataTable
@@ -338,6 +342,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CAJERO", p_CAJERO, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 
@@ -351,7 +356,7 @@
         End Try
     End Function
 
-    Public Function ListarVentasSubArea(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String) As DataTable
+    Public Function ListarVentasSubArea(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_CAJERO As String) As DataTable
         Try
             Dim cmd As IDbCommand
             Dim dt As DataTable
@@ -361,6 +366,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CAJERO", p_CAJERO, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 
@@ -374,7 +380,7 @@
         End Try
     End Function
 
-    Public Function ListarInconsistencias(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String) As DataTable
+    Public Function ListarInconsistencias(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_CAJERO As String) As DataTable
         Try
             Dim cmd As IDbCommand
             Dim dt As DataTable
@@ -384,6 +390,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CAJERO", p_CAJERO, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 
@@ -397,7 +404,7 @@
         End Try
     End Function
 
-    Public Function ResumenDetallesMovimientosCaja(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String) As DataTable
+    Public Function ResumenDetallesMovimientosCaja(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_CAJERO As String) As DataTable
         Try
             Dim cmd As IDbCommand
             Dim dt As DataTable
@@ -407,6 +414,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CAJERO", p_CAJERO, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 

@@ -126,8 +126,9 @@
                     });
 
                     var oTable = $('#tblDocumento').dataTable();
+                    oTable.fnSort([[2, "asc"]]);
                     oTable.fnSort([[0, "desc"]]);
-
+                    
                     $("#tblDocumento").DataTable();
                     actualizarEstilos()
 
@@ -196,7 +197,7 @@
             mes = 12;
             ano = ano - 1
         } else {
-            mes = mes - 1;
+            //mes = mes - 1;
         }
 
         if (mes >= 10)
@@ -205,6 +206,8 @@
             var fNueva = '01/0' + mes + '/' + ano;
 
         $("#txtDesde").val(fNueva);
+
+        /*$(".refreshProcess").click(function () { EjecutarAsientosPendientesVenta(); });*/
     }
 
     return {
@@ -288,3 +291,23 @@ function pad(n, width, z) {
     n = n + '';
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
+
+//function EjecutarAsientosPendientesVenta() {
+
+//    $.ajax({
+//        type: "post",
+//        url: "vistas/CT/ajax/CTLDEAS.ASHX",
+//        data: { OPCION: 6 },
+//        success: function (res) {
+//            if (res == "OK") {
+//                exito();
+//            } else {
+//                alertCustom(res);
+//            }
+//        },
+//        error: function (msg) {
+//            alert(msg);
+//        }
+//    });
+
+//}

@@ -481,5 +481,44 @@
             Throw (ex)
         End Try
     End Function
+    Public Function ListarGlosa() As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_LISTAR_GLOSAS", CommandType.StoredProcedure)
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function AgregarGlosa(ByVal p_GLOSA As String, ByVal p_GLOSA_CODIGO As String) As String
+        Try
+
+            Dim msg As String
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_AGREGAR_GLOSA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_GLOSA", p_GLOSA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_GLOSA_CODIGO", p_GLOSA_CODIGO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RESP", String.Empty, ParameterDirection.Output, 253))
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg = cmd.Parameters("@p_RESP").Value
+
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 
 End Class

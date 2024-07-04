@@ -16,7 +16,9 @@ var v_nro_operacion_inicial;
 var v_monto_inicial; // para movimiento POS
 var v_iItf = 0;
 var v_rpos = 0;
-var operacionEstereotipo;
+var movimientoNoIdentificado;
+var cargaTerminada = false;
+var nuevoMovimiento = true;
 
 var NBLMOCB = function () {
 
@@ -333,8 +335,6 @@ function Confirmacion() {
     $("#modalconfir").modal('show');
 }
 
-var nuevoMovimiento = true;
-
 var NBMMOCB = function () {
 
     $("#listMov").click(function () {
@@ -395,7 +395,8 @@ var NBMMOCB = function () {
             '6': 'PERS', // POS (Solo id asociado al POS) (No seleccionable)
             '7': 'CLIEN', // Abonos bancarios no identificados
             '8': 'EMPL', // Gastos personales de asociados
-            '9': 'PROV' // Pagos bancarios no identificados
+            '9': 'PROV', // Pagos bancarios no identificados
+            '10': 'PROV' // Nota de credito a proveedor 
         };
 
         $("#slcOperacionEfectuada").html(op_op).select2().change(function () {
@@ -417,7 +418,7 @@ var NBMMOCB = function () {
         });
 
         $("#slcOperacion").on("change", function () {
-            ajustesSecundariosTipoOperacion($("#slcOperacion").val());
+            if (!cargaTerminada) ajustesSecundariosTipoOperacion($("#slcOperacion").val());
         });
 
         $("#slcCta").on("change", function () {
@@ -597,12 +598,18 @@ var NBMMOCB = function () {
                     $("#slcTipo").prop("disabled", true);
 
                     //Seleccionar tipo operacion
+                    movimientoNoIdentificado = datos[0].CODIGO_OPERACION === '7';
                     if (datos[0].CODIGO_OPERACION !== undefined && datos[0].CODIGO_OPERACION !== '') {
                         filtrarTipoOperacion(datos[0].TIPO, datos[0].CODIGO_OPERACION);
                     } else {
                         $("#slcOperacion").empty().val('');
                     }
-                    $("#slcOperacion").select2().prop("disabled", true);
+                    $("#slcOperacion").select2();
+
+                    //Para Abonos y Pagos bancarios no identificados
+                    var slcOperacion = $("#slcOperacion").val(); 
+                    var deshabilitar = !(slcOperacion === '7'); 
+                    $("#slcOperacion").prop("disabled", deshabilitar); 
 
                     //Seleccionar el estereotipo
                     estereotipo = operacionEstereotipo[$("#slcOperacion").val()];
@@ -612,10 +619,6 @@ var NBMMOCB = function () {
 
                     //Seleccionar persona
                     $("#hfPIDM").val(datos[0].PERSONA)
-                    //datos[0].CODIGO_OPERACION === "6" || datos[0].CODIGO_OPERACION === "2" ? persona_unica = true : persona_unica = false; //Para movimientos que no deben cambiar de cliente
-                    //var pidm = persona_unica ? $("#hfPIDM").val() : "";
-
-                    //fillPersona("#slcPersona", pidm, estereotipo)
 
                     var selectedClient = persona.find(function (client) {
                         return client.PIDM == $("#hfPIDM").val();
@@ -631,7 +634,7 @@ var NBMMOCB = function () {
                         $("#txtMonto").attr("placeholder", "max." + _u_monto);
                     }
 
-                    if (datos[0].TIPO_REG != "M" && datos[0].TIPO_REG != "C" && datos[0].CODIGO_OPERACION != '6') {
+                    if (datos[0].TIPO_REG != "M" && datos[0].TIPO_REG != "C" && datos[0].CODIGO_OPERACION != '6' && datos[0].CODIGO_OPERACION != '10') {
                         $(".bl").attr("disabled", true);
 
                         $("#slcPersona, #txtDescripcion, #txtMonto").html('').prop("disabled", true);
@@ -652,10 +655,13 @@ var NBMMOCB = function () {
                             }, 500);
                         }
                     }
+
                     setTimeout(function () {
                         $("#txtMonto").val(datos[0].MONTO);
                         v_monto_inicial = $("#txtMonto").val();
                     }, 550);
+
+                    cargaTerminada = true;
                 },
                 error: function (msg) {
                     alert(msg);
@@ -683,6 +689,7 @@ $("#txtMonto").on('change', function () {
     }
 });
 
+//Solo para POS, se permitirá redondear el monto bajo cierto rango
 function rangoPOS(montoNuevo, montoInicial) {
     montoNuevo = parseFloat(montoNuevo);
 
@@ -727,29 +734,66 @@ function verificarNroOperacion(nroOpera) {
     return respuesta;
 }
 
+//Funcion para verificar que un anticipo por compensar sea modificable
+function verificarModificacionOperacion(nroOpera) {
+    var nroOperacionCodificado = encodeURIComponent(nroOpera);
+    var res;
+    $.ajax({
+        type: "post",
+        url: "vistas/NV/ajax/NVMANTI.ashx?OPCION=VERIFICAR_OPERACION&p_NRO_OPERA=" + nroOperacionCodificado,
+        contenttype: "application/json;",
+        datatype: "text",
+        async: false,
+        success: function (datos) {
+            if (datos === '0') {
+                res = true;
+            } else {
+                res = false;
+            }
+        },
+        error: function (msg) {
+            alertCustom("Error");
+        }
+    });
+
+    return res;
+};
+
 //Tipo de operacion que estará disponible dependiendo si es Abono o Cargo
 function filtrarTipoOperacion(tipoOperacion, valorOperacion) {
     $("#slcOperacion").empty();
-    var filtered_op = "";
-    if (tipoOperacion === "I") {
-        filtered_op = '<option value="1" data-value="12.2.1.1.12">ANTICIPO POR COMPENSAR - 12.2.1.1.12</option>' +
-            '<option value="3" data-value="45.1.2.1.11">PRESTAMO DE TERCEROS - 45.1.2.1.11</option>' +
-            '<option value="4" data-value="45.1.2.1.12">PRESTAMO DE TITULAR - 45.1.2.1.12</option>' +
-            (!nuevoMovimiento ? '<option value="6" data-value="42.2.1.1.11">CIERRE DE LOTE POS - 42.2.1.1.11</option>' : '') +
-            '<option value="7" data-value="46.1.1.1.19">ABONOS BANCARIOS NO IDENTIFICADOS - 46.1.1.1.19</option>';
-    } else if (tipoOperacion === "E") {
-        filtered_op = '<option value="2" data-value="94.3.9.1.13">MANTENIMIENTO CUENTA - 94.3.9.1.13</option>' +
-            '<option value="3" data-value="45.1.2.1.11">PRESTAMO DE TERCEROS  - 45.1.2.1.11</option>' +
-            '<option value="4" data-value="45.1.2.1.12">PRESTAMO DE TITULAR - 45.1.2.1.12</option>' +
-            '<option value="5" data-value="10.3.1.1.11">PAGAR DINERO POR ENCARGO - 10.3.1.1.11</option>' + 
-            '<option value="8" data-value="14.9.1.1.11">GASTOS PERSONALES DE ASOCIADOS - 14.9.1.1.11</option>' + 
-            '<option value="9" data-value="16.9.1.1.11">PAGOS BANCARIOS NO IDENTIFICADOS - 16.9.1.1.11</option>';
-    }
-    $("#slcOperacion").html(filtered_op);
-    $("#slcOperacion").prop("disabled", false);
-    $("#slcOperacion").select2();
+
+    var options = {
+        "I": [
+            { value: "1", dataValue: "12.2.1.1.12", text: "ANTICIPO POR COMPENSAR - 12.2.1.1.12" },
+            { value: "3", dataValue: "45.1.2.1.11", text: "PRESTAMO DE TERCEROS - 45.1.2.1.11" },
+            { value: "4", dataValue: "45.1.2.1.12", text: "PRESTAMO DE TITULAR - 45.1.2.1.12" },
+            { value: "6", dataValue: "42.2.1.1.11", text: "CIERRE DE LOTE POS - 42.2.1.1.11", condition: () => nuevoMovimiento == false },
+            { value: "7", dataValue: "46.1.1.1.19", text: "ABONOS BANCARIOS NO IDENTIFICADOS - 46.1.1.1.19" },
+            { value: "10", dataValue: "46.1.1.1.19", text: "NOTA DE CREDITO A PROVEEDOR - 46.1.1.1.19", condition: () => nuevoMovimiento == false }
+        ],
+        "E": [
+            { value: "2", dataValue: "94.3.9.1.13", text: "MANTENIMIENTO CUENTA - 94.3.9.1.13" },
+            { value: "3", dataValue: "45.1.2.1.11", text: "PRESTAMO DE TERCEROS  - 45.1.2.1.11" },
+            { value: "4", dataValue: "45.1.2.1.12", text: "PRESTAMO DE TITULAR - 45.1.2.1.12" },
+            { value: "5", dataValue: "10.3.1.1.11", text: "PAGAR DINERO POR ENCARGO - 10.3.1.1.11" },
+            { value: "8", dataValue: "14.9.1.1.11", text: "GASTOS PERSONALES DE ASOCIADOS - 14.9.1.1.11" },
+            { value: "9", dataValue: "16.9.1.1.11", text: "PAGOS BANCARIOS NO IDENTIFICADOS - 16.9.1.1.11" }
+        ]
+    };
+
+    if (movimientoNoIdentificado) options["I"] = options["I"].filter(opt => opt.value === "1" || opt.value === "7");
+
+    var filteredOptions = options[tipoOperacion].filter(opt => opt.condition === undefined || opt.condition());
+
+    var filtered_op = filteredOptions.map(opt => `<option value="${opt.value}" data-value="${opt.dataValue}">${opt.text}</option>`).join('');
+
+    $("#slcOperacion").html(filtered_op).prop("disabled", false).select2();
+
     ajustesSecundariosTipoOperacion(valorOperacion);
 }
+
+
 
 //Ajustes necesarios dependiendo del tipo de operacion
 function ajustesSecundariosTipoOperacion(valorOperacion) {
@@ -818,6 +862,12 @@ function ajustesSecundariosTipoOperacion(valorOperacion) {
 
         case '6': //POS
             $("#slcPersona, #slcPersona, #txtNroOpe, #txtDescripcion").html('').prop("disabled", true);
+            $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').hide();
+            break;
+
+        case '10': //NOTA DE CREDITO
+            $(".bl").attr("disabled", true);
+            $("#slcPersona, #slcPersona, #txtMonto, #txtDescripcion, #slcOperacionEfectuada").html('').prop("disabled", true);
             $('#btnNuevaPersona, #btnNuevoClienteRapido, #btnRecargarPersona').hide();
             break;
 
@@ -957,7 +1007,6 @@ function fillPersona(v_ID, v_value, v_estereotipo) {
         dataType: "json",
         async: false,
         success: function (datos) {
-            console.log(datos)
             if (datos != null) {
                 persona = datos;
                 var map = {};
@@ -987,13 +1036,19 @@ function fillPersona(v_ID, v_value, v_estereotipo) {
                     },
                 });
 
+                let previousValue = selectRazonSocial.val();
                 selectRazonSocial.on('change', function () {
+                    let currentValue = $(this).val();
+                    if (currentValue === previousValue) return; // Skip if value hasn't changed
+                    previousValue = currentValue;
                     if ($("#slcEstereotipo").val() === "CLIEN" || $("#slcEstereotipo").val() === "PERS") {
                         if (!$(this).val()) {
                             $("#hfPIDM").val("1");
                         }
                     } else {
-                        $("#hfPIDM").val(""); 
+                        if (!$(this).val()) {
+                            $("#hfPIDM").val("");
+                        }
                     }
                 });
 
@@ -1452,11 +1507,17 @@ function actualizarMovimiento() {
         }
     }
 
-    if ($("#slcOperacion").val() === '1' && !confirmarClienteAnticipo()) {
+    var tipoOperacion = $("#slcOperacion").val();
+    if (tipoOperacion === '1' && !confirmarClienteAnticipo()) {
         var estadoVal = $("#hfESTADO").val();
         alertCustom("La operación <b>NO</b> se realizó!<br/>" +
             (estadoVal === 'I' || estadoVal === '' ? " La persona seleccionada debe ser un cliente activo!" :
                 " La persona seleccionada debe ser cliente para generar anticipos!"));
+        return;
+    }
+    var varModificar = verificarModificacionOperacion(v_nro_operacion_actual);
+    if ((tipoOperacion === '1' || tipoOperacion === '9') && varModificar === false) {
+        alertCustom("La operación <b>NO</b> se realizó!<br/>" + "La operacion seleccionada ya ha sido utilizada.");
         return;
     }
 
@@ -1488,6 +1549,7 @@ function actualizarMovimiento() {
             Desbloquear("ventana");
             if (res === "OK") {
                 exito();
+                $("#slcOperacion").prop("disabled", true); 
                 _u_monto += parseFloat($("#txtMonto").val());
             } else {
                 noexito();

@@ -735,6 +735,8 @@
     <input type="hidden" id="hfCOD_NRESP" />
     <input type="hidden" id="hfCOD_RESP" />
     <input type="hidden" id="hfRESP" />
+    <input type="hidden" id="hfSerieDoc" />
+    <input type="hidden" id="hfEstadoPago" />
 </div>
 
 <div id="detalleImpresion" style="display: block;">

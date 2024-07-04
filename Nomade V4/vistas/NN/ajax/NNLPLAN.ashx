@@ -1737,14 +1737,15 @@ Public Class NNLPLAN : Implements IHttpHandler
             Dim bool As Boolean = False
             Dim bool2 As Boolean = False
             For i As Integer = 0 To grupos.Length - 1
-                If i = posiciones.ElementAt(i) Then
+                'Se tuvo que cambiar la linea If i = posiciones.ElementAt(i) debido a un error index out of range. 
+                'Esta línea asumia que posiciones tenia tantos elementos como grupos, lo cual creaba la excepcion cuando no era el caso.
+                If posiciones.Contains(i.ToString()) Then
                     If grupos.GetValue(i).ToString = "1" Then
                         com_flujo = comisiones.GetValue(i)
                         bool = True
                     ElseIf grupos.GetValue(i).ToString = "2" Then
                         com_mixta = comisiones.GetValue(i)
                         bool2 = True
-
                     End If
                 End If
                 If bool And bool2 Then

@@ -7,7 +7,7 @@ Imports System.Data
 Public Class NCMCECC : Implements IHttpHandler, System.Web.SessionState.IRequiresSessionState
 
     Dim sOpcion As String
-    Dim sCodEmpresa, CTLG_CODE As String
+    Dim sCodEmpresa, CTLG_CODE, CCOSTOS_CODE, NIVEL As String
 
     Dim sCodCentroCostosCab As String
     Dim sCodCentroCostosDet As String
@@ -35,8 +35,8 @@ Public Class NCMCECC : Implements IHttpHandler, System.Web.SessionState.IRequire
         sOpcion = context.Request("sOpcion")
 
         CTLG_CODE = context.Request("CTLG_CODE")
-
-
+        CCOSTOS_CODE = context.Request("CCOSTOS_CODE")
+        NIVEL = context.Request("NIVEL")
 
         sCodCentroCostosCab = context.Request("sCodCentroCostosCab")
         sCodCentroCostosCab = IIf(sCodCentroCostosCab Is Nothing, "", sCodCentroCostosCab)
@@ -121,6 +121,16 @@ Public Class NCMCECC : Implements IHttpHandler, System.Web.SessionState.IRequire
                 Case "GETCODCAB"
                     context.Response.ContentType = "application/json; charset=utf-8"
                     oDT = oNCCentroCostos.fnGetCentroCostoActivo(sCodEmpresa)
+                    sResponse = Utilities.DataTableToJSON(oDT)
+
+                Case "NIVELES"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    oDT = oNCCentroCostos.listarNivelesCentroCostos(CTLG_CODE)
+                    sResponse = Utilities.DataTableToJSON(oDT)
+
+                Case "CCXNIVELES"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    oDT = oNCCentroCostos.listarCCostosxEmpresaNiveles(CTLG_CODE, NIVEL, CCOSTOS_CODE)
                     sResponse = Utilities.DataTableToJSON(oDT)
                 Case Else
 

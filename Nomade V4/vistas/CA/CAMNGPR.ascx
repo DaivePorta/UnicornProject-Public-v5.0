@@ -195,7 +195,7 @@
                             </div>
                         </div>
                     
-                            <div class="row-fluid">
+                        <div class="row-fluid">
                             <div class="span1">
                                 <div class="control-group">
                                     <label class="control-label" for="cboMotivo">Motivo</label>
@@ -211,7 +211,7 @@
                                 </div>
                             </div>
                     
-                            <div class="span1 offset3">
+<%--                            <div class="span1 offset3">
                                 <div class="control-group">
                                     <label class="control-label motivo" for="txtMotivoAdicional" style="display:none">
                                         Motivo</label>
@@ -223,8 +223,81 @@
                                         <textarea class="span12 motivo" placeholder="Motivo" maxlength="100" id="txtMotivoAdicional" rows="1" style="resize: vertical; max-height: 250px;display:none;" disabled="disabled"></textarea>
                                     </div>
                                 </div>
+                            </div>--%>
+
+                            <div class="span1 offset1">
+                                <div class="control-group">
+                                    <label class="control-label subMotivo" for="cboSubMotivo" style="display:none">
+                                        Submotivo</label>
+                                    <label class="control-label motivo" for="txtMotivoAdicional" style="display:none">
+                                        Motivo</label>
+                                </div>
                             </div>
-                        </div>     
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <select id="cboSubMotivo" class="span12" data-placeholder="Submotivo" style="display:none" disabled="disabled">
+                                            <option></option>
+                                        </select>
+                                        <textarea class="span12 motivo" placeholder="Motivo" maxlength="100" id="txtMotivoAdicional" rows="1" style="resize: vertical; max-height: 250px;display:none;" disabled="disabled"></textarea>                      
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        
+                        <div class="row-fluid">
+                            <div class="span1">
+                                <div class="control-group">
+                                    <label class="control-label modalidad" for="cboBancoCaja" style="display:none">
+                                        Modalidad</label>
+                                </div>
+                            </div>
+                            <div class="span4" id="divCboBancoCaja">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <select id="cboBancoCaja" class="span12" data-placeholder="Modalidad" style="display:none" disabled="disabled">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="span1 offset1">
+                                <div class="control-group">
+                                    <label id="lblCaja" class="control-label caja" for="cboCuentaBanc_Caja" style="display:none">
+                                        Caja</label>
+                                    <label id="lblCtaBanc" class="control-label cuentaBancaria" for="cboCuentaBanc_Caja" style="display:none"> 
+                                        Cuenta Bancaria</label>
+                                </div>
+                            </div>
+
+                            <div class="span4" id="divcboCuentaBanc_Caja">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <select id="cboCuentaBanc_Caja" class="span12" data-placeholder="Seleccionar" style="display:none" disabled="disabled">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span1 offset6">
+                                <div class="control-group">
+                                    <label id="lblNroOperacion" class="control-label nroOp" for="txtNroOpe" style="display:none">
+                                        Nro.<br />
+                                        Operación</label>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input id="txtNroOpe"class="span12" type="text" placeholder="Nro. Operación" style="display:none" disabled="disabled"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- DOCUMENTO AL QUE MODIFICA -->
 
                         <div class="row-fluid">

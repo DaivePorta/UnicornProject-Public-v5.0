@@ -596,8 +596,8 @@ Public Class CPMPGAS : Implements IHttpHandler
                 Case "AP" ' APROBAR PROVISION DE GASTO
                     Dim cod_prov As String
                     Dim cod_apro(3) As String
-                    Dim cod_pago As String
-                    Dim cod_cred As String
+                    'Dim cod_pago As String
+                    'Dim cod_cred As String
                     Dim p_fecha As String = Convert.ToDateTime(Date.Now).ToString("dd/MM/yyyy")
 
                     context.Response.ContentType = "text/html"
@@ -605,7 +605,7 @@ Public Class CPMPGAS : Implements IHttpHandler
                     r = Verifica_Existe_Provision(p_PIDM_BENEFICIARIO, p_SERIE, p_NUMERO, "1", "", p_TIPO_DCTO, p_CTLG_CODE)
                     If r = "C" Then
                         'CREA PROVISION
-                        cod_prov = Crear_Provision_Gasto(p_CONC_CODE, p_CTLG_CODE, p_DATO_FRECUENCIA, p_DESC_GASTO,
+                        cod_prov = Crear_Y_Aprobar_Gasto(p_CONC_CODE, p_CTLG_CODE, p_DATO_FRECUENCIA, p_DESC_GASTO,
                                                     p_ESTADO_IND, IIf(Utilities.fechaLocal(p_FECHA_UNICA) = "", Nothing, Utilities.fechaLocal(p_FECHA_UNICA)), IIf(p_FRECUENCIA = "", Nothing, p_FRECUENCIA), p_MONTO,
                                                     p_PERIOCIDAD, p_PIDM_BENEFICIARIO, p_SCONC_CODE,
                                                     p_SCSL_CODE, p_TIPO_IND, p_USUA_ID, p_NRO_DCTO_REF, p_CTA_CONTABLE, p_MONE_CODE, p_CENTRO_COSTO, p_CENTRO_COSTO_CABECERA,
@@ -613,62 +613,66 @@ Public Class CPMPGAS : Implements IHttpHandler
                                                     p_HABIDO_IND, p_TIPO_BIEN, p_DETALLE_GASTO, p_DEDUCIBLE_IND, p_DECLARA, IIf(Utilities.fechaLocal(p_FECHA_VENCI) = "", Nothing, Utilities.fechaLocal(p_FECHA_VENCI)),
                                                     p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_NRO_SUSPENCION, p_IMPORTE_PAGAR)
 
-
                         If cod_prov.Length = 15 Then
-                            'CREA APROBACION
-                            cod_apro = Crear_Aprobacion_Gasto(cod_prov, "2", p_MONTO, IIf(p_fecha = "", Nothing, Utilities.fechaLocal(p_fecha)),
-                                                         IIf(p_fecha = "", Nothing, Utilities.fechaLocal(p_fecha)), p_USUA_ID, p_DESC_GASTO, IIf(Utilities.fechaLocal(p_FECHA_UNICA) = "", Nothing, Utilities.fechaLocal(p_FECHA_UNICA)),
-                                                         p_NUMERO, p_SERIE, p_TIPO_DCTO, p_CENTRO_COSTO,
-                                                         p_CENTRO_COSTO_CABECERA, p_COMPRAS_IND, p_MES_TRIB, p_ANIO_TRIB, p_DETALLE_GASTO, p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_IMPORTE_PAGAR)
-
-                            If cod_apro(0).Length = 8 Then
-                                'CREA PAGO DIVERSO
-                                'SE CAMBIÓ p_MONTO POR p_IMPORTE_PAGAR
-                                context.Response.ContentType = "text/html"
-                                cod_pago = Crear_Pago_Diverso(p_MONE_CODE,
-                                                       p_IMPORTE_PAGAR,
-                                                       "0003",
-                                                       Utilities.fechaLocal(p_fecha),
-                                                       Utilities.fechaLocal(p_fecha),
-                                                       cod_prov,
-                                                       Nothing,
-                                                       p_USUA_ID,
-                                                       Utilities.fechaLocal(p_fecha),
-                                                       p_PIDM_BENEFICIARIO,
-                                                       Utilities.fechaLocal(p_fecha),
-                                                       p_GASTO_CONCATENADO,
-                                                       IIf(p_SERIE = "", String.Empty, p_SERIE & "-") & IIf(p_NUMERO = "", String.Empty, p_NUMERO),
-                                                       p_CONC_CODE)
-
-                                If cod_pago.Length = 9 Then
-                                    'CREA CREDITO
-                                    'SE CAMBIÓ p_MONTO POR p_IMPORTE_PAGAR
-                                    context.Response.ContentType = "text/html"
-                                    cod_cred = Crear_Credito(p_CTLG_CODE, p_SCSL_CODE, cod_pago,
-                                                           Utilities.fechaLocal(p_fecha),
-                                                           p_IMPORTE_PAGAR,
-                                                           "CR",
-                                                           "",
-                                                           p_USUA_ID,
-                                                           Utilities.fechaLocal(p_fecha),
-                                                           p_MONE_CODE,
-                                                           Utilities.fechaLocal(p_fecha),
-                                                           Nothing,
-                                                          "P")
-                                    If cod_cred.Length = 10 Then
-                                        res = "OK," + cod_prov
-                                    Else
-                                        res = "ERROR AL CREAR CREDITO"
-                                    End If
-                                Else
-                                    res = "ERROR AL CREAR PAGO DIVERSO"
-                                End If
-                            Else
-                                res = "ERROR AL CREAR APROBACION"
-                            End If
+                            res = "OK," + cod_prov
                         Else
-                            res = "ERROR AL CREAR PROVISION"
+                            res = cod_prov
                         End If
+                        'If cod_prov.Length = 15 Then
+                        '    'CREA APROBACION
+                        '    cod_apro = Crear_Aprobacion_Gasto(cod_prov, "2", p_MONTO, IIf(p_fecha = "", Nothing, Utilities.fechaLocal(p_fecha)),
+                        '                                 IIf(p_fecha = "", Nothing, Utilities.fechaLocal(p_fecha)), p_USUA_ID, p_DESC_GASTO, IIf(Utilities.fechaLocal(p_FECHA_UNICA) = "", Nothing, Utilities.fechaLocal(p_FECHA_UNICA)),
+                        '                                 p_NUMERO, p_SERIE, p_TIPO_DCTO, p_CENTRO_COSTO,
+                        '                                 p_CENTRO_COSTO_CABECERA, p_COMPRAS_IND, p_MES_TRIB, p_ANIO_TRIB, p_DETALLE_GASTO, p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_IMPORTE_PAGAR)
+
+                        '    'If cod_apro(0).Length = 8 Then
+                        '    '    'CREA PAGO DIVERSO
+                        '    '    'SE CAMBIÓ p_MONTO POR p_IMPORTE_PAGAR
+                        '    '    context.Response.ContentType = "text/html"
+                        '    '    cod_pago = Crear_Pago_Diverso(p_MONE_CODE,
+                        '    '                           p_IMPORTE_PAGAR,
+                        '    '                           "0003",
+                        '    '                           Utilities.fechaLocal(p_fecha),
+                        '    '                           Utilities.fechaLocal(p_fecha),
+                        '    '                           cod_prov,
+                        '    '                           Nothing,
+                        '    '                           p_USUA_ID,
+                        '    '                           Utilities.fechaLocal(p_fecha),
+                        '    '                           p_PIDM_BENEFICIARIO,
+                        '    '                           Utilities.fechaLocal(p_fecha),
+                        '    '                           p_GASTO_CONCATENADO,
+                        '    '                           IIf(p_SERIE = "", String.Empty, p_SERIE & "-") & IIf(p_NUMERO = "", String.Empty, p_NUMERO),
+                        '    '                           p_CONC_CODE)
+
+                        '    '    'If cod_pago.Length = 9 Then
+                        '    '    '    'CREA CREDITO
+                        '    '    '    'SE CAMBIÓ p_MONTO POR p_IMPORTE_PAGAR
+                        '    '    '    context.Response.ContentType = "text/html"
+                        '    '    '    cod_cred = Crear_Credito(p_CTLG_CODE, p_SCSL_CODE, cod_pago,
+                        '    '    '                           Utilities.fechaLocal(p_fecha),
+                        '    '    '                           p_IMPORTE_PAGAR,
+                        '    '    '                           "CR",
+                        '    '    '                           "",
+                        '    '    '                           p_USUA_ID,
+                        '    '    '                           Utilities.fechaLocal(p_fecha),
+                        '    '    '                           p_MONE_CODE,
+                        '    '    '                           Utilities.fechaLocal(p_fecha),
+                        '    '    '                           Nothing,
+                        '    '    '                          "P")
+                        '    '    '    If cod_cred.Length = 10 Then
+                        '    '    '        res = "OK," + cod_prov
+                        '    '    '    Else
+                        '    '    '        res = "ERROR AL CREAR CREDITO"
+                        '    '    '    End If
+                        '    '    'Else
+                        '    '    '    res = "ERROR AL CREAR PAGO DIVERSO"
+                        '    '    'End If
+                        '    'Else
+                        '    '    res = "ERROR AL CREAR APROBACION"
+                        '    'End If
+                        'Else
+                        '    res = "ERROR AL CREAR PROVISION"
+                        'End If
                     ElseIf r = "X" Then
                         res = "X"
                     End If
@@ -853,6 +857,46 @@ Public Class CPMPGAS : Implements IHttpHandler
         Return Datos
     End Function
 
+    Public Function Crear_Y_Aprobar_Gasto(ByVal p_CONC_CODE As String, ByVal p_CTLG_CODE As String,
+                                      ByVal p_DATO_FRECUENCIA As Integer, ByVal p_DESC_GASTO As String,
+                                      ByVal p_ESTADO_IND As String, ByVal p_FECHA_UNICA As String,
+                                      ByVal p_FRECUENCIA As String,
+                                      ByVal p_MONTO As Decimal, ByVal p_PERIOCIDAD As String,
+                                      ByVal p_PIDM_BENEFICIARIO As Integer, ByVal p_SCONC_CODE As String,
+                                      ByVal p_SCSL_CODE As String, ByVal p_TIPO_IND As String,
+                                      ByVal p_USUA_ID As String, ByVal p_NRO_DCTO_REF As String, ByVal p_CTA_CONTABLE As String,
+                                      ByVal p_MONE_CODE As String,
+                                      ByVal p_CENTRO_COSTO As String,
+                                      ByVal p_CENTRO_COSTO_CABECERA As String,
+                                      ByVal p_TIPO_DCTO As String,
+                                      ByVal p_SERIE As String,
+                                      ByVal p_NUMERO As String,
+                                      ByVal p_COMPRAS_IND As String, p_MES_TRIB As String, p_ANIO_TRIB As String,
+                                      ByVal p_HABIDO_IND As String, ByVal p_TIPO_BIEN As String, p_DETALLE_GASTO As String, p_DEDUCIBLE_IND As String, ByVal p_DECLARA As String, ByVal p_FECHA_VENCI As String,
+                                      ByVal p_DETRACCION_IND As String, ByVal p_IMPORTE_DETRACCION As String,
+                                      ByVal p_RETENCION_IND As String, ByVal p_IMPORTE_RETENCION As String, ByVal p_NRO_SUSPENCION As String, ByVal p_IMPORTE_PAGAR As String) As String
+
+        Dim Datos As String
+        Dim CPCuentaPorPagar As New Nomade.CP.CPCuentaPorPagar("Bn")
+        Datos = CPCuentaPorPagar.Crear_Y_Aprobar_Gasto(p_CONC_CODE, p_CTLG_CODE,
+                                                       p_DATO_FRECUENCIA, p_DESC_GASTO,
+                                                       p_ESTADO_IND, p_FECHA_UNICA,
+                                                       p_FRECUENCIA,
+                                                       p_MONTO, p_PERIOCIDAD,
+                                                       p_PIDM_BENEFICIARIO, p_SCONC_CODE,
+                                                       p_SCSL_CODE, p_TIPO_IND,
+                                                       p_USUA_ID, p_NRO_DCTO_REF,
+                                                       p_CTA_CONTABLE,
+                                                       p_MONE_CODE,
+                                                       IIf(p_CENTRO_COSTO = "", Nothing, p_CENTRO_COSTO), IIf(p_CENTRO_COSTO_CABECERA = "", Nothing, p_CENTRO_COSTO_CABECERA),
+                                                       IIf(p_TIPO_DCTO = "", Nothing, p_TIPO_DCTO),
+                                                       IIf(p_SERIE = "", Nothing, p_SERIE),
+                                                       IIf(p_NUMERO = "", Nothing, p_NUMERO),
+                                                       p_COMPRAS_IND, p_MES_TRIB, p_ANIO_TRIB,
+                                                       p_HABIDO_IND, p_TIPO_BIEN, p_DETALLE_GASTO, p_DEDUCIBLE_IND, p_DECLARA, p_FECHA_VENCI, p_DETRACCION_IND, p_IMPORTE_DETRACCION, p_RETENCION_IND, p_IMPORTE_RETENCION, p_NRO_SUSPENCION, p_IMPORTE_PAGAR)
+        CPCuentaPorPagar = Nothing
+        Return Datos
+    End Function
 
     Public Function Verifica_Existe_Provision(ByVal p_PIDM_BENEFICIARIO As String, ByVal p_SERIE As String,
                                         ByVal p_NUMERO As String, p_TIPO As String, p_COD_GASTO As String, ByVal p_TIPO_DCTO As String, ByVal p_CTLG_CODE As String) As String

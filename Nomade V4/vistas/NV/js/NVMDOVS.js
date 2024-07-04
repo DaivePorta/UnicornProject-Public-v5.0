@@ -22,6 +22,9 @@ var equivalencias = [];
 var prmtDIGP = 0;
 var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
 var prmtBFDV = "NO";//BLOQUEA FECHA DE EMISIÓN
+var prmtCLIE = "NO";//RESTRINGE LA CARGA DE CLIENTES
+var prmtGLIT = "";
+var GLIT = "";
 var total_boni = 0;
 carga_ini_ind = false;
 var token_migo = '';//dporta
@@ -118,7 +121,7 @@ var NVMDOVS = function () {
 
         $('#txt_fec_comp_detrac, #txt_fec_comp_percep, #txt_fec_comp_reten, #txt_fec_emision, #txt_fec_transaccion, #txt_fec_vencimiento, #txt_fec_vig').inputmask("date", { yearrange: { minyear: 1900, maxyear: 2099 } });
         $('#txt_fec_emision, #txt_fec_transaccion, #txt_fec_vencimiento,#txtFechaPago').datepicker("setDate", "now"); //20/02
-        CargarFactorImpuestoRentaVenta();
+        //CargarFactorImpuestoRentaVenta();
 
         $('#txtFechaPago').datepicker();//20/02
 
@@ -130,6 +133,8 @@ var NVMDOVS = function () {
 
         $('#cbo_direccion').select2();
         $('#cbo_appPago, #cbo_appPago2, #cbo_appPago3').select2();
+
+        autocompletarGlosa('#txt_glosa_det', $('#hfTxtGlosaDet').val());
     }
 
     var fillCboEmpresa = function () {
@@ -347,8 +352,10 @@ var NVMDOVS = function () {
                 fillcboRegistroEspecifico('VENT');
 
                 if (ObtenerQueryString("codigo") == undefined) {
-                    fillTxtCliente("#txtClientes", "");
-                    fillTxtResponsablePago();
+                    if (prmtCLIE == 'NO') {
+                        fillTxtCliente("#txtClientes", "");
+                        //fillTxtResponsablePago();
+                    }                    
                 }
                 else {
                     asincrono = false;
@@ -493,7 +500,7 @@ var NVMDOVS = function () {
                 return false;
             }
             if ($(this).is(":checked")) {
-                //fillTxtResponsablePago();
+                fillTxtResponsablePago();
                 $("#txtResponsablePago").removeAttr("disabled");
                 $("#txtResponsablePago").focus();
             } else {
@@ -566,7 +573,7 @@ var NVMDOVS = function () {
                 }
             } else {
                 if ($("#txt_fec_emision").val() != fechaEmisionAnterior) {
-                    CargarFactorImpuestoRentaVenta();
+                    //CargarFactorImpuestoRentaVenta();
                     if ($("#cbo_modo_pago").val() == "0001") {
                         $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
                     } else {
@@ -838,6 +845,59 @@ var NVMDOVS = function () {
             }
         });
 
+        $("#txtClientes").live("keyup", function (e) {
+            $(this).siblings("ul").css("width", $(this).css("width"))
+            if ($("#txtClientes").val().length <= 0) {
+                $("#txtClientes").attr("disabled", true);
+                $("#lblHabido").html("");
+                $("#lblEstado").html("");
+                $('#cbo_modo_pago, #chk_retencion, #txt_Retencion, #txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', true);
+                $('#chk_retencion').parent().removeClass('checked');
+                $('#cbo_modo_pago option:first-child').prop('selected', true);
+                $('#cbo_modo_pago').change();
+                $('#txt_plazo_pago').val('0');
+                //if ($("#txt_fec_emision").val() != "") {
+                //    $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
+                //} else {
+                //    $('#txt_fec_vencimiento').datepicker('setDate', 'now');
+                //}
+                if ($("#txtNroDctoCliente").val() != "" && $("#txtClientes").val() != "") {
+                    $('#cboTipoDoc').val('1').change();
+                }
+
+                $("#txtNroDctoCliente, #txt_id_proveedor, #txt_Retencion").val("");
+
+                prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
+                $('#txt_fec_emision, #txt_fec_vencimiento').datepicker('setDate', 'now');
+
+                //Limpiar valores   
+                $("#txtResponsablePago").val("").attr("disabled", "disabled");
+                $("#chkResponsablePago").prop("checked", false).parent().removeClass('checked');
+
+                $('#cboDocumentoVenta').attr("disabled", "disabled");
+                $('#cboDocumentoVenta').select2("val", "");
+
+                $('#cboSerieDocVenta').attr("disabled", "disabled");
+                $('#cboSerieDocVenta').empty().append('<option></option>').select2("val", "");
+                $("#txtNroDocVenta").val("");
+
+                $("#hfPIDM").val('');
+                $("#hfAgenteRetencionCliente").val('');
+                $("#hfCodigoCategoriaCliente").val('');
+                $("#hfCodigoTipoDocumento").val('');
+                $("#hfTipoDocumento").val('');
+                $("#hfNroDocumento").val('');
+                $("#hfRUC").val('');
+                $("#hfDIR").val('');
+                $("#hfCreditoDispMoba").val("0");
+                $("#lblTipoCorrelativo").html("");
+
+
+                $("#cbo_direccion").empty().html("<option></option>")
+                $("#cbo_direccion").select2("val", "")
+            }
+        });
+
         $("#p_DatCredito .portlet-title").on("click", function () {
             $("#p_DatCredito .portlet-body").slideToggle();
             if ($("#p_DatCredito .portlet-title i").hasClass("icon-chevron-down")) {
@@ -972,7 +1032,7 @@ var NVMDOVS = function () {
         $("#btnRecargarPersona").on("click", function () {
             $("#hfPIDM").val("");
             fillTxtCliente2("#txtClientes", "");
-            fillTxtResponsablePago();
+            //fillTxtResponsablePago();
             if ($("#chkResponsablePago").is(":checked")) {
                 $("#chkResponsablePago").click();
                 $("#chkResponsablePago").parent().removeClass("checked");
@@ -1413,9 +1473,10 @@ var NVMDOVS = function () {
                     if ($("#hfCompletoInd").val() == "N") {
                         $("#txtClientes").attr("disabled", false);
                     }
-
+                    $("#cboTipoDoc").select2("val", datos[0].CLIE_DOID).change();
+                    $("#txtNroDctoCliente").val(datos[0].CLIE_DCTO_NRO);
                     $("#txtClientes").val(datos[0].RAZON_SOCIAL);
-                    $("#txtClientes").keyup().siblings("ul").children("li").click();
+                    //$("#txtClientes").keyup().siblings("ul").children("li").click();
 
                     // COMBO DIRECCION 
                     $("#cbo_direccion").empty()
@@ -2332,7 +2393,7 @@ function ValidarTotales3() {//21/02
 }
 
 function cargarParametrosSistema() {
-    let filtro = "DIGP,REDN,DETR,RETN,RETR,IMRE,BFDV,ODON,ADET,ACON,CURS,MIGO,0021"; //Aquí van los parámetros que se van a utilizar en la pantalla y luego se le hace su case
+    let filtro = "DIGP,REDN,DETR,RETN,RETR,IMRE,BFDV,ODON,ADET,ACON,CURS,MIGO,0021,CLIE,GLIT"; //Aquí van los parámetros que se van a utilizar en la pantalla y luego se le hace su case
     //Se hizo así para que en una sola consulta traiga los datos necesarios y no esté solicitando uno por uno
     //TODOS LOS PARAMETROS -- DPORTA 11/03/2022
     $.ajax({
@@ -2392,10 +2453,10 @@ function cargarParametrosSistema() {
                             break;
                         case "IMRE":
                             if (!isNaN(parseFloat(datos[i].VALOR))) {
-                                $('#hfFactorImpuestoRenta').val(parseFloat(datos[i].VALOR));
+                                $('#hfFactorImpuestoRentaVenta').val(parseFloat(datos[i].VALOR));
                             } else {
                                 infoCustom2("El parámetro Factor de Impuesto a la Renta Mínimo (IMRE) no es válido. Se considerará Factor Mínimo de 1.5%")
-                                $('#hfFactorImpuestoRenta').val("1.5");
+                                $('#hfFactorImpuestoRentaVenta').val("1.5");
                             }
                             break;
                         case "BFDV":
@@ -2431,6 +2492,16 @@ function cargarParametrosSistema() {
                             break;
                         case "MIGO":
                             token_migo = datos[i].DESCRIPCION_DETALLADA;
+                            break;
+                        case "CLIE":
+                            prmtCLIE = datos[i].VALOR;
+                            break;
+                        case "GLIT":
+                            prmtGLIT = datos[i].VALOR;
+                            if (prmtGLIT === "SI") {
+                                GLIT = toTitleCase(datos[i].DESCRIPCION_DETALLADA);
+                                $("#eti_glosa").text(GLIT);
+                            }
                             break;
                         //case "GRAN":
                         //    if (datos[i].VALOR == "SI") {
@@ -2738,32 +2809,32 @@ function cargarParametrosSistema() {
     }
 }
 
-function CargarFactorImpuestoRentaVenta() {
-    var data = new FormData();
-    data.append('p_FECHA_BUSQUEDA', $("#txt_fec_emision").val());
-    $.ajax({
-        type: "POST",
-        url: "vistas/nc/ajax/ncmimre.ashx?OPCION=1",
-        contentType: false,
-        data: data,
-        processData: false,
-        cache: false
-    })
-        .success(function (datos) {
-            if (datos != null && datos != "") {
-                if (parseFloat(datos[0].FACTOR) < parseFloat($("#hfFactorImpuestoRenta").val())) {
-                    $("#hfFactorImpuestoRentaVenta").val($("#hfFactorImpuestoRenta").val());
-                } else {
-                    $("#hfFactorImpuestoRentaVenta").val(datos[0].FACTOR);
-                }
-            }
-            else {
-                $("#hfFactorImpuestoRentaVenta").val($("#hfFactorImpuestoRenta").val());
-            }
-        })
-        .error(function () {
-        });
-}
+//function CargarFactorImpuestoRentaVenta() {
+//    var data = new FormData();
+//    data.append('p_FECHA_BUSQUEDA', $("#txt_fec_emision").val());
+//    $.ajax({
+//        type: "POST",
+//        url: "vistas/nc/ajax/ncmimre.ashx?OPCION=1",
+//        contentType: false,
+//        data: data,
+//        processData: false,
+//        cache: false
+//    })
+//        .success(function (datos) {
+//            if (datos != null && datos != "") {
+//                if (parseFloat(datos[0].FACTOR) < parseFloat($("#hfFactorImpuestoRenta").val())) {
+//                    $("#hfFactorImpuestoRentaVenta").val($("#hfFactorImpuestoRenta").val());
+//                } else {
+//                    $("#hfFactorImpuestoRentaVenta").val(datos[0].FACTOR);
+//                }
+//            }
+//            else {
+//                $("#hfFactorImpuestoRentaVenta").val($("#hfFactorImpuestoRenta").val());
+//            }
+//        })
+//        .error(function () {
+//        });
+//}
 
 function ListarSucursales(ctlg) {
     var USUA_ID = $("#ctl00_txtus").val();
@@ -3114,7 +3185,7 @@ function validarFechaEmision(fechaInicio, fechaFin) { //DPORTA 31/01/2023
         $('#txt_fec_emision, #txt_fec_vencimiento').datepicker('setDate', 'now');
         infoCustom2("Los documentos electrónicos, solo se pueden emitir con 1 día de antelación.");
     } else {
-        CargarFactorImpuestoRentaVenta();
+        //CargarFactorImpuestoRentaVenta();
         if ($("#cbo_modo_pago").val() == "0001") {
             $("#txt_fec_vencimiento").val($("#txt_fec_emision").val());
         } else {
@@ -3304,172 +3375,362 @@ function ListarValorCambioOficial(monecode) {
     }
 }
 
-//Lista Clientes 
-function fillTxtCliente(v_ID, v_value) {
-
+//Cliente Especifico 
+function fillTxtClienteEspecifico(nro) {
     $("#divTxtClientes").html('<input id="txtClientes" class="span12" type="text" placeholder="Cliente" style="text-transform: uppercase" />');
-    var selectRazonSocial = $(v_ID);
     $.ajax({
         type: "post",
-        //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
-        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.7&CTLG_CODE=" + $("#cbo_Empresa").val() + "&NRO_DOC=" + nro,
         contenttype: "application/json;",
         datatype: "json",
-        async: asincrono,
+        async: false,
         success: function (datos) {
             if (datos != null) {
-                textclientes = selectRazonSocial.typeahead({
-                    items: 20,
-                    source: function (query, process) {
-                        arrayRazonSocial = [];
-                        map = {};
-                        let oObjet = new Array();
+                map = {};
+                let oObjet = new Array();
+                for (var i = 0; i < datos.length; i++) {
 
-                        for (var i = 0; i < datos.length; i++) {
+                    var obj = {};
+                    obj.TIPO_DOCUMENTO = datos[i].TIPO_DOCUMENTO;
+                    obj.NRO_DOCUMENTO = datos[i].NRO_DOCUMENTO;
+                    obj.CODIGO_TIPO_DOCUMENTO = datos[i].CODIGO_TIPO_DOCUMENTO;
+                    obj.RUC = datos[i].RUC;
+                    obj.RAZON_SOCIAL = datos[i].RAZON_SOCIAL;
+                    obj.CODIGO_CATEGORIA = datos[i].CODIGO_CATEGORIA;
+                    obj.CATE_DESC = datos[i].CATE_DESC;
+                    obj.DEUDA = datos[i].DEUDA;
+                    obj.PIDM = datos[i].PIDM;
+                    obj.DIAS = datos[i].DIAS;
+                    obj.ID = datos[i].ID;
+                    obj.AGENTE_RETEN_IND = datos[i].AGENTE_RETEN_IND;
+                    obj.PPBIDEN_CONDICION_SUNAT = datos[i].PPBIDEN_CONDICION_SUNAT;
+                    obj.PPBIDEN_ESTADO_SUNAT = datos[i].PPBIDEN_ESTADO_SUNAT;
 
-                            arrayRazonSocial.push(datos[i].RAZON_SOCIAL);
-                            var obj = {};
-                            obj.TIPO_DOCUMENTO = datos[i].TIPO_DOCUMENTO;
-                            obj.NRO_DOCUMENTO = datos[i].NRO_DOCUMENTO;
-                            obj.CODIGO_TIPO_DOCUMENTO = datos[i].CODIGO_TIPO_DOCUMENTO;
-                            obj.RUC = datos[i].RUC;
-                            obj.RAZON_SOCIAL = datos[i].RAZON_SOCIAL;
-                            //obj.DIRECCION = datos[i].DIRECCION;
-                            obj.CODIGO_CATEGORIA = datos[i].CODIGO_CATEGORIA;
-                            obj.CATE_DESC = datos[i].CATE_DESC;
-                            obj.DEUDA = datos[i].DEUDA;
-                            obj.PIDM = datos[i].PIDM;
-                            obj.DIAS = datos[i].DIAS;
-                            obj.ID = datos[i].ID;
-                            obj.AGENTE_RETEN_IND = datos[i].AGENTE_RETEN_IND;
-                            obj.PPBIDEN_CONDICION_SUNAT = datos[i].PPBIDEN_CONDICION_SUNAT;
-                            obj.PPBIDEN_ESTADO_SUNAT = datos[i].PPBIDEN_ESTADO_SUNAT;
+                    oObjet.push(obj);
+                }
 
-                            if (v_value == obj.PIDM) {
-                                jsonPredeterminado = obj;
+                jsonClientes = oObjet;
+
+                if (obj.RUC != "") {
+                    $('#cboTipoDoc').select2("val", "6").change();
+                    $("#txtNroDctoCliente").val(obj.RUC);
+                    $("#btnHabido").show();
+                } else {
+                    $('#cboTipoDoc').select2("val", obj.CODIGO_TIPO_DOCUMENTO).change();
+                    $("#txtNroDctoCliente").val(obj.NRO_DOCUMENTO);
+                    $("#btnHabido").hide();
+                }
+
+                $("#lblHabido").html("");
+                $("#lblEstado").html("");
+
+                $('#cboDocumentoVenta').removeAttr("disabled");
+                $("#hfPIDM").val(obj.PIDM);
+                $("#hfAgenteRetencionCliente").val(obj.AGENTE_RETEN_IND);
+                $("#hfCodigoCategoriaCliente").val(obj.CODIGO_CATEGORIA);
+                $("#hfCodigoTipoDocumento").val(obj.CODIGO_TIPO_DOCUMENTO);
+                $("#hfTipoDocumento").val(obj.TIPO_DOCUMENTO);
+                $("#hfNroDocumento").val(obj.NRO_DOCUMENTO);
+                $("#hfRUC").val(obj.RUC);
+
+                cod_cate_clie = obj.CODIGO_CATEGORIA;
+                des_cate_clie = obj.CATE_DESC;
+                deuda = obj.DEUDA;
+
+                if ($("#txt_fec_transaccion").val() != $("#txt_fec_vig_Oficial").val()) {//DPORTA
+                    if (ObtenerQueryString("codigo") == undefined) {
+                        InsertarValorCambioOficial($('#cbo_moneda').val());
+                    }
+                }
+                prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
+
+                //Cargar modo de pago
+                $("#cbo_modo_pago").select2('val', '0001');
+                if ($("#hfPIDM").val() !== '1') {
+                    $("#linea").html('');
+                    $("#disponible").html('');
+                    $("#vencido").html('');
+                    $("#divAlCredito").hide();
+                } else {
+                    $("#linea").html('');
+                    $("#disponible").html('');
+                    $("#vencido").html('');
+                    $("#divAlCredito").hide();
+                }
+
+                $('#chk_retencion').prop('disabled', true);
+                $('#chk_retencion').prop('checked', false).parent().removeClass('checked');
+                $('#txt_Retencion, #txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', true).val('');
+
+                //Evalua si se aplica retencion
+                if (obj.AGENTE_RETEN_IND == 'S' && $("#cbo_Empresa :selected").attr("agente-reten-ind") == "N") {//CAMBIO_RETENCION
+                    $('#chk_retencion').prop('checked', true).parent().addClass('checked');
+                    $('#txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', false).val('');
+                }
+
+                if (obj.DIAS > 0) {
+                    $("#cbo_modo_pago").prop("disabled", false);
+                }
+                else {
+                    $("#cbo_modo_pago").prop("disabled", true);
+                }
+
+                fillCboDirecciones(obj.PIDM);
+            }
+        },
+        error: function (msg) {
+            alertCustom("Cliente no se encontró");
+        }
+    });
+}
+
+//Lista Clientes 
+function fillTxtCliente(v_ID, v_value) {
+    //if (prmtCLIE == 'NO') {
+        $("#divTxtClientes").html('<input id="txtClientes" class="span12" type="text" placeholder="Cliente" style="text-transform: uppercase" />');
+        var selectRazonSocial = $(v_ID);
+        $.ajax({
+            type: "post",
+            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
+            contenttype: "application/json;",
+            datatype: "json",
+            async: asincrono,
+            success: function (datos) {
+                if (datos != null) {
+                    textclientes = selectRazonSocial.typeahead({
+                        items: 20,
+                        source: function (query, process) {
+                            arrayRazonSocial = [];
+                            map = {};
+                            let oObjet = new Array();
+
+                            for (var i = 0; i < datos.length; i++) {
+
+                                arrayRazonSocial.push(datos[i].RAZON_SOCIAL);
+                                var obj = {};
+                                obj.TIPO_DOCUMENTO = datos[i].TIPO_DOCUMENTO;
+                                obj.NRO_DOCUMENTO = datos[i].NRO_DOCUMENTO;
+                                obj.CODIGO_TIPO_DOCUMENTO = datos[i].CODIGO_TIPO_DOCUMENTO;
+                                obj.RUC = datos[i].RUC;
+                                obj.RAZON_SOCIAL = datos[i].RAZON_SOCIAL;
+                                //obj.DIRECCION = datos[i].DIRECCION;
+                                obj.CODIGO_CATEGORIA = datos[i].CODIGO_CATEGORIA;
+                                obj.CATE_DESC = datos[i].CATE_DESC;
+                                obj.DEUDA = datos[i].DEUDA;
+                                obj.PIDM = datos[i].PIDM;
+                                obj.DIAS = datos[i].DIAS;
+                                obj.ID = datos[i].ID;
+                                obj.AGENTE_RETEN_IND = datos[i].AGENTE_RETEN_IND;
+                                obj.PPBIDEN_CONDICION_SUNAT = datos[i].PPBIDEN_CONDICION_SUNAT;
+                                obj.PPBIDEN_ESTADO_SUNAT = datos[i].PPBIDEN_ESTADO_SUNAT;
+
+                                if (v_value == obj.PIDM) {
+                                    jsonPredeterminado = obj;
+                                }
+                                oObjet.push(obj);
                             }
-                            oObjet.push(obj);
-                        }
-                        jsonClientes = oObjet;
-                        $.each(oObjet, function (i, objeto) {
-                            map[objeto.RAZON_SOCIAL] = objeto;
-                        });
-                        process(arrayRazonSocial);
+                            jsonClientes = oObjet;
+                            $.each(oObjet, function (i, objeto) {
+                                map[objeto.RAZON_SOCIAL] = objeto;
+                            });
+                            process(arrayRazonSocial);
 
-                        if (jsonPredeterminado.PIDM == v_value && !aux_predeterminado) {//SE PUEDE COMENTAR TODO ESTO
-                            var auxArrayRazonSocial = [];
-                            auxArrayRazonSocial.push(jsonPredeterminado.RAZON_SOCIAL);
-                            $("#txtClientes").val(jsonPredeterminado.RAZON_SOCIAL);
+                            if (jsonPredeterminado.PIDM == v_value && !aux_predeterminado) {//SE PUEDE COMENTAR TODO ESTO
+                                var auxArrayRazonSocial = [];
+                                auxArrayRazonSocial.push(jsonPredeterminado.RAZON_SOCIAL);
+                                $("#txtClientes").val(jsonPredeterminado.RAZON_SOCIAL);
+                                $("#lblHabido").html("");
+                                $("#lblEstado").html("");
+
+                                $('#cboDocumentoVenta').removeAttr("disabled");
+                                $("#hfPIDM").val(jsonPredeterminado.PIDM);
+                                $("#hfAgenteRetencionCliente").val(jsonPredeterminado.AGENTE_RETEN_IND);
+                                $("#hfCodigoCategoriaCliente").val(jsonPredeterminado.CODIGO_CATEGORIA);
+                                $("#hfCodigoTipoDocumento").val(jsonPredeterminado.CODIGO_TIPO_DOCUMENTO);
+                                $("#hfTipoDocumento").val(jsonPredeterminado.TIPO_DOCUMENTO);
+                                $("#hfNroDocumento").val(jsonPredeterminado.NRO_DOCUMENTO);
+                                $("#hfRUC").val(jsonPredeterminado.RUC);
+                                //$("#hfDIR").val(jsonPredeterminado.DIRECCION);
+
+                                $("#hfcod_cate2").val(jsonPredeterminado.CODIGO_CATEGORIA);
+                                $("#hfdes_cate2").val(jsonPredeterminado.CATE_DESC);
+                                cod_cate_clie = jsonPredeterminado.CODIGO_CATEGORIA;
+                                des_cate_clie = jsonPredeterminado.CATE_DESC;
+
+                                if (jsonPredeterminado.PPBIDEN_CONDICION_SUNAT != "") {
+                                    $("#lblHabido").html("CONDICIÓN: " + "<b>" + jsonPredeterminado.PPBIDEN_CONDICION_SUNAT + "</b>");
+                                }
+                                if (jsonPredeterminado.PPBIDEN_ESTADO_SUNAT != "") {
+                                    $("#lblEstado").html("ESTADO: " + "<b>" + jsonPredeterminado.PPBIDEN_ESTADO_SUNAT + "</b>");
+                                }
+
+                                if ($("#txt_fec_transaccion").val() != $("#txt_fec_vig_Oficial").val()) {//DPORTA
+                                    if (ObtenerQueryString("codigo") == undefined) {
+                                        InsertarValorCambioOficial($('#cbo_moneda').val());
+                                    }
+                                }
+                                prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
+                                if (jsonPredeterminado.RUC != "") {
+                                    $('#cboTipoDoc').select2("val", "6").change();
+                                    $("#txtNroDctoCliente").val(jsonPredeterminado.RUC);
+                                    $("#btnHabido").show();
+                                } else {
+                                    $('#cboTipoDoc').select2("val", jsonPredeterminado.CODIGO_TIPO_DOCUMENTO).change();
+                                    $("#txtNroDctoCliente").val(jsonPredeterminado.NRO_DOCUMENTO);
+                                    $("#btnHabido").hide();
+                                }
+
+                                if ($('#cboTipoDoc').val() == '6') {
+                                    $("#cboDocumentoVenta option:not([value=0001])").attr("disabled", "disabled");
+                                    $("#cboDocumentoVenta option[value=0012]").removeAttr("disabled");
+                                    $("#cboDocumentoVenta option[value=0101]").removeAttr("disabled"); //PARA QUE ESTÉ DESBLOQUEADO LA NOTA DE VENTA O EL NOMBRE QUE LE HAYA PUESTO EL CLIENTE
+                                    $("#cboDocumentoVenta option[value=0001]").removeAttr("disabled");
+
+                                    //var oItems = $('#cboDocumentoVenta option');
+                                    //for (var i = 0; i < oItems.length; i++) {
+                                    //    if (oItems[i].value === "0012") {
+                                    //        $("#cboDocumentoVenta").select2("val", "0012").change();
+                                    //    } else {
+                                    //        $("#cboDocumentoVenta").select2("val", "0001").change();
+                                    //    }
+                                    //}
+                                    var oItems = $('#cboDocumentoVenta option');
+                                    for (var i = 0; i < oItems.length; i++) {
+                                        if (oItems[i].value != "" && oItems[i].value != "0003") {
+                                            if (oItems[i].value === "0012" && $("#txtNroDocVenta").val() == "") {
+                                                $("#cboDocumentoVenta").select2("val", "0012").change();
+                                            } else if (oItems[i].value === "0001" && $("#txtNroDocVenta").val() == "") {
+                                                //if ($('#cboSerieDocVenta').val() == "0001") {//DPORTA
+                                                $("#cboDocumentoVenta").select2("val", "0001").change();
+                                                //}
+                                            } else if (oItems[i].value === "0101" && $("#txtNroDocVenta").val() == "") {
+                                                $("#cboDocumentoVenta").select2("val", "0101").change();
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    $("#cboDocumentoVenta option:not([value=0001])").removeAttr("disabled");
+                                    $("#cboDocumentoVenta option[value=0001]").attr("disabled", "disabled");
+
+                                    //var oItems = $('#cboDocumentoVenta option');
+                                    //for (var i = 0; i < oItems.length; i++) {
+                                    //    if (oItems[i].value === "0012") {
+                                    //        $("#cboDocumentoVenta").select2("val", "0012").change();
+                                    //    } else {
+                                    //        $("#cboDocumentoVenta").select2("val", "0003").change();
+                                    //    }
+                                    //}
+                                    var oItems = $('#cboDocumentoVenta option');
+                                    for (var i = 0; i < oItems.length; i++) {
+                                        if (oItems[i].value != "" && oItems[i].value != "0001") {
+                                            if (oItems[i].value === "0012" && $("#txtNroDocVenta").val() == "") {
+                                                $("#cboDocumentoVenta").select2("val", "0012").change();
+                                            } else if (oItems[i].value === "0003" && $("#txtNroDocVenta").val() == "") {
+                                                //if ($('#cboSerieDocVenta').val() == "0003") {
+                                                $("#cboDocumentoVenta").select2("val", "0003").change();
+                                                //}
+                                            } else if (oItems[i].value === "0101" && $("#txtNroDocVenta").val() == "") {
+                                                $("#cboDocumentoVenta").select2("val", "0101").change();
+                                            }
+                                        }
+                                    }
+                                }
+                                //Cargar modo de pago
+                                $("#cbo_modo_pago").select2('val', '0001');
+                                $("#cbo_modo_pago").change();
+                                $('#chk_retencion').prop('disabled', true);
+                                $('#chk_retencion').prop('checked', false).parent().removeClass('checked');
+                                $('#txt_Retencion, #txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', true).val('');
+
+                                //Evalua si se aplica retencion
+                                if (jsonPredeterminado.AGENTE_RETEN_IND == 'S' && $("#cbo_Empresa :selected").attr("agente-reten-ind") == "N") {//CAMBIO_RETENCION
+                                    $('#chk_retencion').prop('checked', true).parent().addClass('checked');
+                                    $('#txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', false).val('');
+                                }
+
+                                if (jsonPredeterminado.DIAS > 0) {
+                                    $("#cbo_modo_pago").prop("disabled", false);
+                                }
+                                else {
+                                    $("#cbo_modo_pago").prop("disabled", true);
+                                }
+
+                                //if (!carga_ini_ind) {
+                                fillCboDirecciones(jsonPredeterminado.PIDM);
+                                //}
+
+                                //CARGA POR DEFECTO
+                                //if ($("#cboDocumentoVenta").val() == "" && $("#txtNroDocVenta").val() == "") {
+                                //    $("#cboDocumentoVenta").select2("val", "0012").change();
+                                //}
+
+                                process(auxArrayRazonSocial);
+                                aux_predeterminado = true;
+
+                            }
+                        },
+                        updater: function (item) {
+                            if (map[item].RUC != "") {
+                                $('#cboTipoDoc').select2("val", "6").change();
+                                $("#txtNroDctoCliente").val(map[item].RUC);
+                                $("#btnHabido").show();
+                            } else {
+                                $('#cboTipoDoc').select2("val", map[item].CODIGO_TIPO_DOCUMENTO).change();
+                                $("#txtNroDctoCliente").val(map[item].NRO_DOCUMENTO);
+                                $("#btnHabido").hide();
+                            }
+
                             $("#lblHabido").html("");
                             $("#lblEstado").html("");
 
                             $('#cboDocumentoVenta').removeAttr("disabled");
-                            $("#hfPIDM").val(jsonPredeterminado.PIDM);
-                            $("#hfAgenteRetencionCliente").val(jsonPredeterminado.AGENTE_RETEN_IND);
-                            $("#hfCodigoCategoriaCliente").val(jsonPredeterminado.CODIGO_CATEGORIA);
-                            $("#hfCodigoTipoDocumento").val(jsonPredeterminado.CODIGO_TIPO_DOCUMENTO);
-                            $("#hfTipoDocumento").val(jsonPredeterminado.TIPO_DOCUMENTO);
-                            $("#hfNroDocumento").val(jsonPredeterminado.NRO_DOCUMENTO);
-                            $("#hfRUC").val(jsonPredeterminado.RUC);
-                            //$("#hfDIR").val(jsonPredeterminado.DIRECCION);
+                            $("#hfPIDM").val(map[item].PIDM);
+                            $("#hfAgenteRetencionCliente").val(map[item].AGENTE_RETEN_IND);
+                            $("#hfCodigoCategoriaCliente").val(map[item].CODIGO_CATEGORIA);
+                            $("#hfCodigoTipoDocumento").val(map[item].CODIGO_TIPO_DOCUMENTO);
+                            $("#hfTipoDocumento").val(map[item].TIPO_DOCUMENTO);
+                            $("#hfNroDocumento").val(map[item].NRO_DOCUMENTO);
+                            $("#hfRUC").val(map[item].RUC);
+                            //$("#hfDIR").val(map[item].DIRECCION);
 
-                            $("#hfcod_cate2").val(jsonPredeterminado.CODIGO_CATEGORIA);
-                            $("#hfdes_cate2").val(jsonPredeterminado.CATE_DESC);
-                            cod_cate_clie = jsonPredeterminado.CODIGO_CATEGORIA;
-                            des_cate_clie = jsonPredeterminado.CATE_DESC;
-
-                            if (jsonPredeterminado.PPBIDEN_CONDICION_SUNAT != "") {
-                                $("#lblHabido").html("CONDICIÓN: " + "<b>" + jsonPredeterminado.PPBIDEN_CONDICION_SUNAT + "</b>");
-                            }
-                            if (jsonPredeterminado.PPBIDEN_ESTADO_SUNAT != "") {
-                                $("#lblEstado").html("ESTADO: " + "<b>" + jsonPredeterminado.PPBIDEN_ESTADO_SUNAT + "</b>");
-                            }
+                            cod_cate_clie = map[item].CODIGO_CATEGORIA;
+                            des_cate_clie = map[item].CATE_DESC;
+                            deuda = map[item].DEUDA;
 
                             if ($("#txt_fec_transaccion").val() != $("#txt_fec_vig_Oficial").val()) {//DPORTA
                                 if (ObtenerQueryString("codigo") == undefined) {
                                     InsertarValorCambioOficial($('#cbo_moneda').val());
-                                }                                
+                                }
                             }
                             prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
-                            if (jsonPredeterminado.RUC != "") {
-                                $('#cboTipoDoc').select2("val", "6").change();
-                                $("#txtNroDctoCliente").val(jsonPredeterminado.RUC);
-                                $("#btnHabido").show();
-                            } else {
-                                $('#cboTipoDoc').select2("val", jsonPredeterminado.CODIGO_TIPO_DOCUMENTO).change();
-                                $("#txtNroDctoCliente").val(jsonPredeterminado.NRO_DOCUMENTO);
-                                $("#btnHabido").hide();
-                            }
 
-                            if ($('#cboTipoDoc').val() == '6') {
-                                $("#cboDocumentoVenta option:not([value=0001])").attr("disabled", "disabled");
-                                $("#cboDocumentoVenta option[value=0012]").removeAttr("disabled");
-                                $("#cboDocumentoVenta option[value=0101]").removeAttr("disabled"); //PARA QUE ESTÉ DESBLOQUEADO LA NOTA DE VENTA O EL NOMBRE QUE LE HAYA PUESTO EL CLIENTE
-                                $("#cboDocumentoVenta option[value=0001]").removeAttr("disabled");
-
-                                //var oItems = $('#cboDocumentoVenta option');
-                                //for (var i = 0; i < oItems.length; i++) {
-                                //    if (oItems[i].value === "0012") {
-                                //        $("#cboDocumentoVenta").select2("val", "0012").change();
-                                //    } else {
-                                //        $("#cboDocumentoVenta").select2("val", "0001").change();
-                                //    }
-                                //}
-                                var oItems = $('#cboDocumentoVenta option');
-                                for (var i = 0; i < oItems.length; i++) {
-                                    if (oItems[i].value != "" && oItems[i].value != "0003") {
-                                        if (oItems[i].value === "0012" && $("#txtNroDocVenta").val() == "") {
-                                        $("#cboDocumentoVenta").select2("val", "0012").change();
-                                        } else if (oItems[i].value === "0001" && $("#txtNroDocVenta").val() == "") {
-                                            //if ($('#cboSerieDocVenta').val() == "0001") {//DPORTA
-                                        $("#cboDocumentoVenta").select2("val", "0001").change();
-                                            //}
-                                        } else if (oItems[i].value === "0101" && $("#txtNroDocVenta").val() == "") {
-                                            $("#cboDocumentoVenta").select2("val", "0101").change();
-                                        }
-                                    }
-                                }
-                            } else {
-                                $("#cboDocumentoVenta option:not([value=0001])").removeAttr("disabled");
-                                $("#cboDocumentoVenta option[value=0001]").attr("disabled", "disabled");
-
-                                //var oItems = $('#cboDocumentoVenta option');
-                                //for (var i = 0; i < oItems.length; i++) {
-                                //    if (oItems[i].value === "0012") {
-                                //        $("#cboDocumentoVenta").select2("val", "0012").change();
-                                //    } else {
-                                //        $("#cboDocumentoVenta").select2("val", "0003").change();
-                                //    }
-                                //}
-                                var oItems = $('#cboDocumentoVenta option');
-                                for (var i = 0; i < oItems.length; i++) {
-                                    if (oItems[i].value != "" && oItems[i].value != "0001") {
-                                        if (oItems[i].value === "0012" && $("#txtNroDocVenta").val() == "") {
-                                        $("#cboDocumentoVenta").select2("val", "0012").change();
-                                        } else if (oItems[i].value === "0003" && $("#txtNroDocVenta").val() == "") {
-                                            //if ($('#cboSerieDocVenta').val() == "0003") {
-                                        $("#cboDocumentoVenta").select2("val", "0003").change();
-                                            //}
-                                        } else if (oItems[i].value === "0101" && $("#txtNroDocVenta").val() == "") {
-                                            $("#cboDocumentoVenta").select2("val", "0101").change();
-                                        }
-                                    }
-                                }
-                            }
                             //Cargar modo de pago
                             $("#cbo_modo_pago").select2('val', '0001');
-                            $("#cbo_modo_pago").change();
+                            if ($("#hfPIDM").val() !== '1') {
+                                //$("#cbo_modo_pago").change();
+                                $("#linea").html('');
+                                $("#disponible").html('');
+                                $("#vencido").html('');
+                                $("#divAlCredito").hide();
+                            } else {
+                                $("#linea").html('');
+                                $("#disponible").html('');
+                                $("#vencido").html('');
+                                $("#divAlCredito").hide();
+                            }
+
                             $('#chk_retencion').prop('disabled', true);
                             $('#chk_retencion').prop('checked', false).parent().removeClass('checked');
                             $('#txt_Retencion, #txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', true).val('');
 
                             //Evalua si se aplica retencion
-                            if (jsonPredeterminado.AGENTE_RETEN_IND == 'S' && $("#cbo_Empresa :selected").attr("agente-reten-ind") == "N") {//CAMBIO_RETENCION
+                            if (map[item].AGENTE_RETEN_IND == 'S' && $("#cbo_Empresa :selected").attr("agente-reten-ind") == "N") {//CAMBIO_RETENCION
                                 $('#chk_retencion').prop('checked', true).parent().addClass('checked');
                                 $('#txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', false).val('');
                             }
 
-                            if (jsonPredeterminado.DIAS > 0) {
+                            if (map[item].DIAS > 0) {
                                 $("#cbo_modo_pago").prop("disabled", false);
                             }
                             else {
@@ -3477,162 +3738,82 @@ function fillTxtCliente(v_ID, v_value) {
                             }
 
                             //if (!carga_ini_ind) {
-                            fillCboDirecciones(jsonPredeterminado.PIDM);
+                            fillCboDirecciones(map[item].PIDM);
                             //}
 
-                            //CARGA POR DEFECTO
+                            //CARGA POR DEFECTO                       
                             //if ($("#cboDocumentoVenta").val() == "" && $("#txtNroDocVenta").val() == "") {
                             //    $("#cboDocumentoVenta").select2("val", "0012").change();
                             //}
 
-                            process(auxArrayRazonSocial);
-                            aux_predeterminado = true;
-
-                        }
-                    },
-                    updater: function (item) {
-                        if (map[item].RUC != "") {
-                            $('#cboTipoDoc').select2("val", "6").change();
-                            $("#txtNroDctoCliente").val(map[item].RUC);
-                            $("#btnHabido").show();
-                        } else {
-                            $('#cboTipoDoc').select2("val", map[item].CODIGO_TIPO_DOCUMENTO).change();
-                            $("#txtNroDctoCliente").val(map[item].NRO_DOCUMENTO);
-                            $("#btnHabido").hide();
-                        }
-
-                        $("#lblHabido").html("");
-                        $("#lblEstado").html("");
-
-                        $('#cboDocumentoVenta').removeAttr("disabled");
-                        $("#hfPIDM").val(map[item].PIDM);
-                        $("#hfAgenteRetencionCliente").val(map[item].AGENTE_RETEN_IND);
-                        $("#hfCodigoCategoriaCliente").val(map[item].CODIGO_CATEGORIA);
-                        $("#hfCodigoTipoDocumento").val(map[item].CODIGO_TIPO_DOCUMENTO);
-                        $("#hfTipoDocumento").val(map[item].TIPO_DOCUMENTO);
-                        $("#hfNroDocumento").val(map[item].NRO_DOCUMENTO);
-                        $("#hfRUC").val(map[item].RUC);
-                        //$("#hfDIR").val(map[item].DIRECCION);
-
-                        cod_cate_clie = map[item].CODIGO_CATEGORIA;
-                        des_cate_clie = map[item].CATE_DESC;
-                        deuda = map[item].DEUDA;
-
-                        if ($("#txt_fec_transaccion").val() != $("#txt_fec_vig_Oficial").val()) {//DPORTA
-                            if (ObtenerQueryString("codigo") == undefined) {
-                                InsertarValorCambioOficial($('#cbo_moneda').val());
+                            return item;
+                        },
+                    });
+                    selectRazonSocial.keyup(function () {
+                        $(this).siblings("ul").css("width", $(this).css("width"))
+                        if ($("#txtClientes").val().length <= 0) {
+                            $("#lblHabido").html("");
+                            $("#lblEstado").html("");
+                            $('#cbo_modo_pago, #chk_retencion, #txt_Retencion, #txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', true);
+                            $('#chk_retencion').parent().removeClass('checked');
+                            $('#cbo_modo_pago option:first-child').prop('selected', true);
+                            $('#cbo_modo_pago').change();
+                            $('#txt_plazo_pago').val('0');
+                            //if ($("#txt_fec_emision").val() != "") {
+                            //    $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
+                            //} else {
+                            //    $('#txt_fec_vencimiento').datepicker('setDate', 'now');
+                            //}
+                            if ($("#txtNroDctoCliente").val() != "" && $("#txtClientes").val() != "") {
+                                $('#cboTipoDoc').val('1').change();
                             }
+
+                            $("#txtNroDctoCliente, #txt_id_proveedor, #txt_Retencion").val("");
+
+                            prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
+                            $('#txt_fec_emision, #txt_fec_vencimiento').datepicker('setDate', 'now');
+
+                            //Limpiar valores   
+                            $("#txtResponsablePago").val("").attr("disabled", "disabled");
+                            $("#chkResponsablePago").prop("checked", false).parent().removeClass('checked');
+
+                            $('#cboDocumentoVenta').attr("disabled", "disabled");
+                            $('#cboDocumentoVenta').select2("val", "");
+
+                            $('#cboSerieDocVenta').attr("disabled", "disabled");
+                            $('#cboSerieDocVenta').empty().append('<option></option>').select2("val", "");
+                            $("#txtNroDocVenta").val("");
+
+                            $("#hfPIDM").val('');
+                            $("#hfAgenteRetencionCliente").val('');
+                            $("#hfCodigoCategoriaCliente").val('');
+                            $("#hfCodigoTipoDocumento").val('');
+                            $("#hfTipoDocumento").val('');
+                            $("#hfNroDocumento").val('');
+                            $("#hfRUC").val('');
+                            $("#hfDIR").val('');
+                            $("#hfCreditoDispMoba").val("0");
+                            $("#lblTipoCorrelativo").html("");
+
+
+                            $("#cbo_direccion").empty().html("<option></option>")
+                            $("#cbo_direccion").select2("val", "")
                         }
-                        prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
-                        
-                        //Cargar modo de pago
-                        $("#cbo_modo_pago").select2('val', '0001');
-                        if ($("#hfPIDM").val() !== '1') {
-                            //$("#cbo_modo_pago").change();
-                            $("#linea").html('');
-                            $("#disponible").html('');
-                            $("#vencido").html('');
-                            $("#divAlCredito").hide();
-                        } else {
-                            $("#linea").html('');
-                            $("#disponible").html('');
-                            $("#vencido").html('');
-                            $("#divAlCredito").hide();
-                        }
+                    });
+                }
+                if (datos != null && $.trim(v_value).length > 0) {
+                    selectRazonSocial.val(v_value);
+                }
 
-                        $('#chk_retencion').prop('disabled', true);
-                        $('#chk_retencion').prop('checked', false).parent().removeClass('checked');
-                        $('#txt_Retencion, #txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', true).val('');
-
-                        //Evalua si se aplica retencion
-                        if (map[item].AGENTE_RETEN_IND == 'S' && $("#cbo_Empresa :selected").attr("agente-reten-ind") == "N") {//CAMBIO_RETENCION
-                            $('#chk_retencion').prop('checked', true).parent().addClass('checked');
-                            $('#txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', false).val('');
-                        }
-
-                        if (map[item].DIAS > 0) {
-                            $("#cbo_modo_pago").prop("disabled", false);
-                        }
-                        else {
-                            $("#cbo_modo_pago").prop("disabled", true);
-                        }
-
-                        //if (!carga_ini_ind) {
-                        fillCboDirecciones(map[item].PIDM);
-                        //}
-
-                        //CARGA POR DEFECTO                       
-                        //if ($("#cboDocumentoVenta").val() == "" && $("#txtNroDocVenta").val() == "") {
-                        //    $("#cboDocumentoVenta").select2("val", "0012").change();
-                        //}
-
-                        return item;
-                    },
-                });
-                selectRazonSocial.keyup(function () {
-                    $(this).siblings("ul").css("width", $(this).css("width"))
-                    if ($("#txtClientes").val().length <= 0) {
-                        $("#lblHabido").html("");
-                        $("#lblEstado").html("");
-                        $('#cbo_modo_pago, #chk_retencion, #txt_Retencion, #txt_num_comp_reten, #txt_fec_comp_reten').prop('disabled', true);
-                        $('#chk_retencion').parent().removeClass('checked');
-                        $('#cbo_modo_pago option:first-child').prop('selected', true);
-                        $('#cbo_modo_pago').change();
-                        $('#txt_plazo_pago').val('0');
-                        //if ($("#txt_fec_emision").val() != "") {
-                        //    $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
-                        //} else {
-                        //    $('#txt_fec_vencimiento').datepicker('setDate', 'now');
-                        //}
-                        if ($("#txtNroDctoCliente").val() != "" && $("#txtClientes").val() != "") {
-                            $('#cboTipoDoc').val('1').change();
-                        }
-
-                        $("#txtNroDctoCliente, #txt_id_proveedor, #txt_Retencion").val("");
-
-                        prmtBFDV == "SI" ? $("#txt_fec_emision").attr("disabled", "disabled") : $("#txt_fec_emision").removeAttr("disabled", false);
-                        $('#txt_fec_emision, #txt_fec_vencimiento').datepicker('setDate', 'now');
-
-                        //Limpiar valores   
-                        $("#txtResponsablePago").val("").attr("disabled", "disabled");
-                        $("#chkResponsablePago").prop("checked", false).parent().removeClass('checked');
-
-                        $('#cboDocumentoVenta').attr("disabled", "disabled");
-                        $('#cboDocumentoVenta').select2("val", "");
-
-                        $('#cboSerieDocVenta').attr("disabled", "disabled");
-                        $('#cboSerieDocVenta').empty().append('<option></option>').select2("val", "");
-                        $("#txtNroDocVenta").val("");
-
-                        $("#hfPIDM").val('');
-                        $("#hfAgenteRetencionCliente").val('');
-                        $("#hfCodigoCategoriaCliente").val('');
-                        $("#hfCodigoTipoDocumento").val('');
-                        $("#hfTipoDocumento").val('');
-                        $("#hfNroDocumento").val('');
-                        $("#hfRUC").val('');
-                        $("#hfDIR").val('');
-                        $("#hfCreditoDispMoba").val("0");
-                        $("#lblTipoCorrelativo").html("");
-
-
-                        $("#cbo_direccion").empty().html("<option></option>")
-                        $("#cbo_direccion").select2("val", "")
-                    }
-                });
+                if (cargarprederteminado) {
+                    selectRazonSocial.val(" ").keyup();
+                }
+            },
+            error: function (msg) {
+                alertCustom("Clientes no se listaron correctamente");
             }
-            if (datos != null && $.trim(v_value).length > 0) {
-                selectRazonSocial.val(v_value);
-            }
-
-            if (cargarprederteminado) {
-                selectRazonSocial.val(" ").keyup();
-            }
-        },
-        error: function (msg) {
-            alertCustom("Clientes no se listaron correctamente");
-        }
-    });
+        });
+    //} 
 }
 
 //Lista Clientes 
@@ -3963,6 +4144,8 @@ function fillTxtCliente2(v_ID, v_value) {
             if (cargarprederteminado) {
                 selectRazonSocial.val(" ").keyup();
             }
+
+            $("#txtClientes").attr("disabled", false);
         },
         error: function (msg) {
             alertCustom("Clientes no se listaron correctamente");
@@ -3976,169 +4159,261 @@ function fillTxtResponsablePago() {
     $("#divResponsablePago").html('<input id="txtResponsablePago" class="span12" type="text" placeholder="Responsable Pago" style="text-transform: uppercase" disabled="disabled" />');
     var selectRazonSocial = $("#txtResponsablePago");
     var v_value = "";
-    if (jsonClientes.length = 0) {
-        $.ajax({
-            type: "post",
-            //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
-            url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
-            contenttype: "application/json;",
-            datatype: "json",
-            async: asincrono,
-            success: function (datos) {
-                if (datos != null) {
-                    textclientes = selectRazonSocial.typeahead({
-                        items: 20,
-                        source: function (query, process) {
-                            arrayRazonSocial = [];
-                            map = {};
-                            var obj = "[";
-                            for (var i = 0; i < datos.length; i++) {
-                                if (datos[i].PIDM != $("#hfPIDM").val()) {
-                                    arrayRazonSocial.push(datos[i].RAZON_SOCIAL);
-                                    obj += '{';
-                                    obj += '"TIPO_DOCUMENTO":"' + datos[i].TIPO_DOCUMENTO +
-                                        '","NRO_DOCUMENTO":"' + datos[i].NRO_DOCUMENTO +
-                                        '","CODIGO_TIPO_DOCUMENTO":"' + datos[i].CODIGO_TIPO_DOCUMENTO +
-                                        '","RUC":"' + datos[i].RUC +
-                                        '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL +
-                                        //'","DIRECCION":"' + datos[i].DIRECCION +
-                                        '","CODIGO_CATEGORIA":"' + datos[i].CODIGO_CATEGORIA +
-                                        '","PIDM":"' + datos[i].PIDM +
-                                        '","DIAS":"' + datos[i].DIAS +
-                                        '","ID":"' + datos[i].ID +
-                                        '","AGENTE_RETEN_IND": "' + datos[i].AGENTE_RETEN_IND + '"';
-                                    obj += '},';
-                                }
+
+    $.ajax({
+        type: "post",
+        //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.6&CTLG_CODE=" + $("#cbo_Empresa").val(),
+        contenttype: "application/json;",
+        datatype: "json",
+        async: asincrono,
+        success: function (datos) {
+            if (datos != null) {
+                textclientes = selectRazonSocial.typeahead({
+                    items: 20,
+                    source: function (query, process) {
+                        arrayRazonSocial = [];
+                        map = {};
+                        var obj = "[";
+                        for (var i = 0; i < datos.length; i++) {
+                            if (datos[i].PIDM != $("#hfPIDM").val()) {
+                                arrayRazonSocial.push(datos[i].RAZON_SOCIAL);
+                                obj += '{';
+                                obj += '"TIPO_DOCUMENTO":"' + datos[i].TIPO_DOCUMENTO +
+                                    '","NRO_DOCUMENTO":"' + datos[i].NRO_DOCUMENTO +
+                                    '","CODIGO_TIPO_DOCUMENTO":"' + datos[i].CODIGO_TIPO_DOCUMENTO +
+                                    '","RUC":"' + datos[i].RUC +
+                                    '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL +
+                                    //'","DIRECCION":"' + datos[i].DIRECCION +
+                                    '","CODIGO_CATEGORIA":"' + datos[i].CODIGO_CATEGORIA +
+                                    '","PIDM":"' + datos[i].PIDM +
+                                    '","DIAS":"' + datos[i].DIAS +
+                                    '","ID":"' + datos[i].ID +
+                                    '","AGENTE_RETEN_IND": "' + datos[i].AGENTE_RETEN_IND + '"';
+                                obj += '},';
                             }
-                            obj += "{}";
-                            obj = obj.replace(",{}", "");
-                            obj += "]";
-                            var json = $.parseJSON(obj);
-
-                            $.each(json, function (i, objeto) {
-                                map[objeto.RAZON_SOCIAL] = objeto;
-                            });
-                            process(arrayRazonSocial);
-                        },
-                        updater: function (item) {
-                            $("#hfResponsablePagoPIDM").val(map[item].PIDM);
-                            let iDiasPlazo = parseInt(map[item].DIAS);
-                            $("#txt_plazo_pago").val(iDiasPlazo);
-                            //Cargar modo de pago
-                            $("#cbo_modo_pago").select2('val', '0001');
-                            $("#cbo_modo_pago").change();
-
-                            if (iDiasPlazo > 0) {
-                                $("#cbo_modo_pago").prop("disabled", false);
-                            }
-                            else {
-                                $("#cbo_modo_pago").prop("disabled", true);
-                            }
-                            return item;
-                        },
-                    });
-
-                    selectRazonSocial.keyup(function () {
-                        $(this).siblings("ul").css("width", $(this).css("width"))
-                        if ($("#txtResponsablePago").val().length <= 0) {
-
-                            $('#cbo_modo_pago').prop('disabled', true);
-                            $('#cbo_modo_pago option:first-child').prop('selected', true);
-
-                            $('#txt_plazo_pago').val('0');
-                            if ($("#txt_fec_emision").val() != "") {
-                                $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
-                            } else {
-                                $('#txt_fec_vencimiento').datepicker('setDate', 'now');
-                            }
-                            //Limpiar campos
-                            $("#hfResponsablePagoPIDM").val("");
-                            $("#txtClientes").keyup().siblings("ul").children("li").click();
-                            $('#cbo_modo_pago').change();
-                            $("#txtResponsablePago").focus();
                         }
-                    });
-                }
-                if (datos != null && $.trim(v_value).length > 0) {
-                    selectRazonSocial.val(v_value);
-                }
-            },
-            error: function (msg) {
-                alertCustom("Responsables de pago no se listaron correctamente.");
-            }
-        });
+                        obj += "{}";
+                        obj = obj.replace(",{}", "");
+                        obj += "]";
+                        var json = $.parseJSON(obj);
 
-    } else {
-        textclientes = selectRazonSocial.typeahead({
-            items: 20,
-            source: function (query, process) {
-                arrayRazonSocial = [];
-                map = {};
-                var obj = "[";
-                for (var i = 0; i < jsonClientes.length; i++) {
-                    if (jsonClientes[i].PIDM != $("#hfPIDM").val()) {
-                        arrayRazonSocial.push(jsonClientes[i].RAZON_SOCIAL);
-                        obj += '{';
-                        obj += '"TIPO_DOCUMENTO":"' + jsonClientes[i].TIPO_DOCUMENTO +
-                            '","NRO_DOCUMENTO":"' + jsonClientes[i].NRO_DOCUMENTO +
-                            '","CODIGO_TIPO_DOCUMENTO":"' + jsonClientes[i].CODIGO_TIPO_DOCUMENTO +
-                            '","RUC":"' + jsonClientes[i].RUC +
-                            '","RAZON_SOCIAL":"' + jsonClientes[i].RAZON_SOCIAL +
-                            //'","DIRECCION":"' + jsonClientes[i].DIRECCION +
-                            '","CODIGO_CATEGORIA":"' + jsonClientes[i].CODIGO_CATEGORIA +
-                            '","PIDM":"' + jsonClientes[i].PIDM +
-                            '","DIAS":"' + jsonClientes[i].DIAS +
-                            '","ID":"' + jsonClientes[i].ID +
-                            '","AGENTE_RETEN_IND": "' + jsonClientes[i].AGENTE_RETEN_IND + '"';
-                        obj += '},';
-                    }
-                }
-                obj += "{}";
-                obj = obj.replace(",{}", "");
-                obj += "]";
-                var json = $.parseJSON(obj);
+                        $.each(json, function (i, objeto) {
+                            map[objeto.RAZON_SOCIAL] = objeto;
+                        });
+                        process(arrayRazonSocial);
+                    },
+                    updater: function (item) {
+                        $("#hfResponsablePagoPIDM").val(map[item].PIDM);
+                        let iDiasPlazo = parseInt(map[item].DIAS);
+                        $("#txt_plazo_pago").val(iDiasPlazo);
+                        //Cargar modo de pago
+                        $("#cbo_modo_pago").select2('val', '0001');
+                        $("#cbo_modo_pago").change();
 
-                $.each(json, function (i, objeto) {
-                    map[objeto.RAZON_SOCIAL] = objeto;
+                        if (iDiasPlazo > 0) {
+                            $("#cbo_modo_pago").prop("disabled", false);
+                        }
+                        else {
+                            $("#cbo_modo_pago").prop("disabled", true);
+                        }
+                        return item;
+                    },
                 });
-                process(arrayRazonSocial);
-            },
-            updater: function (item) {
-                $("#hfResponsablePagoPIDM").val(map[item].PIDM);
-                let iDiasPlazo = parseInt(map[item].DIAS);
-                $("#txt_plazo_pago").val(iDiasPlazo);
-                //Cargar modo de pago
-                $("#cbo_modo_pago").select2('val', '0001');
-                $("#cbo_modo_pago").change();
-                if (iDiasPlazo > 0) {
-                    $("#cbo_modo_pago").prop("disabled", false);
-                }
-                else {
-                    $("#cbo_modo_pago").prop("disabled", true);
-                }
-                return item;
-            },
-        });
-        selectRazonSocial.keyup(function () {
-            $(this).siblings("ul").css("width", $(this).css("width"))
-            if ($("#txtResponsablePago").val().length <= 0) {
-                $('#cbo_modo_pago').prop('disabled', true);
-                $('#cbo_modo_pago option:first-child').prop('selected', true);
 
-                $('#txt_plazo_pago').val('0');
-                if ($("#txt_fec_emision").val() != "") {
-                    $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
-                } else {
-                    $('#txt_fec_vencimiento').datepicker('setDate', 'now');
-                }
-                //Limpiar campos
-                $("#hfResponsablePagoPIDM").val("");
-                $("#txtClientes").keyup().siblings("ul").children("li").click();
-                $('#cbo_modo_pago').change();
-                $("#txtResponsablePago").focus();
+                selectRazonSocial.keyup(function () {
+                    $(this).siblings("ul").css("width", $(this).css("width"))
+                    if ($("#txtResponsablePago").val().length <= 0) {
+
+                        $('#cbo_modo_pago').prop('disabled', true);
+                        $('#cbo_modo_pago option:first-child').prop('selected', true);
+
+                        $('#txt_plazo_pago').val('0');
+                        if ($("#txt_fec_emision").val() != "") {
+                            $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
+                        } else {
+                            $('#txt_fec_vencimiento').datepicker('setDate', 'now');
+                        }
+                        //Limpiar campos
+                        $("#hfResponsablePagoPIDM").val("");
+                        $("#txtClientes").keyup().siblings("ul").children("li").click();
+                        $('#cbo_modo_pago').change();
+                        $("#txtResponsablePago").focus();
+                    }
+                });
             }
-        });
-    }
+            if (datos != null && $.trim(v_value).length > 0) {
+                selectRazonSocial.val(v_value);
+            }
+        },
+        error: function (msg) {
+            alertCustom("Responsables de pago no se listaron correctamente.");
+        }
+    });
+
+    //if (jsonClientes.length = 0) {
+    //    $.ajax({
+    //        type: "post",
+    //        //url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2&CTLG_CODE=" + $("#cbo_Empresa").val(),
+    //        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=2.5&CTLG_CODE=" + $("#cbo_Empresa").val(),
+    //        contenttype: "application/json;",
+    //        datatype: "json",
+    //        async: asincrono,
+    //        success: function (datos) {
+    //            if (datos != null) {
+    //                textclientes = selectRazonSocial.typeahead({
+    //                    items: 20,
+    //                    source: function (query, process) {
+    //                        arrayRazonSocial = [];
+    //                        map = {};
+    //                        var obj = "[";
+    //                        for (var i = 0; i < datos.length; i++) {
+    //                            if (datos[i].PIDM != $("#hfPIDM").val()) {
+    //                                arrayRazonSocial.push(datos[i].RAZON_SOCIAL);
+    //                                obj += '{';
+    //                                obj += '"TIPO_DOCUMENTO":"' + datos[i].TIPO_DOCUMENTO +
+    //                                    '","NRO_DOCUMENTO":"' + datos[i].NRO_DOCUMENTO +
+    //                                    '","CODIGO_TIPO_DOCUMENTO":"' + datos[i].CODIGO_TIPO_DOCUMENTO +
+    //                                    '","RUC":"' + datos[i].RUC +
+    //                                    '","RAZON_SOCIAL":"' + datos[i].RAZON_SOCIAL +
+    //                                    //'","DIRECCION":"' + datos[i].DIRECCION +
+    //                                    '","CODIGO_CATEGORIA":"' + datos[i].CODIGO_CATEGORIA +
+    //                                    '","PIDM":"' + datos[i].PIDM +
+    //                                    '","DIAS":"' + datos[i].DIAS +
+    //                                    '","ID":"' + datos[i].ID +
+    //                                    '","AGENTE_RETEN_IND": "' + datos[i].AGENTE_RETEN_IND + '"';
+    //                                obj += '},';
+    //                            }
+    //                        }
+    //                        obj += "{}";
+    //                        obj = obj.replace(",{}", "");
+    //                        obj += "]";
+    //                        var json = $.parseJSON(obj);
+
+    //                        $.each(json, function (i, objeto) {
+    //                            map[objeto.RAZON_SOCIAL] = objeto;
+    //                        });
+    //                        process(arrayRazonSocial);
+    //                    },
+    //                    updater: function (item) {
+    //                        $("#hfResponsablePagoPIDM").val(map[item].PIDM);
+    //                        let iDiasPlazo = parseInt(map[item].DIAS);
+    //                        $("#txt_plazo_pago").val(iDiasPlazo);
+    //                        //Cargar modo de pago
+    //                        $("#cbo_modo_pago").select2('val', '0001');
+    //                        $("#cbo_modo_pago").change();
+
+    //                        if (iDiasPlazo > 0) {
+    //                            $("#cbo_modo_pago").prop("disabled", false);
+    //                        }
+    //                        else {
+    //                            $("#cbo_modo_pago").prop("disabled", true);
+    //                        }
+    //                        return item;
+    //                    },
+    //                });
+
+    //                selectRazonSocial.keyup(function () {
+    //                    $(this).siblings("ul").css("width", $(this).css("width"))
+    //                    if ($("#txtResponsablePago").val().length <= 0) {
+
+    //                        $('#cbo_modo_pago').prop('disabled', true);
+    //                        $('#cbo_modo_pago option:first-child').prop('selected', true);
+
+    //                        $('#txt_plazo_pago').val('0');
+    //                        if ($("#txt_fec_emision").val() != "") {
+    //                            $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
+    //                        } else {
+    //                            $('#txt_fec_vencimiento').datepicker('setDate', 'now');
+    //                        }
+    //                        //Limpiar campos
+    //                        $("#hfResponsablePagoPIDM").val("");
+    //                        $("#txtClientes").keyup().siblings("ul").children("li").click();
+    //                        $('#cbo_modo_pago').change();
+    //                        $("#txtResponsablePago").focus();
+    //                    }
+    //                });
+    //            }
+    //            if (datos != null && $.trim(v_value).length > 0) {
+    //                selectRazonSocial.val(v_value);
+    //            }
+    //        },
+    //        error: function (msg) {
+    //            alertCustom("Responsables de pago no se listaron correctamente.");
+    //        }
+    //    });
+
+    //} else {
+    //    textclientes = selectRazonSocial.typeahead({
+    //        items: 20,
+    //        source: function (query, process) {
+    //            arrayRazonSocial = [];
+    //            map = {};
+    //            var obj = "[";
+    //            for (var i = 0; i < jsonClientes.length; i++) {
+    //                if (jsonClientes[i].PIDM != $("#hfPIDM").val()) {
+    //                    arrayRazonSocial.push(jsonClientes[i].RAZON_SOCIAL);
+    //                    obj += '{';
+    //                    obj += '"TIPO_DOCUMENTO":"' + jsonClientes[i].TIPO_DOCUMENTO +
+    //                        '","NRO_DOCUMENTO":"' + jsonClientes[i].NRO_DOCUMENTO +
+    //                        '","CODIGO_TIPO_DOCUMENTO":"' + jsonClientes[i].CODIGO_TIPO_DOCUMENTO +
+    //                        '","RUC":"' + jsonClientes[i].RUC +
+    //                        '","RAZON_SOCIAL":"' + jsonClientes[i].RAZON_SOCIAL +
+    //                        //'","DIRECCION":"' + jsonClientes[i].DIRECCION +
+    //                        '","CODIGO_CATEGORIA":"' + jsonClientes[i].CODIGO_CATEGORIA +
+    //                        '","PIDM":"' + jsonClientes[i].PIDM +
+    //                        '","DIAS":"' + jsonClientes[i].DIAS +
+    //                        '","ID":"' + jsonClientes[i].ID +
+    //                        '","AGENTE_RETEN_IND": "' + jsonClientes[i].AGENTE_RETEN_IND + '"';
+    //                    obj += '},';
+    //                }
+    //            }
+    //            obj += "{}";
+    //            obj = obj.replace(",{}", "");
+    //            obj += "]";
+    //            var json = $.parseJSON(obj);
+
+    //            $.each(json, function (i, objeto) {
+    //                map[objeto.RAZON_SOCIAL] = objeto;
+    //            });
+    //            process(arrayRazonSocial);
+    //        },
+    //        updater: function (item) {
+    //            $("#hfResponsablePagoPIDM").val(map[item].PIDM);
+    //            let iDiasPlazo = parseInt(map[item].DIAS);
+    //            $("#txt_plazo_pago").val(iDiasPlazo);
+    //            //Cargar modo de pago
+    //            $("#cbo_modo_pago").select2('val', '0001');
+    //            $("#cbo_modo_pago").change();
+    //            if (iDiasPlazo > 0) {
+    //                $("#cbo_modo_pago").prop("disabled", false);
+    //            }
+    //            else {
+    //                $("#cbo_modo_pago").prop("disabled", true);
+    //            }
+    //            return item;
+    //        },
+    //    });
+    //    selectRazonSocial.keyup(function () {
+    //        $(this).siblings("ul").css("width", $(this).css("width"))
+    //        if ($("#txtResponsablePago").val().length <= 0) {
+    //            $('#cbo_modo_pago').prop('disabled', true);
+    //            $('#cbo_modo_pago option:first-child').prop('selected', true);
+
+    //            $('#txt_plazo_pago').val('0');
+    //            if ($("#txt_fec_emision").val() != "") {
+    //                $('#txt_fec_vencimiento').val($("#txt_fec_emision").val());
+    //            } else {
+    //                $('#txt_fec_vencimiento').datepicker('setDate', 'now');
+    //            }
+    //            //Limpiar campos
+    //            $("#hfResponsablePagoPIDM").val("");
+    //            $("#txtClientes").keyup().siblings("ul").children("li").click();
+    //            $('#cbo_modo_pago').change();
+    //            $("#txtResponsablePago").focus();
+    //        }
+    //    });
+    //}
 }
 
 //Agregar Detalle
@@ -4286,6 +4561,9 @@ function AgregarDetalleVenta() {
                 $("#cbo_Sucursal").attr("disabled", "disabled");
                 $("#cbo_Empresa").attr("disabled", "disabled");
                 $("#rbRedondeo,#rbDonacion").removeAttr("disabled");
+
+                //Agregar glosa si no hay registro
+                if ($("#hfTxtGlosaDet").val() == "") agregarGlosa();
 
                 if (current_filas_table < current_nro_lineas) {
                     LimpiarCamposDetalle();
@@ -4572,6 +4850,7 @@ function LimpiarCamposDetalle() {
     $("#txtStockReal").val('');
     stockReal = 0;
 
+    $("#hfTxtGlosaDet").val('');
 
     $("#hfCOD_PROD").val('');
     $("#hfCostoProducto").val('');
@@ -4884,7 +5163,7 @@ function ObtenerTablaDetalles() {
     res += '<th style="display: none;">ALMACÉN</th>'
     res += '<th style="display: none;">CATEGORIA CLIENTE</th>'
     res += '<th style="display: none;">DESPACHO EN VENTA</th>'
-    res += '<th>GLOSA</th>'
+    res += '<th>' + (prmtGLIT === "SI" ? GLIT.toUpperCase() : 'GLOSA') + '</th>'
     res += '</tr>'
     res += '</thead>'
     res += '<tbody>'
@@ -5459,7 +5738,9 @@ function CalcularDatosMonetarios() {
             //Importe cobrar
             importeCobrar = parseFloat(importeTotal);
             if (parseFloat($("#txt_detraccion").val()) > parseFloat(retencion)) {
-                importeCobrar -= parseFloat($("#txt_detraccion").val());
+                if (!$("#chk_Autodetraccion").is(":checked")) {
+                    importeCobrar -= parseFloat($("#txt_detraccion").val());
+                } 
             } else {
                 importeCobrar -= parseFloat(retencion);
             }
@@ -5502,8 +5783,12 @@ function CalcularDatosMonetarios() {
         if (parseFloat($("#txt_monto_total").val()) != 0 && parseFloat($("#txt_subtotal").val()) != 0 && parseFloat($("#txt_subtotal").val()) >= parseFloat($("#hfParamDetraccion").val())) { //DPORTA 25/02/2021
             $("#chk_Autodetraccion").removeAttr("disabled");
         } else {
-            $('#chk_Autodetraccion').attr("disabled", "disabled");
-            $("#chk_Autodetraccion").prop('checked', false).parent().removeClass('checked');
+            if (!$("#chk_Autodetraccion").is(":checked")) {
+                $('#chk_Autodetraccion').attr("disabled", "disabled");
+                $("#chk_Autodetraccion").prop('checked', false).parent().removeClass('checked');
+            } else {
+                $('#chk_Autodetraccion').attr("disabled", "disabled");
+            }           
         }
 
         $("#rbRedondeo").is(":checked") ? $("#txtRedondeo2").val($("#txtRedondeo").val()) : $("#txtRedondeo2").val("0.00");
@@ -6340,20 +6625,26 @@ function GrabarCompletarDctoVenta() {
                                     alertCustom("Error al registrar datos de cabecera. Verifique los datos!");
                                 } else if (datos[0].CODIGO == 'ERROR_DET') {
                                     alertCustom("Error al registrar los detalles. Verifique los datos!");
-                                } else if (datos[0].CODIGO == 'ERROR_B1') {
-                                    alertCustom("Error al registrar pago bancario dentro de cobro venta 1!");
-                                } else if (datos[0].CODIGO == 'ERROR_C1') {
-                                    alertCustom("Error al registrar pago en caja dentro de cobro venta 1!");
-                                } else if (datos[0].CODIGO == 'ERROR_B2') {
-                                    alertCustom("Error al registrar pago bancario dentro de cobro venta 2!");
-                                } else if (datos[0].CODIGO == 'ERROR_C2') {
-                                    alertCustom("Error al registrar pago en caja dentro de cobro venta 2!");
-                                } else if (datos[0].CODIGO == 'ERROR_B3') {
-                                    alertCustom("Error al registrar pago bancario dentro de cobro venta 3!");
-                                } else if (datos[0].CODIGO == 'ERROR_C3') {
-                                    alertCustom("Error al registrar pago en caja dentro de cobro venta 3!");
+                                } else if (datos[0].CODIGO == 'ERROR_COB') {
+                                    alertCustom("Error al procesar cobro. Verifique los datos e intente nuevamente!");
+                                } else if (datos[0].CODIGO == 'ERROR_B') {
+                                    alertCustom("Error al registrar pago bancario dentro del cobro!");
+                                } else if (datos[0].CODIGO == 'ERROR_C') {
+                                    alertCustom("Error al registrar pago en caja dentro del cobro!");
+                                //} else if (datos[0].CODIGO == 'ERROR_B2') {
+                                //    alertCustom("Error al registrar pago bancario dentro de cobro venta 2!");
+                                //} else if (datos[0].CODIGO == 'ERROR_C2') {
+                                //    alertCustom("Error al registrar pago en caja dentro de cobro venta 2!");
+                                //} else if (datos[0].CODIGO == 'ERROR_B3') {
+                                //    alertCustom("Error al registrar pago bancario dentro de cobro venta 3!");
+                                //} else if (datos[0].CODIGO == 'ERROR_C3') {
+                                //    alertCustom("Error al registrar pago en caja dentro de cobro venta 3!");
                                 } else if (datos[0].CODIGO == 'ERROR_P') {
                                     alertCustom("Error al procesar el cobro. Intente nuevamente!");
+                                } else if (datos[0].CODIGO == 'ERROR_DTR') {
+                                    alertCustom("Error al registrar detracción. Intente nuevamente!");
+                                } else if (datos[0].CODIGO == 'ERROR_PAG') {
+                                    alertCustom("Error al guardar datos de cobro. Intente nuevamente!");
                                 } else {
                                     exito();
                                     BloquearCampos();
@@ -6403,7 +6694,8 @@ function GrabarCompletarDctoVenta() {
                             }
                             else {
                                 //noexito();
-                                alertCustom("Parece que hubo un error al completar la venta. Intente nuevamente!");
+                                //alertCustom("Parece que hubo un error al completar la venta. Intente nuevamente!");
+                                alertCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                                 $("#A4").attr("disabled", false);
                             }
                         } else {
@@ -9191,12 +9483,42 @@ function BuscarClientexDocumento() {
         $("#txtClientes").val("").keyup();
 
         //DPORTA
-        if (nro.length == 11 && doid == '6') {
-            if (rucValido(nro)) {
+        if (prmtCLIE == 'NO') {
+            if (nro.length == 11 && doid == '6') {
+                if (rucValido(nro)) {
+                    if (jsonClientes != null && jsonClientes.length > 0) {
+
+                        for (var i = 0; i < jsonClientes.length; i++) {
+                            if ((parseInt(jsonClientes[i].CODIGO_TIPO_DOCUMENTO) == parseInt(doid) && parseInt(jsonClientes[i].NRO_DOCUMENTO) == parseInt(nro)) || (jsonClientes[i].RUC == parseInt(nro) && parseInt(doid) == 6)) {
+                                esCliente = true;
+                                $("#txtClientes").val($.trim(jsonClientes[i].RAZON_SOCIAL));
+                                $("#txtClientes").keyup().siblings("ul").children("li").click();
+                                break;
+                            }
+                        }
+                        if (!esCliente) {
+                            infoCustom2("La Persona no está registrada como Cliente");
+                            NuevoClienteRapido(doid, nro);
+                            //Datos buscados permanecen
+                            $("#cboTipoDoc").val(doid).change();
+                            $("#txtNroDctoCliente").val(nro);
+                        }
+                    } else {
+                        infoCustom2("No se encontró Cliente");
+                        NuevoClienteRapido(doid, nro);
+                        $("#txtClientes").val("").keyup();
+                        //Datos buscados permanecen
+                        $("#cboTipoDoc").val(doid).change();
+                        $("#txtNroDctoCliente").val(nro);
+                    }
+                } else {
+                    infoCustom2("El RUC ingresado NO existe en SUNAT");
+                }
+            } else {
                 if (jsonClientes != null && jsonClientes.length > 0) {
 
                     for (var i = 0; i < jsonClientes.length; i++) {
-                        if ((parseInt(jsonClientes[i].CODIGO_TIPO_DOCUMENTO) == parseInt(doid) && parseInt(jsonClientes[i].NRO_DOCUMENTO) == parseInt(nro)) || (jsonClientes[i].RUC == parseInt(nro) && parseInt(doid) == 6)) {
+                        if ((parseInt(jsonClientes[i].CODIGO_TIPO_DOCUMENTO) == parseInt(doid) && jsonClientes[i].NRO_DOCUMENTO == nro) || (jsonClientes[i].RUC == parseInt(nro) && parseInt(doid) == 6)) {
                             esCliente = true;
                             $("#txtClientes").val($.trim(jsonClientes[i].RAZON_SOCIAL));
                             $("#txtClientes").keyup().siblings("ul").children("li").click();
@@ -9218,34 +9540,68 @@ function BuscarClientexDocumento() {
                     $("#cboTipoDoc").val(doid).change();
                     $("#txtNroDctoCliente").val(nro);
                 }
-            } else {
-                infoCustom2("El RUC ingresado NO existe en SUNAT");
             }
         } else {
-            if (jsonClientes != null && jsonClientes.length > 0) {
+            if (nro.length == 11 && doid == '6') {
+                if (rucValido(nro)) {
+                    fillTxtClienteEspecifico(nro)
+                    if (jsonClientes != null && jsonClientes.length > 0) {
 
-                for (var i = 0; i < jsonClientes.length; i++) {
-                    if ((parseInt(jsonClientes[i].CODIGO_TIPO_DOCUMENTO) == parseInt(doid) && parseInt(jsonClientes[i].NRO_DOCUMENTO) == parseInt(nro)) || (jsonClientes[i].RUC == parseInt(nro) && parseInt(doid) == 6)) {
-                        esCliente = true;
-                        $("#txtClientes").val($.trim(jsonClientes[i].RAZON_SOCIAL));
-                        $("#txtClientes").keyup().siblings("ul").children("li").click();
-                        break;
+                        for (var i = 0; i < jsonClientes.length; i++) {
+                            if ((parseInt(jsonClientes[i].CODIGO_TIPO_DOCUMENTO) == parseInt(doid) && parseInt(jsonClientes[i].NRO_DOCUMENTO) == parseInt(nro)) || (jsonClientes[i].RUC == parseInt(nro) && parseInt(doid) == 6)) {
+                                esCliente = true;
+                                $("#txtClientes").attr("disabled", false);
+                                $("#txtClientes").val($.trim(jsonClientes[i].RAZON_SOCIAL));
+                                $("#txtClientes").keyup().siblings("ul").children("li").click();
+                                break;
+                            }
+                        }
+                        if (!esCliente) {
+                            infoCustom2("La Persona no está registrada como Cliente");
+                            NuevoClienteRapido(doid, nro);
+                            //Datos buscados permanecen
+                            $("#cboTipoDoc").val(doid).change();
+                            $("#txtNroDctoCliente").val(nro);
+                        }
+                    } else {
+                        infoCustom2("No se encontró Cliente");
+                        NuevoClienteRapido(doid, nro);
+                        $("#txtClientes").val("").keyup();
+                        //Datos buscados permanecen
+                        $("#cboTipoDoc").val(doid).change();
+                        $("#txtNroDctoCliente").val(nro);
                     }
+                } else {
+                    infoCustom2("El RUC ingresado NO existe en SUNAT");
                 }
-                if (!esCliente) {
-                    infoCustom2("La Persona no está registrada como Cliente");
+            } else {
+                fillTxtClienteEspecifico(nro)
+                if (jsonClientes != null && jsonClientes.length > 0) {
+
+                    for (var i = 0; i < jsonClientes.length; i++) {
+                        if ((parseInt(jsonClientes[i].CODIGO_TIPO_DOCUMENTO) == parseInt(doid) && jsonClientes[i].NRO_DOCUMENTO == nro) || (jsonClientes[i].RUC == parseInt(nro) && parseInt(doid) == 6)) {
+                            esCliente = true;
+                            $("#txtClientes").attr("disabled", false);
+                            $("#txtClientes").val($.trim(jsonClientes[i].RAZON_SOCIAL));
+                            $("#txtClientes").keyup().siblings("ul").children("li").click();
+                            break;
+                        }
+                    }
+                    if (!esCliente) {
+                        infoCustom2("La Persona no está registrada como Cliente");
+                        NuevoClienteRapido(doid, nro);
+                        //Datos buscados permanecen
+                        $("#cboTipoDoc").val(doid).change();
+                        $("#txtNroDctoCliente").val(nro);
+                    }
+                } else {
+                    infoCustom2("No se encontró Cliente");
                     NuevoClienteRapido(doid, nro);
+                    $("#txtClientes").val("").keyup();
                     //Datos buscados permanecen
                     $("#cboTipoDoc").val(doid).change();
                     $("#txtNroDctoCliente").val(nro);
                 }
-            } else {
-                infoCustom2("No se encontró Cliente");
-                NuevoClienteRapido(doid, nro);
-                $("#txtClientes").val("").keyup();
-                //Datos buscados permanecen
-                $("#cboTipoDoc").val(doid).change();
-                $("#txtNroDctoCliente").val(nro);
             }
         }
     }
@@ -9802,3 +10158,118 @@ function MuestraSunat() {
 function CancelarSunat() {
     $('#ModalSunat').modal('hide');
 }
+
+function toTitleCase(str) {
+    return str.toLowerCase().split(' ').map(function (word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+}
+
+function agregarGlosa() {
+    var continuar = true;
+
+    var glosa = $.trim($("#txt_glosa_det").val());
+    var glosa_codigo = $("#hfTxtGlosaDet").val();
+
+    var data = new FormData();
+
+    data.append('p_GLOSA', glosa);
+    data.append('p_GLOSA_CODIGO', glosa_codigo);
+
+    if (continuar) {
+        Bloquear("ventana");
+        var jqxhr = $.ajax({
+            type: "POST",
+            url: "vistas/nv/ajax/nvmcoti.ashx?OPCION=AGREGAR_GLOS",
+            contentType: false,
+            data: data,
+            processData: false,
+            cache: false,
+            async: true
+        })
+            .success(function (datos) {
+                Desbloquear("ventana");
+                if (datos == "OK") {
+                    autocompletarGlosa('#txt_glosa_det', $('#hfTxtGlosaDet').val());
+                }
+            })
+            .error(function () {
+                Desbloquear("ventana");
+                alertCustom("Error al agregar glosa");
+            });
+    }
+}
+
+var autocompletarGlosa = function (v_ID, v_value) {
+    var txtResp = $(v_ID);
+    var parent = txtResp.parent();
+    var newInput = $('<textarea id="' + txtResp.attr('id') + '" class="' + txtResp.attr('class') + '" maxlength="' + txtResp.attr('maxlength') + '" style="' + txtResp.attr('style') + '"></textarea>');
+
+    $.ajax({
+        type: "post",
+        url: "vistas/nv/ajax/nvmcoti.ashx?OPCION=GLOS",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: true,
+        success: function (datos) {
+            if (datos != null) {
+                txtResp.replaceWith(newInput);
+                txtResp = newInput;
+
+                txtResp.typeahead({
+                    source: function (query, process) {
+                        txtResp.removeData('typeahead');
+
+                        arrayNC = [];
+                        map = {};
+
+                        var obj = '[';
+                        for (var i = 0; i < datos.length; i++) {
+                            arrayNC.push(datos[i].DESCRIPCION);
+                            obj += '{ "CODIGO" : "' + datos[i].CODIGO + '", "DESCRIPCION" : "' + datos[i].DESCRIPCION + '" },';
+                        }
+                        obj += '{}';
+                        obj = obj.replace(',{}', '');
+                        obj += ']';
+                        var json = $.parseJSON(obj);
+
+                        $.each(json, function (i, objeto) {
+                            map[objeto.DESCRIPCION] = objeto;
+                        });
+                        process(arrayNC);
+                    },
+                    updater: function (item) {
+                        $('#hfTxtGlosaDet').val(map[item].CODIGO);
+                        return item;
+                    }
+                });
+
+                txtResp.keyup(function () {
+                    $(this).siblings("ul").css("width", $(this).css("width"))
+                    if (txtResp.val().length <= 0) {
+                        $('#hfTxtGlosaDet').val('');
+                    }
+                });
+
+                txtResp.keydown(function (e) {
+                    if (e.keyCode === 13) {
+                        var dropdownMenu = $(this).siblings("ul.dropdown-menu");
+                        if (dropdownMenu.is(":visible")) {
+                            e.preventDefault();
+                            var activeItem = dropdownMenu.find(".active");
+                            if (activeItem.length) {
+                                activeItem.trigger("click");
+                            }
+                        }
+                    }
+                });
+            }
+            if (datos != null && $.trim(v_value).length > 0) {
+                txtResp.val(v_value);
+            }
+        },
+        error: function (msg) {
+            alert(msg);
+        }
+    });
+};

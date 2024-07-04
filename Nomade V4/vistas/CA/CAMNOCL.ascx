@@ -398,9 +398,10 @@
                         <div class="row-fluid">
                             <div class="span10 offset1">
                                 <div class="row-fluid" id="divDctoSeleccionado" style="display: none;">
-                                    <h5 style="font-style: italic;">Documento:&nbsp;<span id="lblDctoSeleccionado"></span>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;Moneda:<span class="lblMoneda"></span>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;Precios Inc. IGV:<span class="lblIncIgv">Para Productos Gravados / No para Establecimiento Exonerado</span>
+                                    <h5 style="font-style: italic;"><%--Documento:&nbsp;<span id="lblDctoSeleccionado"></span>--%>
+                                       <%-- Moneda:<span class="lblMoneda"></span>--%>
+                                        Precios Inc. IGV:<span class="lblIncIgv">Para Productos Gravados / No para Establecimiento Exonerado</span>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;La cant. despachada y de devolución se muestran en la unidad de medida base del producto.
                                     </h5>
                                 </div>
 

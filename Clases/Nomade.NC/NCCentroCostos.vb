@@ -623,4 +623,48 @@
         End Try
     End Function
 
+    Public Function listarNivelesCentroCostos(ByVal p_CTLG_CODE As String) As DataTable
+        Try
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("CC_LISTAR_NIVELES_CCOSTOS", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+
+            Dim oDT As DataTable
+            oDT = cn.Consulta(cmd)
+            If oDT Is Nothing Then
+                Return Nothing
+            ElseIf oDT.Rows.Count = 0 Then
+                Return Nothing
+            Else
+                Return oDT
+            End If
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function listarCCostosxEmpresaNiveles(ByVal p_CTLG_CODE As String, ByVal p_NIVEL As String, ByVal p_CCOSTOS As String) As DataTable
+        Try
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SpCon_ListaCentroCostosEmpresa", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NIVEL", p_NIVEL, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CCOSTOS", p_CCOSTOS, ParameterDirection.Input, 253))
+
+            Dim oDT As DataTable
+            oDT = cn.Consulta(cmd)
+            If oDT Is Nothing Then
+                Return Nothing
+            ElseIf oDT.Rows.Count = 0 Then
+                Return Nothing
+            Else
+                Return oDT
+            End If
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
 End Class

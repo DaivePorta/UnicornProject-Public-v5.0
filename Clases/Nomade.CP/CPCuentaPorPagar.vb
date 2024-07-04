@@ -437,7 +437,85 @@
 
             Dim cmd As IDbCommand
             Dim cmd1 As IDbCommand
-            cmd = cn.GetNewCommand("PFS_CREAR_PROVISION_GASTO", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFS_CREAR_PROVISION_GASTO_NEW", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CONC_CODE", p_CONC_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DATO_FRECUENCIA", p_DATO_FRECUENCIA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DESC_GASTO", p_DESC_GASTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_IND", p_ESTADO_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_UNICA", p_FECHA_UNICA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FRECUENCIA", p_FRECUENCIA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MONTO", p_MONTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PERIOCIDAD", p_PERIOCIDAD, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM_BENEFICIARIO", p_PIDM_BENEFICIARIO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCONC_CODE", p_SCONC_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_IND", p_TIPO_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_USUA_ID", p_USUA_ID, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NRO_DCTO_REF", p_NRO_DCTO_REF, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTA_CONTABLE", p_CTA_CONTABLE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MONE_CODE", p_MONE_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CENTRO_COSTO", p_CENTRO_COSTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CENTRO_COSTO_CABECERA", p_CENTRO_COSTO_CABECERA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_DCTO", p_TIPO_DCTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SERIE", p_SERIE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NUMERO", p_NUMERO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_COMPRAS_IND", p_COMPRAS_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MES_TRIB", p_MES_TRIB, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ANIO_TRIB", p_ANIO_TRIB, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_HABIDO_IND", p_HABIDO_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_BIEN", p_TIPO_BIEN, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DETALLE_GASTO", p_DETALLE_GASTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DEDUCIBLE_IND", p_DEDUCIBLE_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DECLARA", p_DECLARA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FECHA_VENCI", p_FECHA_VENCI, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DETRACCION_IND", p_DETRACCION_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_IMPORTE_DETRACCION", p_IMPORTE_DETRACCION, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RETENCION_IND", p_RETENCION_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_IMPORTE_RETENCION", p_IMPORTE_RETENCION, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NRO_SUSPENCION", p_NRO_SUSPENCION, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_IMPORTE_PAGAR", p_IMPORTE_PAGAR, ParameterDirection.Input, 253))
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_GENERADO", String.Empty, ParameterDirection.Output, 253))
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg = cmd1.Parameters("@p_CODE_GENERADO").Value
+
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function Crear_Y_Aprobar_Gasto(ByVal p_CONC_CODE As String, ByVal p_CTLG_CODE As String,
+                                          ByVal p_DATO_FRECUENCIA As Integer, ByVal p_DESC_GASTO As String,
+                                          ByVal p_ESTADO_IND As String, ByVal p_FECHA_UNICA As String,
+                                          ByVal p_FRECUENCIA As String,
+                                          ByVal p_MONTO As Decimal, ByVal p_PERIOCIDAD As String,
+                                          ByVal p_PIDM_BENEFICIARIO As Integer, ByVal p_SCONC_CODE As String,
+                                          ByVal p_SCSL_CODE As String, ByVal p_TIPO_IND As String,
+                                          ByVal p_USUA_ID As String, ByVal p_NRO_DCTO_REF As String,
+                                          ByVal p_CTA_CONTABLE As String,
+                                          ByVal p_MONE_CODE As String,
+                                          ByVal p_CENTRO_COSTO As String,
+                                          ByVal p_CENTRO_COSTO_CABECERA As String,
+                                          ByVal p_TIPO_DCTO As String,
+                                          ByVal p_SERIE As String,
+                                          ByVal p_NUMERO As String,
+                                          ByVal p_COMPRAS_IND As String,
+                                          ByVal p_MES_TRIB As String,
+                                          ByVal p_ANIO_TRIB As String,
+                                          ByVal p_HABIDO_IND As String,
+                                          ByVal p_TIPO_BIEN As String,
+                                          ByVal p_DETALLE_GASTO As String, ByVal p_DEDUCIBLE_IND As String, ByVal p_DECLARA As String, ByVal p_FECHA_VENCI As String,
+                                          ByVal p_DETRACCION_IND As String, ByVal p_IMPORTE_DETRACCION As String,
+                                          ByVal p_RETENCION_IND As String, ByVal p_IMPORTE_RETENCION As String, ByVal p_NRO_SUSPENCION As String, ByVal p_IMPORTE_PAGAR As String) As String
+        Try
+            Dim msg As String
+
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+            cmd = cn.GetNewCommand("PFS_CREAR_Y_APROBAR_GASTO_NEW", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CONC_CODE", p_CONC_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DATO_FRECUENCIA", p_DATO_FRECUENCIA, ParameterDirection.Input, 253))
@@ -750,7 +828,7 @@
             Dim cmd As IDbCommand
             Dim cmd1 As IDbCommand
 
-            cmd = cn.GetNewCommand("PFS_REGISTRA_APROVACION_GASTO", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFS_REGISTRA_APROBACION_GASTO_NEW", CommandType.StoredProcedure)
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_REF_GASTO", p_CODE_REF_GASTO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", p_ESTADO, ParameterDirection.Input, 253))
@@ -807,7 +885,7 @@
             Dim cmd As IDbCommand
             Dim cmd1 As IDbCommand
 
-            cmd = cn.GetNewCommand("PFS_ANULA_APROVACION_GASTO", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFS_ANULA_APROBACION_GASTO_NEW", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODE_REF_GASTO", p_CODE_REF_GASTO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", p_ESTADO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_USUA_ID", p_USUA_ID, ParameterDirection.Input, 253))
@@ -843,7 +921,7 @@
             Dim cmd As IDbCommand
             Dim cmd1 As IDbCommand
 
-            cmd = cn.GetNewCommand("PFA_CREAR_CREDITO_PERSONA", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFA_CREAR_CREDITO_PERSONA_NEW", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_COMC_CODE", p_COMC_CODE, ParameterDirection.Input, 253))
@@ -951,7 +1029,7 @@
             Dim cmd As IDbCommand
             Dim cmd1 As IDbCommand
 
-            cmd = cn.GetNewCommand("PFS_ACTUALIZAR_PROVISION_GASTO", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFS_ACTUALIZAR_PROVISION_GASTO_NEW", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CONC_CODE", p_CONC_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DATO_FRECUENCIA", p_DATO_FRECUENCIA, ParameterDirection.Input, 253))
@@ -1231,6 +1309,52 @@
             cmd = cn.GetNewCommand("PFA_LISTAR_AMORTIZACION_GASTOS", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CODIGO", p_CODE, ParameterDirection.Input, 253))
             dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function ListarRegistroResumenGastos(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_CLASIFICACION As String, ByVal p_ANIO As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PCA_LISTAR_REGISTRO_RESUMEN_GASTOS", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CLASIFICACION", p_CLASIFICACION, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ANIO", p_ANIO, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
+    Public Function ListarRegistroGastosXCentroCostos(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_ANIO As String, ByVal p_NIVEL As String, ByVal p_CCOSTOS As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PCA_LISTAR_DESTINO_GASTOS_XCCOSTOS", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ANIO", p_ANIO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NIVEL", p_NIVEL, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CCOSTOS", p_CCOSTOS, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
             If Not (dt Is Nothing) Then
                 Return dt
             Else

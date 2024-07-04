@@ -468,7 +468,7 @@
                                     <th>MONEDA</th>
                                     <th>BASE IMPONIBLE</th>
                                     <th>DETRACCIÓN</th>
-                                    <th>TOTAL</th>
+                                    <th>IMPORTE TOTAL</th>
                                     <th>MODO<br />
                                         PAGO</th>
                                     <th>FORMA<br />

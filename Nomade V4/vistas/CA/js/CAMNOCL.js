@@ -1,5 +1,5 @@
 ﻿// CARGA DE DATOS/COMBOS INICIAL
-
+var despachi_ind = '';
 function fillCboEmpresa() {
     $.ajax({
         type: "post",
@@ -242,7 +242,7 @@ var CAMNOCL = function () {
         $.ajax({
             type: "post",
             //url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2&p_CTLG_CODE=" + $("#cboEmpresa").val(),
-            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2&p_CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.4&p_CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -426,7 +426,12 @@ var CAMNOCL = function () {
 
             var oTable = $("#tblDetallesCompraVenta").DataTable();
             if (!$("#chkAlmacen").is(":checked")) { 
-                oTable.columns(7).visible(false);
+                if (despachi_ind == '07X') {
+                    infoCustom2("No se pueden devolver items de una venta que NO ha sido despachada.");
+                    $("#_buscarDocumento").modal('hide');
+                    $('#cboMotivo').attr('disabled', false);
+                }
+                oTable.columns(7).visible(false);                
             } else {
                 //oTable.columns(7).visible(true);
             }
@@ -836,13 +841,18 @@ var CAMNOCL = function () {
 
                     if (datos[0].ENTREGA_DESPACHO_ALMACEN == 'S') {
                         //$("#chkAlmacen").attr("checked", true).parent().addClass("checked");
-                        $("#chkAlmacen").attr("checked", false).parent().removeClass("checked");                           
-                        $("#lblMsgDespacho .si").html("&nbsp;NO");
+                        //$("#chkAlmacen").attr("checked", false).parent().removeClass("checked");
+                        //$("#lblMsgDespacho .si").html("&nbsp;NO");
+                        $("#chkAlmacen").attr("checked", true).parent().addClass("checked");         
+                        $("#lblMsgDespacho .si").html("");
                     }
                     else {
                         //$("#chkAlmacen").attr("checked", false).parent().removeClass("checked");
-                        $("#chkAlmacen").attr("checked", true).parent().addClass("checked");         
-                        $("#lblMsgDespacho .si").html("");
+                        //$("#chkAlmacen").attr("checked", true).parent().addClass("checked");         
+                        //$("#lblMsgDespacho .si").html("");
+                        $("#chkAlmacen").attr("checked", false).parent().removeClass("checked");
+                        $("#lblMsgDespacho .si").html("&nbsp;NO");
+
                     }
                     fillTblDetallesNotaCredito(code, codempr, datos[0].SECUENCIA)
                     $("#divTotales").slideDown();
@@ -1204,14 +1214,15 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
             BloqueaCamposProductosSeriados();
 
     } else if (motivo = '07') {
-            if (despachado == 'S') {
+            if (despachado == 'S' || despachado == 'P') {
                 $("#chkAlmacen").attr("checked", true).parent().addClass("checked");
                 $('#chkAlmacen').attr('disabled', true);
                 $('#chkAlmacen').change();
             } else if (despachado == 'N') {
+                despachi_ind = '07X';
                 $("#chkAlmacen").attr("checked", false).parent().removeClass("checked");
                 $('#chkAlmacen').attr('disabled', true);
-                $('#chkAlmacen').change();    
+                $('#chkAlmacen').change();                    
             } else {
                 $('#chkAlmacen').attr('disabled', false);
             }
@@ -1629,7 +1640,7 @@ function GrabarNotaCredito() {
             }
             else {
                 if ($('#cboMotivo :selected').attr('codsunat') == '06' || $('#cboMotivo :selected').attr('codsunat') == '07') {
-                    if (parseFloat($("#hfDetalle" + i + "_cant_sol").val()) < parseFloat($("#txtDevolucion_" + i + "").val())) {
+                    if (parseFloat($("#hfDetalle" + i + "_cant").val()) < parseFloat($("#txtDevolucion_" + i + "").val())) {
                         continuar = false;
                         $("#txtDevolucion_" + i + "").css("outline", "1px solid #b94a48");
                     }
@@ -1674,10 +1685,10 @@ function GrabarNotaCredito() {
             data.append('p_ESTADO_IND', "A");
             data.append('p_ESTADO_USO', "");
             data.append('p_USUA_ID', $("#ctl00_txtus").val());
-            //data.append('p_ENTREGA_DESPACHO_ALMACEN', $("#chkAlmacen").is(":checked") ? "S" : "N");
+            data.append('p_ENTREGA_DESPACHO_ALMACEN', $("#chkAlmacen").is(":checked") ? "S" : "N");
 
             // ESTO ESTA AL REVES PERO NI MODO, TODO FUNCIONA ASI
-            data.append('p_ENTREGA_DESPACHO_ALMACEN', $("#chkAlmacen").is(":checked") ? "N" : "S");
+            //data.append('p_ENTREGA_DESPACHO_ALMACEN', $("#chkAlmacen").is(":checked") ? "N" : "S");
 
             data.append('p_APLICA_DOC_REFERENCIA', $("#chkAplicar").is(":checked") ? "S" : "N");
             data.append('p_SERIE', $("#cboSerieNC").val());
@@ -1719,8 +1730,8 @@ function GrabarNotaCredito() {
                        else if (datos[0].CODIGO == "LIMITE") {
                            alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> Se ha excedido el límite de documentos autorizados!")
                        }
-                       else if (datos[0].CODIGO == "ERROR") {
-                           alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/>")
+                       else if (datos[0].CODIGO.match(/^ERROR.*$/)) {
+                           alertCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                        }
                        else {
                            $("#btnBuscarDocumento").attr("style", "display:none");
@@ -1853,37 +1864,33 @@ function CalcularTotales() {
         detalles = "";
         for (var i = 0 ; i < cantDetalles; i++) {
             var subtotal;
-            detalles += $("#hfDetalle" + i + "_prod").val() + ";"; //PROD_CODE 1
-            detalles += $("#hfDetalle" + i + "_um").val() + ";";//UM_CODE 2
-            detalles += $("#hfDetalle" + i + "_pu").val() + ";";//PRECIO UNITARIO 3
-            detalles += $("#hfDetalle" + i + "_imp").val() + ";";//SUBTOTAL ORIGEN 4                      
 
             if ($('#cboMotivo :selected').attr('codsunat') == '01' || $('#cboMotivo :selected').attr('codsunat') == '02' || $('#cboMotivo :selected').attr('codsunat') == '06') { // Anulación de la operación || Anulación por error en el RUC || DEVOLUCION TOTAL
                 
-                subtotal = parseFloat($("#hfDetalle" + i + "_cant_sol").val()) * parseFloat($("#hfDetalle" + i + "_pu").val())
+                subtotal = parseFloat($("#hfDetalle" + i + "_cant").val()) * parseFloat($("#hfDetalle" + i + "_pu").val() / $("#hfDetalle" + i + "_factor").val())
+
+                detalles += $("#hfDetalle" + i + "_prod").val() + ";"; //PROD_CODE 1
+                detalles += $("#hfDetalle" + i + "_um").val() + ";";//UM_CODE 2
+                detalles += $("#hfDetalle" + i + "_pu").val() + ";";//PRECIO UNITARIO 3
+                detalles += $("#hfDetalle" + i + "_imp").val() + ";";//SUBTOTAL ORIGEN 4     
                 detalles += $("#hfDetalle" + i + "_cant").val() + ";";// CANTIDAD ORIGEN (DESPACHADA) 5
                 detalles += $("#hfDetalle" + i + "_cant").val() + ";"; //CANTIDAD DEVOLUCION 6
                 isc_detalle += subtotal * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100);
-                
-                /*
-                else if ($("#chkAplicar").is(":checked") && !$("#chkAlmacen").is(":checked")) {
-                    subtotal = parseFloat($("#hfDetalle" + i + "_cant_sol").val()) * parseFloat($("#hfDetalle" + i + "_pu").val())
-                    detalles += $("#hfDetalle" + i + "_cant_sol").val() + ";";// CANTIDAD ORIGEN (DESPACHADA) 5
-                    detalles += "0.00" + ";"; //CANTIDAD DEVOLUCION 6
-                    isc_detalle += subtotal * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100);
-                } else {
-                    subtotal = parseFloat($("#txtDevolucion_" + i + "").val()) * parseFloat($("#hfDetalle" + i + "_pu").val())
-                    detalles += $("#hfDetalle" + i + "_cant").val() + ";";// CANTIDAD ORIGEN (DESPACHADA) 5
-                    detalles += $("#txtDevolucion_" + i + "").val() + ";";                    
-                    isc_detalle += subtotal * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100);
-                }
-                */
+
             } else if ($('#cboMotivo :selected').attr('codsunat') == '07') {
-                
-                    subtotal = parseFloat($("#txtDevolucion_" + i + "").val()) * parseFloat($("#hfDetalle" + i + "_pu").val())
-                    detalles += $("#hfDetalle" + i + "_cant").val() + ";";// CANTIDAD ORIGEN (DESPACHADA) 5
-                    detalles += $("#txtDevolucion_" + i + "").val() + ";";// CANTIDAD DEVOLUCION 6
-                    isc_detalle += subtotal * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100);
+                if (parseFloat($("#txtDevolucion_" + i + "").val()) > parseFloat($("#hfDetalle" + i + "_cant").val())) {
+                    $("#txtDevolucion_" + i + "").val($("#hfDetalle" + i + "_cant").val())
+                }
+
+                subtotal = parseFloat($("#txtDevolucion_" + i + "").val()) * parseFloat($("#hfDetalle" + i + "_pu").val() / $("#hfDetalle" + i + "_factor").val())
+
+                detalles += $("#hfDetalle" + i + "_prod").val() + ";"; //PROD_CODE 1
+                detalles += $("#hfDetalle" + i + "_um").val() + ";";//UM_CODE 2
+                detalles += $("#hfDetalle" + i + "_pu").val() / $("#hfDetalle" + i + "_factor").val() + ";";//PRECIO UNITARIO 3
+                detalles += $("#hfDetalle" + i + "_imp").val() + ";";//SUBTOTAL ORIGEN 4     
+                detalles += $("#hfDetalle" + i + "_cant").val() + ";";// CANTIDAD ORIGEN (DESPACHADA) 5
+                detalles += $("#txtDevolucion_" + i + "").val() + ";";// CANTIDAD DEVOLUCION 6
+                isc_detalle += subtotal * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100);
                 
             }
             
@@ -1920,143 +1927,31 @@ function CalcularTotales() {
                 continuar = false;
                 $("#txtDevolucion_" + i + "").addClass("required");
                 $("#txtDevolucion_" + i + "").css("outline", "1px solid #b94a48");
-            }
-            else {
-
-                $("#txtDevolucion_" + i + "").css("outline", "none");
-                precio = parseFloat($("#hfDetalle" + i + "_pu").val());
+            } else {
+                $("#txtDevolucion_" + i + "").css("outline", "none");               
 
                 if ($('#cboMotivo :selected').attr('codsunat') == '01' || $('#cboMotivo :selected').attr('codsunat') == '02' || $('#cboMotivo :selected').attr('codsunat') == '06') {
-
+                    precio = parseFloat($("#hfDetalle" + i + "_pu").val());
                     if (parseFloat($("#hfDetalle" + i + "_cant").val()) != parseFloat($("#txtDevolucion_" + i + "").val())) {
                         continuar = false;
                         $("#txtDevolucion_" + i + "").css("outline", "1px solid #b94a48");
-                    }
-                    else {
+                    } else {
                         $("#txtDevolucion_" + i + "").css("outline", "none");
-                        /*
-                        precio = parseFloat($("#hfDetalle" + i + "_pu").val());
-                        if ($("#hfScslExoneradaInd").val() == "N") {
-                            if ($("#hfDetalle" + i + "_tipo").val() == "GRA" || $("#hfDetalle" + i + "_tipo").val() == "GIS") {
-                                precio = precio / (igv + 1);
-                                montoIgv += (parseFloat($("#hfDetalle" + i + "_pu").val()) - precio) * parseFloat($("#hfDetalle" + i + "_cant_sol").val());
-                                montoTotalISC += ((parseFloat($("#hfDetalle" + i + "_pu").val())) * parseFloat($("#txtDevolucion_" + i + "").val()) * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100));
-
-                                //if (parseFloat($("#txtDevolucion_" + i + "").val()) == '0') {
-                                //    montoTotalGravada += 0;
-                                //    montoTotalISC += 0;
-                                //} else {
-                                //    montoTotalGravada = montoTotalGravada + (precio * parseFloat($("#hfDetalle" + i + "_cant_sol").val()));
-                                //}
-                                montoTotalGravada = montoTotalGravada + (precio * parseFloat($("#hfDetalle" + i + "_cant_sol").val()));
-                            } else {
-                                if ($("#hfDetalle" + i + "_tipo").val() == "EXO") {
-                                    montoTotalExonerado += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#hfDetalle" + i + "_cant_sol").val()));
-                                } else {
-                                    montoTotalInafecto += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#hfDetalle" + i + "_cant_sol").val()));
-                                }
-                            }
-                        }  //El precio siempre no tendrá igv
-                        else {
-                            montoTotalISC += ((parseFloat($("#hfDetalle" + i + "_pu").val())) * parseFloat($("#hfDetalle" + i + "_cant_sol").val()) * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100));
-                            montoTotalExonerado += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#hfDetalle" + i + "_cant_sol").val()));
-                        }
-                            montoTotalSinIgv += parseFloat($("#hfDetalle" + i + "_cant_sol").val()) * precio;
-                        */
                     }
-
-                    
-                    /*
-                    else if ($("#chkAplicar").is(":checked") && !$("#chkAlmacen").is(":checked")) {
-
-                        if (parseFloat($("#hfDetalle" + i + "_cant").val()) < parseFloat($("#txtDevolucion_" + i + "").val())) {
-                            continuar = false;
-                            $("#txtDevolucion_" + i + "").css("outline", "1px solid #b94a48");
-                        }
-                        else {
-                            $("#txtDevolucion_" + i + "").css("outline", "none");
-                            precio = parseFloat($("#hfDetalle" + i + "_pu").val());
-                            if ($("#hfScslExoneradaInd").val() == "N") {
-                                if ($("#hfDetalle" + i + "_tipo").val() == "GRA" || $("#hfDetalle" + i + "_tipo").val() == "GIS") {
-                                    precio = precio / (igv + 1);
-                                    montoIgv += (parseFloat($("#hfDetalle" + i + "_pu").val()) - precio) * parseFloat($("#hfDetalle" + i + "_cant_sol").val());
-                                    montoTotalISC += ((parseFloat($("#hfDetalle" + i + "_pu").val())) * parseFloat($("#hfDetalle" + i + "_cant_sol").val()) * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100));
-
-                                    if (parseFloat($("#hfDetalle" + i + "_cant_sol").val()) == '0') {
-                                        montoTotalGravada = 0;
-                                        montoTotalISC = 0;
-                                    } else {
-                                        montoTotalGravada = montoTotalGravada + (precio * parseFloat($("#hfDetalle" + i + "_cant_sol").val()));
-                                    }
-                                } else {
-                                    if ($("#hfDetalle" + i + "_tipo").val() == "EXO") {
-                                        montoTotalExonerado += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#hfDetalle" + i + "_cant_sol").val()));
-                                    } else {
-                                        montoTotalInafecto += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#hfDetalle" + i + "_cant_sol").val()));
-                                    }
-                                }
-                            }  //El precio siempre no tendrá igv
-                            else {
-                                montoTotalISC += ((parseFloat($("#hfDetalle" + i + "_pu").val())) * parseFloat($("#hfDetalle" + i + "_cant_sol").val()) * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100));
-                                montoTotalExonerado += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#hfDetalle" + i + "_cant_sol").val()));
-                            }
-                            montoTotalSinIgv += parseFloat($("#hfDetalle" + i + "_cant_sol").val()) * precio;
-                        }
-
-                    }
-                    */
-                    /*else if ($('#cboMotivo :selected').attr('codsunat') == '06' || $('#cboMotivo :selected').attr('codsunat') == '07') {
-                        if (parseFloat($("#hfDetalle" + i + "_cant").val()) < parseFloat($("#txtDevolucion_" + i + "").val())) {
-                            continuar = false;
-                            $("#txtDevolucion_" + i + "").css("outline", "1px solid #b94a48");
-                        }
-                        else {
-                            $("#txtDevolucion_" + i + "").css("outline", "none");
-                            precio = parseFloat($("#hfDetalle" + i + "_pu").val());
-                            if ($("#hfScslExoneradaInd").val() == "N") {
-                                if ($("#hfDetalle" + i + "_tipo").val() == "GRA" || $("#hfDetalle" + i + "_tipo").val() == "GIS") {
-                                    precio = precio / (igv + 1);
-                                    montoIgv += (parseFloat($("#hfDetalle" + i + "_pu").val()) - precio) * parseFloat($("#txtDevolucion_" + i + "").val());
-                                    montoTotalISC += ((parseFloat($("#hfDetalle" + i + "_pu").val())) * parseFloat($("#txtDevolucion_" + i + "").val()) * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100));
-
-                                    if (parseFloat($("#txtDevolucion_" + i + "").val()) == '0') {
-                                        montoTotalGravada = 0;
-                                        montoTotalISC = 0;
-                                    } else {
-                                        montoTotalGravada = montoTotalGravada + (precio * parseFloat($("#txtDevolucion_" + i + "").val()));
-                                    }
-                                } else {
-                                    if ($("#hfDetalle" + i + "_tipo").val() == "EXO") {
-                                        montoTotalExonerado += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#txtDevolucion_" + i + "").val()));
-                                    } else {
-                                        montoTotalInafecto += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#txtDevolucion_" + i + "").val()));
-                                    }
-                                }
-                            }  //El precio siempre no tendrá igv
-                            else {
-                                montoTotalISC += ((parseFloat($("#hfDetalle" + i + "_pu").val())) * parseFloat($("#txtDevolucion_" + i + "").val()) * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100));
-                                montoTotalExonerado += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#txtDevolucion_" + i + "").val()));
-                            }
-                            montoTotalSinIgv += parseFloat($("#txtDevolucion_" + i + "").val()) * precio;
-                        }
-                    }
-                    */
-
                 } else {
-                    if (parseFloat($("#hfDetalle" + i + "_cant_sol").val()) < parseFloat($("#txtDevolucion_" + i + "").val())) {
+                    precio = parseFloat($("#hfDetalle" + i + "_pu").val() / $("#hfDetalle" + i + "_factor").val());
+                    if (parseFloat($("#hfDetalle" + i + "_cant").val()) < parseFloat($("#txtDevolucion_" + i + "").val())) {
                         continuar = false;
                         $("#txtDevolucion_" + i + "").css("outline", "1px solid #b94a48");
                     }
                     else {
                         $("#txtDevolucion_" + i + "").css("outline", "none");
 
-                        precio = parseFloat($("#hfDetalle" + i + "_pu").val());
-
                         if ($("#hfScslExoneradaInd").val() == "N") {
                             if ($("#hfDetalle" + i + "_tipo").val() == "GRA" || $("#hfDetalle" + i + "_tipo").val() == "GIS") {
                                 precio = precio / (igv + 1);
-                                montoIgv += (parseFloat($("#hfDetalle" + i + "_pu").val()) - precio) * parseFloat($("#txtDevolucion_" + i + "").val());
-                                montoTotalISC += ((parseFloat($("#hfDetalle" + i + "_pu").val())) * parseFloat($("#txtDevolucion_" + i + "").val()) * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100));
+                                montoIgv += (parseFloat($("#hfDetalle" + i + "_pu").val() / $("#hfDetalle" + i + "_factor").val()) - precio) * parseFloat($("#txtDevolucion_" + i + "").val());
+                                montoTotalISC += ((parseFloat($("#hfDetalle" + i + "_pu").val() / $("#hfDetalle" + i + "_factor").val())) * parseFloat($("#txtDevolucion_" + i + "").val()) * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100));
 
                                 if (parseFloat($("#txtDevolucion_" + i + "").val()) == '0') {
                                     montoTotalGravada = montoTotalGravada+0;
@@ -2064,27 +1959,22 @@ function CalcularTotales() {
                                 } else {
                                     montoTotalGravada = montoTotalGravada + (precio * parseFloat($("#txtDevolucion_" + i + "").val()));
                                 }
-
-
                             } else {
                                 if ($("#hfDetalle" + i + "_tipo").val() == "EXO") {
-                                    montoTotalExonerado += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#txtDevolucion_" + i + "").val()));
+                                    montoTotalExonerado += (parseFloat($("#hfDetalle" + i + "_pu").val() / $("#hfDetalle" + i + "_factor").val()) * parseFloat($("#txtDevolucion_" + i + "").val()));
                                 } else {
-                                    montoTotalInafecto += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#txtDevolucion_" + i + "").val()));
+                                    montoTotalInafecto += (parseFloat($("#hfDetalle" + i + "_pu").val() / $("#hfDetalle" + i + "_factor").val()) * parseFloat($("#txtDevolucion_" + i + "").val()));
                                 }
                             }
                         }  //El precio siempre no tendrá igv
                         else {
-                            montoTotalISC += ((parseFloat($("#hfDetalle" + i + "_pu").val())) * parseFloat($("#txtDevolucion_" + i + "").val()) * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100));
-                            montoTotalExonerado += (parseFloat($("#hfDetalle" + i + "_pu").val()) * parseFloat($("#txtDevolucion_" + i + "").val()));
+                            montoTotalISC += ((parseFloat($("#hfDetalle" + i + "_pu").val() / $("#hfDetalle" + i + "_factor").val())) * parseFloat($("#txtDevolucion_" + i + "").val()) * (parseFloat($("#hfDetalle" + i + "_isc").val()) / 100));
+                            montoTotalExonerado += (parseFloat($("#hfDetalle" + i + "_pu").val() / $("#hfDetalle" + i + "_factor").val()) * parseFloat($("#txtDevolucion_" + i + "").val()));
                         }
 
                         montoTotalSinIgv += parseFloat($("#txtDevolucion_" + i + "").val()) * precio;
-
                     }
-                }
-
-                
+                }                
             }
         }
         if ($("#hfScslExoneradaInd").val() == "N") {
@@ -2145,8 +2035,8 @@ function CalcularTotales() {
         montoIgvGlobal = montoIgv.toFixed(4);
         montoTotalGlobal = montoTotal.toFixed(4);
 
-        console.log('ENTRA AQUI');
-        console.log(detalles);
+        //console.log('ENTRA AQUI');
+        //console.log(detalles);
     }
 
   

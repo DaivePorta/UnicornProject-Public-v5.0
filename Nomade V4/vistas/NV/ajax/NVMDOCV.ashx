@@ -13,7 +13,7 @@ Public Class NVMDOCV : Implements IHttpHandler
 
     Dim OPCION, USUARIO, CTLG_CODE, MONEDA_CODE, CODE_PARAMETRO, TIPO_DCTO, PROD_CODE, NUM_DCTO, p_CODE, p_TOTAL_GRATUITAS, COD_UNI As String
 
-    Dim USUA_ID, PIDM, CTLG, SCSL, ALMC_CODE, ALMC, DESC_ALMC, DESP_VENTA, SERIADO_IND, PRECIO_IND, CODIGO_CATEGORIA, TIPO_CAMBIO, p_FVBVTAC_SEQ_DOC, p_FVBVTAC_CODE, p_PLAZO, DOC_CODE As String
+    Dim USUA_ID, PIDM, CTLG, SCSL, ALMC_CODE, ALMC, DESC_ALMC, DESP_VENTA, SERIADO_IND, PRECIO_IND, CODIGO_CATEGORIA, TIPO_CAMBIO, p_FVBVTAC_SEQ_DOC, p_FVBVTAC_CODE, p_PLAZO, DOC_CODE, NRO_DOC, NOMBRE As String
 
     Dim p_NUM_SERIE, p_NUM_DCTO, p_DCTO_CODE, p_FECHA_EMISION, p_FECHA_TRANS, p_FECHA_VENCIMIENTO,
        p_CMNT_DCTO, p_CTLG_CODE, p_SCSL_CODE, p_CAJA_CODE, p_MONE_CODE, p_VALOR,
@@ -219,6 +219,8 @@ Public Class NVMDOCV : Implements IHttpHandler
         p_NCMOCONT_CODIGO = context.Request("p_NCMOCONT_CODIGO")
 
         DOC_CODE = context.Request("DOC_CODE")
+        NRO_DOC = context.Request("NRO_DOC")
+        NOMBRE = context.Request("NOMBRE")
 
         Try
 
@@ -417,28 +419,88 @@ Public Class NVMDOCV : Implements IHttpHandler
 
                 Case "2.6" 'Listar resposable pago más rápido
                     context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = nceCliente.ListarCliente2(If(PIDM = Nothing, "0", PIDM), "A", If(CTLG_CODE = Nothing, "", CTLG_CODE), "R")
+                    dt = nceCliente.ListarCliente2(If(PIDM = Nothing, "0", PIDM), "A", If(CTLG_CODE = Nothing, "", CTLG_CODE), "P")
                     If Not (dt Is Nothing) Then
                         resb.Append("[")
                         For Each MiDataRow As DataRow In dt.Rows
                             resb.Append("{")
                             resb.Append("""RAZON_SOCIAL"" :" & """" & MiDataRow("RAZON_SOCIAL").ToString & """,")
-                            'resb.Append("""RUC"" :" & """" & MiDataRow("NRO_RUC").ToString & """,")
-                            'resb.Append("""CODIGO_TIPO_DOCUMENTO"" :" & """" & MiDataRow("CODIGO_TIPO_DOCUMENTO").ToString & """,")
-                            'resb.Append("""TIPO_DOCUMENTO"" :" & """" & MiDataRow("TIPO_DOCUMENTO").ToString & """,")
-                            'resb.Append("""NRO_DOCUMENTO"" :" & """" & MiDataRow("NRO_DOCUMENTO").ToString & """,")
+                            resb.Append("""RUC"" :" & """" & MiDataRow("NRO_RUC").ToString & """,")
+                            resb.Append("""CODIGO_TIPO_DOCUMENTO"" :" & """" & MiDataRow("CODIGO_TIPO_DOCUMENTO").ToString & """,")
+                            resb.Append("""TIPO_DOCUMENTO"" :" & """" & MiDataRow("TIPO_DOCUMENTO").ToString & """,")
+                            resb.Append("""NRO_DOCUMENTO"" :" & """" & MiDataRow("NRO_DOCUMENTO").ToString & """,")
                             'resb.Append("""DIRECCION"" :" & """" & MiDataRow("DIRECCION").ToString & """,")
-                            'resb.Append("""ID"" :" & """" & MiDataRow("ID").ToString & """,")
+                            resb.Append("""ID"" :" & """" & MiDataRow("ID").ToString & """,")
                             resb.Append("""DIAS"" :" & """" & MiDataRow("DIAS").ToString & """,")
-                            'resb.Append("""AGENTE_RETEN_IND"" :" & """" & MiDataRow("AGENTE_RETEN_IND").ToString & """,")
-                            'resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
-                            'resb.Append("""CODIGO_CATEGORIA"" :" & """" & MiDataRow("CODIGO_CATEGORIA").ToString & """,")
+                            resb.Append("""AGENTE_RETEN_IND"" :" & """" & MiDataRow("AGENTE_RETEN_IND").ToString & """,")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            resb.Append("""CODIGO_CATEGORIA"" :" & """" & MiDataRow("CODIGO_CATEGORIA").ToString & """,")
                             'resb.Append("""CATE_DESC"" :" & """" & MiDataRow("CATE_DESC").ToString & """,")
-                            'resb.Append("""DEUDA"" :" & """" & MiDataRow("DEUDA").ToString & """,")
+                            resb.Append("""DEUDA"" :" & """" & MiDataRow("DEUDA").ToString & """,")
                             'resb.Append("""PPBIDEN_CONDICION_SUNAT"" :" & """" & MiDataRow("PPBIDEN_CONDICION_SUNAT").ToString & """,")
                             ''resb.Append("""PPBIDEN_ESTADO_SUNAT"" :" & """" & MiDataRow("PPBIDEN_ESTADO_SUNAT").ToString & """,")
                             ''resb.Append("""TELEFONO"" :" & """" & MiDataRow("TELEFONO").ToString & """")
                             resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
+
+                Case "2.7" 'Listar Clientes específico por Documento
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = nceCliente.ListarClienteEspecificoDocumento(If(CTLG_CODE = Nothing, "", CTLG_CODE), NRO_DOC)
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""RAZON_SOCIAL"" :" & """" & MiDataRow("RAZON_SOCIAL").ToString & """,")
+                            resb.Append("""RUC"" :" & """" & MiDataRow("NRO_RUC").ToString & """,")
+                            resb.Append("""CODIGO_TIPO_DOCUMENTO"" :" & """" & MiDataRow("CODIGO_TIPO_DOCUMENTO").ToString & """,")
+                            resb.Append("""TIPO_DOCUMENTO"" :" & """" & MiDataRow("TIPO_DOCUMENTO").ToString & """,")
+                            resb.Append("""NRO_DOCUMENTO"" :" & """" & MiDataRow("NRO_DOCUMENTO").ToString & """,")
+                            resb.Append("""ID"" :" & """" & MiDataRow("ID").ToString & """,")
+                            resb.Append("""DIAS"" :" & """" & MiDataRow("DIAS").ToString & """,")
+                            resb.Append("""AGENTE_RETEN_IND"" :" & """" & MiDataRow("AGENTE_RETEN_IND").ToString & """,")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            resb.Append("""CODIGO_CATEGORIA"" :" & """" & MiDataRow("CODIGO_CATEGORIA").ToString & """,")
+                            resb.Append("""CATE_DESC"" :" & """" & MiDataRow("CATE_DESC").ToString & """,")
+                            resb.Append("""DEUDA"" :" & """" & MiDataRow("DEUDA").ToString & """,")
+                            resb.Append("""PPBIDEN_CONDICION_SUNAT"" :" & """" & MiDataRow("PPBIDEN_CONDICION_SUNAT").ToString & """,")
+                            resb.Append("""PPBIDEN_ESTADO_SUNAT"" :" & """" & MiDataRow("PPBIDEN_ESTADO_SUNAT").ToString & """")
+                            resb.Append("}")
+                            resb.Append(",")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
+
+                Case "2.8" 'Listar Clientes específico por Nombre
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = nceCliente.ListarClienteEspecificoNombre(If(CTLG_CODE = Nothing, "", CTLG_CODE), NOMBRE)
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each MiDataRow As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""RAZON_SOCIAL"" :" & """" & MiDataRow("RAZON_SOCIAL").ToString & """,")
+                            resb.Append("""RUC"" :" & """" & MiDataRow("NRO_RUC").ToString & """,")
+                            resb.Append("""CODIGO_TIPO_DOCUMENTO"" :" & """" & MiDataRow("CODIGO_TIPO_DOCUMENTO").ToString & """,")
+                            resb.Append("""TIPO_DOCUMENTO"" :" & """" & MiDataRow("TIPO_DOCUMENTO").ToString & """,")
+                            resb.Append("""NRO_DOCUMENTO"" :" & """" & MiDataRow("NRO_DOCUMENTO").ToString & """,")
+                            resb.Append("""ID"" :" & """" & MiDataRow("ID").ToString & """,")
+                            resb.Append("""DIAS"" :" & """" & MiDataRow("DIAS").ToString & """,")
+                            resb.Append("""AGENTE_RETEN_IND"" :" & """" & MiDataRow("AGENTE_RETEN_IND").ToString & """,")
+                            resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
+                            resb.Append("""CODIGO_CATEGORIA"" :" & """" & MiDataRow("CODIGO_CATEGORIA").ToString & """,")
+                            resb.Append("""CATE_DESC"" :" & """" & MiDataRow("CATE_DESC").ToString & """,")
+                            resb.Append("""DEUDA"" :" & """" & MiDataRow("DEUDA").ToString & """,")
+                            resb.Append("""PPBIDEN_CONDICION_SUNAT"" :" & """" & MiDataRow("PPBIDEN_CONDICION_SUNAT").ToString & """,")
+                            resb.Append("""PPBIDEN_ESTADO_SUNAT"" :" & """" & MiDataRow("PPBIDEN_ESTADO_SUNAT").ToString & """")
                             resb.Append("}")
                             resb.Append(",")
                         Next
@@ -629,7 +691,8 @@ Public Class NVMDOCV : Implements IHttpHandler
                     'End If
 
                     If dtCabecera.Rows(0)("ASIENTO_COBRO") <> "SIN_AMORTIZAR" Then 'SOLO SE HA GENERADO EL CRÉDITO EN NVMDOCV O NVMDOCS
-                        If dtCabecera.Rows(0)("ASIENTO_COBRO") = "NO" Or dtCabecera.Rows(0)("PAGADO_IND") = "NO" Then
+                        'If dtCabecera.Rows(0)("ASIENTO_COBRO") = "NO" Or dtCabecera.Rows(0)("PAGADO_IND") = "NO" Then
+                        If dtCabecera.Rows(0)("PAGADO_IND") = "SI" And dtCabecera.Rows(0)("ASIENTO_COBRO") = "NO" Then
                             strCodAsientoCobroVenta = oCTGeneracionAsientos.GenerarAsientoCobroDocVenta(p_CODE, dtCabecera.Rows(0)("ASIENTO_COBRO"), dtCabecera.Rows(0)("PAGADO_IND"))
                             If strCodAsientoCobroVenta = "" Then
                                 strCodAsientoCobroVenta = "SIN_CTA_CONTABLE_ORIGEN_COBRO"
@@ -910,7 +973,7 @@ Public Class NVMDOCV : Implements IHttpHandler
                             resb.Append("""PIDM"":""" & row("PIDM").ToString & """,")
                             'resb.Append("""CLIE_DCTO_SUNAT"":""" & row("CLIE_DCTO_SUNAT").ToString & """,")
                             'resb.Append("""CLIE_DCTO_DESC"":""" & row("CLIE_DCTO_DESC").ToString & """,")
-                            'resb.Append("""CLIE_DCTO_NRO"":""" & row("CLIE_DCTO_NRO").ToString & """,")
+                            resb.Append("""CLIE_DCTO_NRO"":""" & row("CLIE_DCTO_NRO").ToString & """,")
                             resb.Append("""DCTO_SERIE"":""" & row("DCTO_SERIE").ToString & """,")
                             resb.Append("""DCTO_NRO"":""" & row("DCTO_NRO").ToString & """,")
                             resb.Append("""DCTO_CODE"":""" & row("DCTO_CODE").ToString & """,")
@@ -1168,6 +1231,46 @@ Public Class NVMDOCV : Implements IHttpHandler
                     dt = nvVenta.ListarVendedorPorRol(CTLG, p_ESTADO_IND)
                     If Not (dt Is Nothing) Then
                         'dt = SortDataTableColumn(dt, "ESTADO", "ASC")
+                        resb.Append("[")
+                        For Each row As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""PIDM"":""" & row("PIDM_PERSONA").ToString & """,")
+                            resb.Append("""USUARIO"":""" & row("USUARIO").ToString & """,")
+                            resb.Append("""ESTADO"" :" & """" & row("ESTADO").ToString & """,")
+                            resb.Append("""NOMBRE_EMPLEADO"":""" & row("NOMBRE").ToString & """")
+                            resb.Append("},")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
+
+                Case "LCAJ" ' LISTAR CAJEROS POR ROL
+
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = nvVenta.ListarCajeroPorRol(CTLG, p_ESTADO_IND)
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each row As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""PIDM"":""" & row("PIDM_PERSONA").ToString & """,")
+                            resb.Append("""USUARIO"":""" & row("USUARIO").ToString & """,")
+                            resb.Append("""ESTADO"" :" & """" & row("ESTADO").ToString & """,")
+                            resb.Append("""NOMBRE_EMPLEADO"":""" & row("NOMBRE").ToString & """")
+                            resb.Append("},")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
+
+                Case "LCAJ-N" ' LISTAR CAJEROS POR ROL SIN SER EMPLEADO
+
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = nvVenta.ListarCajeroPorRol(CTLG, "X")
+                    If Not (dt Is Nothing) Then
                         resb.Append("[")
                         For Each row As DataRow In dt.Rows
                             resb.Append("{")
@@ -1996,7 +2099,8 @@ Public Class NVMDOCV : Implements IHttpHandler
                             resb.Append("""EXONERADO"" :" & """" & MiDataRow("EXONERADO").ToString & """,")
                             resb.Append("""DESCRIPCION"" :" & """" & MiDataRow("DESCRIPCION").ToString & """,")
                             resb.Append("""UBIGEO"" :" & """" & MiDataRow("UBIGEO").ToString & """,")
-                            resb.Append("""ALMC_CODE"" :" & """" & MiDataRow("ALMC_CODE").ToString & """")
+                            resb.Append("""ALMC_CODE"" :" & """" & MiDataRow("ALMC_CODE").ToString & """,")
+                            resb.Append("""PIE_PAGINA_RECIBO"" :" & """" & MiDataRow("PIE_PAGINA_RECIBO").ToString & """")
                             resb.Append("}")
                             resb.Append(",")
                         Next
@@ -2113,6 +2217,12 @@ Public Class NVMDOCV : Implements IHttpHandler
 
         Dim rutaLogo As String = ""
 
+        'Solo para documentos tipo 0101
+        Dim dtPiePaginaIndicador As New DataTable
+        Dim dtParametroPiePaginaRecibo As New DataTable
+        Dim prmt_pie_pagina_recibos As String = ""
+        Dim pie_pagina_recibos_desc As String = ""
+
         dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "I")
         dtDetalles = nvVenta.ListarDetDctoVentaImpresion(p_CODE)
         dtPago = nvVenta.ListarFecha_MedioPago(p_CODE, dtCabecera.Rows(0)("EMPRESA"))
@@ -2150,6 +2260,22 @@ Public Class NVMDOCV : Implements IHttpHandler
             'OBTENER EL TEXTO QUE VA A IR EN LA IMPRESION COMO PIE DE PAGINA
             Dim pie_pagina As String = ""
             pie_pagina = getLinks(dtParametroPiePagina(0)("DESCRIPCION_DETALLADA").ToString)
+
+            'PARAMETRO PIE DE PAGINA EN RECIBOS
+            If dtCabecera(0)("TIPO_DCTO") = "0101" Then 'Pie de pagina solo aplica a tipo doc 0101
+                Dim p_SCSL_CODE = dtCabecera(0)("SUCURSAL")
+                dtPiePaginaIndicador = New Nomade.NC.NCSucursal("Bn").ListarSucursalPiePaginaReciboIndicador(p_CTLG_CODE, p_SCSL_CODE, "A")
+
+                If dtPiePaginaIndicador IsNot Nothing AndAlso dtPiePaginaIndicador(0)("PIE_PAGINA_RECIBO") = "SI" Then
+                    dtParametroPiePaginaRecibo = New Nomade.NC.NCParametros("Bn").ListarParametros("PPRE", "XXX")
+                End If
+                'OBTENER TEXTO PARA EL PIE DE PAGINA EN RECIBOS
+                If dtParametroPiePaginaRecibo IsNot Nothing AndAlso dtParametroPiePaginaRecibo.Rows.Count > 0 Then
+                    prmt_pie_pagina_recibos = getLinks(dtParametroPiePaginaRecibo(0)("VALOR").ToString)
+                    pie_pagina_recibos_desc = getLinks(dtParametroPiePaginaRecibo(0)("DESCRIPCION_DETALLADA").ToString)
+                End If
+            End If
+
             'VARIABLE PARA COLOCAR EL QR EN EL PDF
             ' Dim rutaQr As String = dtCabecera(0)("IMAGEN_QR").ToString
             Dim codeMoneda As String = dtCabecera.Rows(0)("MONEDA") 'Código de Moneda
@@ -2628,6 +2754,12 @@ Public Class NVMDOCV : Implements IHttpHandler
         'Dim dtParametroLogo As New DataTable
         Dim dtParametroPiePagina As New DataTable
 
+        'Solo para documentos tipo 0101
+        Dim dtPiePaginaIndicador As New DataTable
+        Dim dtParametroPiePaginaRecibo As New DataTable
+        Dim prmt_pie_pagina_recibos As String = ""
+        Dim pie_pagina_recibos_desc As String = ""
+
         dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "I")
         dtDetalles = nvVenta.ListarDetDctoVentaImpresion(p_CODE)
         'dtPago = nvVenta.ListarFecha_MedioPago(p_CODE, dtCabecera.Rows(0)("EMPRESA"))
@@ -2685,6 +2817,20 @@ Public Class NVMDOCV : Implements IHttpHandler
             'LA RUTA QUE VA A TENER
             'rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(cadenaQR)
             rutaQr = "data:image/png;base64," + fnGetCodigoQR_fast(cadenaQR)
+
+            'PARAMETRO PIE DE PAGINA EN RECIBOS
+            If dtCabecera(0)("TIPO_DCTO") = "0101" Then 'Pie de pagina solo aplica a tipo doc 0101
+                dtPiePaginaIndicador = New Nomade.NC.NCSucursal("Bn").ListarSucursalPiePaginaReciboIndicador(dtCabecera(0)("EMPRESA"), dtCabecera(0)("SUCURSAL"), "A")
+
+                If dtPiePaginaIndicador IsNot Nothing AndAlso dtPiePaginaIndicador(0)("PIE_PAGINA_RECIBO") = "SI" Then
+                    dtParametroPiePaginaRecibo = New Nomade.NC.NCParametros("Bn").ListarParametros("PPRE", "XXX")
+                End If
+                'OBTENER TEXTO PARA EL PIE DE PAGINA EN RECIBOS
+                If dtParametroPiePaginaRecibo IsNot Nothing AndAlso dtParametroPiePaginaRecibo.Rows.Count > 0 Then
+                    prmt_pie_pagina_recibos = getLinks(dtParametroPiePaginaRecibo(0)("VALOR").ToString)
+                    pie_pagina_recibos_desc = getLinks(dtParametroPiePaginaRecibo(0)("DESCRIPCION_DETALLADA").ToString)
+                End If
+            End If
 
             tabla.Append("<table id='tblDctoImprimir' border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'>")
             tabla.Append("<thead>")
@@ -3124,6 +3270,9 @@ Public Class NVMDOCV : Implements IHttpHandler
                     ' If Not pie_pagina = "" Then
                     tabla.Append("<td colspan='4' style='text-align: center;'>CANJEAR POR BOLETA O FACTURA</td>")
                     'End If
+                ElseIf dtPiePaginaIndicador(0)("PIE_PAGINA_RECIBO") = "SI" AndAlso dtCabecera(0)("TIPO_DCTO") = "0101" AndAlso prmt_pie_pagina_recibos = "SI" Then
+                    tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", pie_pagina_recibos_desc)
+                    tabla.Append("<td colspan='4' style='text-align: center;'>GRACIAS POR SU PREFERENCIA</td>")
                 Else
                     tabla.Append("<td colspan='4' style='text-align: center;'>GRACIAS POR SU PREFERENCIA</td>")
                 End If

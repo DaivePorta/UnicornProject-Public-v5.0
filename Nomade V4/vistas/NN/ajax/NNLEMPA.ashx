@@ -35,6 +35,8 @@ Public Class NNLEMPA : Implements IHttpHandler
                 Dim bool2 As Boolean = False
                 Dim bool3 As Boolean = False
                 Dim bool4 As Boolean = False
+                Dim bool5 As Boolean = False
+                Dim bool6 As Boolean = False
                 Dim array As New ArrayList
                 Dim array2 As New ArrayList
                 dt = New Nomade.NN.NNPlanilla("Bn").Listar_calculo_Tardanzas(ANHO, MES, PIDM, "N", "0001", "2")
@@ -53,18 +55,64 @@ Public Class NNLEMPA : Implements IHttpHandler
 
                     For i As Integer = 0 To dt.Rows.Count - 1
                         bool = False
+                        bool2 = False
                         bool3 = False
                         bool4 = False
+                        bool5 = False
+                        bool6 = False
                         resb.Append("{")
                         resb.Append("""DIA"" :" & """" & dt(i)("DIA").ToString & """,")
                         resb.Append("""FECHA"" :" & """" & dt(i)("FECHA").ToString & """,")
-                        resb.Append("""ENTRADA_M"" :" & """" & dt(i)("ENTRADA_M").ToString & """,")
-                        resb.Append("""SALIDA_M"" :" & """" & dt(i)("SALIDA_M").ToString & """,")
-                        resb.Append("""ENTRADA_T"" :" & """" & dt(i)("ENTRADA_T").ToString & """,")
-                        resb.Append("""SALIDA_T"" :" & """" & dt(i)("SALIDA_T").ToString & """,")
-                        resb.Append("""TARDANZA"" :" & """" & dt(i)("TARDANZA").ToString & """,")
-                        resb.Append("""FALTA"" :" & """" & "" & """,")
+                        'resb.Append("""ENTRADA_M"" :" & """" & dt(i)("ENTRADA_M").ToString & """,")
+                        'resb.Append("""SALIDA_M"" :" & """" & dt(i)("SALIDA_M").ToString & """,")
+                        'resb.Append("""ENTRADA_T"" :" & """" & dt(i)("ENTRADA_T").ToString & """,")
+                        'resb.Append("""SALIDA_T"" :" & """" & dt(i)("SALIDA_T").ToString & """,")
 
+                        If Not (dtFalta Is Nothing) Then
+                            For k As Integer = 0 To dtFalta.Rows.Count - 1
+                                If dtFalta(k)("FECHA_FALTA").ToString = dt(i)("FECHA").ToString And dtFalta(k)("FALTA_DIA").ToString = 1 Then
+                                    resb.Append("""ENTRADA_M"" :" & """" & "-" & """,")
+                                    resb.Append("""SALIDA_M"" :" & """" & "-" & """,")
+                                    bool5 = True
+                                    Exit For
+                                End If
+                            Next
+                        End If
+                        If bool5 = False Then
+                            resb.Append("""ENTRADA_M"" :" & """" & dt(i)("ENTRADA_M").ToString & """,")
+                            resb.Append("""SALIDA_M"" :" & """" & dt(i)("SALIDA_M").ToString & """,")
+                        End If
+
+                        If Not (dtFalta Is Nothing) Then
+                            For k As Integer = 0 To dtFalta.Rows.Count - 1
+                                If dtFalta(k)("FECHA_FALTA").ToString = dt(i)("FECHA").ToString Then
+                                    resb.Append("""ENTRADA_T"" :" & """" & "-" & """,")
+                                    resb.Append("""SALIDA_T"" :" & """" & "-" & """,")
+                                    bool6 = True
+                                    Exit For
+                                End If
+                            Next
+                        End If
+                        If bool6 = False Then
+                            resb.Append("""ENTRADA_T"" :" & """" & dt(i)("ENTRADA_T").ToString & """,")
+                            resb.Append("""SALIDA_T"" :" & """" & dt(i)("SALIDA_T").ToString & """,")
+                        End If
+
+                        resb.Append("""TARDANZA"" :" & """" & dt(i)("TARDANZA").ToString & """,")
+                        'resb.Append("""FALTA"" :" & """" & "" & """,")
+
+                        If Not (dtFalta Is Nothing) Then
+                            For k As Integer = 0 To dtFalta.Rows.Count - 1
+                                If dtFalta(k)("FECHA_FALTA").ToString = dt(i)("FECHA").ToString Then
+                                    resb.Append("""FALTA"" :" & """" & dtFalta(k)("FALTA_DIA").ToString & """,")
+                                    bool2 = True
+                                    Exit For
+                                End If
+                            Next
+                        End If
+                        If bool2 = False Then
+                            resb.Append("""FALTA"" :" & """" & "" & """,")
+                        End If
 
                         If Not (dtFaltaHoras Is Nothing) Then
                             For k As Integer = 0 To dtFaltaHoras.Rows.Count - 1
@@ -115,92 +163,92 @@ Public Class NNLEMPA : Implements IHttpHandler
                 End If
 
                 'extras
-                If Not (dt_horas_extras Is Nothing) Then
-                    If Not (dt Is Nothing) Then
-                        For j As Integer = 0 To dt.Rows.Count - 1
-                            array.Add(dt(j)("DIA").ToString)
-                        Next
-                    End If
-                    If Not (dtFalta Is Nothing) Then
-                        For j As Integer = 0 To dtFalta.Rows.Count - 1
-                            array2.Add(dtFalta(j)("DIA").ToString)
-                        Next
-                    End If
+                'If Not (dt_horas_extras Is Nothing) Then
+                '    If Not (dt Is Nothing) Then
+                '        For j As Integer = 0 To dt.Rows.Count - 1
+                '            array.Add(dt(j)("DIA").ToString)
+                '        Next
+                '    End If
+                '    If Not (dtFalta Is Nothing) Then
+                '        For j As Integer = 0 To dtFalta.Rows.Count - 1
+                '            array2.Add(dtFalta(j)("DIA").ToString)
+                '        Next
+                '    End If
 
-                    For j As Integer = 0 To dt_horas_extras.Rows.Count - 1
-                        If array.Contains(dt_horas_extras(j)("DIA").ToString) = False And array2.Contains(dt_horas_extras(j)("DIA").ToString) = False Then
-
-
-                            Dim a = dt_horas_extras(j)("DIA").ToString
-                            Dim lll = ""
-                            resb.Append("{")
-                            resb.Append("""DIA"" :" & """" & dt_horas_extras(j)("DIA").ToString & """,")
-                            resb.Append("""FECHA"" :" & """" & dt_horas_extras(j)("FECHA_HORA_EXTRA").ToString & """,")
-                            resb.Append("""ENTRADA_M"" :" & """" & "-" & """,")
-                            resb.Append("""SALIDA_M"" :" & """" & "-" & """,")
-                            resb.Append("""ENTRADA_T"" :" & """" & "-" & """,")
-                            resb.Append("""SALIDA_T"" :" & """" & "-" & """,")
-                            resb.Append("""TARDANZA"" :" & """" & "-" & """,")
-                            resb.Append("""FALTA"" :" & """" & "-" & """,")
-                            resb.Append("""MIN_NO_SUBSANADOS"" :" & """" & "-" & """,")
-                            resb.Append("""MIN_SUBSANADOS"" :" & """" & "-" & """,")
-                            resb.Append("""EXTRA"" :" & """" & dt_horas_extras(j)("TOTAL_MINUTOS").ToString & """")
-                            resb.Append("}")
-                            resb.Append(",")
-                        End If
-
-                    Next
+                '    For j As Integer = 0 To dt_horas_extras.Rows.Count - 1
+                '        If array.Contains(dt_horas_extras(j)("DIA").ToString) = False And array2.Contains(dt_horas_extras(j)("DIA").ToString) = False Then
 
 
-                    'resb.Append("{}")
-                    'resb = resb.Replace(",{}", String.Empty)
+                '            Dim a = dt_horas_extras(j)("DIA").ToString
+                '            Dim lll = ""
+                '            resb.Append("{")
+                '            resb.Append("""DIA"" :" & """" & dt_horas_extras(j)("DIA").ToString & """,")
+                '            resb.Append("""FECHA"" :" & """" & dt_horas_extras(j)("FECHA_HORA_EXTRA").ToString & """,")
+                '            resb.Append("""ENTRADA_M"" :" & """" & "-" & """,")
+                '            resb.Append("""SALIDA_M"" :" & """" & "-" & """,")
+                '            resb.Append("""ENTRADA_T"" :" & """" & "-" & """,")
+                '            resb.Append("""SALIDA_T"" :" & """" & "-" & """,")
+                '            resb.Append("""TARDANZA"" :" & """" & "-" & """,")
+                '            resb.Append("""FALTA"" :" & """" & "-" & """,")
+                '            resb.Append("""MIN_NO_SUBSANADOS"" :" & """" & "-" & """,")
+                '            resb.Append("""MIN_SUBSANADOS"" :" & """" & "-" & """,")
+                '            resb.Append("""EXTRA"" :" & """" & dt_horas_extras(j)("TOTAL_MINUTOS").ToString & """")
+                '            resb.Append("}")
+                '            resb.Append(",")
+                '        End If
+
+                '    Next
 
 
-                End If
+                '    'resb.Append("{}")
+                '    'resb = resb.Replace(",{}", String.Empty)
+
+
+                'End If
 
                 'faltas
-                If Not (dtFalta Is Nothing) Then
-                    For x As Integer = 0 To dtFalta.Rows.Count - 1
-                        bool2 = False
-                        resb.Append("{")
-                        resb.Append("""DIA"" :" & """" & dtFalta(x)("DIA").ToString & """,")
-                        resb.Append("""FECHA"" :" & """" & dtFalta(x)("FECHA_FALTA").ToString & """,")
-                        resb.Append("""ENTRADA_M"" :" & """" & "-" & """,")
-                        resb.Append("""SALIDA_M"" :" & """" & "-" & """,")
-                        resb.Append("""ENTRADA_T"" :" & """" & "-" & """,")
-                        resb.Append("""SALIDA_T"" :" & """" & "-" & """,")
-                        resb.Append("""TARDANZA"" :" & """" & "-" & """,")
-                        resb.Append("""FALTA"" :" & """" & dtFalta(x)("FALTA_DIA").ToString & """,")
-                        resb.Append("""MIN_NO_SUBSANADOS"" :" & """" & "-" & """,")
-                        resb.Append("""MIN_SUBSANADOS"" :" & """" & "-" & """,")
-                        If Not (dt_horas_extras Is Nothing) Then
-                            For y As Integer = 0 To dt_horas_extras.Rows.Count - 1
-                                If dtFalta(x)("DIA").ToString = dt_horas_extras(y)("DIA").ToString Then
-                                    resb.Append("""EXTRA"" :" & """" & dt_horas_extras(y)("TOTAL_MINUTOS").ToString & """")
-                                    bool2 = True
-                                    Exit For
-                                End If
-                            Next
-                        End If
+                'If Not (dtFalta Is Nothing) Then
+                '    For x As Integer = 0 To dtFalta.Rows.Count - 1
+                '        bool2 = False
+                '        resb.Append("{")
+                '        resb.Append("""DIA"" :" & """" & dtFalta(x)("DIA").ToString & """,")
+                '        resb.Append("""FECHA"" :" & """" & dtFalta(x)("FECHA_FALTA").ToString & """,")
+                '        resb.Append("""ENTRADA_M"" :" & """" & "-" & """,")
+                '        resb.Append("""SALIDA_M"" :" & """" & "-" & """,")
+                '        resb.Append("""ENTRADA_T"" :" & """" & "-" & """,")
+                '        resb.Append("""SALIDA_T"" :" & """" & "-" & """,")
+                '        resb.Append("""TARDANZA"" :" & """" & "-" & """,")
+                '        resb.Append("""FALTA"" :" & """" & dtFalta(x)("FALTA_DIA").ToString & """,")
+                '        resb.Append("""MIN_NO_SUBSANADOS"" :" & """" & "-" & """,")
+                '        resb.Append("""MIN_SUBSANADOS"" :" & """" & "-" & """,")
+                '        If Not (dt_horas_extras Is Nothing) Then
+                '            For y As Integer = 0 To dt_horas_extras.Rows.Count - 1
+                '                If dtFalta(x)("DIA").ToString = dt_horas_extras(y)("DIA").ToString Then
+                '                    resb.Append("""EXTRA"" :" & """" & dt_horas_extras(y)("TOTAL_MINUTOS").ToString & """")
+                '                    bool2 = True
+                '                    Exit For
+                '                End If
+                '            Next
+                '        End If
 
-                        If bool2 = False Then
-                            resb.Append("""EXTRA"" :" & """" & "-" & """")
-                        End If
-
-
-                        resb.Append("}")
-                        resb.Append(",")
-
-                    Next
+                '        If bool2 = False Then
+                '            resb.Append("""EXTRA"" :" & """" & "-" & """")
+                '        End If
 
 
+                '        resb.Append("}")
+                '        resb.Append(",")
+
+                '    Next
 
 
 
-                    resb.Append("{}")
-                    resb = resb.Replace(",{}", String.Empty)
 
-                End If
+
+                '    resb.Append("{}")
+                '    resb = resb.Replace(",{}", String.Empty)
+
+                'End If
 
                 resb.Append("{}")
                 resb = resb.Replace(",{}", String.Empty)

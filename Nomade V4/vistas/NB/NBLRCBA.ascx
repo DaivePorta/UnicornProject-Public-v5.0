@@ -198,6 +198,19 @@
                     </div>
                 </div>
                 <div class="row-fluid"> 
+                     <div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="cboCajero">
+                                Cajero</label>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div class="control-group">
+                            <div class="controls">
+                                <select id="cboCajero" class="span12 cajero" data-placeholder="TODOS"><option></option></select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="span1">
                         <div class="control-group">
                             <label id="moneda" class="control-label" for="cboMoneda">
@@ -252,6 +265,7 @@
                                     <th>ORDEN DE <br />
                                         SERVICIO</th>
                                     <th>GLOSA</th>
+                                    <th>CAJERO</th>
                                     <th>NRO. DE<br />
                                         OPERACIÓN</th>
                                     <%--<th>CHEQUE</th>--%>

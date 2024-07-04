@@ -922,14 +922,14 @@ var NVMANTI = function () {
             } else {
                 $("#cboDocumentoVenta option:not([value=0001])").removeAttr("disabled");
                 $("#cboDocumentoVenta option[value=0001]").attr("disabled", "disabled");
-                $("#cboDocumentoVenta option[value=0003]").attr("disabled", "disabled");
+                //$("#cboDocumentoVenta option[value=0003]").attr("disabled", "disabled");
                 var oItems = $('#cboDocumentoVenta option');
                 for (var i = 0; i < oItems.length; i++) {
                     if (oItems[i].value === "0012") {
                         $("#cboDocumentoVenta").select2("val", "0012").change();
                     } else {
-                        //$("#cboDocumentoVenta").select2("val", "0003").change();
-                        $("#cboDocumentoVenta").select2("val", "0101").change();
+                        $("#cboDocumentoVenta").select2("val", "0003").change();
+                        //$("#cboDocumentoVenta").select2("val", "0101").change();
                     }
 
                 }
@@ -2548,7 +2548,7 @@ function fillTxtCliente(v_ID, v_value) {
                             $("#cboDocumentoVenta option[value=0001]").removeAttr("disabled");
                             $("#cboDocumentoVenta option[value=0003]").attr("disabled", "disabled");
                         } else {
-                            //$("#cboDocumentoVenta option[value=0003]").removeAttr("disabled");
+                            $("#cboDocumentoVenta option[value=0003]").removeAttr("disabled");
                             $("#cboDocumentoVenta option[value=0001]").attr("disabled", "disabled");
                         }
 
@@ -5469,7 +5469,7 @@ function CargarDatosCobro() {
 //Se llama una lista de numeros de operacion asociadas a la cuenta seleccionada
 function listarNroOperacion(cliente_pidm, listaNumeroOperacion) {
     $.ajaxSetup({ async: true });
-    $.post("/vistas/NB/ajax/NBMMOCB.ASHX", { flag: 3.5, cuenta: $("#cbo_Det_Origen :selected").attr("value"), empresapidm: $('#hfPIDM').val() })
+    $.post("/vistas/NB/ajax/NBMMOCB.ASHX", { flag: 3.5, cuenta: $("#cbo_Det_Origen :selected").attr("value"), tipoOperacion: '1', empresapidm: $('#hfPIDM').val() }) // tipoOperacion = 1 es Anticipo por Compensar
         .success(function (res) {
             if (res != null && res != "" && res.indexOf("error") < 0) {
                 var jsonResponse = JSON.parse(res);

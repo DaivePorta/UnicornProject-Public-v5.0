@@ -659,7 +659,7 @@
         End Try
     End Function
 
-    Public Function listar_stockProductosCantidad(ByVal p_ALMACEN As String, ByVal p_GRUPO As String, ByVal p_MONE_CODE As String, Optional p_CTLG_CODE As String = "N") As DataTable
+    Public Function listar_stockProductosCantidad(ByVal p_ALMACEN As String, ByVal p_GRUPO As String, ByVal p_MONE_CODE As String, ByVal p_ESTADO As String, Optional p_CTLG_CODE As String = "N") As DataTable
         Try
 
             Dim dt As DataTable
@@ -669,6 +669,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_ALMC_CODE", p_ALMACEN, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_GRUP_CODE", p_GRUPO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_MONE_CODE", p_MONE_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO", p_ESTADO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)

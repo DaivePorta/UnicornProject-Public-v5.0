@@ -129,8 +129,14 @@
                                         </div>
                                     </div>
 
+                                    <div class="span1">
+                                        <div class="control-label">
+                                            <a id="btnAdendar" class="btn blue" style="display: none;">Adendar</a>
+                                        </div>
+                                    </div>
 
-                                    <div class="span1 offset1">
+
+                                    <div class="span1">
                                         <div class="control-label">
                                             <label class="control-label" for="cboEstado">
                                                 Estado
@@ -375,6 +381,29 @@
                                         </div>
                                     </div>
 
+                                    <div class="span1" style="display:none" id="divLblAdenda">
+                                        <div class="control-label">
+                                            <label class="control-label" for="txtFechaAdenda">
+                                                F. Creación Adenda
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div id="divFechaAdenda" class="span3">
+                                        <div class="span12">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <input type="text" style="display:none" disabled="disabled" data-date-format="dd/mm/yyyy" class="span12" id="txtFechaAdenda" placeholder="dd/mm/yyyy" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="divAdendaAnteriorSiguiente" style="display:none" class="span3"> 
+                                        <a id="btnAdendaAnterior" class="btn purple span6">Adenda anterior</a>
+                                        <a id="btnAdendaSiguiente" class="btn purple span6">Adenda siguiente</a>
+                                    </div>
+
                                 </div>
 
                                 <div class="row-fluid">
@@ -569,6 +598,7 @@
 
                                 <div class="form-actions">
                                     <div id="divGrabar" class="span1"><a id="grabarEmpleado" class="btn blue" href="javascript:crearContrato();"><i class="icon-ok"></i>&nbsp;Guardar</a>  </div>
+                                    <div id="divAdenda" class="span1"><a id="adendarContrato" class="btn blue" href="javascript:adendarContrato();"><i class="icon-ok"></i>&nbsp;Adendar</a>  </div>
                                     <div id="divRenovar" class="span1"><a id="btnRenovar" class="btn green"><i class="icon-thumbs-up"></i>&nbsp;Renovar</a></div>
                                     <div id="divFirmar" class="span1"><a id="btnFirmar" class="btn purple"><i class="icon-edit"></i>&nbsp;Firmar</a></div>
                                 </div>

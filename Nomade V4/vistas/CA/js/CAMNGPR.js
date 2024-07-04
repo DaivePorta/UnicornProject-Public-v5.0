@@ -148,7 +148,7 @@ var CAMNGPR = function () {
                     if (datos != null) {
                         CrearDatoPermanente("jsonEmpresaNMMPROD", datos);
                         for (var i = 0; i < datos.length; i++) {
-                            $('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
+                            $('#cboEmpresa').append('<option value="' + datos[i].CODIGO + '" data-pidm="' + datos[i].PIDM + '">' + datos[i].DESCRIPCION + '</option>');
                         }
                     }
                     $('#cboEmpresa').select2('val', '');
@@ -165,7 +165,7 @@ var CAMNGPR = function () {
             if (dPermanente != null) {
                 dPermanente = JSON.parse(dPermanente);
                 for (var i = 0; i < dPermanente.length; i++) {
-                    $('#cboEmpresa').append('<option value="' + dPermanente[i].CODIGO + '">' + dPermanente[i].DESCRIPCION + '</option>');
+                    $('#cboEmpresa').append('<option value="' + dPermanente[i].CODIGO + '" data-pidm="' + dPermanente[i].PIDM + '">' + dPermanente[i].DESCRIPCION + '</option>');
                 }
             }
             $('#cboEmpresa').select2('val', '');
@@ -419,6 +419,115 @@ var CAMNGPR = function () {
         });
     };
 
+    var fillCboSubMotivo = function () {
+        var optionsHtml = `<option></option>
+        <option value="1">Anulación Operación Gasto</option>
+        <option value="2">Devolución Parcial de Gasto</option>
+        <option value="3">Otros Conceptos</option>`;
+        $('#cboSubMotivo').html(optionsHtml).removeAttr('title');
+        $(".subMotivo").show();
+        $('#cboSubMotivo').show().removeAttr("disabled").select2();
+    }
+
+    var fillCboModalidad = function () {
+        var optionsHtml = `
+        <option value=""></option>
+        <option value="1">Caja</option>
+        <option value="2">Banco</option>`;
+        $('#cboBancoCaja').html(optionsHtml).removeAttr('title');
+        $(".modalidad").show();
+        $('#cboBancoCaja').show().removeAttr("disabled").select2();
+        $('#cboBancoCaja').trigger('change');
+    };
+
+    var fillcboCuentaBanc_Caja = function (codBancoCaja) {
+        $("#cboCuentaBanc_Caja").empty().removeAttr('title');
+
+        switch (codBancoCaja) {
+            case "1": // Caja
+                $.ajax({
+                    type: "post",
+                    url: "vistas/ca/ajax/CALVICA.ashx?OPCION=2&p_CTLG_CODE=" + $('#cboEmpresa').val() + "&p_SCSL_CODE=" + $('#cboEstablecimiento').val() + "&p_USUA_ID=" + $('#ctl00_txtus').val(),
+                    contenttype: "application/json;",
+                    datatype: "json",
+                    async: false, 
+                    success: function (datos) {
+                        $('#txtNroOpe').hide().val('');
+                        $(".nroOp").hide();
+                        $(".cuentaBancaria").hide();
+                        $(".caja").show();
+
+                        $("#cboCuentaBanc_Caja").append('<option></option>');
+                        if (datos != null) {
+                            for (var i = 0; i < datos.length; i++) {
+                                if (datos[i].ESTADO.toString() == 'ACTIVO' && datos[i].ESTADO_CAJA.toString() == 'A') {
+                                    $("#cboCuentaBanc_Caja").append('<option value="' + datos[i].CAJA_CODE + '" ' + datos[i].ESTADO_CAJA.toString() + 'monto="' + datos[i].MONTO_CAJA + '">' + datos[i].DESCRIPCION_CAJA + '</option>');
+                                }
+                            }
+                        }
+                        $("#cboCuentaBanc_Caja").show().removeAttr("disabled").select2();
+                    },
+                    error: function (msg) {
+                        alert(msg.d);
+                    }
+                });
+                break;
+            case "2": // Banco
+                var opcionSelecionada = $("#cboEmpresa").find(':selected');
+                var pidm = opcionSelecionada.data('pidm');
+                var indCobranza = true;
+                $.ajax({
+                    type: "post",
+                    url: "vistas/NB/ajax/NBMMOCB.ASHX",
+                    data: { flag: 6, empresapidm: pidm, indCobranza: indCobranza },
+                    async: false, 
+                    success: function (resp) {
+                        $(".cuentaBancaria").show();
+                        $(".caja").hide();
+
+                        $("#cboCuentaBanc_Caja").html(resp);
+                        $("#cboCuentaBanc_Caja").show().removeAttr("disabled").select2();
+
+                        $('#txtNroOpe').show().removeAttr("disabled");
+                        $(".nroOp").show();
+                    },
+                    error: function (msg) {
+                        alert(msg.d);
+                    }
+                });
+                break;
+        }
+    };
+
+    var devolucionParcialOTotal = function (indicador) {
+        if (indicador === '1') { //Devolución total
+            $("#txtSubtotalItem").attr("disabled", "disabled");
+            if (dctoSeleccionado.IMPORTE_TOTAL >= 0) {
+                $("#txtSubtotalItem").val(dctoSeleccionado.IMPORTE_TOTAL).trigger('keyup');
+            }
+        } else if (indicador === '2') { //Devolución parcial
+            //Hasta un 99% posible
+            $("#txtSubtotalItem").removeAttr("disabled");
+        }
+    };
+
+    var deshabilitarSubMotivo = function () {
+        //Deshabilitar cuentas bancarias/cajas
+        $(".cuentaBancaria").hide();
+        $(".caja").hide();
+        $('#cboCuentaBanc_Caja').select2('destroy').hide().val('');
+        $(".nroOp").hide();
+        $('#txtNroOpe').hide().val('');
+
+        //Deshabilitar modalidad caja/banco
+        $(".modalidad").hide();
+        $('#cboBancoCaja').select2('destroy').hide().val('');
+
+        //Deshabilitar sub motivo
+        $(".subMotivo").hide();
+        $('#cboSubMotivo').select2('destroy').hide().val('');
+    };
+
     var ListarValorCambio = function () {
         if (typeof $("#cboMoneda [data-tipo='MOAL']").val() != "undefined" && $("#cboMoneda [data-tipo='MOAL']").val() != "") {
             monecode = $("#cboMoneda [data-tipo='MOAL']").val();
@@ -483,13 +592,64 @@ var CAMNGPR = function () {
 
         $("#cboMotivo").on("change", function () {
             if ($("#cboMotivo").val() == "00") {
-                $(".motivo").fadeIn();
+                //Habilitar motivo adicional
+                $(".motivo").show();
                 $("#txtMotivoAdicional").removeAttr("disabled").val("").focus();
+
+                //Deshabilitar sub motivo
+                deshabilitarSubMotivo();
+
+            } else if ($("#cboMotivo").val() == "010") {
+                //Deshabilitar motivo adicional
+                $(".motivo").hide();
+                $("#txtMotivoAdicional").hide().attr("disabled", "disabled").val("");
+
+                //Habilitar sub motivo
+                fillCboSubMotivo();
+                $('#cboSubMotivo').trigger('change');
+
             } else {
-                $(".motivo").fadeOut();
-                $("#txtMotivoAdicional").attr("disabled", "disabled").val("");
+                $(".motivo").hide();
+                $("#txtMotivoAdicional").hide().attr("disabled", "disabled").val("");
+
+                //Deshabilitar motivo adicional/Sub motivo, modalidad y cuenta banc/nro caja
+                deshabilitarSubMotivo();
             }
         })
+
+        let ultimoSubMotivo = null;
+        $("#cboSubMotivo").on("change", function () {
+            const subMotivoActual = $("#cboSubMotivo").val();
+
+            if (subMotivoActual === '1' || subMotivoActual === '2') {
+                if (ultimoSubMotivo !== '1' && ultimoSubMotivo !== '2') {
+                    fillCboModalidad();
+                }
+                devolucionParcialOTotal(subMotivoActual);
+            } else {
+                //Deshabilitar cuentas bancarias/cajas
+                $(".cuentaBancaria").hide();
+                $(".caja").hide();
+                $('#cboCuentaBanc_Caja').select2('destroy').hide().val('');
+
+                //Deshabilitar modalidad caja/banco
+                $(".modalidad").hide();
+                $('#cboBancoCaja').select2('destroy').hide().val('');
+                $(".nroOp").hide();
+                $('#txtNroOpe').hide().val('');
+
+                $("#txtSubtotalItem").removeAttr("disabled")
+            }
+
+            ultimoSubMotivo = subMotivoActual;
+        });
+
+
+        $("#cboBancoCaja").on("change", function () {
+            var codigoBancoCaja;
+            codigoBancoCaja = $("#cboBancoCaja").val();
+            fillcboCuentaBanc_Caja(codigoBancoCaja);
+        });
 
         $("#cboTipoDocumento").on("change", function () {
             $("#txtSerie").val("");
@@ -601,6 +761,43 @@ var CAMNGPR = function () {
                     $("#txtFechaEmisionRef").val(datos[0].EMISION_REF);
                     //AGREGADO
                     $("#txtMonto").val(datos[0].IMPORTE_TOTAL);
+
+                    //Anulación operación gasto
+                    if (datos[0].MOTIVO_CODE == "010") {
+                        //Deshabilitar motivo adicional
+                        $(".motivo").hide();
+                        $("#txtMotivoAdicional").hide().attr("disabled", "disabled").val("");
+
+                        fillCboSubMotivo();
+
+                        if (datos[0].SUBMOTIVO === '1' || datos[0].SUBMOTIVO === '2' ) { // Anulación operación gasto/Devolución parcial
+                            $("#cboSubMotivo").val(datos[0].SUBMOTIVO).trigger('change').attr("disabled", "disabled");
+
+                            var modalidad;
+                            if (datos[0].MODALIDAD === 'B') {
+                                modalidad = '2'; // Banco
+                            } else if (datos[0].MODALIDAD === 'C') {
+                                modalidad = '1'; // Caja
+                            }
+
+                            if (modalidad) {
+                                fillCboModalidad();
+                                $("#cboBancoCaja").val(modalidad).trigger('change').attr("disabled", "disabled");
+                            }
+
+                            if (modalidad === '1') {
+                                fillcboCuentaBanc_Caja(modalidad);
+                                $("#cboCuentaBanc_Caja").val(datos[0].CAJA_CODE).trigger('change').attr("disabled", "disabled");
+                            } else if (modalidad === '2') {
+                                fillcboCuentaBanc_Caja(modalidad);
+                                $("#cboCuentaBanc_Caja").val(datos[0].CUENTA_BANC).trigger('change').attr("disabled", "disabled");
+                                $("#txtNroOpe").val(datos[0].NRO_OPE).attr("disabled", "disabled");
+                            }
+                        } else {
+                            $("#cboSubMotivo").val('3').trigger('change').attr("disabled", "disabled");
+                        }
+                    }
+                       
                     
                     fillTblDetallesNotaCredito(datos[0].CODIGO);
 
@@ -787,6 +984,16 @@ function AgregarDetalle() {
                 continuar = true;
             } else {
                 alertCustom("Subtotal no puede ser menor o igual a 0");
+            }
+
+            var subtotal = parseFloat($("#txtSubtotalItem").val());
+            var monto = parseFloat($("#txtMonto").val());
+
+            if ($("#cboSubMotivo").val() === '2' && subtotal >= monto) {
+                continuar = false;
+                alertCustom("Devolución parcial debe ser menor al monto");
+            } else {
+                continuar = true;
             }
 
             if (continuar) {
@@ -990,6 +1197,7 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
 
     dctoSeleccionado.IMPORTE_TOTAL = importe;
     //LLENAR DATOS DOCUMENTO SELECCIONADO 
+    Delete(1); //Se deben limpiar los contenidos de detalle si se selecciona un nuevo documento.
     $(".lblMoneda").html("(" + simboloMoneda + ")");
     if (codigo != "" & serie != "") {
 
@@ -1005,6 +1213,9 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
         $("#txtFechaEmision").datepicker("setStartDate", dctoSeleccionado.FECHA_EMISION);
         //AGREGADO
         $("#txtMonto").val(dctoSeleccionado.IMPORTE_TOTAL);
+        if ($("#cboSubMotivo").val() === '1') {
+            $("#txtSubtotalItem").val(dctoSeleccionado.IMPORTE_TOTAL).trigger('keyup');
+        }
 
         if ($("#txtFechaEmision").val() != "") {
             if ((DateDiff(new Date(ConvertirDate($("#txtFechaEmision").val())), new Date(ConvertirDate(dctoSeleccionado.FECHA_EMISION)))) < 0) {
@@ -1046,10 +1257,23 @@ function GrabarNotaCredito() {
     if ($("#cboMotivo").val() == "00") {
         campos.push('txtMotivoAdicional');
     }
-    if ($("#cboTipoDocumento").val() != "") {
-        campos.push('txtSerie');
-        campos.push('txtNro');
-        campos.push('txtFechaEmisionRef');
+
+    //La nota de crédito no debería realizarse sin doc de ref independientemente del tipo de documento
+    //if ($("#cboTipoDocumento").val() != "") {
+    //    campos.push('txtSerie');
+    //    campos.push('txtNro');
+    //    campos.push('txtFechaEmisionRef');
+    //}
+    campos.push('txtSerie');
+    campos.push('txtNro');
+    campos.push('txtFechaEmisionRef');
+
+    if ($("#cboMotivo").val() == "010") {
+        campos.push('cboSubMotivo');
+        if ($("#cboSubMotivo").val() === '1') {
+            campos.push('cboBancoCaja');
+            campos.push('cboCuentaBanc_Caja');
+        }
     }
 
     var continuar = false;
@@ -1174,6 +1398,14 @@ function GrabarNotaCredito() {
                        $("#hfCodigoNotaCredito").val(datos[0].CODIGO);
                        $("#btnImprimirDcto").removeAttr("style");
 
+                       if ($("#cboSubMotivo").val() == "1" || $("#cboSubMotivo").val() == "2") {
+                           generarMovimientoCajaBanco($("#hfCodigoNotaCredito").val());
+                       }
+                       $("#cboSubMotivo").attr("disabled", "disabled");
+                       $("#cboBancoCaja").attr("disabled", "disabled");
+                       $("#cboCuentaBanc_Caja").attr("disabled", "disabled");
+                       $("#txtNroOpe").attr("disabled", "disabled");
+
                        vAsientoContable.sCodDoc = $("#hfCodigoNotaCredito").val();
                        $('#btnGenerarAsiento').click();
                    } else if (datos[0].CODIGO == "LIMITE") {
@@ -1202,6 +1434,53 @@ function GrabarNotaCredito() {
         }
     }
 }
+
+function generarMovimientoCajaBanco(p_CODE) {
+    var p_PIDM = $('#cboEmpresa option:selected').data('pidm');
+
+    var data = new FormData();
+    data.append('p_CODE', p_CODE);
+    data.append('p_PERS_PIDM', $("#hfPIDM").val());
+    data.append('p_CTLG_CODE', $("#cboEmpresa").val());
+    data.append('p_SCSL_CODE', $("#cboEstablecimiento").val());
+    data.append('p_PIDM', p_PIDM);
+    data.append('p_NRO_OPE', $("#txtNroOpe").val());
+    data.append('p_FECHA_EMISION', $("#txtFechaEmision").val());
+    data.append('p_USUA_ID', $('#ctl00_lblusuario').html());
+    data.append('p_BANCOCAJA', $("#cboCuentaBanc_Caja").val());
+    data.append('p_INDCAJABANCO', $("#cboBancoCaja").val());
+    data.append('p_SUBMOTIVO', $("#cboSubMotivo").val());
+
+    Bloquear("ventana");
+
+    $.ajax({
+        type: "POST",
+        url: "vistas/ca/ajax/CAMNGPR.ashx?OPCION=GEN_MOV_CAJA_BANCO",
+        contentType: false, // Correct casing
+        data: data,
+        processData: false,
+        cache: false,
+        async: true,
+        success: function (datos) {
+            Desbloquear("ventana");
+            if (datos != null) {
+                if (datos === "OK") {
+                    exito();
+                } else {
+                    alert("Error: " + datos); 
+                }
+            } else {
+                noexito();
+            }
+        },
+        error: function (msg) {
+            Desbloquear("ventana");
+            console.error("Error:", msg); 
+            alert("An error occurred while processing the request.");
+        }
+    });
+}
+
 
 function BloquearxSeleccion(ind) {
     if (ind == undefined) {

@@ -35,9 +35,10 @@
                         </div>                      
                     </div>
 
-                    <div class="span2">
+                    <div class="span3">
                         <div class="control-group">
                             <a id="A1" class="btn blue" href="javascript:ListarCabecera();"><i class="icon-search"></i>Buscar</a>
+                            <a id="btn_siguiente" class="btn gray" ><i class="icon-plus"></i> Asignar siguiente periodo</a>
                         </div>
                     </div>
                     

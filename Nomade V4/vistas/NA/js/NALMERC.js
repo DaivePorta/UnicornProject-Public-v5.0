@@ -3,7 +3,7 @@
     var oTable = "[]";
 
     var plugins = function () {
-        $('#cboEmpresas').select2();
+        $('#cboEmpresas, #cboEstado').select2();
     }
 
     var fillCboEmpresa = function () {
@@ -54,7 +54,7 @@
                     listarProductos($('#cboEmpresas').val(),
                         $('#cboAlmacen').val() == null ? '' : $('#cboAlmacen').val().toString(),
                         $('#slsGrupos').val() == null ? '' : $('#slsGrupos').val().toString(),
-                        '');
+                        $('#cboEstado').val());
                 } else {
                     alertCustom("Seleccione por lo menos un almacén");
                 }
@@ -108,14 +108,15 @@
         });
     }
 
-    function listarProductos(empresa, almacen, grupos,tipo) {       
+    function listarProductos(empresa, almacen, grupos, estado) {       
         $.ajax({
             type: "POST",
             dataType: "json",
             url: "vistas/na/ajax/nalmerc.ashx?OPCION=5.5" +
                 "&p_ctlg=" + empresa +
                 "&p_almacen=" + almacen +
-                "&p_grupo=" + grupos,
+                "&p_grupo=" + grupos +
+                "&p_estado=" + estado,
             async: true,
             beforeSend: function () { Bloquear("tblProductos") },
             success: function (datos) {
@@ -198,8 +199,9 @@
             columns: [
                 { data: "CODIGO" },
                 { data: "PRODUCTO" },               
+                { data: "ESTADO", align: "center" },
+                { data: "ALMACEN", align: "center" },                
                 { data: "UM", align: "center" },
-                { data: "ALMACEN", align: "center" },
                 { data: "CANTIDAD", align: "right" },
                 { data: "SEPARADO", align: "right" },
                 { data: "CANTIDAD_DISPONIBLE", align: "right" }

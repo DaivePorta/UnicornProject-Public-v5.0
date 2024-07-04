@@ -263,8 +263,7 @@ Public Class CAMNOCL : Implements IHttpHandler
                         resb.Append("[")
                         resb.Append("{")
                         resb.Append("""CODIGO"" :" & """" & array(0).ToString & """,")
-                        'resb.Append("""DATOS_QR"" :" & """" & array(1).ToString & """,")
-                        resb.Append("""SECUENCIA"" :" & """" & array(2).ToString & """")
+                        resb.Append("""SECUENCIA"" :" & """" & array(1).ToString & """")
                         resb.Append("}")
                         resb.Append(",")
                         resb.Append("{}")
@@ -1195,15 +1194,15 @@ Public Class CAMNOCL : Implements IHttpHandler
                     hf.AppendFormat("<input id='hfDetalle{0}_um' value='{1}' type='hidden' />", i, dt.Rows(i)("UNIDAD").ToString())
                     hf.AppendFormat("<input id='hfDetalle{0}_pu' value='{1}' type='hidden' />", i, dt.Rows(i)("PRECIO").ToString())
                     hf.AppendFormat("<input id='hfDetalle{0}_imp' value='{1}' type='hidden' />", i, dt.Rows(i)("TOTAL").ToString())
-                    hf.AppendFormat("<input id='hfDetalle{0}_cant_sol' class='inputCantidad' value='{1}'  type='hidden' />", i, dt.Rows(i)("CANTIDAD").ToString())
-                    hf.AppendFormat("<input id='hfDetalle{0}_cant'value='{1}'  type='hidden' />", i, dt.Rows(i)("CANTIDAD_DESPACHADA").ToString())
+                    hf.AppendFormat("<input id='hfDetalle{0}_cant_sol' class='inputCantidad' value='{1}'  type='hidden' />", i, FormatNumber(CDbl(dt.Rows(i)("CANTIDAD").ToString), 2))
+                    hf.AppendFormat("<input id='hfDetalle{0}_cant'value='{1}'  type='hidden' />", i, FormatNumber(CDbl(dt.Rows(i)("CANTIDAD_DESPACHADA").ToString), 2))
                     hf.AppendFormat("<input id='hfDetalle{0}_item' value='{1}'type='hidden' />", i, dt.Rows(i)("ITEM").ToString())
                     hf.AppendFormat("<input id='hfDetalle{0}_almc' value='{1}'type='hidden' />", i, dt.Rows(i)("ALMC_CODE").ToString())
                     hf.AppendFormat("<input id='hfDetalle{0}_tipo_prod' value='{1}'type='hidden' />", i, dt.Rows(i)("TIPO_PROD").ToString()) 'DPORTA 17/03/2021
                     hf.AppendFormat("<input id='hfDetalle{0}_tipo' value='{1}'type='hidden' />", i, dt.Rows(i)("TIPO_BIEN").ToString())
                     hf.AppendFormat("<input id='hfDetalle{0}_isc' value='{1}'type='hidden' />", i, dt.Rows(i)("PROD_ISC").ToString())
                     hf.AppendFormat("<input id='hfCantDetalles{0}' value='{1}' type='hidden' />", i, hfCantDetalles)
-
+                    hf.AppendFormat("<input id='hfDetalle{0}_factor' value='{1}' type='hidden' />", i, FormatNumber(CDbl(dt.Rows(i)("FACTOR").ToString()), 2))
 
                     resb.AppendFormat("<tr class='det_fila'  id='det_fila_{0}_{1}'>", dt.Rows(i)("CODIGO").ToString(), dt.Rows(i)("PROD_CODE").ToString())
                     resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("PROD_CODE_ANTIGUO").ToString())
@@ -1215,9 +1214,9 @@ Public Class CAMNOCL : Implements IHttpHandler
                     'resb.AppendFormat("<td align='center' ><input id='txtDevolucion_{1}' class='inputDevolucion' onkeypress='return ValidaDecimales(event,this)'  onkeyup=""ValidaCantidadOrigen(this,'{0}')"" value='{0}' type='number' max='{0}' min='0' disabled='disabled' style='text-align:center;'>{2}</td>", dt.Rows(i)("CANTIDAD_DESPACHADA").ToString(), i.ToString(), hf.ToString())
                     If motivo = "07" Then
                         'resb.AppendFormat("<td align='center' ><input id='txtDevolucion_{1}' class='inputDevolucion' onkeypress='return ValidaDecimales(event,this)'  onkeyup=""ValidaCantidadOrigen(this,'{0}', '{3}')"" value='{0}' type='number' max='{0}' min='0' disabled='disabled' style='text-align:center;'>{2}</td>", FormatNumber(CDbl(dt.Rows(i)("CANTIDAD").ToString), 2), i.ToString(), hf.ToString(), dt.Rows(i)("CANTIDAD_DESPACHADA").ToString())
-                        resb.AppendFormat("<td align='center' ><input id='txtDevolucion_{1}' class='inputDevolucion' onkeypress='return ValidaDecimales(event,this)'  onkeyup=""ValidaCantidadOrigen(this,'{0}', '{3}')"" value='{0}' type='number' max='{0}' min='0' disabled='disabled' style='text-align:center;'>{2}</td>", FormatNumber(CDbl(dt.Rows(i)("CANTIDAD_DESPACHADA").ToString), 2), i.ToString(), hf.ToString(), dt.Rows(i)("CANTIDAD_DESPACHADA").ToString())
+                        resb.AppendFormat("<td align='center' ><input id='txtDevolucion_{1}' class='inputDevolucion' onkeypress='return ValidaDecimales(event,this)'  onkeyup=""ValidaCantidadOrigen(this,'{0}', '{3}')"" value='{0}' type='number' max='{0}' min='0' disabled='disabled' style='text-align:center;'>{2}</td>", FormatNumber(CDbl(dt.Rows(i)("CANTIDAD_DESPACHADA").ToString), 2), i.ToString(), hf.ToString(), FormatNumber(CDbl(dt.Rows(i)("CANTIDAD_DESPACHADA").ToString), 2))
                     Else
-                        resb.AppendFormat("<td align='center' ><input id='txtDevolucion_{1}' class='inputDevolucion' onkeypress='return ValidaDecimales(event,this)'  onkeyup=""ValidaCantidadOrigen(this,'{0}')"" value='{0}' type='number' max='{0}' min='0' disabled='disabled' style='text-align:center;'>{2}</td>", dt.Rows(i)("CANTIDAD_DESPACHADA").ToString(), i.ToString(), hf.ToString())
+                        resb.AppendFormat("<td align='center' ><input id='txtDevolucion_{1}' class='inputDevolucion' onkeypress='return ValidaDecimales(event,this)'  onkeyup=""ValidaCantidadOrigen(this,'{0}')"" value='{0}' type='number' max='{0}' min='0' disabled='disabled' style='text-align:center;'>{2}</td>", FormatNumber(CDbl(dt.Rows(i)("CANTIDAD_DESPACHADA").ToString), 2), i.ToString(), hf.ToString())
                     End If
 
 
@@ -1248,7 +1247,7 @@ Public Class CAMNOCL : Implements IHttpHandler
                         resb.Append("<td>" + dt.Rows(i)("COD_BARRAS") + "</td>")
                     End If
 
-                    If Convert.ToInt32(dt.Rows(i)("CANTIDAD")) = Convert.ToInt32(dt.Rows(i)("CANTIDAD_DESPACHADA")) Then
+                    If Convert.ToInt32(dt.Rows(i)("CANTIDAD_AUX")) = Convert.ToInt32(dt.Rows(i)("CANTIDAD_DESPACHADA")) Then
                         resb.Append("<td align='center'>SI</td>")
                     ElseIf Convert.ToInt32(dt.Rows(i)("CANTIDAD_DESPACHADA")) = 0 Then
                         resb.Append("<td align='center'>NO</td>")

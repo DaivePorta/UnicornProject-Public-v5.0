@@ -41,6 +41,9 @@ Public Class NBMMOCB : Implements IHttpHandler
     Dim persona As String
     Dim codigoVenta As String
 
+    Dim indCobranzaStr As String
+    Dim indCobranza As Boolean = False
+
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         context.Response.ContentType = "text/plain"
         empresa = context.Request("empresa")
@@ -81,6 +84,8 @@ Public Class NBMMOCB : Implements IHttpHandler
         stbl = context.Request("stbl")
         tipoChq = context.Request("tipoChq")
         origen = context.Request("origen")
+
+        indCobranzaStr = context.Request("indCobranza")
 
         Try
 
@@ -133,7 +138,7 @@ Public Class NBMMOCB : Implements IHttpHandler
 
                 Case "3.5" 'Para confirmar el codigo de operacion los anticipos
                     Dim p As New Nomade.NB.NBMovimientoBancario("BN")
-                    dt = p.ListarNroOperacionSinUsar(cuenta, empresapidm)
+                    dt = p.ListarNroOperacionSinUsar(cuenta, tipoOperacion, empresapidm)
                     If Not dt Is Nothing Then
                         resb.Append("[")
                         For Each row As DataRow In dt.Rows
@@ -310,12 +315,27 @@ Public Class NBMMOCB : Implements IHttpHandler
                     End If
 
                 Case "6"
+                    If Not String.IsNullOrEmpty(indCobranzaStr) Then
+                        Boolean.TryParse(indCobranzaStr, indCobranza)
+                    End If
+
                     dt = b.ListarCtasBancarias(empresapidm, "A", "")
+
                     If dt Is Nothing Then
                         res = GenerarSelect(dt, "code", "DESCRIPCION", "CTABANC")
+                    ElseIf indCobranza = True Then
+                        ' Filtra la datatable bajo la condicion de COBRANZA_IND = "S"
+                        Dim dtFiltrada As DataTable = dt.Clone()
+                        For Each row As DataRow In dt.Rows
+                            If row("COBRANZA_IND").ToString() = "S" Then
+                                dtFiltrada.ImportRow(row)
+                            End If
+                        Next
+                        res = GenerarSelect(SortDataTableColumn(dtFiltrada, "DESCRIPCION", "ASC"), "code", "DESCRIPCION", "CTABANC")
                     Else
                         res = GenerarSelect(SortDataTableColumn(dt, "DESCRIPCION", "ASC"), "code", "DESCRIPCION", "CTABANC")
                     End If
+
                 Case "6.5"
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = b.ListarCtasBancarias_2(empresa, "A", "")

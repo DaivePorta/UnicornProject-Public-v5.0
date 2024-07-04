@@ -12,6 +12,7 @@ eventOrigenBco = false;
 eventOrigenCaj = false;
 jsonPersonas = null;
 json_selec = new Array();
+var deudasDescripcionMap = {};
 
 var CPLPGVA = function () {
 
@@ -738,6 +739,8 @@ var CPMPGVA = function () {
             $("#cboMedioPago").val("").change();
             $("#cbo_moneda").val("").change();
 
+            reiniciarNroOp();
+
             switch (OrigenActual) {
 
                 case "Caja":
@@ -857,7 +860,7 @@ var CPMPGVA = function () {
 
 
                     $("#cboMedioPago").html(StringMediosPago);
-                    $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0013" && valorO != "0006" && valorO != "0005" && valorO != "") $(j).remove(); });
+                    $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0013" && valorO != "0006" && valorO != "0005" && valorO != "0022" && valorO != "0023" && valorO != "") $(j).remove(); });
                     $("#cboMedioPago").attr("disabled", false);
 
                     break;
@@ -880,6 +883,9 @@ var CPMPGVA = function () {
             $(".mPersona").css("display", "none");
             offObjectEvents("txtNroOpe");
             $("#txtNroOpe").removeClass("personas").attr("disabled", false);
+
+            reiniciarNroOp();
+
             switch (MedioActual) {
 
                 case "0001"://DEPOSITO BANCARIO
@@ -944,8 +950,6 @@ var CPMPGVA = function () {
                     $("#lbl_detalle3").html("Destino");
                     $("#lbl_detalle4").html("Nro. Operación");
 
-
-
                     $.ajaxSetup({ async: false });
                     $("#cbDestino").off("change");
                     $.post("vistas/CP/ajax/CPMPGVA.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: $("#cboProveedores").val() },
@@ -955,8 +959,8 @@ var CPMPGVA = function () {
                             } else {
                                 $("#cbDestino").html("<option></option>").select2();
                             }
-
                         });
+
                     $.ajaxSetup({ async: true });
                     $.ajaxSetup({ async: false });
 
@@ -970,12 +974,10 @@ var CPMPGVA = function () {
                             } else {
                                 $("#cbDestino").html("<option></option>").change();
                             }
-
                         });
                     $.ajaxSetup({ async: true });
-
-
                     $("#cbDestino").attr("disabled", false).change();
+
                     $("#cbo_moneda").attr("disabled", true);
                     $("#txtMonto").attr("disabled", false);
                     //$("#txtNroOpe").attr("disabled", false);
@@ -1070,12 +1072,47 @@ var CPMPGVA = function () {
                         });
                     $.ajaxSetup({ async: true });
 
-
                     break;
 
+                case "0022": //SERVICIO O ALQUILER
+
+                    $("#lbl_detalle3").html("Destino");
+                    $("#lbl_detalle4").html("Nro. Operación");
+
+                    $("#cbDestino").html("<option></option><option value=0>" + $("#cboProveedores :selected").html() + "</option>").select2("val", "0").change().attr("disabled", true);
+
+                    $("#cbo_moneda").attr("disabled", true);
+                    $("#txtMonto").attr("disabled", false);
+                    //$("#txtNroOpe").attr("disabled", false);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
+                    break;
+
+                case "0023": //PAGOS NO IDENTIFICADOS
+
+                    $("#lbl_detalle3").html("Destino");
+                    $("#lbl_detalle4").html("Nro. Operación");
+
+                    $("#cbDestino").html("<option></option><option value=0>" + $("#cboProveedores :selected").html() + "</option>").select2("val", "0").change().attr("disabled", true);
+
+                    $("#cbo_moneda").attr("disabled", true);
+                    $("#txtMonto").attr("disabled", true);
+                    $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
+
+                    var listaNumeroOperacion = {};
+                    var proveedor_cliente_pidm = $("#cboProveedores").val();
+
+                    listarNroOperacion(proveedor_cliente_pidm, listaNumeroOperacion);
+
+                    $("#txtNroOpe").on("input", function () {
+                        var numeroOperacion = $(this).val();
+                        if (numeroOperacion === "") {
+                            $("#txtMonto").val("");
+                        } else {
+                            confirmarNroOperacion(numeroOperacion, listaNumeroOperacion);
+                        }
+                    });
+                    break;
             }
-
-
         });
 
 
@@ -1204,6 +1241,16 @@ var CPMPGVA = function () {
 
             var pos = oTableDeudas.api(true).row($(this).parents("tr")[0]).index();
             var row = oTableDeudas.fnGetData(pos);
+
+            // llena mapa con la descripcion asociada al documento
+            deudasDescripcionMap[row.DOCUMENTO] = row.DESCRIPCION;
+
+            // manejo del uncheck
+            if (!$(this).is(":checked")) {
+                delete deudasDescripcionMap[row.DOCUMENTO];
+            }
+            console.log(deudasDescripcionMap);
+
             var monto_base = $("#txt_monto_base").attr("monto");
             var monto_alt = $("#txt_monto_alt").attr("monto");
 
@@ -1325,20 +1372,20 @@ var CPMPGVA = function () {
 
         });
 
-        $('#tblBandeja tbody').on('dblclick', 'tr', function () {
+        //$('#tblBandeja tbody').on('dblclick', 'tr', function () {
 
-            if ($(this).hasClass('selected')) {
-                $(this).removeClass('selected');
-            } else {
-                $("#tblBandeja tr.selected").removeClass('selected');
-                $(this).addClass('selected');
-                var row = $("#tblBandeja").DataTable().row(this).data();
-                var code = row.CODIGO;
-                window.open("?f=nomdocc&codigo=" + code, '_blank');
-            }
+        //    if ($(this).hasClass('selected')) {
+        //        $(this).removeClass('selected');
+        //    } else {
+        //        $("#tblBandeja tr.selected").removeClass('selected');
+        //        $(this).addClass('selected');
+        //        var row = $("#tblBandeja").DataTable().row(this).data();
+        //        var code = row.CODIGO;
+        //        window.open("?f=nomdocc&codigo=" + code, '_blank');
+        //    }
 
 
-        });
+        //});
 
         $('#chkAll').click(function () {
 
@@ -2098,6 +2145,8 @@ function verificaPago() {
         }
 
     } else {
+        console.log($(".obligatorio").map(function () { return $(this).val(); }).get());
+        console.log(parseFloat($("#txtMonto").attr("monto")));
         if (!vErrorBodyAnyElement(".obligatorio") && parseFloat($("#txtMonto").attr("monto")) > 0) { //si no hay errores en los campos oblig. 
             rpta = verificarPagoNotaCredito(); //si hay respuesta inmediata
             if (rpta) {
@@ -2159,7 +2208,7 @@ function pagar() {
     var nTotaSoloNotas = json_select_NotaCredito.filter(obj => obj.MONE_CODE == moneda_activa_cod).map(obj => parseFloat(obj.MONTO_USABLE).Redondear(2))
         .concat(json_select_NotaCredito.filter(obj => obj.MONE_CODE !== moneda_activa_cod).map(obj => parseFloat(moneda_activa_cod == '0002' ? obj.MONTO_USABLE * tc : obj.MONTO_USABLE / tc).Redondear(2))).reduce((sum, obj) => (sum + obj), 0).Redondear(2);
 
-    var nTotalMontoPagar = parseFloat($("#txtMonto").val().split(",").join(""));
+    var nTotalMontoPagar = parseFloat($("#txtMonto").val().split(",").join("")).Redondear(2);
 
     var monto_base = $("#txt_monto_base").attr("monto");
     var monto_alt = $("#txt_monto_alt").attr("monto");
@@ -2322,7 +2371,7 @@ function pagar() {
 
                 var p_destino = $("#cbDestino :selected").html();
                 var p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
-                var p_flag = 1;
+                var p_flag = 1.7;
                 var adicional = "";
 
                 var det_desc = "", pidm_cta = "", cta = "", compl = "";
@@ -2333,7 +2382,7 @@ function pagar() {
                     pidm_cta = $("#cbo_Det_Origen :selected").attr("pidm");
                     cta = $("#cbo_Det_Origen").val();
                     compl = "S";
-                    p_flag = 1.5;
+                    p_flag = 1.8;
 
                     switch ($("#cboMedioPago").val()) {
                         case "0003": //transferencia
@@ -2360,6 +2409,18 @@ function pagar() {
                         case "0005": // tarjeta de debito
 
                             det_desc = $("#cboProveedores :selected").html() + "/" + $("#cbDestino :selected").html();
+
+                            break;
+
+                        case "0022": // pago de servicios
+
+                            det_desc = "PAGO SERVICIO*" + "/" + $("#cboProveedores :selected").html();
+
+                            break;
+
+                        case "0023": // pagos bancarios no identificados
+
+                            det_desc = "PAGO SERVICIO*" + "/" + $("#cboProveedores :selected").html();
 
                             break;
                     }
@@ -2424,7 +2485,7 @@ function pagar() {
                         switch (datos[0].SUCCESS) {
 
                             case "NA": // Uno de los documentos no puede ser amortizado por el monto indicado
-                                alertCustom("Uno de los documentos ya ha sido amortizado!");
+                                alertCustom("No se pudo amortizar el documento!");
                                 break;
                             case "NG": // El monto usable de la nota de credito generica es 0
                                 alertCustom("La nota de crédito genérica seleccionada no posee monto usable! ");
@@ -2434,6 +2495,19 @@ function pagar() {
                                 break;
                             case "SI": // Saldo insuficiente caja/banco
                                 alertCustom("No posee saldo suficiente en la " + ($("#cbo_OrigenPago").val().substring(0, 1) === "B" ? "cuenta" : "caja") + " seleccionada!");
+                                break;
+                            case "BI": // ERROR AL INSERTAR DETALLE EN TABLA FBRBANC
+                                alertCustom("Error al registrar cobro bancario!");
+                                break;
+                            case "CA": // ERROR AL INSERTAR DETALLE EN TABLA FBRMCAJ
+                                alertCustom("Error al registrar cobro en caja!");
+                                break;
+                            case "DC": // EL PARAMETRO MOCA NO ESTÁ ACTIVO Y SE ESTÁ INTENTANDO PAGAR DESDE OTRA CAJA
+                                alertCustom("Se está intentando pagar documento desde caja perteneciente a otro establecimiento!");
+                                break;
+                            case "TI": // Transacción incompleta
+                                //alertCustom("Parece que hubo un error en el cobro. Intente nuevamente!");
+                                alertCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                                 break;
                             case "TC": // Transaccion realizada correctamente
                                 if (datos[0].CODE_GENERADO != "") {
@@ -2755,6 +2829,53 @@ function verificaNotaDcto() {
         alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> Ingrese los campos obligatorios!");
     }
 
+}
+
+//Se llama una lista de numeros de operacion asociadas a la cuenta seleccionada
+function listarNroOperacion(proveedor_cliente_pidm, listaNumeroOperacion) {
+    $.ajaxSetup({ async: true });
+    $.post("/vistas/NB/ajax/NBMMOCB.ASHX", { flag: 3.5, cuenta: $("#cbo_Det_Origen :selected").attr("value"), tipoOperacion: '9', empresapidm: proveedor_cliente_pidm }) // tipoOperacion = 9 es Pagos Bancarios no Identificados
+        .success(function (res) {
+            if (res != null && res != "" && res.indexOf("error") < 0) {
+                var jsonResponse = JSON.parse(res);
+                var filteredResponse = [];
+
+                jsonResponse.forEach(function (row) {
+                    if (proveedor_cliente_pidm === "" || proveedor_cliente_pidm === row.PIDM_CLIENTE) {
+                        filteredResponse.push(row);
+                    }
+                });
+
+                if (filteredResponse.length > 0) {
+                    filteredResponse.forEach(function (row) {
+                        listaNumeroOperacion[row.NRO_OPERACION] = row.MONTO;
+                    });
+                }
+            }
+        })
+        .error(function (msg) {
+            alert(msg);
+        });
+}
+
+//Verifica que el nro de operacion asociado a esta cuenta este en el sistema
+function confirmarNroOperacion(numeroOperacion, listaNumeroOperacion) {
+    var montoCierre = listaNumeroOperacion[numeroOperacion];
+    var monto;
+    if (montoCierre !== undefined) {
+        $("#txtNroOpe").css("border", "2px solid green");
+        monto = parseFloat(montoCierre).toFixed(2);
+        $("#txtMonto").attr("monto", monto).val(monto);
+    } else {
+        $("#txtNroOpe").css("border", "2px solid red");
+        $("#txtMonto").attr("monto", 0.00).val("0.00");
+    }
+}
+
+//Se quitan los efectos del borde en caso se elija una opcion diferente
+function reiniciarNroOp() {
+    $("#txtNroOpe").css("border", "");
+    $("#txtMonto").attr("monto") == "";
 }
 
 function insertar_fila(padre, html1, html2) {

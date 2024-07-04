@@ -1169,7 +1169,7 @@ namespace Nomade.Efact.LogNegocio
                 // Inicio - Verificar si el documento tiene anticipos y si hay crear el contenido del txt (REL)
                 string sDatosAnticipo = "";
                 string sNombreArchivoAnticipo = "";
-                if (oDR_DatosDoc["IND_ANTICIPO"].ToString() != "0")
+                if (oDR_DatosDoc["CAB15"].ToString() != "0.00")
                 {
                     DataTable oDT_DatosAnticipo = ocEFFactura.fnListarDatosAnticipoOrbitum(p_CTLG_CODE, p_VTAC_CODE, "");
                     bool enterAnticipo = false;
@@ -1193,7 +1193,7 @@ namespace Nomade.Efact.LogNegocio
                 // Inicio - Verificar si el documento tiene anticipos y si hay crear el contenido del txt (ACV)
                 string sDatosAnticipoACV = "";
                 string sNombreArchivoAnticipoACV = "";
-                if (oDR_DatosDoc["IND_ANTICIPO"].ToString() != "0")
+                if (oDR_DatosDoc["CAB15"].ToString() != "0.00")
                 {
                     DataTable oDT_DatosAnticipoACV = ocEFFactura.fnListarDatosACVAnticipoOrbitum(p_CTLG_CODE, p_VTAC_CODE);
                     bool enterAnticipo = false;
@@ -1283,7 +1283,7 @@ namespace Nomade.Efact.LogNegocio
                 string t1 = "1000"; // tipo de tributo
                 string t2 = "IGV"; // IGV
                 string t3 = "VAT"; // VAT
-                string t4 = oDR_DatosDoc["CAB11"].ToString(); // BASE (GRAVADO)
+                string t4 = oDR_DatosDoc["BASE_TRI"].ToString(); // BASE (GRAVADO)
                 string t5 = oDR_DatosDoc["CAB10"].ToString(); // IGV
 
                 string sDatosTributos = t1 + "|" + t2 + "|" + t3 + "|" + t4 + "|" + t5 + "|";

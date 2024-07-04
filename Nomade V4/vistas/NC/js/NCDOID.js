@@ -163,7 +163,7 @@ var NCDOID = function () {
 
     var plugins = function () {
 
-        $("#txtcosu").inputmask({ "mask": "9", "repeat": 6, "greedy": false });
+        //$("#txtcosu").inputmask({ "mask": "9", "repeat": 6, "greedy": false });
 
         $("#txtnombre").focus(function () { $(this).inputmask({ "mask": "L", "repeat": 40, "greedy": false }); })
 

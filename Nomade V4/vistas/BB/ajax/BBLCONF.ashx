@@ -11,12 +11,13 @@ Public Class BBLCONF : Implements IHttpHandler
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         'context.Response.ContentType = "text/plain"
         'context.Response.Write("Hello World")
-        Dim Opcion, Emp As String
+        Dim Opcion, Emp, Usuario As String
         Dim Comision As New Nomade.BB.BBComisionSistemaPension("Bn")
         Dim Periodo As New Nomade.NF.NFPeriodo("Bn")
 
         Opcion = context.Request("Opcion")
         Emp = context.Request("Emp")
+        Usuario = context.Request("usuario")
         Dim cFecha As String = context.Request("fe")
 
         Try
@@ -100,11 +101,9 @@ Public Class BBLCONF : Implements IHttpHandler
                     End If
 
 
-
-
-
-
-
+                Case "R" 'Asignar configuración siguiente
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    res = Comision.crearConfiguracionRepetida(cFecha.ToUpper(), Emp, Usuario)
 
             End Select
             context.Response.Write(res)

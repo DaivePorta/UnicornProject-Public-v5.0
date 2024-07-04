@@ -172,14 +172,14 @@
                                     <th>CANT</th>
                                     <th>COSTO<br /> UNITARIO</th>
                                     <th>COSTO<br /> TOTAL</th>
+                                    <th>NRO. DOC. REGISTRO</th>
                                     <th>TIPO CAMBIO</th>
                                     <th style='text-align: center'>#</th>
                                 </tr>
                             </thead>
                             <tfoot>
                                 <tr>
-                                    <th colspan="5" align='center'><b>TOTALES</b></th>
-                                    <th align='center'></th>
+                                    <th colspan="6" align='center'><b>TOTALES</b></th>
                                     <th align='center' class='colorColumna'></th>
                                     <th align='center' class='colorColumna'></th>
                                     <th align='center' class='colorColumna'></th>
@@ -189,6 +189,7 @@
                                     <th align='center' class='colorColumna'></th>
                                     <th align='center' class='colorColumna'></th>
                                     <th align='center' class='colorColumna'></th>
+                                    <th align='center'></th>
                                     <th align='center' colspan='2'></th>
                                 </tr>
                             </tfoot>

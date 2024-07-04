@@ -46,6 +46,30 @@
             Throw (ex)
         End Try
     End Function
+    Public Function Listar_Empleados_Con_Contrato(ByVal p_PIDM As Integer, ByVal p_SEQ As Integer, ByVal p_ESTADO_IND As String, Optional ByVal p_CTLG_CODE As String = "", Optional p_SCSL_CODE As String = "",
+                                     Optional p_CARGO As String = "", Optional p_NOMBRE As String = "", Optional p_FILTRO As String = "") As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("SP_LISTAR_EMPLEADO_CON_CONTRATO", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SEQ", p_SEQ, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_IND", p_ESTADO_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CARGO", p_CARGO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NOMBRE", p_NOMBRE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FILTRO", p_FILTRO, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
 
     Public Function Listar_EmpleadosFast(ByVal p_PIDM As Integer, ByVal p_SEQ As Integer, ByVal p_ESTADO_IND As String, Optional ByVal p_CTLG_CODE As String = "", Optional p_SCSL_CODE As String = "",
                                      Optional p_CARGO As String = "", Optional p_NOMBRE As String = "", Optional p_FILTRO As String = "") As DataTable
@@ -619,6 +643,48 @@
 
             cmd.Parameters.Add(cn.GetNewParameter("@p_RHREGLA_CODE", p_RHREGLA_CODE, ParameterDirection.Input, 253))
 
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg(0) = "OK"
+            msg(1) = cmd1.Parameters("@p_GENERADO").Value
+            msg(2) = cmd1.Parameters("@p_VALIDACION").Value
+            Return msg
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+    Public Function adendarContrato(p_PIDM As Integer, p_NUMERO As String, p_ESTADO_IND As String, p_CTLG_CODE As String, p_SCSL_CODE As String, p_CONT_FECHA_INI As String,
+                                    p_CONT_FECHA_FIN As String, p_TITR_CODE As String, p_CARG_CODE As String,
+                                    p_REM_BASICA As String, p_MOVILIDAD As String, p_VIATICOS As String, p_REFRIGERIO As String,
+                                    p_BONIFICACION_RIESGO_CAJA As String, p_BONO_PRODUCTIVIDAD As String, p_REM_TOTAL As String, p_USUA_ID As String) As Array
+        Try
+            Dim msg(3) As String
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_AGREGAR_ADENDA_CONTRATO", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NUMERO", p_NUMERO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_IND", p_ESTADO_IND, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CONT_FECHA_INI", p_CONT_FECHA_INI, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CONT_FECHA_FIN", IIf(p_CONT_FECHA_FIN = "" Or p_CONT_FECHA_FIN = "0000/00/00", Nothing, p_CONT_FECHA_FIN), ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TITR_CODE", p_TITR_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CARG_CODE", p_CARG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_REM_BASICA", p_REM_BASICA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MOVILIDAD", p_MOVILIDAD, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VIATICOS", p_VIATICOS, ParameterDirection.Input, 253))
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_REFRIGERIO", p_REFRIGERIO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_BONIFICACION_RIESGO_CAJA", p_BONIFICACION_RIESGO_CAJA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_BONO_PRODUCTIVIDAD", p_BONO_PRODUCTIVIDAD, ParameterDirection.Input, 253))
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_REM_TOTAL", p_REM_TOTAL, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_USUA_ID", p_USUA_ID, ParameterDirection.Input, 253))
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_GENERADO", String.Empty, ParameterDirection.Output, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_VALIDACION", String.Empty, ParameterDirection.Output, 253))
 
             cmd1 = cn.Ejecuta_parms(cmd)
             msg(0) = "OK"

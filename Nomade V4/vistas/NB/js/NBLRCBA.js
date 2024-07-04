@@ -2,7 +2,7 @@
 
     var plugins = function () {
 
-        $('#cboEmpresa, #cboCtaBancaria, #cboMoneda').select2();
+        $('#cboEmpresa, #cboCtaBancaria, #cboMoneda, #cboCajero').select2();
         $('#txtDesde').datepicker();
         $('#txtHasta').datepicker();
 
@@ -157,6 +157,10 @@
 
                 },
                 {
+                    data: "USUARIO_COBRO", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "center"); },
+                    //visible: false
+                },
+                {
                     data: "NRO_OPERACION", createdCell: function (td, cellData, rowData, row, col) { $(td).attr("align", "center"); },
                     //visible: false
                 },
@@ -228,6 +232,7 @@
             var DESC_CTA_BANCARIA = $("#cboCtaBancaria option:selected").html();
             var MONE_CODE = $("#cboMoneda").val();
             var CHK_DETALLE = $("#chkDespachoVenta").is(":checked") ? "S" : "N";
+            var CAJERO = ($('#cboCajero option:selected').attr("usuario") == undefined ? "" : $('#cboCajero option:selected').attr("usuario"));
 
             data.append('CHK_DETALLE', CHK_DETALLE);
             data.append('MONE_CODE', MONE_CODE);
@@ -237,6 +242,7 @@
             data.append('DESC_CTA_BANCARIA', DESC_CTA_BANCARIA);
             data.append('DESDE', $("#txtDesde").val());
             data.append('HASTA', $("#txtHasta").val());
+            data.append('CAJERO', CAJERO);
 
             $.ajax({
                 type: "POST",
@@ -305,6 +311,7 @@
             $('#cboCtaBancaria, #cboMoneda').select2("val", "");
             $("#cboMoneda").attr("disabled", true);
             fillCboCuentas(valEmpresa);
+            fillCboCajero(valEmpresa, $('#cboEstablecimiento').val(), "", false);
         });
 
         $("#cboCtaBancaria").change(function () {
@@ -390,6 +397,45 @@
 //tiene cambios de anticipo
 var NuevaVenta = function () {
     window.location.href = '?f=NBLRCBA';
+}
+
+var ajaxVendedor = null;
+function fillCboCajero(ctlg, scsl, estado, bAsync) {
+    if (ajaxVendedor) {
+        ajaxVendedor.abort();
+    }
+    if (bAsync == undefined) {
+        bAsync = true;
+    }
+    ajaxVendedor = $.ajax({
+        type: "post",
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LCAJ" +
+            "&CTLG=" + ctlg +
+            "&SCSL=" + scsl +
+            "&p_ESTADO_IND=" + estado,
+        contenttype: "application/json;",
+        datatype: "json",
+        async: bAsync,
+        success: function (datos) {
+            $('#cboVendedor').empty();
+            $('#cboVendedor').append('<option></option>');
+            var pidmActual = "";
+            if (datos != null) {
+                for (var i = 0; i < datos.length; i++) {
+                    $('#cboCajero').append('<option value="' + datos[i].PIDM + '" usuario="' + datos[i].USUARIO + '" >' + datos[i].NOMBRE_EMPLEADO + '</option>');
+                    if ($("#ctl00_lblusuario").html() == datos[i].USUARIO) {
+                        pidmActual = datos[i].PIDM;
+                    }
+                }
+            }
+            $('#cboCajero').select2("val", pidmActual);
+        },
+        error: function (msg) {
+            if (msg.statusText != "abort") {
+                alertCustom("Vendedores no se listaron correctamente.");
+            }
+        }
+    });
 }
 
 function imprimirListaDctosVenta() {

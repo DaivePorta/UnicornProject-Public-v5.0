@@ -10,7 +10,7 @@ Public Class Empleado : Implements IHttpHandler
 
     Dim PIDM, PIDM_DA As String
 
-    Dim FECHA_INICIO, FECHA_FIN, VINC_CODE, MBDH_CODE, ESTADO_IND, USUA_ID As String
+    Dim FECHA_INICIO, FECHA_FIN, VINC_CODE, MBDH_CODE, ESTADO_IND, USUA_ID, FILTRO As String
 
     Dim TIPA_CODE, CUBA_CODE_PAGO, PEPA_CODE, CUBA_CODE_CTS, EPSA_CODE, EPSS_CODE, SCSL_CODE,
         FECHA_INGRESO, FECHA_INI_CONT, TICO_CODE, FECHA_CESE_CONT, MOTIVO_CESE_CONT, TITR_CODE,
@@ -45,6 +45,8 @@ Public Class Empleado : Implements IHttpHandler
 
         PIDM = context.Request("PIDM")
         PIDM_DA = context.Request("PIDM_DA")
+
+        FILTRO = context.Request("FILTRO")
 
         FECHA_INICIO = context.Request("FECHA_INICIO")
         FECHA_FIN = context.Request("FECHA_FIN")
@@ -513,7 +515,18 @@ Public Class Empleado : Implements IHttpHandler
             Case "LEMP" 'Lista Info Empleado
                 context.Response.ContentType = "application/json; charset=utf-8"
                 Dim pemp As New Nomade.NC.NCEEmpleado("BN")
-                dt = pemp.Listar_Empleados(PIDM, "0", IIf(ESTADO_IND = Nothing, "", ESTADO_IND), IIf(CTLG_CODE = Nothing, String.Empty, CTLG_CODE), IIf(SCSL_CODE = Nothing, String.Empty, SCSL_CODE), String.Empty)
+                dt = pemp.Listar_Empleados(PIDM, "0", IIf(ESTADO_IND = Nothing, "", ESTADO_IND), IIf(CTLG_CODE = Nothing, String.Empty, CTLG_CODE), IIf(SCSL_CODE = Nothing, String.Empty, SCSL_CODE), "", "", IIf(FILTRO = Nothing, String.Empty, FILTRO))
+                If Not (dt Is Nothing) Then
+
+                    res = Utilities.Datatable2Json(dt)
+                Else
+                    res = "[]"
+                End If
+
+            Case "LEMPCONTR" 'Lista Info Empleado con Contrato
+                context.Response.ContentType = "application/json; charset=utf-8"
+                Dim pemp As New Nomade.NC.NCEEmpleado("BN")
+                dt = pemp.Listar_Empleados_Con_Contrato(PIDM, "0", IIf(ESTADO_IND = Nothing, "", ESTADO_IND), IIf(CTLG_CODE = Nothing, String.Empty, CTLG_CODE), IIf(SCSL_CODE = Nothing, String.Empty, SCSL_CODE), "", "", IIf(FILTRO = Nothing, String.Empty, FILTRO))
                 If Not (dt Is Nothing) Then
 
                     res = Utilities.Datatable2Json(dt)

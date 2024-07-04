@@ -4848,6 +4848,27 @@ function cargarParametrosSistema() {
             }
         },
     });
+
+    //BLOQUEAR CAMPOS DE FECHA DE EMISIÓN Y PAGO EN VENTA RAPIDA
+    $.ajax({
+        type: "post",
+        url: "vistas/no/ajax/nomdocc.ashx?OPCION=3&CODE_PARAMETRO=BFES",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: true,
+        success: function (datos) {
+            if (datos != null) {
+                if (datos[0].VALOR == "SI") {
+                    //$("#txtEmision").attr('disabled', true);
+                    $("#txtTransaccion").attr('disabled', true);//20/02
+
+                } else {
+                    //$("#txtEmision").attr('disabled', false);
+                    $("#txtTransaccion").attr('disabled', false);//20/02
+                }
+            }
+        },
+    });
 }
 
 //Imprimir dcto venta
@@ -6142,8 +6163,8 @@ var grabarDetalle = function () {
                             var p_CECD = "";
 
                             if ($("#txtCentroCostos").val() !== "" || $("#txtCentroCostos").val().length !== 0) {
-                                p_CECC = $("#txtCentroCostos").data("CodCentroCostoCab");
-                                p_CECD = $("#txtCentroCostos").data("CodCentroCosto");
+                                p_CECC = $("#txtCentroCostos").data("CodCentroCosto");
+                                p_CECD = $("#txtCentroCostos").data("CodCentroCostoCab");  
                             }
 
                             data.append('p_CECC', p_CECC == undefined ? $("#hfCECC_CODE").val() : p_CECC);
@@ -6256,7 +6277,7 @@ var listarDetalles = function () {
             { data: 'GARANTIA', createdCell: function (cell, cellData, row) { $(cell).css('text-align', 'center').attr('id', row.ITEM); }, width: '7%' },
             {
                 data: 'CANTIDAD_BASE', createdCell: function (cell, cellData, row) {
-                    $(cell).css('text-align', 'right').attr('PROD_CODE', row.PROD_CODE).attr('id', row.ITEM);
+                    $(cell).css('text-align', 'right').attr('PROD_CODE', row.PROD_CODE).attr('id', row.NRO);
                     $(cell).dblclick(function () {
                         $('#btnCompletar').data('SERIADO_IND', row.SERIADO_IND);
                     });
@@ -7481,14 +7502,14 @@ var CompletarDcto = function () {
                                     //    setTimeout(guardarQR, 500);
                                     //}                                    
                                 }
-                                else if (atos[0].p_RPTA.split("-")[0] === "X_SEPAR") {
-                                    infoCustom2("El producto " + atos[0].p_RPTA.split("-")[1] + " no cuenta con separados suficientes para despachar.")
+                                else if (datos[0].p_RPTA.match(/^ERROR.*$/)) {
+                                    noexitoCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                                 }
-                                else if (atos[0].p_RPTA.split("-")[0] === "X_STOCK") {
-                                    infoCustom2("El producto " + atos[0].p_RPTA.split("-")[1] + " no cuenta con el stock suficiente. Revise su stock disponible.")
-                                }
+                                //else if (atos[0].p_RPTA.split("-")[0] === "X_STOCK") {
+                                //    infoCustom2("El producto " + atos[0].p_RPTA.split("-")[1] + " no cuenta con el STOCK suficiente. Revise su stock disponible.")
+                                //}
                                 else {
-                                    alertCustom("El doc. no se completó, porque la serie " + atos[0].p_RPTA + " ya se encuentra registrada en el almacén.")
+                                    alertCustom("El doc. ya ha sido completado anteriormente.")
                                     //infoCustom2("La serie " + data + " ya se encuentra registrada en el almacén.")
                                 }
                             } else {

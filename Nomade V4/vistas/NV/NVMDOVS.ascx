@@ -292,7 +292,7 @@
                                             <div class="span4">
                                                 <div class="control-group span12">
                                                     <div class="controls" id="divTxtClientes">
-                                                        <input id="txtClientes" class="span12" type="text" placeholder="Cliente" style="text-transform: uppercase" />
+                                                        <input id="txtClientes" class="span12" type="text" placeholder="Cliente" disabled="disabled" style="text-transform: uppercase" />
                                                     </div>
                                                 </div>
 
@@ -661,7 +661,7 @@
                                                             </div>
                                                             <div class="span1">
                                                                 <div class="control-group">
-                                                                    <label class="control-label" for="txt_glosa">
+                                                                    <label id="eti_glosa" class="control-label" for="txt_glosa">
                                                                         Glosa</label>
                                                                 </div>
                                                             </div>
@@ -1972,6 +1972,8 @@
 
 <input id="hfcod_cate2" type="hidden" />
 <input id="hfdes_cate2" type="hidden" />
+
+<input id="hfTxtGlosaDet" type="hidden" />
 
 <div id="muestralistap" style="width: 700px; display: none;" role="dialog" class="modal fade" tabindex="-1" aria-hidden="true" aria-labelledby="myModalLabel">
     <div class="modal-content">

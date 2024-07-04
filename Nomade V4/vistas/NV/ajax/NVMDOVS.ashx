@@ -460,6 +460,12 @@ Public Class NVMDOVS : Implements IHttpHandler
 
         Dim dtParametroPiePagina As New DataTable
 
+        'Solo para documentos tipo 0101
+        Dim dtPiePaginaIndicador As New DataTable
+        Dim dtParametroPiePaginaRecibo As New DataTable
+        Dim prmt_pie_pagina_recibos As String = ""
+        Dim pie_pagina_recibos_desc As String = ""
+
         dtCabecera = nvVenta.ListarCabDctoVentaImpresion(p_CODE, "I")
         dtDetalles = nvVenta.ListarDetDctoVentaImpresion(p_CODE)
         'dtParametroLogo = New Nomade.NC.NCParametros("Bn").ListarParametros("LOVE", "")
@@ -504,6 +510,20 @@ Public Class NVMDOVS : Implements IHttpHandler
             'LA RUTA QUE VA A TENER
             'rutaQr = "data:image/png;base64," + codigoQR.fnGetCodigoQR(p_CODE, p_CTLG_CODE)
             rutaQr = "data:image/png;base64," + fnGetCodigoQR_fast(cadenaQR)
+
+            'PARAMETRO PIE DE PAGINA EN RECIBOS
+            If dtCabecera(0)("TIPO_DCTO") = "0101" Then 'Pie de pagina solo aplica a tipo doc 0101
+                dtPiePaginaIndicador = New Nomade.NC.NCSucursal("Bn").ListarSucursalPiePaginaReciboIndicador(dtCabecera(0)("EMPRESA"), dtCabecera(0)("SUCURSAL"), "A")
+
+                If dtPiePaginaIndicador IsNot Nothing AndAlso dtPiePaginaIndicador(0)("PIE_PAGINA_RECIBO") = "SI" Then
+                    dtParametroPiePaginaRecibo = New Nomade.NC.NCParametros("Bn").ListarParametros("PPRE", "XXX")
+                End If
+                'OBTENER TEXTO PARA EL PIE DE PAGINA EN RECIBOS
+                If dtParametroPiePaginaRecibo IsNot Nothing AndAlso dtParametroPiePaginaRecibo.Rows.Count > 0 Then
+                    prmt_pie_pagina_recibos = getLinks(dtParametroPiePaginaRecibo(0)("VALOR").ToString)
+                    pie_pagina_recibos_desc = getLinks(dtParametroPiePaginaRecibo(0)("DESCRIPCION_DETALLADA").ToString)
+                End If
+            End If
 
             tabla.Append("<table id='tblDctoImprimir' border='0' style='width: 100%;' cellpadding='0px' cellspacing='0px' align='center'>")
             tabla.Append("<thead>")
@@ -874,6 +894,8 @@ Public Class NVMDOVS : Implements IHttpHandler
                     ' If Not pie_pagina = "" Then
                     tabla.Append("<td colspan='4' style='text-align: center;'>CANJEAR POR BOLETA O FACTURA</td>")
                     'End If
+                ElseIf dtPiePaginaIndicador(0)("PIE_PAGINA_RECIBO") = "SI" AndAlso dtCabecera(0)("TIPO_DCTO") = "0101" AndAlso prmt_pie_pagina_recibos = "SI" Then
+                    tabla.AppendFormat("<tr><td style='text-align: center' colspan='4'>{0}</td></tr>", pie_pagina_recibos_desc)
                 Else
                     tabla.Append("<td colspan='4' style='text-align: center;'>GRACIAS POR SU PREFERENCIA</td>")
                 End If

@@ -111,6 +111,37 @@ Public Class CPMPGDI : Implements IHttpHandler
                         End If
                     End If
 
+                Case "1.6" 'crear pago x caja
+                    res = PagoDiverso.PagoDiversoCajaNew(detalle, caja, usuario, codigo_apertura, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, tipo_cambio, estable, "CAJ", "", "", "", "", "", "", monto_total)
+
+                    If asiento_contable = "SI" Then
+                        Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                        If Not String.IsNullOrEmpty(codModulo) Then
+                            If codModulo.Equals("0003") Then
+                                Dim strCodAsientoPagoGasto As String
+                                For Each item As String In detalle.Split("|")
+                                    Dim strCodGasto As String = item.Split(",")(0)
+                                    strCodAsientoPagoGasto = oCTGeneracionAsientos.GenerarAsientoPagoGasto(strCodGasto)
+                                Next
+                            End If
+                        End If
+                    End If
+
+                Case "1.7" 'crear pago x banco
+                    res = PagoDiverso.PagoDiversoBancoNew(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, tipo_cambio, estable, adicional, caja)
+
+                    If asiento_contable = "SI" Then
+                        Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                        If Not String.IsNullOrEmpty(codModulo) Then
+                            If codModulo.Equals("0003") Then
+                                Dim strCodAsientoPagoGasto As String
+                                For Each item As String In detalle.Split("|")
+                                    Dim strCodGasto As String = item.Split(",")(0)
+                                    strCodAsientoPagoGasto = oCTGeneracionAsientos.GenerarAsientoPagoGasto(strCodGasto)
+                                Next
+                            End If
+                        End If
+                    End If
                 Case "2" 'lista forma de pago
 
                     dt = ccPercepcion.ListarFormasPago("", "", "", "A")

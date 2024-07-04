@@ -8,7 +8,8 @@ Public Class NVMANUL : Implements IHttpHandler
 
     Dim OPCION, USUA_ID As String
     Dim CTLG_CODE, SCSL_CODE As String
-    Dim VTAC_CODE, NUM_SEQ_DOC, ANULAC_ID, CMNT_ANULAC, DEVOLUCION_EFECTIVO, DEVOLUCION_DESPACHO, MOTIVO_CODE As String
+    Dim VTAC_CODE, NUM_SEQ_DOC, ANULAC_ID, CMNT_ANULAC, DEVOLUCION_EFECTIVO, DEVOLUCION_DESPACHO, MOTIVO_CODE,
+        DOCUMENTO, PIDM_CLIENTE, ESTADO_PAGO, ESTADO_DESPACHO, MONE_CODE As String
     Dim dt As DataTable
     Dim res, cod, msg As String
     Dim resb As New StringBuilder
@@ -24,6 +25,11 @@ Public Class NVMANUL : Implements IHttpHandler
 
             CTLG_CODE = context.Request("CTLG_CODE")
             SCSL_CODE = context.Request("SCSL_CODE")
+            DOCUMENTO = context.Request("DOCUMENTO")
+            PIDM_CLIENTE = context.Request("PIDM_CLIENTE")
+            ESTADO_PAGO = context.Request("ESTADO_PAGO")
+            ESTADO_DESPACHO = context.Request("ESTADO_DESPACHO")
+            MONE_CODE = context.Request("MONE_CODE")
 
             VTAC_CODE = context.Request("VTAC_CODE")
             NUM_SEQ_DOC = context.Request("NUM_SEQ_DOC")
@@ -38,13 +44,14 @@ Public Class NVMANUL : Implements IHttpHandler
                     context.Response.ContentType = "application/text; charset=utf-8"
                     Dim nvVenta As New Nomade.NV.NVVenta("Bn")
                     res = nvVenta.AnularDocumentoVenta(VTAC_CODE, NUM_SEQ_DOC, ANULAC_ID, CMNT_ANULAC,
-                                                       If(DEVOLUCION_EFECTIVO = Nothing, "N", DEVOLUCION_EFECTIVO),
-                                                       If(DEVOLUCION_DESPACHO = Nothing, "N", DEVOLUCION_DESPACHO), MOTIVO_CODE)
+                                                       If(DEVOLUCION_EFECTIVO = Nothing, "N", DEVOLUCION_EFECTIVO), If(DEVOLUCION_DESPACHO = Nothing, "N", DEVOLUCION_DESPACHO),
+                                                       MOTIVO_CODE, CTLG_CODE, SCSL_CODE, DOCUMENTO, PIDM_CLIENTE, ESTADO_PAGO, ESTADO_DESPACHO, MONE_CODE)
 
                 Case "2"
                     context.Response.ContentType = "application/text; charset=utf-8"
                     Dim oNVAnticipo As New Nomade.NV.NVAnticipo("Bn")
-                    res = oNVAnticipo.fnAnularAnticipo(VTAC_CODE, ANULAC_ID, CMNT_ANULAC, If(DEVOLUCION_EFECTIVO = Nothing, "N", DEVOLUCION_EFECTIVO), MOTIVO_CODE)
+                    res = oNVAnticipo.fnAnularAnticipo(VTAC_CODE, ANULAC_ID, CMNT_ANULAC, If(DEVOLUCION_EFECTIVO = Nothing, "N", DEVOLUCION_EFECTIVO), MOTIVO_CODE,
+                                                       CTLG_CODE, SCSL_CODE, DOCUMENTO, PIDM_CLIENTE, ESTADO_PAGO, MONE_CODE)
 
             End Select
             context.Response.Write(res)

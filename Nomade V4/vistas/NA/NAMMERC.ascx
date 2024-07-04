@@ -17,15 +17,13 @@
             </div>
 
             <div class="portlet-body">
-
                 <div class="row-fluid">
-
                     <div class="span1">
                         <div class="control-group ">
                             <label>Empresa</label>
                         </div>
                     </div>
-                    <div class="span2">
+                    <div class="span4">
                         <div class="control-group">
                             <div class="controls">
                                 <select id="cboEmpresas" class="span12 empresa" data-placeholder="EMPRESA">
@@ -33,14 +31,12 @@
                             </div>
                         </div>
                     </div>
-
-
                     <div class="span1">
                         <div class="control-group ">
                             <label>Almacén</label>
                         </div>
                     </div>
-                    <div class="span3">
+                    <div class="span4">
                         <div class="control-group">
                             <div class="controls">
                                 <%--<select id="cboAlmacen" multiple="multiple" class="span12 estable" data-placeholder="ALMACEN" style="display: none;">
@@ -52,12 +48,14 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="row-fluid">
                     <div class="span1">
                         <div class="control-group ">
                             <label>Grupos</label>
                         </div>
                     </div>
-                    <div class="span3">
+                    <div class="span4">
                         <div class="control-group">
                             <div class="controls">
                                 <select id="slsGrupos" multiple class="span12" data-placeholder="GRUPOS" required style="display: none;">
@@ -66,10 +64,21 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <!--termina primera fila -->
-                <div class="row-fluid">
-                    <div class="span8">
+                    <div class="span1">
+                        <div class="control-group ">
+                            <label>Estado</label>
+                        </div>
+                    </div>
+                    <div class="span2">
+                        <div class="control-group ">
+                            <div class="controls">
+                                <select id="cboEstado" class="span12" data-placeholder="Estad">
+                                    <option value="">TODOS</option>
+                                    <option value="A">ACTIVOS</option>   
+                                    <option value="I">DESCONTINUADOS</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="span3">
                         <div class="control-group">
@@ -81,7 +90,7 @@
                 </div>
 
                  <div style="float: right;" id="divExportBtns">
-                    <button class="btn red btnpdf" id="btnLibroPdf" type="button"><i class="fa fa-file-pdf-o"></i>&nbsp;Exportar a Pdf</button>
+                    <%--<button class="btn red btnpdf" id="btnLibroPdf" type="button"><i class="fa fa-file-pdf-o"></i>&nbsp;Exportar a Pdf</button>--%>
                     <button class="btn green" id="btnLibroXls" type="button" style="margin-left: 5px;"><i class="fa fa-file-excel-o"></i>&nbsp;Exportar a Excel</button>
                 </div>
 
@@ -94,8 +103,9 @@
                                 <tr>
                                     <th>CODIGO</th>
                                     <th>DESCRIPCION</th>
-                                    <th>U.M</th>
+                                    <th>ESTADO</th>
                                     <th>ALMACÉN</th>
+                                    <th>U.M</th>
                                     <th>STOCK ACTUAL</th>
                                     <th>SEPARADO</th>
                                     <th>DISPONIBLE</th>

@@ -1,4 +1,5 @@
 ﻿var BBLCONF = function () {
+    var indicadorItemsVacio = 0; 
 
     var ListarConfiguracion = function () {
         $('#tblConfiguracion').dataTable().fnDestroy()
@@ -18,10 +19,15 @@
             success: function (datos) {
                 if (datos == null) {
                     iniciaTabla('tblConfiguracion');
-
                     return false;
                 }
                 var combo = "";
+
+                if (!datos || datos.length === 0) {
+                    indicadorItemsVacio = 1;
+                } else {
+                    indicadorItemsVacio = 0;
+                }
 
                 var parms = {
                     data: datos,
@@ -92,13 +98,11 @@
                         }
 
                     ]
-
                 }
 
                 oTableRegimen = iniciaTabla('tblConfiguracion', parms);
 
                 $('#tblConfiguracion').removeAttr('style');
-
 
                 $('#tblConfiguracion tbody').on('click', 'tr', function () {
 
@@ -113,23 +117,14 @@
                         var row = oTableRegimen.fnGetData(pos);
                         var codigo = row.CODIGO;
 
-
                         aa = $("#optanho").val();
                         mm = $("#optmes").val();
                         fe = mm + " " + aa;
                         fe = fe.toUpperCase();
 
                         window.location.href = '?f=BBMCONF&codigo=' + codigo + "&fe=" + fe + "&Emp=" + emp;
-
                     }
-
                 });
-
-
-
-
-
-
             },
             error: function (msg) {
                 alert(msg);
@@ -138,7 +133,50 @@
 
     }
 
+    var ListarConfiguracionSiguiente = function () {
+        if (indicadorItemsVacio == 0) {
+            var emp = $("#ctl00_hddctlg").val();
 
+            var aa = $("#optanho").val();
+            var mm = $("#optmes").val();
+            var fe = mm + " " + aa;
+            var usuario = $('#ctl00_lblusuario').html();
+            fe = fe.toUpperCase();
+
+            var data = new FormData();
+            data.append('opcion', "R");
+            data.append('emp', emp);
+            data.append('usuario', usuario);
+            data.append('fe', fe);
+
+            Bloquear("ventana");
+
+            $.ajax({
+                type: "POST",
+                url: "vistas/BB/ajax/BBLCONF.ASHX",
+                data: data,
+                contentType: false,
+                processData: false,
+                cache: false,
+                async: false,
+                success: function (res) {
+                    Desbloquear("ventana");
+                    if (res == "OK") {
+                        exito();
+                    }
+                    else {
+                        alertCustom(res);
+                    }
+                },
+                error: function (msg) {
+                    Desbloquear("ventana");
+                    noexito();
+                }
+            });
+        } else {
+            alertCustom("No hay items para asignar");
+        }
+    }
 
 
     var eventos = function () {
@@ -147,6 +185,12 @@
         $("#btn_filtrar").on("click", function () {
 
             ListarConfiguracion();
+
+        });
+
+        $("#btn_siguiente").on("click", function () {
+
+            ListarConfiguracionSiguiente();
 
         });
 
@@ -284,6 +328,16 @@ var BBMCONF = function () {
             var dateObj = new Date(dateString);
             $('#optanho').datepicker('update', dateObj);
             $('#optmes').datepicker('update', dateObj);
+
+            //Hay meses donde $('#optanho').datepicker('update', dateObj) falla en establecer el año
+            //Se agrego una medida adicional para establecer el año correcto
+            setTimeout(function () {
+                var año = $('#optanho').datepicker('getDate').getFullYear();
+                if (año !== dateObj.getFullYear()) {
+                    var fallbackDate = new Date(dateObj.getFullYear(), 0, 1);
+                    $('#optanho').datepicker('setDate', fallbackDate);
+                }
+            }, 100);
         }
 
         if (codigo != null) {

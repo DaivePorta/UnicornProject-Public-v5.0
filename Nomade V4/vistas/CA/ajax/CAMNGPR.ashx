@@ -8,9 +8,9 @@ Public Class CAMNGPR : Implements IHttpHandler
     Dim OPCION As String
     Dim USUA_ID As String
 
-    Dim p_CODE, p_CTLG_CODE, p_SCSL_CODE, p_SCSL_EXONERADA_IND, p_PERS_PIDM As String
+    Dim p_CODE, p_CTLG_CODE, p_SCSL_CODE, p_SCSL_EXONERADA_IND, p_PERS_PIDM, p_PIDM, p_USUA_ID As String
     Dim p_MOTIVO_CODE, p_MOTIVO_DESC, p_MOTIVO_ADICIONAL, p_FECHA_EMISION, p_FECHA_TRANSACCION, p_ESTADO_IND,
-        p_MONE_CODE, p_DETALLES, p_MONTO_IGV, p_SERIE, p_NUMERO, p_CODIGO_CORRELATIVO, p_TIPO_IND As String
+        p_MONE_CODE, p_DETALLES, p_MONTO_IGV, p_SERIE, p_NUMERO, p_CODIGO_CORRELATIVO, p_TIPO_IND, p_BANCOCAJA, p_INDCAJABANCO, p_NRO_OPE, p_SUBMOTIVO As String
 
     Dim p_DESDE, p_HASTA As String
 
@@ -88,6 +88,14 @@ Public Class CAMNGPR : Implements IHttpHandler
         p_FTVDCTO_CODE = IIf(p_FTVDCTO_CODE Is Nothing, "", p_FTVDCTO_CODE)
         p_FTVDCTO_IND_ESTADO = context.Request("p_FTVDCTO_IND_ESTADO")
         p_FTVDCTO_IND_ESTADO = IIf(p_FTVDCTO_IND_ESTADO Is Nothing, "", p_FTVDCTO_IND_ESTADO)
+
+        'GENERACION MOVIMIENTO DE CAJA O BANCO
+        p_BANCOCAJA = context.Request("p_BANCOCAJA")
+        p_INDCAJABANCO = context.Request("p_INDCAJABANCO")
+        p_PIDM = context.Request("p_PIDM") 'PIDM de empresa
+        p_NRO_OPE = context.Request("p_NRO_OPE")
+        p_USUA_ID = context.Request("p_USUA_ID")
+        p_SUBMOTIVO = context.Request("p_SUBMOTIVO")
 
         Try
 
@@ -179,6 +187,14 @@ Public Class CAMNGPR : Implements IHttpHandler
                             resb.Append("""VALOR_CAMBIO"" :" & """" & row("VALOR_CAMBIO").ToString & """,")
                             resb.Append("""PERIODO_DESC"" :" & """" & row("PERIODO_DESC").ToString & """,")
 
+                            'Anulación operación gasto
+                            resb.Append("""SUBMOTIVO"" :" & """" & row("SUBMOTIVO").ToString & """,")
+                            resb.Append("""MODALIDAD"" :" & """" & row("MODALIDAD").ToString & """,")
+                            resb.Append("""CAJA_CODE"" :" & """" & row("CAJA_CODE").ToString & """,")
+                            resb.Append("""CUENTA_BANC"" :" & """" & row("CUENTA_BANC").ToString & """,")
+                            resb.Append("""CUENTA_PIDM"" :" & """" & row("CUENTA_PIDM").ToString & """,")
+                            resb.Append("""NRO_OPE"" :" & """" & row("NRO_OPE").ToString & """,")
+
                             resb.Append("""USUA_ID"" :" & """" & row("USUA_ID").ToString & """")
                             resb.Append("}")
                             resb.Append(",")
@@ -220,6 +236,10 @@ Public Class CAMNGPR : Implements IHttpHandler
                 Case "IMPR"
                     context.Response.ContentType = "application/text; charset=utf-8"
                     res = GenerarDctoImprimir(p_CODE, p_CTLG_CODE)
+
+                Case "GEN_MOV_CAJA_BANCO"
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    res = caNotaCredito.GenerarMovCajaBanco(p_CODE, p_SUBMOTIVO, p_CTLG_CODE, p_SCSL_CODE, p_PERS_PIDM, p_PIDM, Utilities.fechaLocal(p_FECHA_EMISION), p_USUA_ID, p_BANCOCAJA, p_INDCAJABANCO, p_NRO_OPE)
 
                 Case "GEN_ASIENTO"
                     Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()

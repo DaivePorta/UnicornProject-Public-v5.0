@@ -132,9 +132,9 @@
                         <div class="control-group ">
                             <div class="controls">
                                 <select id="cboEmision" class="span12" data-placeholder="Emision">
-                                    <option value="">TODOS</option>
-                                    <option value="A">ACEPTADOS</option>   
                                     <option value="N">NO ENVIADOS</option>
+                                    <option value="">TODOS</option>
+                                    <option value="A">ACEPTADOS</option> 
                                     <option value="P">PENDIENTE</option>                                                                     
                                     <option value="S">ENVIADOS</option>                                    
                                     <option value="X">ERROR</option>                                  

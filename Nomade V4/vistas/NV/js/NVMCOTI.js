@@ -15,6 +15,8 @@ var prmtDIGP = 0;
 var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
 var docu = "";
 var prmtCURS = "";
+var prmtGLIT = "";
+var GLIT = "";
 /*var token_migo = '';//dporta*/
 var desc_producto = '';
 
@@ -145,6 +147,8 @@ var NVMCOTI = function () {
             $('#txtFechaVigencia').datepicker('setStartDate', $(this).val());
             $('#txtFechaVigencia').change();
         });
+
+        autocompletarGlosa('#txt_glosa_det', $('#hfTxtGlosaDet').val());
     }
 
     var fillCboEmpresa = function () {
@@ -1368,7 +1372,7 @@ var NVMCOTI = function () {
 }();
 
 function cargarParametrosSistema() {
-    let filtro = "DIGP,DETR,RETN,RETR,IMRE,BFDV,ODON,VNST,ADET,ACON,CURS"; //Aquí van los parámetros que se van a utilizar en la pantalla y luego se le hace su case
+    let filtro = "DIGP,DETR,RETN,RETR,IMRE,BFDV,ODON,VNST,ADET,ACON,CURS,GLIT"; //Aquí van los parámetros que se van a utilizar en la pantalla y luego se le hace su case
     //Se hizo así para que en una sola consulta traiga los datos necesarios y no esté solicitando uno por uno
     //TODOS LOS PARAMETROS -- DPORTA 11/03/2022
     $.ajax({
@@ -1452,6 +1456,13 @@ function cargarParametrosSistema() {
                             break;
                         case "CURS":
                             prmtCURS = datos[i].VALOR;
+                            break;
+                        case "GLIT":
+                            prmtGLIT = datos[i].VALOR;
+                            if (prmtGLIT === "SI") {
+                                GLIT = toTitleCase(datos[i].DESCRIPCION_DETALLADA);
+                                $("#eti_glosa").text(GLIT);
+                            }
                             break;
                         //case "MIGO":
                         //    token_migo = datos[i].DESCRIPCION_DETALLADA;
@@ -2785,6 +2796,9 @@ function AgregarDetalleVenta() {
                         $("#cbo_Sucursal").attr("disabled", "disabled");
                         $("#cbo_Empresa").attr("disabled", "disabled");
 
+                        //Agregar glosa si no hay registro
+                        if ($("#hfTxtGlosaDet").val() == "") agregarGlosa();
+
                         LimpiarCamposDetalle();
 
                         contVenta = contVenta + 1;
@@ -3028,6 +3042,9 @@ function AgregarDetalleVenta() {
                         $("#cbo_Sucursal").attr("disabled", "disabled");
                         $("#cbo_Empresa").attr("disabled", "disabled");
 
+                        //Agregar glosa si no hay registro
+                        if ($("#hfTxtGlosaDet").val() == "") agregarGlosa();
+
                         LimpiarCamposDetalle();
 
                         contMuestra = contMuestra + 1;
@@ -3068,6 +3085,7 @@ function LimpiarCamposDetalle() {
     $("#txtPrecioUnitario").val('');
     $("#txt_descuento_det").val('0.00');
     $("#txt_glosa_det").val('');
+    $("#hfTxtGlosaDet").val('');
 
     $("#hfCOD_PROD").val('');
     prodActual = {};
@@ -6074,7 +6092,7 @@ function ObtenerTablaDetalles() {
     res += '<th>ISC</th>'
     res += '<th>DETRACCION</th>'
     res += '<th>ALMACÉN</th>'
-    res += '<th>GLOSA</th>'
+    res += '<th>' + (prmtGLIT === "SI" ? GLIT.toUpperCase() : 'GLOSA') + '</th>'
     res += '</tr>'
     res += '</thead>'
     res += '<tbody>'
@@ -7106,3 +7124,118 @@ function NuevoClienteRapido(doid, nro) {
         }
     }
 }
+
+function toTitleCase(str) {
+    return str.toLowerCase().split(' ').map(function (word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+}
+
+function agregarGlosa() {
+    var continuar = true;
+
+    var glosa = $.trim($("#txt_glosa_det").val());
+    var glosa_codigo = $("#hfTxtGlosaDet").val();
+
+    var data = new FormData();
+
+    data.append('p_GLOSA', glosa);
+    data.append('p_GLOSA_CODIGO', glosa_codigo);
+
+    if (continuar) {
+        Bloquear("ventana");
+        var jqxhr = $.ajax({
+            type: "POST",
+            url: "vistas/nv/ajax/nvmcoti.ashx?OPCION=AGREGAR_GLOS",
+            contentType: false,
+            data: data,
+            processData: false,
+            cache: false,
+            async: true
+        })
+            .success(function (datos) {
+                Desbloquear("ventana");
+                if (datos == "OK") {
+                    autocompletarGlosa('#txt_glosa_det', $('#hfTxtGlosaDet').val());
+                }
+            })
+            .error(function () {
+                Desbloquear("ventana");
+                alertCustom("Error al agregar glosa");
+            });
+    }
+}
+
+var autocompletarGlosa = function (v_ID, v_value) {
+    var txtResp = $(v_ID);
+    var parent = txtResp.parent();
+    var newInput = $('<textarea id="' + txtResp.attr('id') + '" class="' + txtResp.attr('class') + '" maxlength="' + txtResp.attr('maxlength') + '" style="' + txtResp.attr('style') + '"></textarea>');
+
+    $.ajax({
+        type: "post",
+        url: "vistas/nv/ajax/nvmcoti.ashx?OPCION=GLOS",
+        contenttype: "application/json;",
+        datatype: "json",
+        async: true,
+        success: function (datos) {
+            if (datos != null) {
+                txtResp.replaceWith(newInput);
+                txtResp = newInput;
+
+                txtResp.typeahead({
+                    source: function (query, process) {
+                        txtResp.removeData('typeahead');
+
+                        arrayNC = [];
+                        map = {};
+
+                        var obj = '[';
+                        for (var i = 0; i < datos.length; i++) {
+                            arrayNC.push(datos[i].DESCRIPCION);
+                            obj += '{ "CODIGO" : "' + datos[i].CODIGO + '", "DESCRIPCION" : "' + datos[i].DESCRIPCION + '" },';
+                        }
+                        obj += '{}';
+                        obj = obj.replace(',{}', '');
+                        obj += ']';
+                        var json = $.parseJSON(obj);
+
+                        $.each(json, function (i, objeto) {
+                            map[objeto.DESCRIPCION] = objeto;
+                        });
+                        process(arrayNC);
+                    },
+                    updater: function (item) {
+                        $('#hfTxtGlosaDet').val(map[item].CODIGO);
+                        return item;
+                    }
+                });
+
+                txtResp.keyup(function () {
+                    $(this).siblings("ul").css("width", $(this).css("width"))
+                    if (txtResp.val().length <= 0) {
+                        $('#hfTxtGlosaDet').val('');
+                    }
+                });
+
+                txtResp.keydown(function (e) {
+                    if (e.keyCode === 13) {
+                        var dropdownMenu = $(this).siblings("ul.dropdown-menu");
+                        if (dropdownMenu.is(":visible")) {
+                            e.preventDefault();
+                            var activeItem = dropdownMenu.find(".active");
+                            if (activeItem.length) {
+                                activeItem.trigger("click");
+                            }
+                        }
+                    }
+                });
+            }
+            if (datos != null && $.trim(v_value).length > 0) {
+                txtResp.val(v_value);
+            }
+        },
+        error: function (msg) {
+            alert(msg);
+        }
+    });
+};

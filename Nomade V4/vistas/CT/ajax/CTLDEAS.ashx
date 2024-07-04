@@ -50,7 +50,10 @@ Public Class CTLDEAS : Implements IHttpHandler
                     context.Response.ContentType = "application/text; charset=utf-8"
                     dt = nvVenta.ListarDocVenta_Busq("", CLIENTE, NUM_DCTO, DCTO_CODE, VENDEDOR, ESTADO, PRODUCTO, SERIE_DCTO, Utilities.fechaLocal(DESDE), Utilities.fechaLocal(HASTA), CTLG_CODE, SCSL_CODE)
                     res = GenerarTablaDocumentoImprimir(dt)
+                    'Case "6" 'DPORTA 13/03/2024
+                    '    context.Response.ContentType = "text/html"
 
+                    '    res = nvVenta.EjecutarAsientosPendientesVenta()
             End Select
             context.Response.Write(res)
         Catch ex As Exception
@@ -74,9 +77,9 @@ Public Class CTLDEAS : Implements IHttpHandler
         resb.AppendFormat("<th style='max-width:52px;'>FECHA<br/>EMISIÓN</th>")
         resb.AppendFormat("<th style='max-width:52px;'>DOC. ID.</th>")
         resb.AppendFormat("<th style='max-width:300px;'>PERSONA</th>")
-        resb.AppendFormat("<th style='max-width:60px;'>CENTRO DE<br/>COSTOS</th>")
-        resb.AppendFormat("<th style='max-width:90px;'>CUENTA</th>")
-        resb.AppendFormat("<th style='max-width:90px;'>DESCRIPCIÓN</th>")
+        'resb.AppendFormat("<th style='max-width:60px;'>CENTRO DE<br/>COSTOS</th>")
+        resb.AppendFormat("<th style='max-width:100px;'>CUENTA</th>")
+        resb.AppendFormat("<th style='max-width:100px;'>DESCRIPCIÓN</th>")
         resb.AppendFormat("<th style='max-width:90px;'>DEBE_MN</th>")
         resb.AppendFormat("<th style='max-width:90px;'>HABER_MN</th>")
         resb.AppendFormat("<th style='max-width:90px;'>DEBE_ME</th>")
@@ -95,7 +98,7 @@ Public Class CTLDEAS : Implements IHttpHandler
                 'resb.AppendFormat("<td align='center' data-order='" + ObtenerFecha(dt.Rows(i)("EMISION").ToString) + "'>{0}<br/><small style='color:#6C7686;'>{1}</small></td>", dt.Rows(i)("EMISION").ToString(), dt.Rows(i)("FECHA_ACTV").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("DOC_IDENT").ToString())
                 resb.AppendFormat("<td align='left' >{0}</td>", dt.Rows(i)("PERSONA").ToString())
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CCOSTO_DET").ToString())
+                'resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CCOSTO_DET").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CTAS_ID").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("CTAS").ToString())
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("DEBE_MN").ToString())

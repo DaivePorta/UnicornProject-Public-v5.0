@@ -75,7 +75,8 @@
                         $('#cbo_tipo_planilla').append('<option value="' + datos[i].CODIGO + '">' + datos[i].DESCRIPCION + '</option>');
                     }
                 }
-                $("#cbo_tipo_planilla").select2("val", "0002").change();
+                $("#cbo_tipo_planilla").select2("val", "0001").change();
+                $("#cbo_tipo_planilla").prop("disabled", true);
             },
             error: function (msg) {
                 alertCustom("Error Listado Tipo Planilla")

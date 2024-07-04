@@ -3,7 +3,7 @@ errorSaldoInsuf = false;
 indCargaInicial = false;
 jsonPersonas = null;
 var prmtACON = "NO";//VERIFICA SI DESEA QUE SE GENERE O NO EL ASIENTO CONTABLE
-const mediosPago = ['0001', '0003', '0005', '0006', '0020']; //PARA VERIFICAR EL NÚMERO DE OPERACIÓN O COD. DE AUTORIZACIÓN. DPORTA 16/08/2023
+const mediosPago = ['0001', '0003', '0005', '0006', '0020', '0022']; //PARA VERIFICAR EL NÚMERO DE OPERACIÓN O COD. DE AUTORIZACIÓN. DPORTA 16/08/2023
 var CPLPGDI = function () {
     var selectedPidm = 0;
     var cargarCombos = function () {
@@ -696,7 +696,7 @@ var CPMPGDI = function () {
 
                         $("#cboMedioPago").html(StringMediosPago);
                         //DPORTA 09/12/2021 BILLETERA DIG.
-                        $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0013" && valorO != "0020" && valorO != "0005" && valorO != "") $(j).remove(); });
+                        $("#cboMedioPago option").filter(function (e, j) { var valorO = $(j).val(); if (valorO != "0003" && valorO != "0013" && valorO != "0020" && valorO != "0022" && valorO != "0005" && valorO != "") $(j).remove(); });
                         $("#cboMedioPago").attr("disabled", false);
 
                         break;
@@ -797,47 +797,67 @@ var CPMPGDI = function () {
                         $("#lbl_detalle3").html("Destino");
                         $("#lbl_detalle4").html("Nro. Operación");
                        
-                        if (objData.DESCRIPCION.indexOf("SERVICIO") >= 0 || objData.DESCRIPCION.indexOf("ALQUILER") >= 0) { //SERVICIO O ALQUILER
+                        //if (objData.DESCRIPCION.indexOf("SERVICIO") >= 0 || objData.DESCRIPCION.indexOf("ALQUILER") >= 0) { //SERVICIO O ALQUILER
+                        //    $("#cbDestino").html("<option></option><option value=0>" + objData.PERSONA.NOMBRE + "</option>").select2("val", "0").change().attr("disabled", true);
+                        //}
+                        //else {
+                        //    $.ajaxSetup({ async: false });
+                        //    $("#cbDestino").off("change");
+                        //    $.post("vistas/CP/ajax/CPMPGDI.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: objData.PERSONA.CODIGO },
+                        //      function (res) {
+                        //          if (res != null && res != "" && res.indexOf("error") < 0) {
+                        //              $("#cbDestino").html(res).select2();
+                        //          } else {
+                        //              $("#cbDestino").html("<option></option>").select2();
+                        //          }
+                        //      });
+                        //    $.ajaxSetup({ async: true });
+                        //    $.ajaxSetup({ async: false });
 
-                            $("#cbDestino").html("<option></option><option value=0>" + objData.PERSONA.NOMBRE + "</option>").select2("val", "0").change().attr("disabled", true);
-                        }
-                        else {
+                        //    $.post("vistas/CP/ajax/CPMPGDI.ASHX", { flag: 6, banco: $("#cbo_Det_Origen :selected").attr("banco"), moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: objData.PERSONA.CODIGO },
+                        //      function (res) {
+                        //          if (res != null && res != "" < 0) {
+                        //              $("#cbDestino option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
+                        //              if (res != "error") {
+                        //                  $("#cbDestino").append(res.split("<option></option")[1]);
+                        //              }
+                        //          } else {
+                        //              $("#cbDestino").html("<option></option>").change();
+                        //          }
+                        //      });
+                        //    $.ajaxSetup({ async: true });
+                        //    $("#cbDestino").attr("disabled", false).change();
+                        //}
 
+                        //Se ha separado los pagos de servicios/alquileres de transferencia al nuevo codigo 0022
+                        //Transferencias siempre tendran destino, mientras que pagos y servicios seleccionara el servicio directamente
+                        $.ajaxSetup({ async: false });
+                        $("#cbDestino").off("change");
+                        $.post("vistas/CP/ajax/CPMPGDI.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: objData.PERSONA.CODIGO },
+                            function (res) {
+                                if (res != null && res != "" && res.indexOf("error") < 0) {
+                                    $("#cbDestino").html(res).select2();
+                                } else {
+                                    $("#cbDestino").html("<option></option>").select2();
+                                }
+                            });
+                        $.ajaxSetup({ async: true });
+                        $.ajaxSetup({ async: false });
 
+                        $.post("vistas/CP/ajax/CPMPGDI.ASHX", { flag: 6, banco: $("#cbo_Det_Origen :selected").attr("banco"), moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: objData.PERSONA.CODIGO },
+                            function (res) {
+                                if (res != null && res != "" < 0) {
+                                    $("#cbDestino option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
+                                    if (res != "error") {
+                                        $("#cbDestino").append(res.split("<option></option")[1]);
+                                    }
+                                } else {
+                                    $("#cbDestino").html("<option></option>").change();
+                                }
+                            });
+                        $.ajaxSetup({ async: true });
+                        $("#cbDestino").attr("disabled", false).change();
 
-
-                            $.ajaxSetup({ async: false });
-                            $("#cbDestino").off("change");
-                            $.post("vistas/CP/ajax/CPMPGDI.ASHX", { flag: 6.5, moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: objData.PERSONA.CODIGO },
-                              function (res) {
-                                  if (res != null && res != "" && res.indexOf("error") < 0) {
-                                      $("#cbDestino").html(res).select2();
-                                  } else {
-                                      $("#cbDestino").html("<option></option>").select2();
-                                  }
-
-                              });
-                            $.ajaxSetup({ async: true });
-                            $.ajaxSetup({ async: false });
-
-                            $.post("vistas/CP/ajax/CPMPGDI.ASHX", { flag: 6, banco: $("#cbo_Det_Origen :selected").attr("banco"), moneda: $("#cbo_Det_Origen :selected").attr("moneda"), empresapidm: objData.PERSONA.CODIGO },
-                              function (res) {
-                                  if (res != null && res != "" < 0) {
-                                      $("#cbDestino option").filter(function (e, j) { var valorO = $(j).val(); if (res.indexOf(valorO) > 0) $(j).remove(); });
-                                      if (res != "error") {
-                                          $("#cbDestino").append(res.split("<option></option")[1]);
-                                      }
-                                  } else {
-                                      $("#cbDestino").html("<option></option>").change();
-                                  }
-
-                              });
-                            $.ajaxSetup({ async: true });
-
-
-                            $("#cbDestino").attr("disabled", false).change();
-
-                        }
                         $("#cbo_moneda").attr("disabled", true);
                         $("#txtMonto").attr("disabled", false);
                         //$("#txtNroOpe").attr("disabled", false);
@@ -990,6 +1010,20 @@ var CPMPGDI = function () {
                             $(".mNroOpe").attr('class', 'span5 mNroOpe');
                         }
 
+                        break;
+
+                    case "0022":
+                        $(".mAppPago").css("display", "none");
+                        $(".mNroOpe").attr('class', 'span5 mNroOpe');
+                        $("#lbl_detalle3").html("Destino");
+                        $("#lbl_detalle4").html("Nro. Operación");
+
+                        $("#cbDestino").html("<option></option><option value=0>" + objData.PERSONA.NOMBRE + "</option>").select2("val", "0").change().attr("disabled", true);
+
+                        $("#cbo_moneda").attr("disabled", true);
+                        $("#txtMonto").attr("disabled", false);
+                        //$("#txtNroOpe").attr("disabled", false);
+                        $("#txtNroOpe").attr("disabled", false).attr("placeholder", "de la transacción");
                         break;
 
                 }
@@ -1277,7 +1311,7 @@ function pagar() {
           var  p_documento = $("#txtNroOpe.personas").html() == undefined ? "OP" + $("#txtNroOpe").val() : $("#txtNroOpe").val();
         }
 
-        var p_flag = 1;
+        var p_flag = 1.6;
         var adicional = "";
 
         var codModulo = objData.MODULO.CODIGO;
@@ -1291,7 +1325,7 @@ function pagar() {
             pidm_cta = $("#cbo_Det_Origen :selected").attr("pidm");
             cta = $("#cbo_Det_Origen").val();
             compl = "S";
-            p_flag = 1.5;
+            p_flag = 1.7;
 
             switch ($("#cboMedioPago").val()) {
                 case "0003": //transferencia
@@ -1317,6 +1351,11 @@ function pagar() {
                 case "0020": // OTROS (BILLETERA DIGITAL) DPORTA 09/12/2021
 
                     det_desc = "DEV. BILLETERA DIGITAL*" + "/" + objData.PERSONA.NOMBRE;
+                    break;
+                case "0022": // pago de servicios
+
+                    det_desc = "PAGO SERVICIO*" + "/" + objData.PERSONA.NOMBRE;
+
                     break;
             }
         } else if (ind_tipo == "C") {
@@ -1370,7 +1409,7 @@ function pagar() {
                     switch (res) {
 
                         case "NA": // Uno de los documentos no puede ser amortizado por el monto indicado
-                            alertCustom("Documento ya amortizado. Realizar el pago en la pantalla de Pagos Varios!");
+                            alertCustom("No se pudo amortizar el documento!");
                             break;
                         case "NG": // El monto usable de la nota de credito generica es 0
                             alertCustom("La nota de crédito genérica seleccionada no posee monto usable! ");
@@ -1380,6 +1419,19 @@ function pagar() {
                             break;
                         case "SI": // Saldo insuficiente caja/banco
                             alertCustom("No posee saldo suficiente en la " + ($("#cbo_OrigenPago").val().substring(0, 1) === "B" ? "cuenta" : "caja") + " seleccionada!");
+                            break;
+                        case "BI": // ERROR AL INSERTAR DETALLE EN TABLA FBRBANC
+                            alertCustom("Error al registrar cobro bancario!");
+                            break;
+                        case "CA": // ERROR AL INSERTAR DETALLE EN TABLA FBRMCAJ
+                            alertCustom("Error al registrar cobro en caja!");
+                            break;
+                        case "DC": // EL PARAMETRO MOCA NO ESTÁ ACTIVO Y SE ESTÁ INTENTANDO PAGAR DESDE OTRA CAJA
+                            alertCustom("Se está intentando pagar documento desde caja perteneciente a otro establecimiento!");
+                            break;
+                        case "TI": // Transacción incompleta
+                            //alertCustom("Parece que hubo un error en el cobro. Intente nuevamente!");
+                            alertCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                             break;
                         case "TC": // Transaccion realizada correctamente
                             json_selec = new Array();

@@ -138,7 +138,7 @@ Public Class NVLANUL : Implements IHttpHandler
 
         If (dt IsNot Nothing) Then
             For i As Integer = 0 To dt.Rows.Count - 1
-                If dt.Rows(i)("ESTADO_DOC_ELECT").ToString() = "N" And dt.Rows(i)("ATENDIDO").ToString() <> "N.CRÉDITO APLICADO" Then
+                If dt.Rows(i)("ESTADO_DOC_ELECT").ToString() = "N" And dt.Rows(i)("ATENDIDO").ToString() <> "N.CRÉDITO APLICADA" Then
                     resb.AppendFormat("<tr>")
                     'resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("EMPRESA_DESC_CORTA").ToString())
                     'resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("SUCURSAL_DESC").ToString())

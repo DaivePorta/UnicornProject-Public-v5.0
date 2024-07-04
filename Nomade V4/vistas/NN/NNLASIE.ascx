@@ -95,13 +95,13 @@
                                 <tr>
                                     <th style="width: 10%;">FECHA
                                     </th>
-                                    <th style="width: 10%;">ENTRADA
+                                    <th style="width: 10%;">ENTRADA_M
                                     </th>
-                                    <th style="width: 10%;">SALIDA
+                                    <th style="width: 10%;">SALIDA_M
                                     </th>
-                                    <th style="width: 10%;">ENTRADA
+                                    <th style="width: 10%;">ENTRADA_T
                                     </th>
-                                    <th style="width: 10%;">SALIDA
+                                    <th style="width: 10%;">SALIDA_T
                                     </th>
                                     <th style="width: 10%;">TARDANZA(min)
                                     </th>

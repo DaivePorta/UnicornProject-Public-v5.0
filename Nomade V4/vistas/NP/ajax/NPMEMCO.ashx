@@ -3,6 +3,7 @@
 Imports System
 Imports System.Web
 Imports System.Data
+Imports System.Linq
 
 Public Class NPMEMCO : Implements IHttpHandler
 
@@ -90,7 +91,38 @@ Public Class NPMEMCO : Implements IHttpHandler
                 context.Response.ContentType = "application/text; charset=utf-8"
                 Dim pemp As New Nomade.NC.NCEEmpleado("BN")
                 dt = pemp.Lista_Contrato_Empl(IIf(PIDM = "", "0", PIDM), CTLG_CODE, SCSL_CODE, ESTADO_IND)
-                res = GenerarTablaContratos(dt)
+
+                Dim filteredRows = dt.AsEnumerable().GroupBy(Function(row) New With {
+                    Key .PIDM = Convert.ToInt32(row("PIDM")),
+                    Key .Secuencia = Convert.ToInt32(row("SECUENCIA")),
+                    Key .NRO = Convert.ToString(row("NRO"))
+                }).Select(Function(group)
+                              Dim firstRow = group.OrderBy(Function(row) Convert.ToDateTime(Utilities.fechaLocal(row("FECHA_INI")))).First()
+                              Dim existeIndefinido = group.Any(Function(row) String.IsNullOrEmpty(row("FECHA_FIN").ToString()) Or row("FECHA_FIN").ToString() = "00/00/0000")
+
+                              Dim latestRow = group.OrderByDescending(Function(row) row("ADENDA")).First()
+
+                              latestRow("FECHA_INI") = firstRow("FECHA_INI")
+                              If existeIndefinido Then
+                                  latestRow("FECHA_FIN") = DBNull.Value
+                              Else
+                                  ' Si todas las fechas fin son definidas
+                                  Dim ultimaFechaDefinida = group.
+                                      Where(Function(row) Not String.IsNullOrEmpty(row("FECHA_FIN").ToString()) AndAlso row("FECHA_FIN").ToString() <> "00/00/0000").
+                                      OrderByDescending(Function(row) Convert.ToDateTime(Utilities.fechaLocal(row("FECHA_FIN")))).FirstOrDefault()
+                                  If ultimaFechaDefinida IsNot Nothing Then
+                                      latestRow("FECHA_FIN") = ultimaFechaDefinida("FECHA_FIN")
+                                  Else
+                                      latestRow("FECHA_FIN") = DBNull.Value
+                                  End If
+                              End If
+
+                              Return latestRow
+                          End Function)
+
+                Dim newdt = filteredRows.CopyToDataTable()
+
+                res = GenerarTablaContratos(newdt)
             Case "3" 'Lista Modalidad Formativa
                 context.Response.ContentType = "application/json; charset=utf-8"
                 Dim pemp As New Nomade.NC.NCModalidadForm("BN")
@@ -216,6 +248,7 @@ Public Class NPMEMCO : Implements IHttpHandler
                         resb.Append("""PIDM"" :" & """" & MiDataRow("PIDM").ToString & """,")
                         resb.Append("""NOMBRE_EMPLEADO"" :" & """" & MiDataRow("NOMBRE_EMPLEADO").ToString & """,")
                         resb.Append("""SECUENCIA"" :" & """" & MiDataRow("SECUENCIA").ToString & """,")
+                        resb.Append("""ADENDA"" :" & """" & MiDataRow("ADENDA").ToString & """,")
                         resb.Append("""CTLG_CODE"" :" & """" & MiDataRow("CTLG_CODE").ToString & """,")
                         resb.Append("""SCSL_CODE"" :" & """" & MiDataRow("SCSL_CODE").ToString & """,")
                         resb.Append("""NRO"" :" & """" & MiDataRow("NRO").ToString & """,")
@@ -226,6 +259,7 @@ Public Class NPMEMCO : Implements IHttpHandler
                         resb.Append("""FECHA_CESE"" :" & """" & MiDataRow("FECHA_CESE").ToString & """,")
                         resb.Append("""MOTIVO_CESE_CODE"" :" & """" & MiDataRow("MOTIVO_CESE_CODE").ToString & """,")
                         resb.Append("""MOTIVO_CESE_DESC"" :" & """" & MiDataRow("MOTIVO_CESE_DESC").ToString & """,")
+                        resb.Append("""FECHA_ADENDA"" :" & """" & MiDataRow("FECHA_ADENDA").ToString & """,")
                         resb.Append("""TITR_CODE"" :" & """" & MiDataRow("TITR_CODE").ToString & """,")
                         resb.Append("""TITR_DESC"" :" & """" & MiDataRow("TITR_DESC").ToString & """,")
                         resb.Append("""TMOF_CODE"" :" & """" & MiDataRow("TMOF_CODE").ToString & """,")
@@ -291,6 +325,25 @@ Public Class NPMEMCO : Implements IHttpHandler
                     resb.Append("]")
                 End If
                 res = resb.ToString()
+
+            Case "12" 'Adendar Contrato
+                context.Response.ContentType = "application/json; charset=utf-8"
+                Dim e As New Nomade.NC.NCEEmpleado("Bn")
+
+                CONT_FECHA_INI = Utilities.fechaLocal(CONT_FECHA_INI)
+                CONT_FECHA_FIN = Utilities.fechaLocal(CONT_FECHA_FIN)
+
+                resArray = e.adendarContrato(PIDM, NUMERO, ESTADO_IND, CTLG_CODE, SCSL_CODE, CONT_FECHA_INI, CONT_FECHA_FIN, TITR_CODE, CARG_CODE, REM_BASICA, MOVILIDAD, VIATICOS,
+                                             REFRIGERIO, BONIFICACION_RIESGO_CAJA, BONO_PRODUCTIVIDAD, REM_TOTAL, USUA_ID)
+                resb.Append("[")
+                resb.Append("{")
+                resb.Append("""SUCCESS"" :" & """" & resArray(0).ToString & """,")
+                resb.Append("""NRO_CONTRATO"" :" & """" & resArray(1).ToString & """,")
+                resb.Append("""VALIDACION"" :" & """" & resArray(2).ToString & """")
+                resb.Append("}")
+                resb.Append("]")
+                res = resb.ToString()
+
 
             Case "LECO" 'Lista Estado de Contrato
                 context.Response.ContentType = "application/json; charset=utf-8"

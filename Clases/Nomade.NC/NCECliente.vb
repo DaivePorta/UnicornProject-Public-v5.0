@@ -100,6 +100,48 @@
             Throw (ex)
         End Try
     End Function
+    Public Function ListarClienteEspecificoDocumento(ByVal p_empresa As String, ByVal p_nro_doc As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFC_LISTAR_CLIENTE_ESPECIFICO_DOCUMENTO", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_EMPRESA", p_empresa, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NRO_DOC", p_nro_doc, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+    Public Function ListarClienteEspecificoNombre(ByVal p_empresa As String, ByVal p_nombre As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFC_LISTAR_CLIENTE_ESPECIFICO_NOMBRE", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_EMPRESA", p_empresa, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NOMBRE", p_nombre, ParameterDirection.Input, 253))
+
+            dt = cn.Consulta(cmd)
+
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
     'DPORTA
     Public Function CambiarEstadoCliente(ByVal P_CODE As String, ByVal P_USUA_ID As String, P_CTLG_CODE As String) As String
         Try

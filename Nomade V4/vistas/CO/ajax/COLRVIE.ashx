@@ -29,7 +29,7 @@ Public Class COLRVIE : Implements IHttpHandler
     Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
 
         OPCION = context.Request("OPCION")
-        p_DESC_EMPRESA = context.Request("p_DESC_EMPRESA")
+        p_DESC_EMPRESA = context.Request("p_DESC_EMPRESA").Replace("&amp;", "Y")
         p_CTLG_CODE = context.Request("p_CTLG_CODE")
         p_SCSL_CODE = context.Request("p_SCSL_CODE")
         p_USUA_ID = context.Request("p_USUA_ID")
@@ -143,85 +143,92 @@ Public Class COLRVIE : Implements IHttpHandler
                     'TIPO COMPROBANTE, SERIE, AÑO EMISION DUA, NRO                    
                     cadena += dt.Rows(i)("TIPO_DCTO_SUNAT").ToString() + "|" + dt.Rows(i)("SERIE").ToString() + "|" + dt.Rows(i)("NUMERO").ToString() + "|"
                     'NUMERO FINAL
-                    'cadena += dt.Rows(i)("NRO_FINAL").ToString() + "|"
+                    cadena += dt.Rows(i)("NRO_FINAL").ToString() + "|"
                     ''INFORMACIÓN DEL CLIENTE                                    
-                    cadena += dt.Rows(i)("TIPO_DCTO_CLIE").ToString() + "|" + dt.Rows(i)("NRO_DCTO_CLIE").ToString() + "|"
+                    'cadena += dt.Rows(i)("TIPO_DCTO_CLIE").ToString() + "|" + dt.Rows(i)("NRO_DCTO_CLIE").ToString() + "|"
+                    'cadena += dt.Rows(i)("RAZON_SOCIAL").ToString() + "|"
+                    If dt.Rows(i)("TIPO_DCTO_CLIE").ToString() = 0 And dt.Rows(i)("NRO_DCTO_CLIE").ToString() = "99999999" And Decimal.Parse(dt.Rows(i)("IMPORTE").ToString()) < 700 Then
+                        cadena += "|"
+                    Else
+                        cadena += dt.Rows(i)("TIPO_DCTO_CLIE").ToString() + "|"
+                    End If
+                    cadena += dt.Rows(i)("NRO_DCTO_CLIE").ToString() + "|"
                     cadena += dt.Rows(i)("RAZON_SOCIAL").ToString() + "|"
                     'VALOR DE LA EXPORTACION
                     If Decimal.Parse(dt.Rows(i)("VALOR_EXPORTACION").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("VALOR_EXPORTACION").ToString())) + "|"
                     End If
                     'BASE IMPONIBLE
                     If Decimal.Parse(dt.Rows(i)("BASE_IMPONIBLE").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("BASE_IMPONIBLE").ToString())) + "|"
                     End If
                     'DESCUENTO DE LA BASE IMPONIBLE
                     If Decimal.Parse(dt.Rows(i)("DSCTO_BASE_IMPONIBLE").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("DSCTO_BASE_IMPONIBLE").ToString())) + "|"
                     End If
                     'IGV
                     If Decimal.Parse(dt.Rows(i)("IGV").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IGV").ToString())) + "|"
                     End If
                     'DESCUENTO DEL IGV O IMPUESTO DE PROMOCIÓN MUNICIPAL
                     If Decimal.Parse(dt.Rows(i)("DSCTO_IGV").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("DSCTO_IGV").ToString())) + "|"
                     End If
                     'IMPORTE EXONERADA
                     If Decimal.Parse(dt.Rows(i)("IMPORTE_EXONERADA").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IMPORTE_EXONERADA").ToString())) + "|"
                     End If
                     'IMPORTE INAFECTA
                     If Decimal.Parse(dt.Rows(i)("IMPORTE_INAFECTA").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IMPORTE_INAFECTA").ToString())) + "|"
                     End If
                     'ISC
                     If Decimal.Parse(dt.Rows(i)("ISC").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ISC").ToString())) + "|"
                     End If
                     'BASE IMPONIBLE IVAP
                     If Decimal.Parse(dt.Rows(i)("BASE_IMPONIBLE_IVAP").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("BASE_IMPONIBLE_IVAP").ToString())) + "|"
                     End If
                     'IMPUESTO IVAP
                     If Decimal.Parse(dt.Rows(i)("IMPUESTO_IVAP").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IMPUESTO_IVAP").ToString())) + "|"
                     End If
                     'IMPUESTO AL CONSUMO DE LAS BOLSAS DE PLASTICO (ICEPER)
                     If Decimal.Parse(dt.Rows(i)("ICBPER").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("ICBPER").ToString())) + "|"
                     End If
                     'OTROS TRIBUTOS
                     If Decimal.Parse(dt.Rows(i)("OTROS_TRIBUTOS").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("OTROS_TRIBUTOS").ToString())) + "|"
                     End If
                     'IMPORTE
                     If Decimal.Parse(dt.Rows(i)("IMPORTE").ToString()) = 0 Then
-                        cadena += "0|"
+                        cadena += "0.00|"
                     Else
                         cadena += String.Format("{0:##0.00}", Decimal.Parse(dt.Rows(i)("IMPORTE").ToString())) + "|"
                     End If
@@ -229,7 +236,7 @@ Public Class COLRVIE : Implements IHttpHandler
                     cadena += dt.Rows(i)("MONEDA").ToString() + "|"
                     'VALOR CAMBIO
                     If dt.Rows(i)("MONEDA").ToString() = "PEN" Then
-                        cadena += "1|"
+                        cadena += "|"
                     Else
                         cadena += String.Format("{0:#0.000}", Decimal.Parse(dt.Rows(i)("TIPO_CAMBIO").ToString())) + "|"
                     End If
@@ -242,13 +249,13 @@ Public Class COLRVIE : Implements IHttpHandler
                     'CAMPOS NUEVOS
                     cadena += dt.Rows(i)("ID_PROYECTO_OPERADORES").ToString() + "|"
 
-                    cadena += "|"
-                    cadena += "1" + "|"
-                    cadena += "0" + "|"
-                    cadena += "0" + "|"
-                    cadena += "101" + "|"
-                    cadena += "|"
-                    cadena += "|"
+                    'cadena += "|"
+                    'cadena += "1" + "|"
+                    'cadena += "0" + "|"
+                    'cadena += "0" + "|"
+                    'cadena += "101" + "|"
+                    'cadena += "|"
+                    'cadena += "|"
 
                     If cantidad_datos <> nroCorrelativo Then
                         cadena += vbCrLf
@@ -312,7 +319,7 @@ Public Class COLRVIE : Implements IHttpHandler
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>DSCTO BI</th>")
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>IGV / IPM</th>")
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>DSCTO IGV / IPM</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>MTO EXONERADP</th>")
+        resb.AppendFormat("<th rowspan='1' style='width:85px;'>MTO EXONERADO</th>")
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>MTO INAFECTO</th>")
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>ISC</th>")
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>BI GRAV IVAP</th>")
@@ -327,14 +334,14 @@ Public Class COLRVIE : Implements IHttpHandler
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>SERIE CP MODIFICADO</th>")
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>NRO CP MODIFICADO</th>")
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>ID PROYECTO OPERADORES ATRIBUCIÓN</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>TIPO DE NOTA</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>EST. COMP</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>VALOR FOB EMBARCADO</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>VALOR OP GRATUITAS</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>TIPO OPERACIÓN</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>DAM / CP</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>CLU</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>USO INTERNO SUNAT</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>TIPO DE NOTA</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>EST. COMP</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>VALOR FOB EMBARCADO</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>VALOR OP GRATUITAS</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>TIPO OPERACIÓN</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>DAM / CP</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>CLU</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>USO INTERNO SUNAT</th>")
         resb.AppendFormat("</tr>")
 
         resb.AppendFormat("</thead>")
@@ -371,7 +378,11 @@ Public Class COLRVIE : Implements IHttpHandler
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("SERIE").ToString()) '8   
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NUMERO").ToString()) '9
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_FINAL").ToString()) '10
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_DCTO_CLIE").ToString()) '11
+                If dt.Rows(i)("TIPO_DCTO_CLIE").ToString() = 0 And dt.Rows(i)("NRO_DCTO_CLIE").ToString() = "99999999" And Decimal.Parse(dt.Rows(i)("IMPORTE").ToString()) < 700 Then
+                    resb.AppendFormat("<td align='center' >{0}</td>", "") '11
+                Else
+                    resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_DCTO_CLIE").ToString()) '11
+                End If
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_DCTO_CLIE").ToString()) '12   
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("RAZON_SOCIAL").ToString()) '13
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("VALOR_EXPORTACION").ToString()) '14
@@ -388,21 +399,21 @@ Public Class COLRVIE : Implements IHttpHandler
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("OTROS_TRIBUTOS").ToString()) '25
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("IMPORTE").ToString()) '26
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("MONEDA").ToString()) '27
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_CAMBIO").ToString()) '28  
+                resb.AppendFormat("<td align='center' >{0}</td>", If(dt.Rows(i)("MONEDA") = "PEN", "", dt.Rows(i)("TIPO_CAMBIO").ToString())) '28  
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("FECHA_EMISION_DOC_MODIFICADO").ToString()) '29
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_CP_MODIFICADO").ToString()) '30
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("SERIE_CP_MODIFICADO").ToString()) '31
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_CP_MODIFICADO").ToString()) '32  
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("ID_PROYECTO_OPERADORES").ToString()) '33
 
-                resb.AppendFormat("<td align='center' >{0}</td>", "") '34
-                resb.AppendFormat("<td align='center' >{0}</td>", "1") '35
-                resb.AppendFormat("<td align='center' >{0}</td>", "0") '36   
-                resb.AppendFormat("<td align='center' >{0}</td>", "0") '37
-                resb.AppendFormat("<td align='center' >{0}</td>", "101") '38
-                resb.AppendFormat("<td align='center' >{0}</td>", "") '39   
-                resb.AppendFormat("<td align='center' >{0}</td>", "") '40  
-                resb.AppendFormat("<td align='center' >{0}</td>", "") '41  
+                'resb.AppendFormat("<td align='center' >{0}</td>", "") '34
+                'resb.AppendFormat("<td align='center' >{0}</td>", "1") '35
+                'resb.AppendFormat("<td align='center' >{0}</td>", "0") '36   
+                'resb.AppendFormat("<td align='center' >{0}</td>", "0") '37
+                'resb.AppendFormat("<td align='center' >{0}</td>", "101") '38
+                'resb.AppendFormat("<td align='center' >{0}</td>", "") '39   
+                'resb.AppendFormat("<td align='center' >{0}</td>", "") '40  
+                'resb.AppendFormat("<td align='center' >{0}</td>", "") '41  
                 resb.AppendFormat("</tr>")
             Next
         Else

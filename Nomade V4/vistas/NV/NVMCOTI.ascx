@@ -594,7 +594,7 @@
                                                         <div class="row-fluid">
                                                             <div class="span1">
                                                                 <div class="control-group">
-                                                                    <label class="control-label" for="txt_glosa">
+                                                                    <label id="eti_glosa" class="control-label" for="txt_glosa">
                                                                         Glosa</label>
                                                                 </div>
                                                             </div>
@@ -1507,6 +1507,7 @@
 
 <input id="hfDIR" type="hidden" />
 <input id="hfDNI" type="hidden" />
+<input id="hfTxtGlosaDet" type="hidden" />
 
 
 

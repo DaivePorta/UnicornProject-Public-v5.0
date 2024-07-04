@@ -112,19 +112,19 @@
             Dim cmd1 As IDbCommand
 
             Dim mtar As New NCMarcaTarjeta("BN")
-            Dim dt = mtar.ListarMarcaTarjetaPorOperador(" ", "A")
+            'Dim dt = mtar.ListarMarcaTarjetaPorOperador(" ", "A")
 
-            dt = IIf(dt Is Nothing, New DataTable(), dt)
+            'dt = IIf(dt Is Nothing, New DataTable(), dt)
 
             Dim loContiene As Boolean = False
-            If Not dt Is Nothing Then
-                For Each row In dt.Rows
-                    loContiene = marcas.Contains(row("CODIGO_MARCA").ToString())
-                    If loContiene Then
-                        Exit For
-                    End If
-                Next
-            End If
+            'If Not dt Is Nothing Then
+            '    For Each row In dt.Rows
+            '        loContiene = marcas.Contains(row("CODIGO_MARCA").ToString())
+            '        If loContiene Then
+            '            Exit For
+            '        End If
+            '    Next
+            'End If
 
             If Not loContiene Then
                 cmd = cn.GetNewCommand("PMN_ACTUALIZAR_OPERADOR_TARJETA", CommandType.StoredProcedure)

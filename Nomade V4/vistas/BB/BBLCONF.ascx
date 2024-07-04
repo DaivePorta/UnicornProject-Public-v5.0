@@ -4,7 +4,7 @@
         <div class="portlet box blue" id="ventana">
      
             <div class="portlet-title">
-                <h4><i class="icon-reorder"></i>LISTA CONFIGURACÍON DE SISTEMA PENSIONES</h4>
+                <h4><i class="icon-reorder"></i>LISTA CONFIGURACIÓN DE SISTEMA PENSIONES</h4>
                 <div class="actions">
               
                     <a href="javascript:NuevoListado();" class="btn green" id="btnNuevo"><i class="icon-plus"></i>Nuevo</a>
@@ -34,9 +34,9 @@
                     <div class="span3">
                         <div class="control-group">
                             <a id="btn_filtrar" class="btn blue" ><i class="icon-search"></i>Buscar</a>
+                            <a id="btn_siguiente" class="btn gray" ><i class="icon-plus"></i> Asignar siguiente periodo</a>
                         </div>
                     </div>
-
 
                     <div class="span1" id="DivFecha">
                         <asp:HiddenField ID="hfComision" runat="server" Value="0" />

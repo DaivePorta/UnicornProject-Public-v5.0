@@ -358,8 +358,13 @@
                         }
 
                     },
+                    {
+                        data: "NRO_DOC_REGISTRO",
+                        createdCell: function (td, cellData, rowData, row, col) {
+                            $(td).attr("align", "center");
+                        }
 
-
+                    },
                     {
                         data: "TIPO_CAMBIO_KARDEX",
                         createdCell: function (td, cellData, rowData, row, col) {

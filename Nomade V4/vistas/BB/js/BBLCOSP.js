@@ -1,5 +1,5 @@
-﻿var BBLCOSP = function () {
-
+﻿var indicadorItemsVacio = 0;
+var BBLCOSP = function () {
     function ListarValidacionConfiguracion() {
         var emp = $("#ctl00_hddctlg").val();
 
@@ -7,8 +7,6 @@
         var mm = $("#optmes").val();
         var cm = mm + " " + aa;
 
-
-  
         $.ajax({
             type: "post",
             //url: "vistas/ca/ajax/CALVICA.ashx?OPCION=2&p_CTLG_CODE=" + $('#cboEmpresa').val() + "&p_SCSL_CODE=" + $('#cboEstablecimiento').val() + "&p_USUA_ID=" + $('#ctl00_txtus').val(),
@@ -52,9 +50,6 @@
         });
     };
 
-
-    
-
     var ListarValidacion = function () {     
         var emp = $("#ctl00_hddctlg").val();
 
@@ -74,13 +69,9 @@
         });
     };
 
- 
-
-
     var ListarComision= function () {
         var emp = $("#ctl00_hddctlg").val();
-        
-        
+
         $.ajax({
             type: "POST",
             url: "vistas/BB/ajax/BBLCOSP.ASHX?Opcion=0&emp=" + emp ,
@@ -235,6 +226,40 @@
         return Opcion;
     }
 
+    var CrearComisionSiguiente = function () {
+        if (indicadorItemsVacio == 0) {
+            var emp = $("#ctl00_hddctlg").val();
+            var Usuario = $('#ctl00_txtus').val();
+
+            var aa = $("#optanho").val();
+            var mm = $("#optmes").val();
+            var Peri = mm + " " + aa;
+
+            $.ajax({
+                type: "POST",
+                url: "vistas/BB/ajax/BBLCOSP.ASHX?Opcion=SGTE_PERIODO&emp=" + emp + "&u=" + Usuario + "&p=" + Peri,
+                success: function (res) {
+                    Desbloquear("ventana");
+                    if (res == "OK") {
+                        exito();
+                    }
+                    else {
+                        alertCustom(res);
+                    }
+                },
+                error: function (msg) {
+                    Desbloquear("ventana");
+                    noexito();
+                }
+            });
+        } else {
+            alertCustom("No hay items para asignar");
+        }
+    }
+
+    $("#btn_siguiente").on("click", function () {
+        CrearComisionSiguiente();
+    });
     
     return {
         init: function () {
@@ -400,13 +425,9 @@ function ValidarCombo(fila,codigo) {
 
 var ListarCabecera = function () {
     var emp = $("#ctl00_hddctlg").val();
-
     var aa = $("#optanho").val();
     var mm = $("#optmes").val();
     var cm = mm + " " + aa;
-
-
-
 
     var fe = $("#hffecha").val();
     
@@ -420,6 +441,12 @@ var ListarCabecera = function () {
         //contentType: "application/json;",
         //dataType: "json",
         success: function (res) {
+            if (!res || res == "<b>Debe registrar la conguración del periodo...!</b>") {
+                indicadorItemsVacio = 1;
+            } else {
+                indicadorItemsVacio = 0;
+            }
+
             $('#TablaDiv').html(res);
             $('#TablaComision').dataTable({
                 "scrollX": true,
@@ -434,8 +461,8 @@ var ListarCabecera = function () {
             alert(msg);
         }
     });
-
 }
+
 function Limpiar(fila,Limit) {
     for (var i = 1; i <= Limit; i++) {
         var txtid = "txtColummna" + fila + "_" + i;

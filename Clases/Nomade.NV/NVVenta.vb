@@ -26,6 +26,25 @@ Public Class NVVenta
         End Try
     End Function
 
+    Public Function ListarCajeroPorRol(ByVal p_CTLG_CODE As String, Optional ByVal p_ESTADO_IND As String = "A") As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("PFV_LISTAR_CAJERO_POR_ROL", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_IND", p_ESTADO_IND, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
     Public Function ListarDococumentos_Busq(p_CTLG_CODE As String, p_SCSL_CODE As String, p_MONEDA_CODE As String, p_CHK_INC_SERVICIOS As String, ByVal p_DESDE As String, p_HASTA As String) As DataTable
         Try
             Dim dt As DataTable
@@ -469,6 +488,22 @@ Public Class NVVenta
         End Try
     End Function
 
+    'Public Function EjecutarAsientosPendientesVenta() As String
+    '    Try
+    '        Dim msg As String
+    '        Dim cmd As IDbCommand
+
+    '        cmd = cn.GetNewCommand("JOB_CREAR_ASIENTOS_DE_VENTA_COBRO", CommandType.StoredProcedure)
+    '        cmd.Parameters.Add(cn.GetNewParameter("@p_RPTA", String.Empty, ParameterDirection.Output, 253))
+    '        cmd = cn.Ejecuta_parms(cmd)
+    '        msg = cmd.Parameters("@p_RPTA").Value
+
+    '        Return msg
+
+    '    Catch ex As Exception
+    '        Throw (ex)
+    '    End Try
+    'End Function
 
     Public Function ListarDocVenta_Rap(p_VTAC_CODE As String, p_RAZON_SOCIAL As String, p_NUM_DCTO As String,
                                         p_TIPO_DCTO As String, p_VENDEDOR As String, p_ANULADO As String,
@@ -2954,11 +2989,12 @@ Public Class NVVenta
     'Anular un documento de Venta
     Function AnularDocumentoVenta(VTAC_CODE As String, NUM_SEQ_DOC As String, ANULAC_ID As String, CMNT_ANULAC As String,
                                   ByVal p_DEVOLUCION_EFECTIVO As String, ByVal p_DEVOLUCION_DESPACHO As String,
-                                  ByVal p_MOTIVO_CODE As String) As String
+                                  ByVal p_MOTIVO_CODE As String, ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DOCUMENTO As String,
+                                  ByVal p_PIDM_CLIENTE As String, ByVal p_ESTADO_PAGO As String, ByVal p_ESTADO_DESPACHO As String, ByVal p_MONE_CODE As String) As String
         Dim msg As String
         Dim cmd As IDbCommand
         Try
-            cmd = cn.GetNewCommand("PFV_ANULAR_VENTA_WEB", CommandType.StoredProcedure)
+            cmd = cn.GetNewCommand("PFV_ANULAR_VENTA_WEB_NEW", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_VTAC_CODE", VTAC_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_SEQ_DOC", NUM_SEQ_DOC, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_ANULAC_ID", ANULAC_ID, ParameterDirection.Input, 253))
@@ -2966,6 +3002,13 @@ Public Class NVVenta
             cmd.Parameters.Add(cn.GetNewParameter("@p_DEVOLUCION_EFECTIVO", p_DEVOLUCION_EFECTIVO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DEVOLUCION_DESPACHO", p_DEVOLUCION_DESPACHO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_MOTIVO_CODE", p_MOTIVO_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DOCUMENTO", p_DOCUMENTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM_CLIENTE", p_PIDM_CLIENTE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_PAGO", p_ESTADO_PAGO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_DESPACHO", p_ESTADO_DESPACHO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MONE_CODE", p_MONE_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESPUESTA", String.Empty, ParameterDirection.Output, 253))
             cmd = cn.Ejecuta_parms(cmd)
             msg = cmd.Parameters("@p_RESPUESTA").Value

@@ -169,14 +169,14 @@ Partial Class vistas_CO_COLRVIE
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>SERIE CP MODIFICADO</th>")
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>NRO CP MODIFICADO</th>")
         resb.AppendFormat("<th rowspan='1' style='width:85px;'>ID PROYECTO OPERADORES ATRIBUCIÓN</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>TIPO DE NOTA</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>EST. COMP</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>VALOR FOB EMBARCADO</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>VALOR OP GRATUITAS</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>TIPO OPERACIÓN</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>DAM / CP</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>CLU</th>")
-        resb.AppendFormat("<th rowspan='1' style='width:85px;'>USO INTERNO SUNAT</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>TIPO DE NOTA</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>EST. COMP</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>VALOR FOB EMBARCADO</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>VALOR OP GRATUITAS</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>TIPO OPERACIÓN</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>DAM / CP</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>CLU</th>")
+        'resb.AppendFormat("<th rowspan='1' style='width:85px;'>USO INTERNO SUNAT</th>")
         resb.AppendFormat("</tr>")
 
         resb.AppendFormat("</thead>")
@@ -213,7 +213,11 @@ Partial Class vistas_CO_COLRVIE
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("SERIE").ToString()) '8   
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NUMERO").ToString()) '9
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_FINAL").ToString()) '10
-                resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_DCTO_CLIE").ToString()) '11
+                If dt.Rows(i)("TIPO_DCTO_CLIE").ToString() = 0 And dt.Rows(i)("NRO_DCTO_CLIE").ToString() = "99999999" And Decimal.Parse(dt.Rows(i)("IMPORTE").ToString()) < 700 Then
+                    resb.AppendFormat("<td align='center' >{0}</td>", "") '11
+                Else
+                    resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("TIPO_DCTO_CLIE").ToString()) '11
+                End If
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_DCTO_CLIE").ToString()) '12   
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("RAZON_SOCIAL").ToString()) '13
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("VALOR_EXPORTACION").ToString()) '14
@@ -237,14 +241,14 @@ Partial Class vistas_CO_COLRVIE
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("NRO_CP_MODIFICADO").ToString()) '32  
                 resb.AppendFormat("<td align='center' >{0}</td>", dt.Rows(i)("ID_PROYECTO_OPERADORES").ToString()) '33
 
-                resb.AppendFormat("<td align='center' >{0}</td>", "") '34
-                resb.AppendFormat("<td align='center' >{0}</td>", "1") '35
-                resb.AppendFormat("<td align='center' >{0}</td>", "0") '36   
-                resb.AppendFormat("<td align='center' >{0}</td>", "0") '37
-                resb.AppendFormat("<td align='center' >{0}</td>", "101") '38
-                resb.AppendFormat("<td align='center' >{0}</td>", "") '39   
-                resb.AppendFormat("<td align='center' >{0}</td>", "") '40  
-                resb.AppendFormat("<td align='center' >{0}</td>", "") '41  
+                'resb.AppendFormat("<td align='center' >{0}</td>", "") '34
+                'resb.AppendFormat("<td align='center' >{0}</td>", "1") '35
+                'resb.AppendFormat("<td align='center' >{0}</td>", "0") '36   
+                'resb.AppendFormat("<td align='center' >{0}</td>", "0") '37
+                'resb.AppendFormat("<td align='center' >{0}</td>", "101") '38
+                'resb.AppendFormat("<td align='center' >{0}</td>", "") '39   
+                'resb.AppendFormat("<td align='center' >{0}</td>", "") '40  
+                'resb.AppendFormat("<td align='center' >{0}</td>", "") '41  
                 resb.AppendFormat("</tr>")
             Next
         Else

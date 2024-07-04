@@ -10,7 +10,7 @@ var NVLREMO = function () {
 
     var plugins = function () {
         $('#cboEmpresa').select2();
-
+        //$('#cboCajero').select2();
         $('#txtDesde').datepicker();
         $('#txtHasta').datepicker();
 
@@ -81,6 +81,7 @@ var NVLREMO = function () {
             var valEmpresa = $(this).val();
             // CARGA DE ESTABLECIMIENTOS
             fillCboEstablecimiento(valEmpresa);
+            fillCboCajero(valEmpresa);
         });
 
         $("#txtHasta").datepicker({
@@ -117,15 +118,23 @@ var NVLREMO = function () {
         });
 
         $('#btnBuscar').on('click', function () {
-            Bloquear($("#contenedor"), "Generando Reporte Monetario ...")
-            CobroVentasCredito($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
-            VentasContado($("#cboEmpresa").val(), $("#cboEstablecimiento").val());            
-            ResumenDetallesMovimientosCaja($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
-            PagoGastosPorBanco($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
-            VentasArea($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
-            $("#chkDetGastos").is(':checked') ? ($("#divDetGastos").attr("style", "margin-left: 0; display:inline") && DetGastos($("#cboEmpresa").val(), $("#cboEstablecimiento").val())) : $("#divDetGastos").attr("style", "display:none");
-            VentasSubArea($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
-            Inconsistencias($("#cboEmpresa").val(), $("#cboEstablecimiento").val());
+            if ($('#cboEstablecimiento').val() != null) {
+                if ($('#cboCajero').val() != null) {
+                    Bloquear($("#contenedor"), "Generando Reporte Monetario ...")
+                    CobroVentasCredito($("#cboEmpresa").val(), $("#cboEstablecimiento").val(), ($("#cboCajero").val() == "TODOS") ? '' : $("#cboCajero").val());
+                    VentasContado($("#cboEmpresa").val(), $("#cboEstablecimiento").val(), ($("#cboCajero").val() == "TODOS") ? '' : $("#cboCajero").val());
+                    ResumenDetallesMovimientosCaja($("#cboEmpresa").val(), $("#cboEstablecimiento").val(), ($("#cboCajero").val() == "TODOS") ? '' : $("#cboCajero").val());
+                    PagoGastosPorBanco($("#cboEmpresa").val(), $("#cboEstablecimiento").val(), ($("#cboCajero").val() == "TODOS") ? '' : $("#cboCajero").val());
+                    VentasArea($("#cboEmpresa").val(), $("#cboEstablecimiento").val(), ($("#cboCajero").val() == "TODOS") ? '' : $("#cboCajero").val());
+                    $("#chkDetGastos").is(':checked') ? ($("#divDetGastos").attr("style", "margin-left: 0; display:inline") && DetGastos($("#cboEmpresa").val(), $("#cboEstablecimiento").val(), ($("#cboCajero").val() == "TODOS") ? '' : $("#cboCajero").val())) : $("#divDetGastos").attr("style", "display:none");
+                    VentasSubArea($("#cboEmpresa").val(), $("#cboEstablecimiento").val(), ($("#cboCajero").val() == "TODOS") ? '' : $("#cboCajero").val());
+                    Inconsistencias($("#cboEmpresa").val(), $("#cboEstablecimiento").val(), ($("#cboCajero").val() == "TODOS") ? '' : $("#cboCajero").val());
+                } else {
+                    alertCustom("Seleccione por lo menos un cajero!");
+                }
+            } else {
+                alertCustom("Seleccione por lo menos un establecimiento!");
+            }           
         });  
 
         $("#btnMail").on('click', function () {
@@ -240,7 +249,7 @@ var NVLREMO = function () {
                 //    createdCell: function (td, cellData, rowData, row, col) {
                 //        $(td).attr('align', 'center')
                 //    }
-                //},
+                //},                
                 {
                     data: "SALDO_MONTO_SOLES_EFECTIVO",
                     createdCell: function (td, cellData, rowData, row, col) {
@@ -249,6 +258,18 @@ var NVLREMO = function () {
                             $(td).html("0.00");
                         } else {
                             var f = formatoMiles(rowData.SALDO_MONTO_SOLES_EFECTIVO);
+                            $(td).html(f);
+                        }
+                    }
+                },
+                {
+                    data: "SALDO_INICIAL",
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr('align', 'right')
+                        if (rowData.SALDO_INICIAL == "") {
+                            $(td).html("0.00");
+                        } else {
+                            var f = formatoMiles(rowData.SALDO_INICIAL);
                             $(td).html(f);
                         }
                     }
@@ -314,77 +335,125 @@ var NVLREMO = function () {
                     }
                 },
                 {
-                    data: "SALDO_MONTO_DOLARES_EFECTIVO",
+                    data: "DIF_DESDE_CUENTA_MONTO_SOLES",
                     createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr('align', 'right')
-                        if (rowData.SALDO_MONTO_DOLARES_EFECTIVO == "") {
+                        if (rowData.DIF_DESDE_CUENTA_MONTO_SOLES == "") {
                             $(td).html("0.00");
                         } else {
-                            var f = formatoMiles(rowData.SALDO_MONTO_DOLARES_EFECTIVO);
+                            var f = formatoMiles(rowData.DIF_DESDE_CUENTA_MONTO_SOLES);
                             $(td).html(f);
                         }
                     }
                 },
                 {
-                    data: "ING_MONTO_DOLARES_EFECTIVO",
+                    data: "DIF_DESDE_CAJA_MONTO_SOLES",
                     createdCell: function (td, cellData, rowData, row, col) {
                         $(td).attr('align', 'right')
-                        if (rowData.ING_MONTO_DOLARES_EFECTIVO == "") {
+                        if (rowData.DIF_DESDE_CAJA_MONTO_SOLES == "") {
                             $(td).html("0.00");
                         } else {
-                            var f = formatoMiles(rowData.ING_MONTO_DOLARES_EFECTIVO);
-                            $(td).html(f);
-                        }
-                    }
-                },
-                {
-                    data: "ING_MONTO_DOLARES_TARJETA",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('align', 'right')
-                        if (rowData.ING_MONTO_DOLARES_TARJETA == "") {
-                            $(td).html("0.00");
-                        } else {
-                            var f = formatoMiles(rowData.ING_MONTO_DOLARES_TARJETA);
-                            $(td).html(f);
-                        }
-                    }
-                },
-                {
-                    data: "EGR_MONTO_DOLARES_EFECTIVO",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('align', 'right')
-                        if (rowData.EGR_MONTO_DOLARES_EFECTIVO == "") {
-                            $(td).html("0.00");
-                        } else {
-                            var f = formatoMiles(rowData.EGR_MONTO_DOLARES_EFECTIVO);
-                            $(td).html(f);
-                        }
-                    }
-                },
-                {
-                    data: "DIF_CUENTA_MONTO_DOLARES",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('align', 'right')
-                        if (rowData.DIF_CUENTA_MONTO_DOLARES == "") {
-                            $(td).html("0.00");
-                        } else {
-                            var f = formatoMiles(rowData.DIF_CUENTA_MONTO_DOLARES);
-                            $(td).html(f);
-                        }
-                    }
-                },
-                {
-                    data: "DIF_CAJA_MONTO_DOLARES",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('align', 'right')
-                        if (rowData.DIF_CAJA_MONTO_DOLARES == "") {
-                            $(td).html("0.00");
-                        } else {
-                            var f = formatoMiles(rowData.DIF_CAJA_MONTO_DOLARES);
+                            var f = formatoMiles(rowData.DIF_DESDE_CAJA_MONTO_SOLES);
                             $(td).html(f);
                         }
                     }
                 }
+                //{
+                //    data: "SALDO_MONTO_DOLARES_EFECTIVO",
+                //    createdCell: function (td, cellData, rowData, row, col) {
+                //        $(td).attr('align', 'right')
+                //        if (rowData.SALDO_MONTO_DOLARES_EFECTIVO == "") {
+                //            $(td).html("0.00");
+                //        } else {
+                //            var f = formatoMiles(rowData.SALDO_MONTO_DOLARES_EFECTIVO);
+                //            $(td).html(f);
+                //        }
+                //    }
+                //},
+                //{
+                //    data: "ING_MONTO_DOLARES_EFECTIVO",
+                //    createdCell: function (td, cellData, rowData, row, col) {
+                //        $(td).attr('align', 'right')
+                //        if (rowData.ING_MONTO_DOLARES_EFECTIVO == "") {
+                //            $(td).html("0.00");
+                //        } else {
+                //            var f = formatoMiles(rowData.ING_MONTO_DOLARES_EFECTIVO);
+                //            $(td).html(f);
+                //        }
+                //    }
+                //},
+                //{
+                //    data: "ING_MONTO_DOLARES_TARJETA",
+                //    createdCell: function (td, cellData, rowData, row, col) {
+                //        $(td).attr('align', 'right')
+                //        if (rowData.ING_MONTO_DOLARES_TARJETA == "") {
+                //            $(td).html("0.00");
+                //        } else {
+                //            var f = formatoMiles(rowData.ING_MONTO_DOLARES_TARJETA);
+                //            $(td).html(f);
+                //        }
+                //    }
+                //},
+                //{
+                //    data: "EGR_MONTO_DOLARES_EFECTIVO",
+                //    createdCell: function (td, cellData, rowData, row, col) {
+                //        $(td).attr('align', 'right')
+                //        if (rowData.EGR_MONTO_DOLARES_EFECTIVO == "") {
+                //            $(td).html("0.00");
+                //        } else {
+                //            var f = formatoMiles(rowData.EGR_MONTO_DOLARES_EFECTIVO);
+                //            $(td).html(f);
+                //        }
+                //    }
+                //},
+                //{
+                //    data: "DIF_CUENTA_MONTO_DOLARES",
+                //    createdCell: function (td, cellData, rowData, row, col) {
+                //        $(td).attr('align', 'right')
+                //        if (rowData.DIF_CUENTA_MONTO_DOLARES == "") {
+                //            $(td).html("0.00");
+                //        } else {
+                //            var f = formatoMiles(rowData.DIF_CUENTA_MONTO_DOLARES);
+                //            $(td).html(f);
+                //        }
+                //    }
+                //},
+                //{
+                //    data: "DIF_CAJA_MONTO_DOLARES",
+                //    createdCell: function (td, cellData, rowData, row, col) {
+                //        $(td).attr('align', 'right')
+                //        if (rowData.DIF_CAJA_MONTO_DOLARES == "") {
+                //            $(td).html("0.00");
+                //        } else {
+                //            var f = formatoMiles(rowData.DIF_CAJA_MONTO_DOLARES);
+                //            $(td).html(f);
+                //        }
+                //    }
+                //},
+                //{
+                //    data: "DIF_DESDE_CUENTA_MONTO_DOLARES",
+                //    createdCell: function (td, cellData, rowData, row, col) {
+                //        $(td).attr('align', 'right')
+                //        if (rowData.DIF_DESDE_CUENTA_MONTO_DOLARES == "") {
+                //            $(td).html("0.00");
+                //        } else {
+                //            var f = formatoMiles(rowData.DIF_DESDE_CUENTA_MONTO_DOLARES);
+                //            $(td).html(f);
+                //        }
+                //    }
+                //},
+                //{
+                //    data: "DIF_DESDE_CAJA_MONTO_DOLARES",
+                //    createdCell: function (td, cellData, rowData, row, col) {
+                //        $(td).attr('align', 'right')
+                //        if (rowData.DIF_DESDE_CAJA_MONTO_DOLARES == "") {
+                //            $(td).html("0.00");
+                //        } else {
+                //            var f = formatoMiles(rowData.DIF_DESDE_CAJA_MONTO_DOLARES);
+                //            $(td).html(f);
+                //        }
+                //    }
+                //}
             ]
         }
 
@@ -393,13 +462,14 @@ var NVLREMO = function () {
         oTable.fnSetColumnVis(0, false, true);
     }
     
-    var ResumenDetallesMovimientosCaja = function (empresa, establecimiento) {
+    var ResumenDetallesMovimientosCaja = function (empresa, establecimiento, cajero) {
         var data = new FormData();
         data.append('OPCION', '3');
         data.append('p_CTLG_CODE', empresa);
         data.append('p_SCSL_CODE', establecimiento);
         data.append('p_DESDE', $("#txtDesde").val());
         data.append('p_HASTA', $("#txtHasta").val());
+        data.append('p_CAJERO', cajero);
 
         Bloquear('detalles');
         var jqxhr = $.ajax({
@@ -442,13 +512,119 @@ var NuevaVenta = function () {
     window.location.href = '?f=NVLREMO';
 }
 
-function VentasContado(empresa, establecimiento) {
+function fillCboCajero(ctlg, scsl, estado, bAsync) {
+    var select = $('#cboCajero');
+    select.multiselect('destroy');
+    select.multiselect();
+
+    ctlg = $("#cboEmpresa").val()
+    scsl = $("#cboEstablecimiento").val()
+    estado = "A";
+    bAsync = true;
+    if (bAsync == undefined) {
+        bAsync = true;
+    }
+    $.ajax({
+        type: "post",
+        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LCAJ-N" +
+            "&CTLG=" + ctlg +
+            "&SCSL=" + scsl +
+            "&p_ESTADO_IND=" + estado,
+        contenttype: "application/json;",
+        datatype: "json",
+        async: bAsync,
+        success: function (datos) {
+            select.empty();
+            select.append('<option Value="TODOS">TODOS</option>');
+            if (datos != null) {                
+                var options = "";
+                for (var i = 0; i < datos.length; i++) {
+                    options += '<option value="' + datos[i].PIDM + '" usuario="' + datos[i].USUARIO + '" >' + datos[i].NOMBRE_EMPLEADO + '</option>';
+                }
+                options += '</optgroup>';
+            }
+
+            select.append(options);
+            select.val("TODOS");
+
+            select.multiselect('destroy');
+            select.multiselect();
+
+            if (ObtenerQueryString("pidmV") != undefined) {
+                if (ObtenerQueryString("pidmV") != "TODOS") {
+                    select.val(ObtenerQueryString("pidmV"));
+                    select.multiselect('refresh');
+                }
+            }
+        },
+        error: function (msg) {
+            alertCustom("Vendedores no se listaron correctamente.");
+        }
+    });
+}
+
+//function fillCboCajero(ctlg, scsl, estado, bAsync) {
+//    ctlg = $("#cboEmpresa").val()
+//    scsl = $("#cboEstablecimiento").val()
+//    estado = "A";
+//    bAsync = true;
+//    if (bAsync == undefined) {
+//        bAsync = true;
+//    }
+//    $.ajax({
+//        type: "post",
+//        url: "vistas/nv/ajax/nvmdocv.ashx?OPCION=LCAJ-N" +
+//            "&CTLG=" + ctlg +
+//            "&SCSL=" + scsl +
+//            "&p_ESTADO_IND=" + estado,
+//        contenttype: "application/json;",
+//        datatype: "json",
+//        async: bAsync,
+//        success: function (datos) {
+//            $('#cboCajero').empty();
+//            $('#cboCajero').append('<option></option>');
+//            $('#cboCajero').append('<option Value="TODOS">TODOS</option>');
+//            if (datos != null) {
+//                var f = true;
+//                var f2 = true;
+//                var options = "";
+//                for (var i = 0; i < datos.length; i++) {
+//                    if (datos[i].ESTADO == 'A' && f) {
+//                        options += '<optgroup label="ACTIVOS">';
+//                        f &= 0;
+//                    }
+//                    if (datos[i].ESTADO == 'I' && f2) {
+//                        if (f) options += '</optgroup>';
+//                        options += '<optgroup label="INACTIVOS">';
+//                        f2 &= 0;
+//                    }
+//                    options += '<option value="' + datos[i].PIDM + '" usuario="' + datos[i].USUARIO + '" >' + datos[i].NOMBRE_EMPLEADO + '</option>';
+//                }
+//                options += '</optgroup>';
+//            }
+
+//            $('#cboCajero').append(options);
+//            $('#cboCajero').select2("val", "TODOS");
+
+//            if (ObtenerQueryString("pidmV") != undefined) {
+//                if (ObtenerQueryString("pidmV") != "TODOS") {
+//                    $('#cboCajero').select2("val", ObtenerQueryString("pidmV"));
+//                }
+//            }
+//        },
+//        error: function (msg) {
+//            alertCustom("Vendedores no se listaron correctamente.");
+//        }
+//    });
+//}
+function VentasContado(empresa, establecimiento, cajero) {
     var data = new FormData();
     data.append('OPCION', '1');
     data.append('p_CTLG_CODE', empresa);
     data.append('p_SCSL_CODE', establecimiento);
     data.append('p_DESDE', $("#txtDesde").val());
     data.append('p_HASTA', $("#txtHasta").val());
+    data.append('p_CAJERO', cajero);
 
     Bloquear('divTotales');
     var jqxhr = $.ajax({
@@ -479,13 +655,14 @@ function VentasContado(empresa, establecimiento) {
     });
 }
 
-function CobroVentasCredito(empresa, establecimiento) {
+function CobroVentasCredito(empresa, establecimiento, cajero) {
     var data = new FormData();
     data.append('OPCION', '2');
     data.append('p_CTLG_CODE', empresa);
     data.append('p_SCSL_CODE', establecimiento);
     data.append('p_DESDE', $("#txtDesde").val());
     data.append('p_HASTA', $("#txtHasta").val());
+    data.append('p_CAJERO', cajero);
 
     //Bloquear('divTotalesCobroVentasCredito');
     var jqxhr = $.ajax({
@@ -513,13 +690,14 @@ function CobroVentasCredito(empresa, establecimiento) {
     });
 }
 
-function PagoGastosPorBanco(empresa, establecimiento) {
+function PagoGastosPorBanco(empresa, establecimiento, cajero) {
     var data = new FormData();
     data.append('OPCION', '4');
     data.append('p_CTLG_CODE', empresa);
     data.append('p_SCSL_CODE', establecimiento);
     data.append('p_DESDE', $("#txtDesde").val());
     data.append('p_HASTA', $("#txtHasta").val());
+    data.append('p_CAJERO', cajero);
 
     Bloquear('divPagoGastosPorBanco');
     var jqxhr = $.ajax({
@@ -545,13 +723,14 @@ function PagoGastosPorBanco(empresa, establecimiento) {
     });
 }
 
-function DetGastos(empresa, establecimiento) {
+function DetGastos(empresa, establecimiento, cajero) {
     var data = new FormData();
     data.append('OPCION', '4.5');
     data.append('p_CTLG_CODE', empresa);
     data.append('p_SCSL_CODE', establecimiento);
     data.append('p_DESDE', $("#txtDesde").val());
     data.append('p_HASTA', $("#txtHasta").val());
+    data.append('p_CAJERO', cajero);
 
     Bloquear('divDetGastos');
     var jqxhr = $.ajax({
@@ -577,13 +756,14 @@ function DetGastos(empresa, establecimiento) {
     });
 }
 
-function VentasArea(empresa, establecimiento) {
+function VentasArea(empresa, establecimiento, cajero) {
     var data = new FormData();
     data.append('OPCION', '5');
     data.append('p_CTLG_CODE', empresa);
     data.append('p_SCSL_CODE', establecimiento);
     data.append('p_DESDE', $("#txtDesde").val());
     data.append('p_HASTA', $("#txtHasta").val());
+    data.append('p_CAJERO', cajero);
 
     Bloquear('divVentasArea');
     var jqxhr = $.ajax({
@@ -609,13 +789,14 @@ function VentasArea(empresa, establecimiento) {
     });
 }
 
-function VentasSubArea(empresa, establecimiento) {
+function VentasSubArea(empresa, establecimiento, cajero) {
     var data = new FormData();
     data.append('OPCION', '6');
     data.append('p_CTLG_CODE', empresa);
     data.append('p_SCSL_CODE', establecimiento);
     data.append('p_DESDE', $("#txtDesde").val());
     data.append('p_HASTA', $("#txtHasta").val());
+    data.append('p_CAJERO', cajero);
 
     Bloquear('divVentasSubArea');
     var jqxhr = $.ajax({
@@ -641,13 +822,14 @@ function VentasSubArea(empresa, establecimiento) {
     });
 }
 
-function Inconsistencias(empresa, establecimiento) {
+function Inconsistencias(empresa, establecimiento, cajero) {
     var data = new FormData();
     data.append('OPCION', '7');
     data.append('p_CTLG_CODE', empresa);
     data.append('p_SCSL_CODE', establecimiento);
     data.append('p_DESDE', $("#txtDesde").val());
     data.append('p_HASTA', $("#txtHasta").val());
+    data.append('p_CAJERO', cajero);
 
     Bloquear('divInconsistencias');
     var jqxhr = $.ajax({

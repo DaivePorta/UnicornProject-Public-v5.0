@@ -63,7 +63,7 @@
     var fillCboEmpleado = function () {
         $.ajax({
             type: "post",
-            url: "vistas/np/ajax/NPMEMCO.ashx?OPCION=LEMP&PIDM=0&CTLG_CODE=" + $('#cboEmpresa').val() + "&SCSL_CODE=" + $('#cboSucursal').val() + "&ESTADO_IND=",
+            url: "vistas/np/ajax/NPMEMCO.ashx?OPCION=LEMPCONTR&PIDM=0&CTLG_CODE=" + $('#cboEmpresa').val() + "&SCSL_CODE=" + $('#cboSucursal').val() + "&ESTADO_IND=",
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -164,6 +164,7 @@ var NPMEMCO = function () {
         $('#cboEstado').select2();
         $('#txtFechaIniCont').datepicker();
         $('#txtFechaFinCont').datepicker();
+        $('#txtFechaAdenda').datepicker();
         $('#txtFechaCese').datepicker();
         $('#cboRegLab').select2();
         $('#cboEmpresaAlerta').select2();
@@ -358,7 +359,7 @@ var NPMEMCO = function () {
     var fillCboEmpleado = function (ESTADO) {        
         $.ajax({
             type: "post",
-            url: "vistas/nc/estereotipos/ajax/Empleado.ashx?OPCION=LEMP&PIDM=0&ESTADO_IND=" + ESTADO + "&CTLG_CODE=" + $("#cbo_Empresa").val(),
+            url: "vistas/nc/estereotipos/ajax/Empleado.ashx?OPCION=LEMPCONTR&PIDM=0&ESTADO_IND=" + ESTADO + "&CTLG_CODE=" + $("#cbo_Empresa").val() + "&FILTRO=2",
             contenttype: "application/json;",
             datatype: "json",
             async: false,
@@ -430,9 +431,8 @@ var NPMEMCO = function () {
         });
     }
 
-
+    var datosAdenda = [];
     function CargaContrato(v_PPBIDEN_PIDM, v_PPBIDEM_CTLG) {       
-
  
         $.ajax({
             type: "post",
@@ -442,13 +442,13 @@ var NPMEMCO = function () {
             async: false,
             success: function (datos) {
 
-                var selectTipoContrato = $('#cboTipoContrato');
-                var selectModFormativa = $('#cboModFormativa');
-                var selectTipoTrabajador = $('#cboTipoTrabajador');
-                var selectCargo = $('#cboCargo');
-                var selectMotivoCese = $('#cboMotivoCese');
-                var selectRegLab = $('#cboRegLab');
-
+                //var selectTipoContrato = $('#cboTipoContrato');
+                //var selectModFormativa = $('#cboModFormativa');
+                //var selectTipoTrabajador = $('#cboTipoTrabajador');
+                //var selectCargo = $('#cboCargo');
+                //var selectMotivoCese = $('#cboMotivoCese');
+                //var selectRegLab = $('#cboRegLab');
+                
                 if (!$('#chkReingreso').is(':checked')) {
                     if (datos != null) {
                         $('#hfRenovacion').val('');
@@ -464,85 +464,41 @@ var NPMEMCO = function () {
                             $('#divFirmar').show();
                             $('#txtFechaFinCont').removeAttr('disabled');
                         }                        
-                        
-                        $('#txtNroContrato').val(datos[0].NRO);
-                        $('#hfNumeroCont').val(datos[0].NRO)
-                        $('#txtFechaIniCont').datepicker('setDate', datos[0].FECHA_INI);
-                        $('#txtFechaFinCont').datepicker('setDate', datos[0].FECHA_FIN);
 
-                        $('#cboEmpresa').val(datos[0].CTLG_CODE).change();
-                        $('#cboSucursal').val(datos[0].SCSL_CODE).change();
+                        cargarCampos(datos, 0);
 
+                        //Es necesario no restringir el array de datos segun su secuencia para que pueda cargar secuencias antiguas desde el listado
+                        datosAdenda = datos.filter(item => item.SECUENCIA === datos[0].SECUENCIA);
+                        //Se crea un array aparte solo para adendas
 
-                        $('#cboTipoContrato').select2('val', datos[0].TICO_CODE).change();
-                        if (datos[0].ESTADO_IND == 'A') {
-                            $('#txtFechaFinCont').removeAttr('disabled')
-                        }
-                        else { $('#txtFechaFinCont').attr('disabled', 'disabled') }
-
-
-                        selectTipoTrabajador.select2('val', datos[0].TITR_CODE).change();
-                        selectCargo.select2('val', datos[0].CARG_CODE).change();
-
-
-
-                        $('#cboRegLab option').filter(function (i,obj) {
-                            if (obj.value == datos[0].REGLAB_CODE ) {
-                                $(obj).remove();
-                            }
-                        });
-                        selectRegLab.append('<option value="' + datos[0].REGLAB_CODE + '">' + datos[0].REGLAB_DESC + '</option>');
-
-                        selectRegLab.select2('val', datos[0].REGLAB_CODE).change()
-
-                        if (datos[0].TMOF_CODE != '') {
-                            $('#chkModFormativa').attr('checked', true).parent().addClass("checked").change();
-                            $('#chkModFormativa').change();
-                            selectModFormativa.select2('val', datos[0].TMOF_CODE).change();
-                            if (datos[0].ESTADO_IND == 'A') {
-                                selectModFormativa.removeAttr('disabled')
-                            }
-                            else { selectModFormativa.attr('disabled', 'disabled') }
-
-
-                        }
-                        else {
-                            $('#chkModFormativa').attr('checked', false).parent().removeClass("checked").change();
+                        //Los botones de anterior y siguiente solo serán habilitados si se detecta adendas
+                        if (datos[0].ADENDA != 0) {
+                            $('#divAdendaAnteriorSiguiente').show();
+                        } else {
+                            $('#divAdendaAnteriorSiguiente').hide();
                         }
 
-
-
-
-                        if (datos[0].MOTIVO_CESE_CODE != '') {
-                            $('#chkCese').attr('checked', true).parent().addClass("checked")
-                            selectMotivoCese.select2('val', datos[0].MOTIVO_CESE_CODE).change()
-                            $('#txtFechaCese').datepicker('setDate', datos[0].FECHA_CESE)
-                        }
-                        else {
-                            $('#chkCese').attr('checked', false).parent().removeClass("checked")
-                        }
-
-                        $('#divBtnCese').hide();
-                        $('#txtRemBasica').val(datos[0].REM_BASICA)
-                        $('#txtMovilidad').val(datos[0].MOVILIDAD)
-                        $('#txtViaticos').val(datos[0].VIATICOS)
-                        $('#txtRefrigerio').val(datos[0].REFRIGERIO)
-                        $('#txtBonoProductividad').val(datos[0].BONO_PRODUCTIVIDAD)
-                        $('#txtBonificRiesgoCaja').val(datos[0].BONIFICACION_RIESGO_CAJA)
-                        $('#lblRemTotal').text(datos[0].REM_TOTAL)
-                        $('#hfESTADO_CONT').val(datos[0].ESTADO_IND);
-                        $('#cboEstado').select2('val', datos[0].ESTADO_IND).change();
+                        $('#divAdenda').hide(); //Siempre debe estar oculto a no ser que el usario haga click en Adendar
 
                         if (datos[0].ESTADO_IND == 'F') {
                             DesbloquearSinGif('#divChkCese');
                             $('#btnRenovar').removeAttr('disabled');
                             $('#divRenovar').show();
+                            $('#btnAdendar').removeAttr('disabled');
+                            $('#btnAdendar').show();
                             $('#divGrabar').hide();
                         }
                         else {
                             BloquearSinGif('#divChkCese');
                             $('#btnRenovar').attr('disabled', 'disabled');
                             $('#divRenovar').hide();
+                            if (datos[0].ESTADO_IND == 'I') {
+                                $('#btnAdendar').removeAttr('disabled');
+                                $('#btnAdendar').show();
+                            } else {
+                                $('#btnAdendar').hide();
+                                $('#btnAdendar').attr('disabled', 'disabled');
+                            }
                             $('#cboMotivoCese').attr('disabled', 'disabled');
                             $('#txtFechaCese').attr('disabled', 'disabled');
                         }
@@ -565,6 +521,7 @@ var NPMEMCO = function () {
                         $('#btnRenovar').attr('disabled', 'disabled');
                         $('#divRenovar').hide();
                         $('#divBtnCese').hide();
+                        $('#divAdenda').hide();
                         $('#grabarEmpleado').removeAttr('disabled');
                         $('#divGrabar').show();
                         BloquearSinGif('#divChkCese');
@@ -580,8 +537,6 @@ var NPMEMCO = function () {
                      
                         bloqueDatosPrinc('C');
                     }
-
-
                 }
                 else {
                     $('#hfRenovacion').val('');
@@ -589,6 +544,7 @@ var NPMEMCO = function () {
                     $('#btnRenovar').attr('disabled', 'disabled');
                     $('#divRenovar').hide();
                     $('#divBtnCese').hide();
+                    $('#divAdenda').hide();
                     $('#grabarEmpleado').removeAttr('disabled');
                     $('#divGrabar').show();
                     BloquearSinGif('#divChkCese');
@@ -607,6 +563,140 @@ var NPMEMCO = function () {
 
     }
 
+    function cargarCampos(datos, i) {
+        var selectTipoContrato = $('#cboTipoContrato');
+        var selectModFormativa = $('#cboModFormativa');
+        var selectTipoTrabajador = $('#cboTipoTrabajador');
+        var selectCargo = $('#cboCargo');
+        var selectMotivoCese = $('#cboMotivoCese');
+        var selectRegLab = $('#cboRegLab');
+
+        datos[i].ADENDA == 0 ? $('#txtNroContrato').val(datos[i].NRO) : $('#txtNroContrato').val(datos[i].NRO + '-' + datos[i].ADENDA);
+
+        if (datos[i].ADENDA != 0) {
+            $('#txtFechaAdenda').datepicker('setDate', datos[i].FECHA_ADENDA);
+            $('#divLblAdenda').show()
+            $('#txtFechaAdenda').show()
+        }
+
+        $('#hfNumeroCont').val(datos[i].NRO)
+        $('#txtFechaIniCont').datepicker('setDate', datos[i].FECHA_INI);
+        $('#txtFechaFinCont').datepicker('setDate', datos[i].FECHA_FIN);
+
+        $('#cboEmpresa').val(datos[i].CTLG_CODE).change();
+        $('#cboSucursal').val(datos[i].SCSL_CODE).change();
+
+        $('#cboTipoContrato').select2('val', datos[i].TICO_CODE).change();
+
+        if (datos[i].FECHA_FIN !== '00/00/0000') {
+            $('#txtFechaFinCont').datepicker('setDate', datos[i].FECHA_FIN);
+        }
+
+        if (datos[i].ESTADO_IND == 'A') {
+            $('#txtFechaFinCont').removeAttr('disabled')
+        }
+        else { $('#txtFechaFinCont').attr('disabled', 'disabled') }
+
+        selectTipoTrabajador.select2('val', datos[i].TITR_CODE).change();
+        selectCargo.select2('val', datos[i].CARG_CODE).change();
+
+        var regLabCode = datos[0].REGLAB_CODE; //necesario para que no haya cruces con el indice i
+        $('#cboRegLab option').filter(function (i, obj) {
+            if (obj.value == regLabCode) {
+                $(obj).remove();
+            }
+        });
+        selectRegLab.append('<option value="' + datos[i].REGLAB_CODE + '">' + datos[i].REGLAB_DESC + '</option>');
+
+        selectRegLab.select2('val', datos[i].REGLAB_CODE).change()
+
+        if (datos[i].TMOF_CODE != '') {
+            $('#chkModFormativa').attr('checked', true).parent().addClass("checked").change();
+            $('#chkModFormativa').change();
+            selectModFormativa.select2('val', datos[i].TMOF_CODE).change();
+            if (datos[i].ESTADO_IND == 'A') {
+                selectModFormativa.removeAttr('disabled')
+            }
+            else { selectModFormativa.attr('disabled', 'disabled') }
+
+        }
+        else {
+            $('#chkModFormativa').attr('checked', false).parent().removeClass("checked").change();
+        }
+
+        if (datos[i].MOTIVO_CESE_CODE != '') {
+            $('#chkCese').attr('checked', true).parent().addClass("checked")
+            selectMotivoCese.select2('val', datos[i].MOTIVO_CESE_CODE).change()
+            $('#txtFechaCese').datepicker('setDate', datos[i].FECHA_CESE)
+        }
+        else {
+            $('#chkCese').attr('checked', false).parent().removeClass("checked")
+        }
+
+        $('#divBtnCese').hide();
+        $('#txtRemBasica').val(datos[i].REM_BASICA)
+        $('#txtMovilidad').val(datos[i].MOVILIDAD)
+        $('#txtViaticos').val(datos[i].VIATICOS)
+        $('#txtRefrigerio').val(datos[i].REFRIGERIO)
+        $('#txtBonoProductividad').val(datos[i].BONO_PRODUCTIVIDAD)
+        $('#txtBonificRiesgoCaja').val(datos[i].BONIFICACION_RIESGO_CAJA)
+        $('#lblRemTotal').text(datos[i].REM_TOTAL)
+        $('#hfESTADO_CONT').val(datos[i].ESTADO_IND);
+        $('#cboEstado').select2('val', datos[i].ESTADO_IND).change();
+    }
+
+    var indice = 0; // indice para la navegacion de adendas
+    function cargarAdendas(i) {
+        if (i >= 0 && i < datosAdenda.length) {
+            if (i !== 0) { //Las adendas anteriores tendran que deshabilitar todos los botones
+                cargarCampos(datosAdenda, i);
+                DesabilitaControles();
+                BloquearSinGif('#divChkCese');
+                $('#btnRenovar').attr('disabled', 'disabled');
+                $('#divRenovar').hide();
+                $('#btnAdendar').hide();
+                $('#btnAdendar').attr('disabled', 'disabled');
+                $('#cboMotivoCese').attr('disabled', 'disabled');
+                $('#txtFechaCese').attr('disabled', 'disabled');
+                $('#grabarEmpleado').attr('disabled', 'disabled')
+                $('#divGrabar').hide();
+                bloqueDatosPrinc('A');
+            } else {
+                //Se carga contrato nuevamente en el último indice para que los botones correspondientes aparescan
+                CargaContrato($('#cboEmpleado').val(), $('#cbo_Empresa').val());
+            }
+        }
+
+        //Actualizar botones
+        if (indice >= datosAdenda.length - 1) {
+            $('#btnAdendaAnterior').attr('disabled', 'disabled');
+        } else {
+            $('#btnAdendaAnterior').removeAttr('disabled');
+        }
+        if (indice <= 0) {
+            $('#btnAdendaSiguiente').attr('disabled', 'disabled');
+        } else {
+            $('#btnAdendaSiguiente').removeAttr('disabled');
+        }
+    }
+
+    function adendaSiguiente() {
+        if (indice > 0) {
+            indice--;
+            cargarAdendas(indice);
+        } else {
+            console.log('No hay adenda siguiente.');
+        }
+    }
+
+    function adendaAnterior() {
+        if (indice < datosAdenda.length - 1) {
+            indice++;
+            cargarAdendas(indice);
+        } else {
+            console.log('No hay adenda anterior.');
+        }
+    }
 
     var bloqueDatosPrinc = function (accion) {
         $('#DatosEmp').slideDown();
@@ -637,8 +727,6 @@ var NPMEMCO = function () {
 
 
     var eventoControles = function () {
-
-
 
         $('#cboTipoContrato').on('change', function () {
             $('#txtCodigoTipoContrato').val($('#cboTipoContrato [value="' + this.value + '"]').attr('value_sunat'));
@@ -758,6 +846,58 @@ var NPMEMCO = function () {
 
         });
 
+        $("#btnAdendar").on("click", function () {
+            if ($('#btnAdendar').attr('disabled') != 'disabled') {
+                $('#divAdenda').show();
+                $('#divRenovar').hide();
+                $('#divGrabar').hide();
+                $('#divAdendaAnteriorSiguiente').hide();
+
+                //Se habilitan los campos que se pueden cambiar.
+                $('#txtFechaIniCont').removeAttr('disabled');
+                $('#txtRemBasica').removeAttr('disabled');
+                $('#txtMovilidad').removeAttr('disabled');
+                $('#txtViaticos').removeAttr('disabled');
+                $('#txtRefrigerio').removeAttr('disabled');
+                $('#txtBonoProductividad').removeAttr('disabled');
+                $('#txtBonificRiesgoCaja').removeAttr('disabled');
+                $('#cboSucursal').removeAttr('disabled');
+                $('#cboTipoTrabajador').removeAttr('disabled');
+                $('#cboCargo').removeAttr('disabled');
+                $('#chkModFormativa').attr('disabled', 'disabled');
+                BloquearSinGif('#divChkModForm');
+                $('#divChkCese').attr('disabled', 'disabled');
+                BloquearSinGif('#divChkCese');
+                $('#adendarContrato').removeAttr('disabled');
+
+                //Se añade un dia más a la fecha de inicio de la adenda anterior para que no se repitan
+                x = $("#txtFechaIniCont").datepicker("getDate");
+                var nextDay = new Date(x);
+                $("#txtFechaIniCont").datepicker("option", "minDate", nextDay).datepicker("refresh");
+
+                var ESTADO_IND = $('#cboEstado').val();
+                if (ESTADO_IND == 'I') { //Para adendas en contratos antiguos
+                    var fechaStr = $('#txtFechaFinCont').val();
+                    var partes = fechaStr.split('/');
+                    var fechaFinal = new Date(partes[2], partes[1] - 1, partes[0]); 
+
+                    var fechaInicioAdenda = new Date(fechaFinal.getFullYear(), fechaFinal.getMonth(), 1);
+                    $("#txtFechaIniCont").datepicker("setDate", fechaInicioAdenda).datepicker('update');
+                } else {
+                    //Se pone por defecto la fecha en la que se crea la adenda
+                    var fechahoy = new Date();
+                    $("#txtFechaIniCont").datepicker("setDate", fechahoy).datepicker('update');
+                }
+            }
+            $('#btnAdendar').attr('disabled', 'disabled');
+        });
+
+        $('#btnAdendaAnterior').click(function () {
+            adendaAnterior();
+        });
+        $('#btnAdendaSiguiente').click(function () {
+            adendaSiguiente();
+        });
 
         $("#btnCancelar").on("click", function () {
             if ($('#btnCancelar').attr('disabled') != 'disabled') {
@@ -769,9 +909,13 @@ var NPMEMCO = function () {
                 $('#btnActualizarEmpl').removeAttr('disabled', 'disabled');
                 DesbloquearSinGif('#divchkIngreso');
                 $('#btnCancelar').attr('disabled', 'disabled')
+                $('#divLblAdenda').hide()
+                $('#txtFechaAdenda').hide()
                 $('#hfBIO').val('')
                 $('#DatosEmp').slideUp();
                 LimpiaDatosEmp();
+                $("#divAdendar").hide();
+                $("#btnAdendar").hide();
                 if ($('#chkReingreso').is(':checked')) {
                     fillCboEmpleado("I");
                 }
@@ -788,6 +932,8 @@ var NPMEMCO = function () {
                 if ($('#cboEstado').val() == 'A') {
                     $("#mensaje").html("Una vez firmado el contrato no podrá modificarlo. Está seguro de firmar el contrato del empleado?");
                     $("#modal-confirmar").modal("show");
+                    $("#btnAdendar").show();
+                    $('#btnAdendar').removeAttr('disabled');
 
                 } else {
                     alertCustom("No se pude firmar contrato, estado incorrecto.");
@@ -864,6 +1010,12 @@ var NPMEMCO = function () {
                     $('#txtFechaCese').attr('disabled', 'disabled');
                     $("#grabarEmpleado").html("<i class='icon-ok'></i>&nbsp;Guardar");
                     $("#grabarEmpleado").attr("href", "javascript:CrearContrato();");
+
+                    $('#divRenovar').hide();
+                    $('#btnAdendar').hide();
+                    $('#divLblAdenda').hide()
+                    $('#txtFechaAdenda').hide()
+
                     $('#btnRenovar').attr('disabled', 'disabled')
                     $('#divRenovar').hide();
                     $('#divGrabar').show();
@@ -1012,6 +1164,7 @@ var NPMEMCO = function () {
         $('#cboCargo').select2('val', '');
         $('#cboRegLab').select2('val', '');
         $('#txtFechaCese').val('');
+        $('#txtFechaAdenda').val('');
 
 
     }
@@ -1026,7 +1179,7 @@ var NPMEMCO = function () {
 
         $('#DatosEmp').slideUp();        
         fillCboEmpresa();
-        //fillCboEmpleado("A");        
+        fillCboEmpleado("A");        
         ListarTipoCotrato();
         ListarEstadoContrato();
         ListarModFormativa();
@@ -1460,6 +1613,103 @@ function ActualizarContrato() {
 
 }
 
+function adendarContrato() {
+
+    if ($('#adendarContrato').attr('disabled') != 'disabled') {
+
+        var varContrato = true
+
+        varContrato = validarContrato();
+
+        if (varContrato) {
+
+            //Datos Basicos
+            var PIDM = $('#cboEmpleado').val();
+            var CTLG_CODE = $('#cboEmpresa').val();
+            var SCSL_CODE = $('#cboSucursal').val();
+            var CONT_FECHA_INI = $('#txtFechaIniCont').val();
+            var CONT_FECHA_FIN = $('#txtFechaFinCont').val();
+            var TITR_CODE = $('#cboTipoTrabajador').val();
+            var CARG_CODE = $('#cboCargo').val();
+
+            var codContrato = $('#txtNroContrato').val();
+            let partes = codContrato.split("-");
+            let NUMERO = partes[0];
+
+            var ESTADO_IND = $('#cboEstado').val();
+
+            var REM_BASICA = $('#txtRemBasica').val();
+            var MOVILIDAD = $('#txtMovilidad').val();
+            var VIATICOS = $('#txtViaticos').val();
+            var REFRIGERIO = $('#txtRefrigerio').val();
+            var BONO_PRODUCTIVIDAD = $('#txtBonoProductividad').val();
+            var BONIFICACION_RIESGO_CAJA = $('#txtBonificRiesgoCaja').val();
+            var REM_TOTAL = $('#lblRemTotal').text();
+
+            var USUA_ID = $.trim($('#ctl00_lblusuario').html());
+
+            var data = new FormData();
+            data.append('OPCION', "12");
+            data.append('PIDM', PIDM);
+            data.append('NUMERO', NUMERO);
+            data.append('ESTADO_IND', ESTADO_IND);
+            data.append('CTLG_CODE', CTLG_CODE);
+            data.append('SCSL_CODE', SCSL_CODE);
+            data.append('CONT_FECHA_INI', CONT_FECHA_INI);
+            data.append('CONT_FECHA_FIN', CONT_FECHA_FIN);
+            data.append('TITR_CODE', TITR_CODE);
+            data.append('CARG_CODE', CARG_CODE);
+            data.append('REM_BASICA', REM_BASICA);
+            data.append('MOVILIDAD', MOVILIDAD);
+            data.append('VIATICOS', VIATICOS);
+            data.append('REFRIGERIO', REFRIGERIO);
+            data.append('BONO_PRODUCTIVIDAD', BONO_PRODUCTIVIDAD);
+            data.append('BONIFICACION_RIESGO_CAJA', BONIFICACION_RIESGO_CAJA);
+            data.append('REM_TOTAL', REM_TOTAL);
+            data.append('USUA_ID', USUA_ID);
+
+            Bloquear("ventana");
+
+            $.ajax({
+                type: "POST",
+                url: "vistas/np/ajax/npmemco.ashx",
+                data: data,
+                contentType: false,
+                processData: false,
+                cache: false,
+                async: false,
+                success: function (datos) {
+                    Desbloquear("ventana");
+                    if (datos != null) {
+                        if (datos[0].SUCCESS == "OK") {
+                            if (datos[0].VALIDACION != "") {
+                                alertCustom(datos[0].VALIDACION);
+                            }
+                            else {
+                                exito();
+                                $("#divAdendar").hide();
+                                DesabilitaControles();
+                                $('#adendarContrato').attr('disabled', 'disabled');
+                                window.location.href = '?f=npmemco&pidm=' + PIDM + "&nro=" + NUMERO + "&ctlg_code=" + CTLG_CODE;
+                                //$("#btnCancelar").trigger("click");
+                                //$('#cboEmpleado').select2('val', PIDM).change();
+                                //$("#btnContrato").trigger("click");
+                            }
+                        }
+                    }
+                    else {
+                        noexito();
+                    }
+                },
+                error: function (msg) {
+                    Desbloquear("ventana");
+                    noexito();
+                }
+            });
+        }
+    }
+}
+
 function ActualizarFirmado() {
 
 
@@ -1627,49 +1877,53 @@ function HabilitaControles() {
 function validarContrato() {
 
     var v_continue = true;
+    var adenda = false;
+
+    if ($('#adendarContrato').attr('disabled') != 'disabled') {
+        adenda = true;
+    }
 
     if (!vErrors(['cboEmpresa', 'cboSucursal', 'txtFechaIniCont', 'cboEstado',
     'cboCargo', 'cboTipoContrato', 'cboTipoTrabajador', 'cboRegLab'])) {
         v_continue = false;
     }
+    else if (adenda == false) { // Filtros que no son factores para una adenda
+        if ($('#cboTipoContrato [value="' + $('#cboTipoContrato').val() + '"]').attr('value_sunat') != '01' && ($('#txtFechaFinCont').val().trim() == '')) {
+            vErrorsNotMessage(['txtFechaFinCont']);
+            v_continue = false;
+            alertCustom("Ingrese Fecha Fin de Contrato");
+        }
 
-    else if ($('#cboTipoContrato [value="' + $('#cboTipoContrato').val() + '"]').attr('value_sunat') != '01' && ($('#txtFechaFinCont').val().trim() == '')) {
+        else if ($('#cboEstado').val() == 'I' && !$('#chkCese').is(':checked')) {
+            vErrorsNotMessage(['cboEstado']);
+            v_continue = false;
+            alertCustom("Ingresar datos de Cese");
+        }
 
-        vErrorsNotMessage(['txtFechaFinCont']);
-        v_continue = false;
-        alertCustom("Ingrese Fecha Fin de Contrato");
+        else if ($('#cboEstado').val() == 'V') {
+            vErrorsNotMessage(['cboEstado']);
+            v_continue = false;
+            alertCustom("No puede actualizar un contrato a estado : VENCIDO");
+        }
+
+        else if ($('#chkCese').is(':checked') && (($('#txtFechaCese').val().trim() == '') || $('#cboMotivoCese').val() == '')) {
+            vErrorsNotMessage(['txtFechaCese', 'cboMotivoCese']);
+            v_continue = false;
+            alertCustom("Ingrese los datos obligatorios para el cese");
+        }
+
+        else if ($('#chkCese').is(':checked') && (DateDiff(new Date(ConvertirDate($('#txtFechaCese').val())), new Date(ConvertirDate($('#txtFechaIniCont').val()))) <= 0)) {
+            vErrorsNotMessage(['txtFechaCese', 'cboMotivoCese']);
+            v_continue = false;
+            alertCustom("La Fecha de Cese debe ser mayor a la Fecha de Inicio del Contrato");
+        }
+
+        else if ($('#chkCese').is(':checked') && (DateDiff(new Date(ConvertirDate($('#txtFechaFinCont').val())), new Date(ConvertirDate($('#txtFechaCese').val()))) < 0)) {
+            vErrorsNotMessage(['txtFechaCese', 'txtFechaFinCont']);
+            v_continue = false;
+            alertCustom("La Fecha de Cese debe ser menor o igual a la fecha de fin del contrato");
+        }
     }
-
-    else if ($('#cboEstado').val() == 'I' && !$('#chkCese').is(':checked')) {
-        vErrorsNotMessage(['cboEstado']);
-        v_continue = false;
-        alertCustom("Ingresar datos de Cese");
-    }
-
-    else if ($('#cboEstado').val() == 'V') {
-        vErrorsNotMessage(['cboEstado']);
-        v_continue = false;
-        alertCustom("No puede actualizar un contrato a estado : VENCIDO");
-    }
-
-    else if ($('#chkCese').is(':checked') && (($('#txtFechaCese').val().trim() == '') || $('#cboMotivoCese').val() == '')) {
-        vErrorsNotMessage(['txtFechaCese', 'cboMotivoCese']);
-        v_continue = false;
-        alertCustom("Ingrese los datos obligatorios para el cese");
-    }
-
-    else if ($('#chkCese').is(':checked') && (DateDiff(new Date(ConvertirDate($('#txtFechaCese').val())), new Date(ConvertirDate($('#txtFechaIniCont').val()))) <= 0)) {
-        vErrorsNotMessage(['txtFechaCese', 'cboMotivoCese']);
-        v_continue = false;
-        alertCustom("La Fecha de Cese debe ser mayor a la Fecha de Inicio del Contrato");
-    }
-
-    else if ($('#chkCese').is(':checked') && (DateDiff(new Date(ConvertirDate($('#txtFechaFinCont').val())), new Date(ConvertirDate($('#txtFechaCese').val()))) < 0)) {
-        vErrorsNotMessage(['txtFechaCese', 'txtFechaFinCont']);
-        v_continue = false;
-        alertCustom("La Fecha de Cese debe ser menor o igual a la fecha de fin del contrato");
-    }
-
     else if (DateDiff(new Date(ConvertirDate($('#txtFechaFinCont').val())), new Date(ConvertirDate($('#txtFechaIniCont').val()))) <= 0) {
         v_continue = false;
         alertCustom("La Fecha Fin del contrato debe ser mayor a la Fecha de Inicio");

@@ -255,19 +255,19 @@ Public Class CALNOCR : Implements IHttpHandler
                 For Each row In dtDetalles.Rows
                     'If Decimal.Parse(row("CANTIDAD_DEVL")) > 0 Then
                     tabla.Append("<tr>")
-                    If motivoSunat = "01" Or motivoSunat = "02" Then
+                    If motivoSunat = "01" Or motivoSunat = "02" Or motivoSunat = "06" Then
                         If dtCabecera.Rows(0)("ENTREGA_DESPACHO_ALMACEN") = "S" Then
-                            tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_ORIGEN"))
+                            tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_DOC_ORIGEN"))
                             tabla.AppendFormat("<td ><span style='word-break:break-all;'>{0}</span></td>", row("DESC_PRODUCTO_DCTO"))
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("PU"))
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("VALOR_VENTA"))
                         Else
-                            tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_DEVL"))
+                            tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_DOC_ORIGEN"))
                             tabla.AppendFormat("<td ><span style='word-break:break-all;'>{0}</span></td>", row("DESC_PRODUCTO_DCTO"))
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("PU"))
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("VALOR_VENTA"))
                         End If
-                    ElseIf motivoSunat = "06" Or motivoSunat = "07" Then
+                    ElseIf motivoSunat = "07" Then
                         If Decimal.Parse(row("CANTIDAD_DEVL")) > 0 Then
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_DEVL"))
                             tabla.AppendFormat("<td ><span style='word-break:break-all;'>{0}</span></td>", row("DESC_PRODUCTO_DCTO"))
@@ -275,7 +275,7 @@ Public Class CALNOCR : Implements IHttpHandler
                             tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("VALOR_VENTA"))
                         End If
                     Else
-                        tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_DEVL"))
+                        tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("CANTIDAD_DOC_ORIGEN"))
                         tabla.AppendFormat("<td ><span style='word-break:break-all;'>{0}</span></td>", row("DESC_PRODUCTO_DCTO"))
                         tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("PU"))
                         tabla.AppendFormat("<td style='text-align: right;'>{0}</td>", row("VALOR_VENTA"))

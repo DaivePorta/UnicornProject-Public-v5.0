@@ -14,7 +14,7 @@ Public Class NALMERC : Implements IHttpHandler
    TIPO_ALMACEN,
    TIPO_ALMACENAJE, ESTADO, USUARIO, SISTEMA_ALMACENAJE, PALETIZADO_IND, NRO_PALETS As String
 
-    Dim p_CTLG_CODE, p_ctlg As String
+    Dim p_CTLG_CODE, p_ctlg, p_estado As String
 
     Dim total As Decimal
     Dim dt As DataTable
@@ -66,6 +66,7 @@ Public Class NALMERC : Implements IHttpHandler
 
         codempr = context.Request("codempr")
         usua = context.Request("usua")
+        p_estado = context.Request("p_estado")
 
         Try
 
@@ -153,7 +154,7 @@ Public Class NALMERC : Implements IHttpHandler
                         res = "[]"
                     End If
                 Case "5.5" 'TABLA DE PRODUCTOS STOCK POR CANTIDAD 
-                    dtp = gPro.listar_stockProductosCantidad(p_ALMACEN, p_GRUP_CODE, p_mone_code, p_ctlg)
+                    dtp = gPro.listar_stockProductosCantidad(p_ALMACEN, p_GRUP_CODE, p_mone_code, p_estado, p_ctlg)
                     If Not dtp Is Nothing Then
                         res = Utilities.Datatable2Json(dtp)
                     Else

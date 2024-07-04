@@ -91,13 +91,33 @@
             Throw (ex)
         End Try
     End Function
+    Public Function ListarSucursalPiePaginaReciboIndicador(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_ESTADO_IND As String) As DataTable
+        Try
+            Dim dt As DataTable
+            Dim cmd As IDbCommand
+
+            cmd = cn.GetNewCommand("PFC_LISTAR_SUCURSAL_PIE_PAGINA_RECIBO", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_IND", p_ESTADO_IND, ParameterDirection.Input, 253))
+            dt = cn.Consulta(cmd)
+
+            If Not (dt Is Nothing) Then
+                Return dt
+            Else
+                Return Nothing
+            End If
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
     Public Function ActualizarSucursal(ByVal p_codiemp As String, ByVal p_codisuc As String, ByVal p_COD_EST_SUNAT As String,
                                        ByVal p_desc As String, ByVal p_propie As String,
                                        ByVal p_direc As String, ByVal p_tel As String,
                                        ByVal p_fini As String, ByVal p_ubigeo As String, ByVal p_Urban As String,
                                        ByVal p_fterm As String, ByVal p_estado As String,
                                        ByVal p_user As String, ByVal p_establecimiento As String,
-                                       ByVal p_pais As String, p_bio_ind As String, Optional ByVal p_exonerado As String = "") As String
+                                       ByVal p_pais As String, p_bio_ind As String, ByVal p_Pie_Pagina_Recibo As String, Optional ByVal p_exonerado As String = "") As String
         Try
             Dim msg As String
 
@@ -129,6 +149,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_MESG", String.Empty, ParameterDirection.Output, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_EXONERADO", p_exonerado, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_BIO_IND", p_bio_ind, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIE_PAGINA_RECIBO", p_Pie_Pagina_Recibo, ParameterDirection.Input, 253))
 
             cmd1 = cn.Ejecuta_parms(cmd)
 
@@ -148,7 +169,7 @@
                                        ByVal p_fini As String, ByVal p_ubigeo As String, ByVal p_Urban As String,
                                        ByVal p_fterm As String, ByVal p_estado As String,
                                        ByVal p_user As String, ByVal p_establecimiento As String,
-                                       ByVal p_pais As String, p_bio_ind As String, Optional ByVal p_exonerado As String = "") As Array
+                                       ByVal p_pais As String, p_bio_ind As String, ByVal p_Pie_Pagina_Recibo As String, Optional ByVal p_exonerado As String = "") As Array
 
         Try
             Dim msg(2) As String
@@ -180,6 +201,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_PAIS", p_pais, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_EXONERADO", p_exonerado, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_BIO_IND", p_bio_ind, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIE_PAGINA_RECIBO", p_Pie_Pagina_Recibo, ParameterDirection.Input, 253))
 
             cmd1 = cn.Ejecuta_parms(cmd)
 

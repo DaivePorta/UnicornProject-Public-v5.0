@@ -319,7 +319,8 @@
     End Function
 
     'Anular anticipo
-    Function fnAnularAnticipo(VTAC_CODE As String, ANULAC_ID As String, CMNT_ANULAC As String, p_DEVOLUCION_EFECTIVO As String, p_MOTIVO_CODE As String) As String
+    Function fnAnularAnticipo(VTAC_CODE As String, ANULAC_ID As String, CMNT_ANULAC As String, p_DEVOLUCION_EFECTIVO As String, p_MOTIVO_CODE As String, ByVal p_CTLG_CODE As String,
+                              ByVal p_SCSL_CODE As String, ByVal p_DOCUMENTO As String, ByVal p_PIDM_CLIENTE As String, ByVal p_ESTADO_PAGO As String, ByVal p_MONE_CODE As String) As String
         Try
             Dim cmd As IDbCommand
             cmd = cn.GetNewCommand("PFV_ANULAR_ANTICIPO_WEB", CommandType.StoredProcedure)
@@ -328,6 +329,12 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_CMNT_ANULAC", CMNT_ANULAC, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DEVOLUCION_EFECTIVO", p_DEVOLUCION_EFECTIVO, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_MOTIVO_CODE", p_MOTIVO_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CTLG_CODE", p_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_SCSL_CODE", p_SCSL_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_DOCUMENTO", p_DOCUMENTO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM_CLIENTE", p_PIDM_CLIENTE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_ESTADO_PAGO", p_ESTADO_PAGO, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_MONE_CODE", p_MONE_CODE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_RESPUESTA", String.Empty, ParameterDirection.Output, 253))
             cmd = cn.Ejecuta_parms(cmd)
 
@@ -340,7 +347,22 @@
             Throw ex
         End Try
     End Function
+    Public Function verificarOperacionUsada(p_NUM_OP As String) As String
+        Dim msg As String
+        Dim cmd As IDbCommand
+        Try
+            cmd = cn.GetNewCommand("SP_VALIDAR_MODIFICACION_OPERACION_USADA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@p_NUM_OP", p_NUM_OP, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RES", String.Empty, ParameterDirection.Output, 253))
 
+            cmd = cn.Ejecuta_parms(cmd)
+            msg = cmd.Parameters("@p_RES").Value
+
+        Catch ex As Exception
+            msg = ex.Message
+        End Try
+        Return msg
+    End Function
     Public Function fnGetAnticipo(p_CODE As String) As DataTable
         Try
             Dim cmd As IDbCommand

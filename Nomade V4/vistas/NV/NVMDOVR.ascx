@@ -243,7 +243,7 @@
                                             <div class="span4">
                                                 <div class="control-group span12">
                                                     <div class="controls" id="divTxtClientes">
-                                                        <input id="txtClientes" class="span12" type="text" placeholder="Cliente" style="text-transform: uppercase" />
+                                                        <input id="txtClientes" class="span12" type="text" placeholder="Cliente" disabled="disabled" style="text-transform: uppercase" />
                                                     </div>
                                                 </div>
 

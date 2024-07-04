@@ -11,7 +11,7 @@ Imports SelectPdf
 
 Public Class NVLREMO : Implements IHttpHandler
     Dim OPCION As String
-    Dim p_CTLG_CODE, p_SCSL_CODE, p_USUA_ID, p_CODE_MOVI, p_DESDE, p_HASTA, p_DET_GASTO As String
+    Dim p_CTLG_CODE, p_SCSL_CODE, p_USUA_ID, p_CODE_MOVI, p_DESDE, p_HASTA, p_DET_GASTO, p_CAJERO As String
 
 
     Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
@@ -42,6 +42,7 @@ Public Class NVLREMO : Implements IHttpHandler
         p_DET_GASTO = context.Request("p_DET_GASTO")
         p_USUA_ID = context.Request("p_USUA_ID")
         p_CODE_MOVI = context.Request("p_CODE_MOVI")
+        p_CAJERO = context.Request("p_CAJERO")
 
         REMITENTE = context.Request("REMITENTE")
         DESTINATARIOS = context.Request("DESTINATARIOS")
@@ -56,19 +57,19 @@ Public Class NVLREMO : Implements IHttpHandler
             Select Case OPCION
                 Case "1" 'Generar tabla contado (montos)
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = caMovimientos.ListarVentasContado(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    dt = caMovimientos.ListarVentasContado(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_CAJERO)
                     'If Not (dt Is Nothing) Then
                     res = GenerarTablaVentasContado(dt)
                     'End If
                 Case "2" 'Generar tabla crédito (montos)
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = caMovimientos.ListarCobroVentasCredito(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    dt = caMovimientos.ListarCobroVentasCredito(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_CAJERO)
                     'If Not (dt Is Nothing) Then
                     res = GenerarTablaCobroVentasCredito(dt)
                     'End If
                 Case "3" 'Listar detalles de movimientos caja (resúmen) JSON
                     context.Response.ContentType = "application/json; charset=utf-8"
-                    dt = caMovimientos.ResumenDetallesMovimientosCaja(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    dt = caMovimientos.ResumenDetallesMovimientosCaja(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_CAJERO)
                     If Not dt Is Nothing Then
                         res = Utilities.Datatable2Json(dt)
                     Else
@@ -76,42 +77,42 @@ Public Class NVLREMO : Implements IHttpHandler
                     End If
                 Case "4" 'Generar tabla pago gastos por banco (montos)
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = caMovimientos.ListarPagoGastosPorBanco(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    dt = caMovimientos.ListarPagoGastosPorBanco(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_CAJERO)
                     'If Not (dt Is Nothing) Then
                     res = GenerarTablaPagoGastosPorBanco(dt)
                     'End If
                 Case "4.5" 'Generar tabla pago gastos de caja (montos)
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    dt = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_CAJERO)
                     'If Not (dt Is Nothing) Then
                     res = GenerarTablaDetGastos(dt)
                     'End If
                 Case "5" 'Generar tabla ventas área (montos)
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    dt = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_CAJERO)
                     'If Not (dt Is Nothing) Then
                     res = GenerarTablaVentasArea(dt)
                     'End If
                 Case "6" 'Generar tabla ventas sub-área (montos)
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    dt = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_CAJERO)
                     'If Not (dt Is Nothing) Then
                     res = GenerarTablaVentasSubArea(dt)
                     'End If
                 Case "7" 'Generar tabla inconsistencias (montos)
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    dt = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA))
+                    dt = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_CAJERO)
                     If Not (dt Is Nothing) Then
                         res = GenerarTablaInconsistencias(dt)
                     End If
                 Case "IMPR" 'Generar tabla para impresion de detalle 
                     context.Response.ContentType = "application/text; charset=utf-8"
-                    res = GenerarReporteImprimir(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_HASTA, p_DET_GASTO)
+                    res = GenerarReporteImprimir(p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_HASTA, p_DET_GASTO, p_CAJERO)
                 Case "GENERAR_PDF" 'DPORTA
                     Dim msgError As String = "OK"
                     p_CODE_MOVI = "Reporte_Monetario_"
                     Try
-                        GenerarPDF(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DESDE, p_HASTA, p_DET_GASTO)
+                        GenerarPDF(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DESDE, p_HASTA, p_DET_GASTO, p_CAJERO)
                     Catch ex As Exception
                         msgError = "ERROR: " + ex.Message
                     End Try
@@ -124,7 +125,7 @@ Public Class NVLREMO : Implements IHttpHandler
 
                     Dim documento As String = ""
 
-                    documento = GenerarDctoCorreo(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DET_GASTO)
+                    documento = GenerarDctoCorreo(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DET_GASTO, p_CAJERO)
                     MENSAJE += documento
                     'email.enviar(REMITENTE, REMITENTE, DESTINATARIOS, ASUNTO, MENSAJE, datoAj) 'DPORTA PDF
                     email.enviar(REMITENTE, REMITENTE, DESTINATARIOS, ASUNTO, MENSAJE)
@@ -140,7 +141,7 @@ Public Class NVLREMO : Implements IHttpHandler
 
                     Dim documento As String = ""
 
-                    documento = GenerarDctoCorreo(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DET_GASTO)
+                    documento = GenerarDctoCorreo(p_CODE_MOVI, p_CTLG_CODE, p_SCSL_CODE, Utilities.fechaLocal(p_DESDE), Utilities.fechaLocal(p_HASTA), p_DET_GASTO, p_CAJERO)
                     GenerarPDF_Whatsapp(p_CODE_COMPLETO, documento)
                     whatsapp.enviarWhatsapp(RECIPIENT_PHONE_NUMBER, p_CODE_COMPLETO, MENSAJEWHATSAPP, Plantilla, datoAj)
 
@@ -152,25 +153,25 @@ Public Class NVLREMO : Implements IHttpHandler
 
     End Sub
 
-    Public Function GenerarPDF(ByVal CODIGO As String, ByVal CTLG As String, ByVal SCSL As String, ByVal DESDE As String, ByVal HASTA As String, ByVal p_DESDEH As String, ByVal p_HASTAH As String, ByVal p_DET_GASTO As String) As String
+    Public Function GenerarPDF(ByVal CODIGO As String, ByVal CTLG As String, ByVal SCSL As String, ByVal DESDE As String, ByVal HASTA As String, ByVal p_DESDEH As String, ByVal p_HASTAH As String, ByVal p_DET_GASTO As String, ByVal p_CAJERO As String) As String
         Dim ress As String = ""
         Dim htmlText As StringBuilder
         Dim cNomArch As String = CODIGO + Date.Now().ToString("ddMMyyyy") + ".pdf"
-        htmlText = GenerarReportePDF(CTLG, SCSL, DESDE, HASTA, p_DESDEH, p_HASTAH, p_DET_GASTO)
+        htmlText = GenerarReportePDF(CTLG, SCSL, DESDE, HASTA, p_DESDEH, p_HASTAH, p_DET_GASTO, p_CAJERO)
         HTMLToPDF(htmlText, cNomArch)
         Return ress
     End Function
 
-    Function getHtmlTextPDF(ByVal codigo As String, ByVal ctlg As String, ByVal scsl As String, ByVal desde As String, ByVal hasta As String, ByVal p_DET_GASTO As String) As String
+    Function getHtmlTextPDF(ByVal codigo As String, ByVal ctlg As String, ByVal scsl As String, ByVal desde As String, ByVal hasta As String, ByVal p_DET_GASTO As String, ByVal p_CAJERO As String) As String
         Dim htmlText As New StringBuilder
         htmlText.Length = 0
         Dim documento As String = ""
-        documento = GenerarDctoCorreo(codigo, ctlg, scsl, desde, hasta, p_DET_GASTO)
+        documento = GenerarDctoCorreo(codigo, ctlg, scsl, desde, hasta, p_DET_GASTO, p_CAJERO)
         htmlText.Append(documento)
         Return htmlText.ToString
     End Function
 
-    Public Function GenerarDctoCorreo(ByVal p_CODE_MOVI As String, ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_DET_GASTO As String) As String
+    Public Function GenerarDctoCorreo(ByVal p_CODE_MOVI As String, ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_DET_GASTO As String, ByVal p_CAJERO As String) As String
         Dim tabla As New StringBuilder
         Dim dtVentasContado As New DataTable
         Dim dtVentasCredito As New DataTable
@@ -182,15 +183,15 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim dtDetGastos As New DataTable
 
         Dim caMovimientos As New Nomade.CA.CAMovimientos("Bn")
-        dtVentasContado = caMovimientos.ListarVentasContado(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtVentasCredito = caMovimientos.ListarCobroVentasCredito(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtResumenCajas = caMovimientos.ResumenDetallesMovimientosCaja(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtPagoGastosBanco = caMovimientos.ListarPagoGastosPorBanco(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtVentasArea = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtVentasSubArea = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtInconsistencias = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
+        dtVentasContado = caMovimientos.ListarVentasContado(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtVentasCredito = caMovimientos.ListarCobroVentasCredito(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtResumenCajas = caMovimientos.ResumenDetallesMovimientosCaja(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtPagoGastosBanco = caMovimientos.ListarPagoGastosPorBanco(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtVentasArea = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtVentasSubArea = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtInconsistencias = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
         If p_DET_GASTO = "S" Then
-            dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
+            dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
         End If
         'tabla.Clear()
         'Dim dtMonedas As New DataTable
@@ -730,17 +731,22 @@ Public Class NVLREMO : Implements IHttpHandler
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>CAJA</th>")
             'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>ESTABLEC.</th>")
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>SALDO EFECTIVO ({0})</th>", simbMonedaBase)
+            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>SALDO ANTERIOR ({0})</th>", simbMonedaBase)
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>INGRESO EFECTIVO ({0})</th>", simbMonedaBase)
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>INGRESO TARJETA ({0})</th>", simbMonedaBase)
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>EGRESO EFECTIVO ({0})</th>", simbMonedaBase)
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>DIFERIDO A BANCO ({0})</th>", simbMonedaBase)
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>DIFERIDO A OTRA CAJA ({0})</th>", simbMonedaBase)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>SALDO EFECTIVO ({0})</th>", simbMonedaAlterna)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>INGRESO EFECTIVO ({0})</th>", simbMonedaAlterna)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>INGRESO TARJETA ({0})</th>", simbMonedaAlterna)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>EGRESO EFECTIVO ({0})</th>", simbMonedaAlterna)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>DIFERIDO A BANCO ({0})</th>", simbMonedaAlterna)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>DIFERIDO A OTRA CAJA ({0})</th>", simbMonedaAlterna)
+            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>DIFERIDO DESDE BANCO ({0})</th>", simbMonedaBase)
+            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>DIFERIDO DESDE OTRA CAJA ({0})</th>", simbMonedaBase)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>SALDO EFECTIVO ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>INGRESO EFECTIVO ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>INGRESO TARJETA ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>EGRESO EFECTIVO ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>DIFERIDO A BANCO ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>DIFERIDO A OTRA CAJA ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>DIFERIDO DESDE BANCO ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>DIFERIDO DESDE OTRA CAJA ({0})</th>", simbMonedaAlterna)
             tabla.AppendFormat("</tr>")
             tabla.AppendFormat("</thead>")
             tabla.AppendFormat("<tbody>")
@@ -749,17 +755,22 @@ Public Class NVLREMO : Implements IHttpHandler
                 tabla.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dtResumenCajas.Rows(i)("DES_CAJA").ToString())
                 'tabla.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dtResumenCajas.Rows(i)("DESC_ESTABLECIMIENTO").ToString())
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_MONTO_SOLES_EFECTIVO").ToString())))
+                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_INICIAL").ToString())))
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_SOLES_EFECTIVO").ToString())))
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_SOLES_TARJETA").ToString())))
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("EGR_MONTO_SOLES_EFECTIVO").ToString())))
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CUENTA_MONTO_SOLES").ToString())))
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CAJA_MONTO_SOLES").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_MONTO_DOLARES_EFECTIVO").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_EFECTIVO").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_TARJETA").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("EGR_MONTO_DOLARES_EFECTIVO").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CUENTA_MONTO_DOLARES").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CAJA_MONTO_DOLARES").ToString())))
+                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CUENTA_MONTO_SOLES").ToString())))
+                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CAJA_MONTO_SOLES").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_MONTO_DOLARES_EFECTIVO").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_EFECTIVO").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_TARJETA").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("EGR_MONTO_DOLARES_EFECTIVO").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CUENTA_MONTO_DOLARES").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CAJA_MONTO_DOLARES").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CUENTA_MONTO_DOLARES").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CAJA_MONTO_DOLARES").ToString())))
                 tabla.Append("</tr>")
             Next
             tabla.Append("</tbody>")
@@ -1527,7 +1538,7 @@ Public Class NVLREMO : Implements IHttpHandler
         End Get
     End Property
 
-    Public Function GenerarReporteImprimir(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_HASTAH As String, ByVal p_DET_GASTO As String) As String
+    Public Function GenerarReporteImprimir(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_HASTAH As String, ByVal p_DET_GASTO As String, ByVal p_CAJERO As String) As String
         Dim tabla As New StringBuilder
         Dim dtVentasContado As New DataTable
         Dim dtVentasCredito As New DataTable
@@ -1539,15 +1550,15 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim dtDetGastos As New DataTable
 
         Dim caMovimientos As New Nomade.CA.CAMovimientos("Bn")
-        dtVentasContado = caMovimientos.ListarVentasContado(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtVentasCredito = caMovimientos.ListarCobroVentasCredito(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtResumenCajas = caMovimientos.ResumenDetallesMovimientosCaja(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtPagoGastosBanco = caMovimientos.ListarPagoGastosPorBanco(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtVentasArea = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtVentasSubArea = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtInconsistencias = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
+        dtVentasContado = caMovimientos.ListarVentasContado(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtVentasCredito = caMovimientos.ListarCobroVentasCredito(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtResumenCajas = caMovimientos.ResumenDetallesMovimientosCaja(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtPagoGastosBanco = caMovimientos.ListarPagoGastosPorBanco(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtVentasArea = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtVentasSubArea = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtInconsistencias = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
         If p_DET_GASTO = "S" Then
-            dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
+            dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
         End If
         'Dim dtMonedas As New DataTable
         'dtMonedas = glLetras.ListarMoneda(p_CTLG_CODE)
@@ -2086,17 +2097,22 @@ Public Class NVLREMO : Implements IHttpHandler
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:150%;'>CAJA</th>")
             'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>ESTABLEC.</th>")
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>SALDO EFECTIVO ({0})</th>", simbMonedaBase)
+            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>SALDO ANTERIOR ({0})</th>", simbMonedaBase)
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>INGRESO EFECTIVO ({0})</th>", simbMonedaBase)
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>INGRESO TARJETA ({0})</th>", simbMonedaBase)
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>EGRESO EFECTIVO ({0})</th>", simbMonedaBase)
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>DIFERIDO A BANCO ({0})</th>", simbMonedaBase)
             tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>DIFERIDO A OTRA CAJA ({0})</th>", simbMonedaBase)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>SALDO EFECTIVO ({0})</th>", simbMonedaAlterna)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>INGRESO EFECTIVO ({0})</th>", simbMonedaAlterna)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>INGRESO TARJETA ({0})</th>", simbMonedaAlterna)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>EGRESO EFECTIVO ({0})</th>", simbMonedaAlterna)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>DIFERIDO A BANCO ({0})</th>", simbMonedaAlterna)
-            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>DIFERIDO A OTRA CAJA ({0})</th>", simbMonedaAlterna)
+            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>DIFERIDO DESDE BANCO ({0})</th>", simbMonedaBase)
+            tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>DIFERIDO DESDE OTRA CAJA ({0})</th>", simbMonedaBase)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>SALDO EFECTIVO ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>INGRESO EFECTIVO ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>INGRESO TARJETA ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>EGRESO EFECTIVO ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>DIFERIDO A BANCO ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>DIFERIDO A OTRA CAJA ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>DIFERIDO DESDE BANCO ({0})</th>", simbMonedaAlterna)
+            'tabla.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb; font-size:125%;'>DIFERIDO DESDE OTRA CAJA ({0})</th>", simbMonedaAlterna)
             tabla.AppendFormat("</tr>")
             tabla.AppendFormat("</thead>")
             tabla.AppendFormat("<tbody>")
@@ -2105,17 +2121,22 @@ Public Class NVLREMO : Implements IHttpHandler
                 tabla.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb; font-size:160%;'>{0}</td>", dtResumenCajas.Rows(i)("DES_CAJA").ToString())
                 'tabla.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb; font-size:160%;'>{0}</td>", dtResumenCajas.Rows(i)("DESC_ESTABLECIMIENTO").ToString())
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_MONTO_SOLES_EFECTIVO").ToString())))
+                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_INICIAL").ToString())))
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_SOLES_EFECTIVO").ToString())))
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_SOLES_TARJETA").ToString())))
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("EGR_MONTO_SOLES_EFECTIVO").ToString())))
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CUENTA_MONTO_SOLES").ToString())))
                 tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CAJA_MONTO_SOLES").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_MONTO_DOLARES_EFECTIVO").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_EFECTIVO").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_TARJETA").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("EGR_MONTO_DOLARES_EFECTIVO").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CUENTA_MONTO_DOLARES").ToString())))
-                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CAJA_MONTO_DOLARES").ToString())))
+                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CUENTA_MONTO_SOLES").ToString())))
+                tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CAJA_MONTO_SOLES").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_MONTO_DOLARES_EFECTIVO").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_EFECTIVO").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_TARJETA").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("EGR_MONTO_DOLARES_EFECTIVO").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CUENTA_MONTO_DOLARES").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CAJA_MONTO_DOLARES").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CUENTA_MONTO_DOLARES").ToString())))
+                'tabla.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb; font-size:180%;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CAJA_MONTO_DOLARES").ToString())))
                 tabla.Append("</tr>")
             Next
             tabla.Append("</tbody>")
@@ -2124,7 +2145,7 @@ Public Class NVLREMO : Implements IHttpHandler
         Return tabla.ToString()
     End Function
 
-    Public Function GenerarReportePDF(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_DESDEH As String, ByVal p_HASTAH As String, ByVal p_DET_GASTO As String) As StringBuilder
+    Public Function GenerarReportePDF(ByVal p_CTLG_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_DESDEH As String, ByVal p_HASTAH As String, ByVal p_DET_GASTO As String, ByVal p_CAJERO As String) As StringBuilder
         'Dim tabla As New StringBuilder
         res = ""
         resb.Clear()
@@ -2141,16 +2162,16 @@ Public Class NVLREMO : Implements IHttpHandler
         Dim caMovimientos As New Nomade.CA.CAMovimientos("Bn")
         Dim ncEmpresa As New Nomade.NC.NCEmpresa("Bn")
 
-        dtVentasContado = caMovimientos.ListarVentasContado(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtVentasCredito = caMovimientos.ListarCobroVentasCredito(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtResumenCajas = caMovimientos.ResumenDetallesMovimientosCaja(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtPagoGastosBanco = caMovimientos.ListarPagoGastosPorBanco(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtVentasArea = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtVentasSubArea = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
-        dtInconsistencias = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
+        dtVentasContado = caMovimientos.ListarVentasContado(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtVentasCredito = caMovimientos.ListarCobroVentasCredito(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtResumenCajas = caMovimientos.ResumenDetallesMovimientosCaja(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtPagoGastosBanco = caMovimientos.ListarPagoGastosPorBanco(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtVentasArea = caMovimientos.ListarVentasArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtVentasSubArea = caMovimientos.ListarVentasSubArea(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
+        dtInconsistencias = caMovimientos.ListarInconsistencias(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
         dtEmpresas = ncEmpresa.ListarEmpresa(p_CTLG_CODE, "A", "")
         If p_DET_GASTO = "S" Then
-            dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA)
+            dtDetGastos = caMovimientos.ListarDetGastos(p_CTLG_CODE, p_SCSL_CODE, p_DESDE, p_HASTA, p_CAJERO)
         End If
         'tabla.Clear()
         'Dim dtMonedas As New DataTable
@@ -2704,17 +2725,22 @@ Public Class NVLREMO : Implements IHttpHandler
             resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>CAJA</strong></th>")
             'resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>ESTABLEC.</th>")
             resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>SALDO EFECTIVO ({0})</th>", simbMonedaBase)
+            resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>SALDO ANTERIOR ({0})</strong></th>", simbMonedaBase)
             resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>INGRESO EFECTIVO ({0})</strong></th>", simbMonedaBase)
             resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>INGRESO TARJETA ({0})</strong></th>", simbMonedaBase)
             resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>EGRESO EFECTIVO ({0})</strong></th>", simbMonedaBase)
             resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>DIFERIDO A BANCO ({0})</strong></th>", simbMonedaBase)
             resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>DIFERIDO A OTRA CAJA ({0})</strong></th>", simbMonedaBase)
-            resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>SALDO EFECTIVO ({0})</th>", simbMonedaAlterna)
-            resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>INGRESO EFECTIVO ({0})</strong></th>", simbMonedaAlterna)
-            resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>INGRESO TARJETA ({0})</strong></th>", simbMonedaAlterna)
-            resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>EGRESO EFECTIVO ({0})</strong></th>", simbMonedaAlterna)
-            resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>DIFERIDO A BANCO ({0})</strong></th>", simbMonedaAlterna)
-            resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>DIFERIDO A OTRA CAJA ({0})</strong></th>", simbMonedaAlterna)
+            resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>DIFERIDO DESDE BANCO ({0})</strong></th>", simbMonedaBase)
+            resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>DIFERIDO DESDE OTRA CAJA ({0})</strong></th>", simbMonedaBase)
+            'resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'>SALDO EFECTIVO ({0})</th>", simbMonedaAlterna)
+            'resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>INGRESO EFECTIVO ({0})</strong></th>", simbMonedaAlterna)
+            'resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>INGRESO TARJETA ({0})</strong></th>", simbMonedaAlterna)
+            'resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>EGRESO EFECTIVO ({0})</strong></th>", simbMonedaAlterna)
+            'resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>DIFERIDO A BANCO ({0})</strong></th>", simbMonedaAlterna)
+            'resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>DIFERIDO A OTRA CAJA ({0})</strong></th>", simbMonedaAlterna)
+            'resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>DIFERIDO DESDE BANCO ({0})</strong></th>", simbMonedaAlterna)
+            'resb.AppendFormat("<th style='text-align:center;border-left: 1px solid #cbcbcb;'><strong>DIFERIDO DESDE OTRA CAJA ({0})</strong></th>", simbMonedaAlterna)
             resb.AppendFormat("</tr>")
             resb.AppendFormat("</thead>")
             resb.AppendFormat("<tbody>")
@@ -2723,17 +2749,22 @@ Public Class NVLREMO : Implements IHttpHandler
                 resb.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dtResumenCajas.Rows(i)("DES_CAJA").ToString())
                 'resb.AppendFormat("<td style='text-align:left;border-left: 1px solid #cbcbcb;'>{0}</td>", dtResumenCajas.Rows(i)("DESC_ESTABLECIMIENTO").ToString())
                 resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_MONTO_SOLES_EFECTIVO").ToString())))
+                resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_INICIAL").ToString())))
                 resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_SOLES_EFECTIVO").ToString())))
                 resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_SOLES_TARJETA").ToString())))
                 resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("EGR_MONTO_SOLES_EFECTIVO").ToString())))
                 resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CUENTA_MONTO_SOLES").ToString())))
                 resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CAJA_MONTO_SOLES").ToString())))
-                resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_MONTO_DOLARES_EFECTIVO").ToString())))
-                resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_EFECTIVO").ToString())))
-                resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_TARJETA").ToString())))
-                resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("EGR_MONTO_DOLARES_EFECTIVO").ToString())))
-                resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CUENTA_MONTO_DOLARES").ToString())))
-                resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CAJA_MONTO_DOLARES").ToString())))
+                resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CUENTA_MONTO_SOLES").ToString())))
+                resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CAJA_MONTO_SOLES").ToString())))
+                'resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("SALDO_MONTO_DOLARES_EFECTIVO").ToString())))
+                'resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_EFECTIVO").ToString())))
+                'resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("ING_MONTO_DOLARES_TARJETA").ToString())))
+                'resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("EGR_MONTO_DOLARES_EFECTIVO").ToString())))
+                'resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CUENTA_MONTO_DOLARES").ToString())))
+                'resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_CAJA_MONTO_DOLARES").ToString())))
+                'resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CUENTA_MONTO_DOLARES").ToString())))
+                'resb.AppendFormat("<td style='text-align:right;border-left: 1px solid #cbcbcb;'>{0}</td>", String.Format("{0:#,##0.00}", Decimal.Parse(dtResumenCajas.Rows(i)("DIF_DESDE_CAJA_MONTO_DOLARES").ToString())))
                 resb.Append("</tr>")
             Next
             resb.Append("</tbody>")

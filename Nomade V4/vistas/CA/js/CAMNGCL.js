@@ -326,16 +326,16 @@ var CAMNGCL = function () {
         $("#inputRazsocial").html('<input id="txtrazsocial" class="span12" type="text" data-provide="typeahead"  placeholder="Cliente"/>');
 
         var selectRazonSocial = $(v_ID);
-        Bloquear("divTxtRazonSocial");
+        //Bloquear("divTxtRazonSocial");
         $.ajax({
             type: "post",
             //url: "vistas/ca/ajax/camnocl.ashx?OPCION=3&p_CTLG_CODE=" + $("#cboEmpresa").val(),
-            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2&p_CTLG_CODE=" + $("#cboEmpresa").val(),
+            url: "vistas/cc/ajax/cclrfva.ashx?OPCION=2.4&p_CTLG_CODE=" + $("#cboEmpresa").val(),
             contenttype: "application/json;",
             datatype: "json",
             async: true,
             success: function (datos) {
-                Desbloquear("divTxtRazonSocial");
+                //Desbloquear("divTxtRazonSocial");
                 if (datos != null) {
                     selectRazonSocial.typeahead({
                         source: function (query, process) {
@@ -389,7 +389,7 @@ var CAMNGCL = function () {
                 }
             },
             error: function (msg) {
-                Desbloquear("divTxtRazonSocial");
+                //Desbloquear("divTxtRazonSocial");
                 alertCustom("Clientes no se listaron correctamente.");
             }
         });
@@ -1263,6 +1263,7 @@ function setSeleccionDocumento(codigo, secuencia, serie, nro, tipo, importe, mon
     //AGREGADO
     dctoSeleccionado.IMPORTE = importe;
     //LLENAR DATOS DOCUMENTO SELECCIONADO 
+    Delete(1); //Se deben limpiar los contenidos de detalle si se selecciona un nuevo documento.
     $(".lblMoneda").html("(" + simboloMoneda + ")");
      
     if (codigo != "" & serie != "") {
@@ -1353,11 +1354,16 @@ function GrabarNotaCredito() {
     if ($("#cboMotivo").val() == "00") {
         campos.push('txtMotivoAdicional');
     }
-    if ($("#cboTipoDocumento").val() != "") {
-        campos.push('txtSerie');
-        campos.push('txtNro');
-        campos.push('txtFechaEmisionRef');
-    }
+
+    //La nota de crédito no debería realizarse sin doc de ref independientemente del tipo de documento
+    //if ($("#cboTipoDocumento").val() != "") {
+    //    campos.push('txtSerie');
+    //    campos.push('txtNro');
+    //    campos.push('txtFechaEmisionRef');
+    //}
+    campos.push('txtSerie');
+    campos.push('txtNro');
+    campos.push('txtFechaEmisionRef');
 
     var continuar = false;
     if (vErrors(campos)) {
@@ -1458,7 +1464,7 @@ function GrabarNotaCredito() {
            .success(function (datos) {
                Desbloquear("ventana");
                if (datos != null && datos.length > 0) {
-                   if (datos[0].RESPUESTA == "OK") {
+                   if (datos[0].RESPUESTA == "OK" && !datos[0].CODIGO.match(/^ERROR.*$/)) {
                        exito();
                        $('#btnMail').removeClass('hidden');
                        $('#btnWhatsapp').removeClass('hidden');
@@ -1501,8 +1507,8 @@ function GrabarNotaCredito() {
                    } else if (datos[0].CODIGO == "LIMITE") {
                        alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/> Se ha excedido el límite de documentos autorizados!");
                    }
-                   else if (datos[0].CODIGO == "ERROR") {
-                       alertCustom("La operaci\u00f3n <b>NO</b> se realiz\u00f3!<br/>");
+                   else if (datos[0].CODIGO.match(/^ERROR.*$/)) {
+                       alertCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                    }
                    else {
                        alertCustom(datos[0].CODIGO);//Mensaje de error de bd

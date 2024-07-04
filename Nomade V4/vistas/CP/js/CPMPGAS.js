@@ -4005,7 +4005,7 @@ var Guardar = function () {
                 cache: false,
                 success: function (datos) {
                     Desbloquear("ventana");
-                    if (datos != null && datos != "" && datos != "X" && datos != "ERROR") {
+                    if (datos != null && datos != "" && datos != "X" && !datos.match(/^ERROR.*$/)) {
 
                         $("#txtCodigo").val(datos);
                         window.history.pushState("Object", "REGISTRO PROVISION DE GASTOS", "/Default.aspx?f=cpmpgas&codigo=" + datos);
@@ -4041,9 +4041,12 @@ var Guardar = function () {
                     if (datos == "X") {
                         noexitoCustom("DISCULPA! La provisión con el número de documento ya ha sido registrada anteriormente en el sistema.")
                     }
-                    if (datos == "ERROR") {//ERROR DESDE BD                        
-                        noexito();
+                    if (datos.match(/^ERROR.*$/)) {
+                        noexitoCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                     }
+                    //if (datos == "ERROR") {//ERROR DESDE BD                        
+                    //    noexito();
+                    //}
                 },
                 error: function (msg) {
                     Desbloquear("ventana");
@@ -4808,7 +4811,7 @@ var Aprobar = function () {
                     cache: false,
                     success: function (datos) {
                         Desbloquear("ventana");
-                        if (datos != null && datos != "" && datos != "X") {
+                        if (datos != null && datos != "" && datos != "X"  && !datos.match(/^ERROR.*$/)) {
 
                             if (datos.split(",")[0] == "OK") {
                                 $(".btnEliminarDetalle").attr("style", "display:none");
@@ -4869,6 +4872,9 @@ var Aprobar = function () {
                         }
                         if (datos == "X") {
                             noexitoCustom("DISCULPA! La provisión con el número de documento ya ha sido registrada anteriormente en el sistema.")
+                        }
+                        if (datos.match(/^ERROR.*$/)) {
+                            noexitoCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                         }
 
                     },

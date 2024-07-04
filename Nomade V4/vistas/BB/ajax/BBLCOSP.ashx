@@ -106,8 +106,9 @@ Public Class BBLCOSP : Implements IHttpHandler
                     res = ListarComboNuevo(IFiLajs, p_FCOSIPE_FTVREPE_CODE, p_FCOPERI_COD, p_FCOSIPE_CTLG_CODE, idCod)
 
 
-
-
+                Case "SGTE_PERIODO"
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    res = Comision.crearComisionSiguiente(p_FCOSIPE_USUA_ID, p_FCOSIPE_CTLG_CODE, p_FCOPERI_COD.ToUpper())
 
 
                 Case "CONFIGURACION"
@@ -696,6 +697,15 @@ Public Class BBLCOSP : Implements IHttpHandler
         datos(0) = Comision.CrearComisionSistemaPension(p_FCOSIPE_USUA_ID, p_FTCONFI_RHCNPL_CODE, p_FCOSIPE_COLUMNA, p_FCOSIPE_DATO, p_FCOSIPE_FTVREPE_CODE, p_SALIDA, p_FCOSIPE_CTLG_CODE, p_FCOPERI_CODE.ToUpper(), FCOSIPE_GRUP)
         Comision = Nothing
         Return datos(0)
+
+    End Function
+
+    Public Function CrearComisionSiguiente(ByVal p_FCOSIPE_USUA_ID As String, ByVal p_FTCONFI_RHCNPL_CODE As String, ByVal p_FCOSIPE_COLUMNA As String, ByVal p_FCOSIPE_DATO As String,
+                                            ByVal p_FCOSIPE_FTVREPE_CODE As String, ByVal p_FCOSIPE_CTLG_CODE As String, ByVal p_SALIDA As String, ByVal p_FCOPERI_CODE As String, ByVal FCOSIPE_GRUP As String) As String
+        Dim res As String
+        res = Comision.crearComisionSiguiente(p_FCOSIPE_USUA_ID, p_FCOSIPE_CTLG_CODE, p_FCOPERI_CODE.ToUpper())
+        Comision = Nothing
+        Return res
 
     End Function
 

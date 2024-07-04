@@ -143,7 +143,30 @@
                             </div>
                         </div>
                     </div>
-                    <div class="span2 offset1">
+                     <div class="span1">
+                        <div class="control-group">
+                            <label class="control-label" for="cboCajero">
+                                Cajero</label>
+                        </div>
+                    </div>
+
+                    <%--<div class="span4">
+                        <div class="control-group ">
+                            <div class="controls">
+                                <select id="cboCajero" class="span12" data-placeholder="Cajero">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>--%>
+                    <div class="span4">
+                        <div class="control-group">
+                            <div class="controls">
+                                <select id="cboCajero" class="span12 cajero"  data-placeholder="TODOS LOS CAJEROS" multiple="multiple"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span2">
                         <div class="control-group">
                             <div class="controls">
                                 <input type="checkbox" id="chkDetGastos" />
@@ -193,17 +216,22 @@
                                             <th>INFORME CAJAS</th>
                                             <%--<th>ESTABLECIMIENTO</th>--%>
                                             <th>SALDO EFECTIVO (<span class="simboloMoba">S/</span>)</th>
+                                            <th>SALDO ANTERIOR (<span class="simboloMoba">S/</span>)</th>
                                             <th>INGRESO EFECTIVO (<span class="simboloMoba">S/</span>)</th>
                                             <th>INGRESO TARJETA (<span class="simboloMoba">S/</span>)</th>
                                             <th>EGRESO EFECTIVO (<span class="simboloMoba">S/</span>)</th>
                                             <th>DIFERIDO A BANCO (<span class="simboloMoba">S/</span>)</th>
                                             <th>DIFERIDO A OTRA CAJA (<span class="simboloMoba">S/</span>)</th>
-                                            <th>SALDO EFECTIVO (<span class="simboloMoal">$</span>)</th>
+                                            <th>DIFERIDO DESDE BANCO (<span class="simboloMoba">S/</span>)</th>
+                                            <th>DIFERIDO DESDE OTRA CAJA (<span class="simboloMoba">S/</span>)</th>
+                                            <%--<th>SALDO EFECTIVO (<span class="simboloMoal">$</span>)</th>
                                             <th>INGRESO EFECTIVO (<span class="simboloMoal">$</span>)</th>
                                             <th>INGRESO TARJETA (<span class="simboloMoal">$</span>)</th>
                                             <th>EGRESO EFECTIVO  (<span class="simboloMoal">$</span>)</th>
                                             <th>DIFERIDO A BANCO (<span class="simboloMoal">$</span>)</th>
                                             <th>DIFERIDO A OTRA CAJA (<span class="simboloMoal">$</span>)</th>
+                                            <th>DIFERIDO DESDE BANCO (<span class="simboloMoal">$</span>)</th>
+                                            <th>DIFERIDO DESDE OTRA CAJA (<span class="simboloMoal">$</span>)</th>--%>
                                         </tr>
                                     </thead>
                                     <tbody>

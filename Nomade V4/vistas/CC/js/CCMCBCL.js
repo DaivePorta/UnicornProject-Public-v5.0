@@ -1778,7 +1778,7 @@ var CCMCBCL = function () {
                         }
                     });
                     if (!vacio_ind) {
-                        var val0r = $(".moneda.activo").select2("val");
+                        var val0r = ($(".moneda.activo").select2("val") == "" ? moneCode : $(".moneda.activo").select2("val"));
                        json_select_NotaCredito.filter(function (e, f) {
                             var auxMonto = e.MONTO_USABLE;
                             if (e.MONE_CODE != val0r) {
@@ -1798,7 +1798,8 @@ var CCMCBCL = function () {
                     $("#montoTotalAgregado").html(formatoMiles(d + parseFloat($("#txtMonto").attr("monto") == undefined ? 0 : $("#txtMonto").attr("monto"))))
                   
                     $("#lblMontoTotalSoloNota").attr("monto", d.toFixed(2)).html("Total: " + (($("#cbo_monedaSoloNota").val() == "0002" || $("#cbo_monedaSoloNota").val() == "") ? "S/." : "$.") + formatoMiles(d));
-                    
+
+                    montoNC = formatoMiles(d);
                 });
                 //$("#p_DatVuelto").hide();
         });
@@ -1873,11 +1874,8 @@ function filltxtcliente() {
                     $(".NotaCreditoItem").remove();
                     $("#divMontoAgregado").css("display", "none");
 
-                });
-
-                
-            }
-                
+                }); 
+            } 
         },
         error: function (msg) {
             alert(msg);
@@ -1892,7 +1890,6 @@ function filltxtcliente() {
                 $("#cboClientes").select2('val', codigo).change();                
                 $("#btnConsultar").click();
             }
-
         }
     });
 
@@ -2639,7 +2636,7 @@ function pagarRetencion() {
     var nTotaSoloNotas = json_select_NotaCredito.filter(obj => obj.MONE_CODE == moneda_activa_cod).map(obj => parseFloat(obj.MONTO_USABLE).Redondear(2))
         .concat(json_select_NotaCredito.filter(obj => obj.MONE_CODE !== moneda_activa_cod).map(obj => parseFloat(moneda_activa_cod == '0002' ? obj.MONTO_USABLE * tc : obj.MONTO_USABLE / tc).Redondear(2))).reduce((sum, obj) => (sum + obj), 0).Redondear(2);
 
-    var nTotalMontoPagar = parseFloat($("#txtMonto").val().split(",").join(""));
+    var nTotalMontoPagar = parseFloat($("#txtMonto").val().split(",").join("")).Redondear(2);
     //var nMontoSeleccionado = $(".moneda.activo :selected").attr("tipo") == "MOBA" ? parseFloat($("#txt_monto_base").attr("monto")) : parseFloat($("#txt_monto_alt").attr("monto"));
     var nMontoSeleccionado = (moneda_activa_tipo == 'MOBA') ? $('#txt_monto_base').attr('monto') : $('#txt_monto_alt').attr('monto');
 
@@ -2794,7 +2791,7 @@ function pagarRetencion() {
             //cade_pagar += ("|" + oItem.CODIGO + "," + oItem.DOCUMENTO + "," + nMontoDeudaItemMOBA + "," + nMontoDeudaItemMOAL + "," + sIndPago + "," + oItem.SUCURSAL_CODE + "," + oItem.PAGO_RETENCION);
             cade_pagar += ("|" + oItem.CODIGO + "," + oItem.DOCUMENTO + "," + nMontoDeudaItemMOBA + "," + nMontoDeudaItemMOAL + "," + sIndPago + "," + oItem.SUCURSAL_CODE + "," + oItem.PAGO_RETENCION + "," + vMontoDeudaItemMOBA + "," + vMontoDeudaItemMOAL);
 
-            nTotalMontoPagarTemp = nTotalMontoPagarTemp - parseFloat(nMontoCobrarItem);
+            nTotalMontoPagarTemp = parseFloat(nTotalMontoPagarTemp - nMontoCobrarItem).Redondear(2);
         }
 
         p_destino = $("#cbo_Det_Origen").val(); // origen
@@ -2931,8 +2928,15 @@ function pagarRetencion() {
                     case "P": // Error INSERT en FABCRED o FABAMPR
                         alertCustom("Error al procesar el cobro. Intente nuevamente!");
                         break;
+                    case "DC": // EL PARAMETRO MOCA NO ESTÁ ACTIVO Y SE ESTÁ INTENTANDO PAGAR DESDE OTRA CAJA
+                        alertCustom("Se está intentando cobrar documento en caja perteneciente a otro establecimiento!");
+                        break;
+                    case "CL": //  ERROR AL COBRAR CON UNA NC CLIENTE
+                        alertCustom("Error al cobrar con Nota de Crédito!");
+                        break;
                     case "TI": // Transacción incompleta
-                        alertCustom("Parece que hubo un error en el cobro. Intente nuevamente!");
+                        //alertCustom("Parece que hubo un error en el cobro. Intente nuevamente!");
+                        alertCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                         break;
                     case "TC": // Transaccion realizada correctamente 
                         if (datos[0].CODE_GENERADO != "") {
@@ -3187,7 +3191,7 @@ function pagar() {
         var nTotaSoloNotas = json_select_NotaCredito.filter(obj => obj.MONE_CODE == moneda_activa_cod).map(obj => parseFloat(obj.MONTO_USABLE).Redondear(2))
             .concat(json_select_NotaCredito.filter(obj => obj.MONE_CODE !== moneda_activa_cod).map(obj => parseFloat(moneda_activa_cod == '0002' ? obj.MONTO_USABLE * tc : obj.MONTO_USABLE / tc).Redondear(2))).reduce((sum, obj) => (sum + obj), 0).Redondear(2);
 
-        var nTotalMontoPagar = parseFloat($("#txtMonto").val().split(",").join(""));
+        var nTotalMontoPagar = parseFloat($("#txtMonto").val().split(",").join("")).Redondear(2);
         //var nMontoSeleccionado = $(".moneda.activo :selected").attr("tipo") == "MOBA" ? parseFloat($("#txt_monto_base").attr("monto")) : parseFloat($("#txt_monto_alt").attr("monto"));
         var nMontoSeleccionado = (moneda_activa_tipo == 'MOBA') ? $('#txt_monto_base').attr('monto') : $('#txt_monto_alt').attr('monto');
 
@@ -3328,7 +3332,7 @@ function pagar() {
 
                 nMontoCobrarItem = nMontoDeudaItem;
                 sIndPago = "S";
-                if (nMontoDeudaItem > nTotalMontoPagarTemp) {
+                if (parseFloat(nMontoDeudaItem).Redondear(2) > parseFloat(nTotalMontoPagarTemp).Redondear(2)) {
                     nMontoCobrarItem = nTotalMontoPagarTemp;
                     sIndPago = "P";
                 }
@@ -3347,7 +3351,7 @@ function pagar() {
 
                 //cade_pagar += ("|" + oItem.CODIGO + "," + oItem.DOCUMENTO + "," + nMontoDeudaItemMOBA + "," + nMontoDeudaItemMOAL + "," + sIndPago + "," + oItem.SUCURSAL_CODE);
                 cade_pagar += ("|" + oItem.CODIGO + "," + oItem.DOCUMENTO + "," + nMontoDeudaItemMOBA + "," + nMontoDeudaItemMOAL + "," + sIndPago + "," + oItem.SUCURSAL_CODE + "," + "" + "," + vMontoDeudaItemMOBA + "," + vMontoDeudaItemMOAL);
-                nTotalMontoPagarTemp = nTotalMontoPagarTemp - nMontoCobrarItem;
+                nTotalMontoPagarTemp = parseFloat(nTotalMontoPagarTemp - nMontoCobrarItem).Redondear(2);
             }
 
             p_destino = $("#cbo_Det_Origen").val(); // origen

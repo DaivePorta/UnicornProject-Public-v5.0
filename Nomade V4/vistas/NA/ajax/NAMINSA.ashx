@@ -948,8 +948,10 @@ Public Class NAMINSA : Implements IHttpHandler
                             res = value.ToString
                     End Select
                 Case "DELETE" 'ELIMINA UN ITEM DEL DETALLE  I/S ALMACEN
+                    Dim OK As String
                     context.Response.ContentType = "text/html"
                     msg = New Nomade.NA.NATipoMovimiento("Bn").ELIMINAR_DETALLE_DCTO_ALMACEN(ISAC_CODE, item, doc_origen)
+                    OK = New Nomade.NA.NATipoMovimiento("BN").actualizar_doc_origen_NAMINSA(ISAC_CODE)
                     res = msg.ToString()
                 Case "COMPLETAR" 'COMPLETA I/S DE ALMACEN
                     context.Response.ContentType = "text/html"
@@ -1616,7 +1618,7 @@ Public Class NAMINSA : Implements IHttpHandler
                                                         If (COD_ALMC = row("ALMC_CODE").ToString) Then ' cambio gozu
                                                             'If row("SERIADO_IND").ToString = "N" Then
                                                             OK = New Nomade.NA.NATipoMovimiento("BN").insertar_detalle_dcto_almacen2(ISAC_CODE, DCTOS(i).ToString, row("ITEM").ToString, IIf(row("SERIADO_IND").ToString = "N", row("PROD_CODE").ToString, row("CODIGO_PRODUCTO").ToString),
-                                                                                                  row("PROD_CODE_ANTIGUO").ToString, row("UNIDAD").ToString, IIf(stock > cantidad, cantidad, stock),
+                                                                                                  row("PROD_CODE_ANTIGUO").ToString, row("UNIDAD_AUX").ToString, IIf(stock > cantidad, cantidad, stock),
                                                                                                   row("UNIDAD").ToString, IIf(stock > cantidad, cantidad, stock),
                                                                                                   (Double.Parse(row("COSTO").ToString) * IIf(stock > cantidad, cantidad, stock)),
                                                                                                   "0", row("PESO_UNIT").ToString, peso_total, "1", "0", USUA_ID, IIf(row("SERIADO_IND").ToString = "N", "", row("CODIGO_BARRAS").ToString), row("COSTO").ToString,
@@ -1645,7 +1647,6 @@ Public Class NAMINSA : Implements IHttpHandler
                                             End If
                                         Next
                                     End If
-
 
                                     'DETALLE BONIFICACION
                                     If Not (dtDetBonificacion Is Nothing) Then
@@ -1708,7 +1709,6 @@ Public Class NAMINSA : Implements IHttpHandler
                                     End If
                                     'FIN DETALLE BONIFICACION
 
-
                                     'DETALLE MUESTRA
                                     If Not (dtDetMuestra Is Nothing) Then
 
@@ -1767,8 +1767,8 @@ Public Class NAMINSA : Implements IHttpHandler
                                         Next
                                     End If
                                     'FIN DETALLE MUESTRA
-
                                 Next
+                                OK = New Nomade.NA.NATipoMovimiento("BN").actualizar_doc_origen_NAMINSA(ISAC_CODE)
                             Case "0028"
                                 For i As Integer = 0 To (DCTOS.Length - 1)
                                     dt = New Nomade.CO.CORegistroCompras("BN").LISTAR_DETALLES_APROBADOS(DCTOS(i).ToString, String.Empty, SCSL_CODE, CTLG_CODE)

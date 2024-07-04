@@ -181,6 +181,67 @@ Public Class CPMPGVA : Implements IHttpHandler
 
                     res = resb.ToString()
 
+                Case "1.7" 'crear pago x caja
+                    If RUTA_IMAGEN = "../../recursos/img/no_disponible.jpg" Then
+                        VALIDAR_IMG = "NO"
+                    Else
+                        VALIDAR_IMG = "SI"
+                    End If
+
+                    resArray = PagoProveedor.PagarGastosVariosAProveedorCajaNew(detalle, caja, usuario, codigo_apertura, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, tipo_cambio, VALIDAR_IMG, "CAJ", notaCredito, "", "", "", "", "", "", monto_total)
+
+                    If asiento_contable = "SI" Then
+                        Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                        Dim strCodAsientoPagoGasto As String
+                        For Each item As String In detalle.Split("|")
+                            Dim strCodGasto As String = item.Split(",")(0)
+                            strCodAsientoPagoGasto = oCTGeneracionAsientos.GenerarAsientoPagoGasto(strCodGasto)
+                        Next
+                    End If
+
+                    If RUTA_IMAGEN <> "" And resArray(1) = "TC" And VALIDAR_IMG = "SI" Then
+                        RUTA = GrabaImagen(RUTA_IMAGEN, context, resArray(0).ToString + ".jpg")
+                    End If
+
+                    resb.Append("[")
+                    resb.Append("{")
+                    resb.Append("""CODE_GENERADO"" :" & """" & resArray(0).ToString & """,")
+                    resb.Append("""SUCCESS"" :" & """" & resArray(1).ToString & """")
+                    resb.Append("}")
+                    resb.Append("]")
+
+                    res = resb.ToString()
+
+                Case "1.8" 'crear pago x banco
+                    If RUTA_IMAGEN = "../../recursos/img/no_disponible.jpg" Then
+                        VALIDAR_IMG = "NO"
+                    Else
+                        VALIDAR_IMG = "SI"
+                    End If
+
+                    resArray = PagoProveedor.PagarGastosVariosAProveedorBancoNew(detalle, pidmcuenta, cuenta, usuario, empresa, fecha_pago, moneda, medio_pago, descripcion, destino, documento, completo, monto_total, tipo_cambio, VALIDAR_IMG, adicional, caja, notaCredito)
+
+                    If asiento_contable = "SI" Then
+                        Dim oCTGeneracionAsientos As New Nomade.CT.CTGeneracionAsientos()
+                        Dim strCodAsientoPagoGasto As String
+                        For Each item As String In detalle.Split("|")
+                            Dim strCodGasto As String = item.Split(",")(0)
+                            strCodAsientoPagoGasto = oCTGeneracionAsientos.GenerarAsientoPagoGasto(strCodGasto)
+                        Next
+                    End If
+
+                    If RUTA_IMAGEN <> "" And resArray(1) = "TC" And VALIDAR_IMG = "SI" Then
+                        RUTA = GrabaImagen(RUTA_IMAGEN, context, resArray(0).ToString + ".jpg")
+                    End If
+
+                    resb.Append("[")
+                    resb.Append("{")
+                    resb.Append("""CODE_GENERADO"" :" & """" & resArray(0).ToString & """,")
+                    resb.Append("""SUCCESS"" :" & """" & resArray(1).ToString & """")
+                    resb.Append("}")
+                    resb.Append("]")
+
+                    res = resb.ToString()
                 Case "2" 'lista forma de pago
 
                     dt = ccPercepcion.ListarFormasPago("", "", "", "A")

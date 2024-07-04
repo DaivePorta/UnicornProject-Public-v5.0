@@ -36,6 +36,9 @@ Public Class NVMCOTI : Implements IHttpHandler
     'PDF 
     Dim imagen As String
 
+    'GLOSA
+    Dim p_GLOSA, p_GLOSA_CODIGO As String
+
     Dim ncSucursal As New NOMADE.NC.NCSucursal("Bn")
     Dim g As New NOMADE.NC.NCGrupos("Bn")
     Dim e As New NOMADE.NM.NMTipodeExistencia("Bn")
@@ -81,6 +84,10 @@ Public Class NVMCOTI : Implements IHttpHandler
         'WHATSAPP CLOUD API
         RECIPIENT_PHONE_NUMBER = context.Request("RECIPIENT_PHONE_NUMBER")
         MENSAJEWHATSAPP = context.Request("MENSAJEWHATSAPP")
+
+        'Glosa
+        p_GLOSA = context.Request("p_GLOSA")
+        p_GLOSA_CODIGO = context.Request("p_GLOSA_CODIGO")
 
         'NUEVOS
         USUA_ID = context.Request("USUA_ID")
@@ -634,6 +641,26 @@ Public Class NVMCOTI : Implements IHttpHandler
                     USAR_IGV_IND = context.Request("USAR_IGV_IND") ' Si es nothing se usará el de la tabla
                     res = GenerarDctoImprimir(p_CODE, USAR_IGV_IND)
 
+                Case "GLOS"
+                    context.Response.ContentType = "application/json; charset=utf-8"
+                    dt = nvCotizacion.ListarGlosa()
+                    If Not (dt Is Nothing) Then
+                        resb.Append("[")
+                        For Each row As DataRow In dt.Rows
+                            resb.Append("{")
+                            resb.Append("""CODIGO"":""" & row("CODE").ToString & """,")
+                            resb.Append("""DESCRIPCION"":""" & row("DESCRIPCION").ToString & """")
+                            resb.Append("},")
+                        Next
+                        resb.Append("{}")
+                        resb = resb.Replace(",{}", String.Empty)
+                        resb.Append("]")
+                    End If
+                    res = resb.ToString()
+
+                Case "AGREGAR_GLOS"
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    res = nvCotizacion.AgregarGlosa(p_GLOSA, p_GLOSA_CODIGO)
                 Case Else
 
             End Select

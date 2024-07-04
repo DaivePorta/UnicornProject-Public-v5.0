@@ -8,7 +8,7 @@ Public Class NCSCSL : Implements IHttpHandler
 
     'Declaramos variables para usarlas en el proceso
     Dim flag, acti, cod_est_sunat, empresa, sucursal, dire, estable, telef, pais, ubigeo, fechai, fechat, user, propietario, codelim, cod As String
-    Dim p_Code_Pais, p_Code_Depa, p_Code_Prov, p_Code_Dist, p_Code_Ubigeo, p_Code_Empr, exonerado, bio_ind, URBAN As String
+    Dim p_Code_Pais, p_Code_Depa, p_Code_Prov, p_Code_Dist, p_Code_Ubigeo, p_Code_Empr, exonerado, bio_ind, URBAN, p_pie_pagina_recibos As String
     Dim dt As DataTable
     Dim codrec As String
     Dim resb As New StringBuilder
@@ -67,13 +67,15 @@ Public Class NCSCSL : Implements IHttpHandler
         exonerado = context.Request("exonerado")
         bio_ind = context.Request("bio_ind")
 
+        p_pie_pagina_recibos = context.Request("p_pie_pagina_recibos")
+
         context.Response.ContentType = "text/html"
         Try
             If (flag = "1") Then
-                res = CrearSucursal(empresa, cod_est_sunat, sucursal, propietario, dire, telef, fechai, ubigeo, URBAN, fechat, acti, user, estable, pais, bio_ind, exonerado)
+                res = CrearSucursal(empresa, cod_est_sunat, sucursal, propietario, dire, telef, fechai, ubigeo, URBAN, fechat, acti, user, estable, pais, bio_ind, exonerado, p_pie_pagina_recibos)
 
             ElseIf (flag = "2") Then
-                res = ActualizarSucursal(empresa, cod, cod_est_sunat, sucursal, propietario, dire, telef, fechai, ubigeo, URBAN, fechat, acti, user, estable, pais, bio_ind, exonerado)
+                res = ActualizarSucursal(empresa, cod, cod_est_sunat, sucursal, propietario, dire, telef, fechai, ubigeo, URBAN, fechat, acti, user, estable, pais, bio_ind, exonerado, p_pie_pagina_recibos)
 
 
             ElseIf (flag = "3") Then
@@ -155,6 +157,7 @@ Public Class NCSCSL : Implements IHttpHandler
                 resb.Append("""UBIGEO"" :" & """" & dt.Rows(0)("UBIGEO") & """,")
                 resb.Append("""URBAN"" :" & """" & dt.Rows(0)("URBAN") & """,")
                 resb.Append("""EXONERADO"" :" & """" & dt.Rows(0)("EXONERADO") & """,")
+                resb.Append("""PIE_PAGINA_RECIBO"" :" & """" & dt.Rows(0)("PIE_PAGINA_RECIBO") & """,")
                 resb.Append("""DISTRITO"" :" & """" & dt.Rows(0)("DISTRITO") & """,")
                 resb.Append("""BIO_IND"" :" & """" & dt.Rows(0)("BIO_IND") & """,")
                 resb.Append("""CTLG_BIO_IND"" :" & """" & dt.Rows(0)("CTLG_BIO_IND") & """")
@@ -176,9 +179,9 @@ Public Class NCSCSL : Implements IHttpHandler
 
     End Sub
 
-    Public Function CrearSucursal(ByVal p_codiemp As String, ByVal p_COD_EST_SUNAT As String, ByVal p_desc As String, ByVal p_propie As String, ByVal p_direc As String, ByVal p_tel As String, ByVal p_fini As String, ByVal p_ubigeo As String, ByVal p_Urban As String, ByVal p_fterm As String, ByVal p_estado As String, ByVal p_user As String, ByVal p_establecimiento As String, ByVal p_pais As String, p_bio_ind As String, ByVal exonerado As String) As String
+    Public Function CrearSucursal(ByVal p_codiemp As String, ByVal p_COD_EST_SUNAT As String, ByVal p_desc As String, ByVal p_propie As String, ByVal p_direc As String, ByVal p_tel As String, ByVal p_fini As String, ByVal p_ubigeo As String, ByVal p_Urban As String, ByVal p_fterm As String, ByVal p_estado As String, ByVal p_user As String, ByVal p_establecimiento As String, ByVal p_pais As String, p_bio_ind As String, ByVal exonerado As String, ByVal p_pie_pagina_recibos As String) As String
         Dim datos(2) As String
-        datos = P.CrearSucursal(p_codiemp, p_COD_EST_SUNAT, p_desc, p_propie, p_direc, p_tel, p_fini, p_ubigeo, p_Urban, p_fterm, p_estado, p_user, p_establecimiento, p_pais, p_bio_ind, exonerado)
+        datos = P.CrearSucursal(p_codiemp, p_COD_EST_SUNAT, p_desc, p_propie, p_direc, p_tel, p_fini, p_ubigeo, p_Urban, p_fterm, p_estado, p_user, p_establecimiento, p_pais, p_bio_ind, p_pie_pagina_recibos, exonerado)
 
         Return datos(0)
 
@@ -187,9 +190,9 @@ Public Class NCSCSL : Implements IHttpHandler
 
 
 
-    Public Function ActualizarSucursal(ByVal p_codiemp As String, ByVal p_codisuc As String, ByVal p_COD_EST_SUNAT As String, ByVal p_desc As String, ByVal p_propie As String, ByVal p_direc As String, ByVal p_tel As String, ByVal p_fini As String, ByVal p_ubigeo As String, ByVal p_Urban As String, ByVal p_fterm As String, ByVal p_estado As String, ByVal p_user As String, ByVal p_establecimiento As String, ByVal p_pais As String, p_bio_ind As String, ByVal exonerado As String) As String
+    Public Function ActualizarSucursal(ByVal p_codiemp As String, ByVal p_codisuc As String, ByVal p_COD_EST_SUNAT As String, ByVal p_desc As String, ByVal p_propie As String, ByVal p_direc As String, ByVal p_tel As String, ByVal p_fini As String, ByVal p_ubigeo As String, ByVal p_Urban As String, ByVal p_fterm As String, ByVal p_estado As String, ByVal p_user As String, ByVal p_establecimiento As String, ByVal p_pais As String, p_bio_ind As String, ByVal exonerado As String, ByVal p_pie_pagina_recibos As String) As String
         Dim datos As String
-        datos = P.ActualizarSucursal(p_codiemp, p_codisuc, p_COD_EST_SUNAT, p_desc, p_propie, p_direc, p_tel, p_fini, p_ubigeo, p_Urban, p_fterm, p_estado, p_user, p_establecimiento, p_pais, p_bio_ind, exonerado)
+        datos = P.ActualizarSucursal(p_codiemp, p_codisuc, p_COD_EST_SUNAT, p_desc, p_propie, p_direc, p_tel, p_fini, p_ubigeo, p_Urban, p_fterm, p_estado, p_user, p_establecimiento, p_pais, p_bio_ind, p_pie_pagina_recibos, exonerado)
         Return datos
     End Function
 

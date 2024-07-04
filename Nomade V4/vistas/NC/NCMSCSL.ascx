@@ -210,6 +210,14 @@
                             </div>
                         </div>
                     </div>
+                <div class="span5">
+                    <div class="control-group ">
+                        <div class="controls">
+                            <input id="chkPiePagina" type="checkbox"/>
+                            Pie de Pagina en Recibos
+                        </div>
+                    </div>
+                </div>
 
                  </div>
                 <div class="row-fluid">

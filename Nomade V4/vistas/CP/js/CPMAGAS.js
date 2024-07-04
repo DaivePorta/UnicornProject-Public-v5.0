@@ -3263,13 +3263,22 @@ var Aprobar = function () {
             success: function (datos) {
                 Desbloquear("ventana");
                 if (datos != null) {
-                    if (datos[0].ERROR != "X") {
+                    if (datos[0].ERROR != "X" && !datos[0].CODE_GENERADO.match(/^ERROR.*$/)) {
                         if (datos[0].CODE_GENERADO.length <= 8) {
                             $("#txtCodigo").val(datos[0].CODE_GENERADO);
                             window.history.pushState("Object", "APROBACION DE GASTO", "/Default.aspx?f=cpmagas&codigo=" + datos[0].CODE_GENERADO);
                             $('#txtSerieRegistroInterno').val(datos[0].SERIE_INT);
                             $('#txtNroRegistroInterno').val(datos[0].NUMERO_INT);
-                            CrearPagoDiverso();
+                            //CrearPagoDiverso();
+                            $("#acciones_generales").remove()
+                            $(".b").attr("disabled", true);
+                            $("#aprob").slideDown()
+                            $("#error").slideUp()
+                            $("#anul").slideUp()
+                            //  $("#rechazar").remove();
+                            $("#estado").children().children().attr("style", "text-align: -webkit-center;font-size: large;font-family: sans-serif;font-weight: bold;")
+                            $("#estado").children().children().html("<i class='icon-asterisk'></i>&nbsp;&nbsp;APROBADO")
+
                             $("#add_detalle").attr("disabled", true);
                             $("#btnBuscarCentroCto").attr("disabled", true);
                             $("#cbo_gasto").attr("disabled", true);
@@ -3306,6 +3315,9 @@ var Aprobar = function () {
                     }
                     if (datos[0].ERROR == "X") {
                         noexitoCustom("DISCULPA! La provision con el numero de documento ya ha sido registrada anteriormente en el sistema.")
+                    }
+                    if (datos[0].CODE_GENERADO.match(/^ERROR.*$/)) {
+                        noexitoCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                     }
                 }
             },
@@ -3450,59 +3462,59 @@ var Rechazar = function () {
     }
 }
 
-var CrearPagoDiverso = function () {
+//var CrearPagoDiverso = function () {
 
-    var data = new FormData();
+//    var data = new FormData();
 
-    data.append("OPCION", "4");
-    data.append("p_FACGADI_MONE_CODE", $("#hfmone_code").val());
-    data.append("p_FACGADI_MONTO", $.trim(ReplaceTotal(",", "", $('#txt_monto').val())));
-    data.append("p_FACGADI_USUA_ID", $.trim($('#ctl00_txtus').val()));
-    data.append("p_FACGADI_REF_CODE", $.trim($('#hfcodgasto').val()));
-    data.append("p_FACGADI_FECHA_VENCIMIENTO", $.trim($('#txt_fec_vencimiento').val()));
-    data.append("p_FACGADI_FECHA_PAGO_PROG", $.trim($('#txt_fec_pago').val()));
-    data.append("p_FACGADI_FECHA_TRANSACCION", $.trim($('#txt_fec_aprobacion').val()));
-    data.append("p_PIDM", $.trim($("#hfpidm").val()));
-    data.append("p_FECHA_EMISION", $.trim($('#txt_fec_aprobacion').val()));
-    data.append("p_REF_DCTO_DESC", $.trim($("#hfdesc_dcto").val()));
-    data.append("p_FACGADI_IMPORTE_PAGAR", $.trim(ReplaceTotal(",", "", $('#txt_importePagar').val()))); //DPORTA 21/01/2022
+//    data.append("OPCION", "4");
+//    data.append("p_FACGADI_MONE_CODE", $("#hfmone_code").val());
+//    data.append("p_FACGADI_MONTO", $.trim(ReplaceTotal(",", "", $('#txt_monto').val())));
+//    data.append("p_FACGADI_USUA_ID", $.trim($('#ctl00_txtus').val()));
+//    data.append("p_FACGADI_REF_CODE", $.trim($('#hfcodgasto').val()));
+//    data.append("p_FACGADI_FECHA_VENCIMIENTO", $.trim($('#txt_fec_vencimiento').val()));
+//    data.append("p_FACGADI_FECHA_PAGO_PROG", $.trim($('#txt_fec_pago').val()));
+//    data.append("p_FACGADI_FECHA_TRANSACCION", $.trim($('#txt_fec_aprobacion').val()));
+//    data.append("p_PIDM", $.trim($("#hfpidm").val()));
+//    data.append("p_FECHA_EMISION", $.trim($('#txt_fec_aprobacion').val()));
+//    data.append("p_REF_DCTO_DESC", $.trim($("#hfdesc_dcto").val()));
+//    data.append("p_FACGADI_IMPORTE_PAGAR", $.trim(ReplaceTotal(",", "", $('#txt_importePagar').val()))); //DPORTA 21/01/2022
 
-    if ($("#chk_sin_dcto").is(':checked')) {
-        data.append("p_REF_DCTO_NRO", $.trim($("#txtSerieRegistroInterno").val()) + '-' + $.trim($("#txtNroRegistroInterno").val()));
-    } else {
-        data.append("p_REF_DCTO_NRO", $.trim($("#txt_serie").val()) + '-' + $.trim($("#txt_dcto_ref").val()));
-    }
-    data.append("p_COMC_CODE", $.trim($("#hf_conc_code").val()));
-
-
-    Bloquear("ventana");
-
-    $.ajax({
-        url: "vistas/CP/ajax/CPMAGAS.ASHX",
-        type: "post",
-        contentType: false,
-        data: data,
-        processData: false,
-        cache: false,
-        success: function (datos) {
-            Desbloquear("ventana");
-            if (datos != null && datos != "") {
-
-                CrearCredito(datos);
-            } else { noexito(); }
-
-        },
-        error: function (msg) {
-            Desbloquear("ventana");
-            noexitoCustom("Error al Registrar!")
-        }
-    });
+//    if ($("#chk_sin_dcto").is(':checked')) {
+//        data.append("p_REF_DCTO_NRO", $.trim($("#txtSerieRegistroInterno").val()) + '-' + $.trim($("#txtNroRegistroInterno").val()));
+//    } else {
+//        data.append("p_REF_DCTO_NRO", $.trim($("#txt_serie").val()) + '-' + $.trim($("#txt_dcto_ref").val()));
+//    }
+//    data.append("p_COMC_CODE", $.trim($("#hf_conc_code").val()));
 
 
+//    Bloquear("ventana");
+
+//    $.ajax({
+//        url: "vistas/CP/ajax/CPMAGAS.ASHX",
+//        type: "post",
+//        contentType: false,
+//        data: data,
+//        processData: false,
+//        cache: false,
+//        success: function (datos) {
+//            Desbloquear("ventana");
+//            if (datos != null && datos != "") {
+
+//                CrearCredito(datos);
+//            } else { noexito(); }
+
+//        },
+//        error: function (msg) {
+//            Desbloquear("ventana");
+//            noexitoCustom("Error al Registrar!")
+//        }
+//    });
 
 
 
-}
+
+
+//}
 
 var Anular = function () {
 
@@ -3556,60 +3568,60 @@ var Anular = function () {
 
 }
 
-var CrearCredito = function (cod) {
+//var CrearCredito = function (cod) {
 
-    var data = new FormData();
+//    var data = new FormData();
 
-    data.append("OPCION", "6");
-    data.append("p_CTLG_CODE", $("#hfctlg_code").val());
-    data.append("p_SCSL_CODE", $("#hfscsl_code").val());
-    data.append("p_COMC_CODE", cod);
-    data.append("p_FECHA_EMISION", $.trim($('#txt_fec_aprobacion').val()));
-    data.append("p_MONTO", $.trim(ReplaceTotal(",", "", $('#txt_monto').val())));
-    data.append("p_TIPO_CRED_IND", "CR");
-    data.append("p_USUA_ID", $.trim($('#ctl00_txtus').val()));
-    data.append("p_FACGADI_FECHA_VENCIMIENTO", $.trim($('#txt_fec_vencimiento').val()));
-    data.append("p_FACGADI_FECHA_PAGO_PROG", $.trim($('#txt_fec_pago').val()));
-    data.append("p_TIPO_IND", "P");
-    data.append("p_FACGADI_MONE_CODE", $("#hfmone_code").val());
-    data.append("p_IMPORTE_PAGAR", $.trim(ReplaceTotal(",", "", $('#txt_importePagar').val()))); //DPORTA 21/01/2022
+//    data.append("OPCION", "6");
+//    data.append("p_CTLG_CODE", $("#hfctlg_code").val());
+//    data.append("p_SCSL_CODE", $("#hfscsl_code").val());
+//    data.append("p_COMC_CODE", cod);
+//    data.append("p_FECHA_EMISION", $.trim($('#txt_fec_aprobacion').val()));
+//    data.append("p_MONTO", $.trim(ReplaceTotal(",", "", $('#txt_monto').val())));
+//    data.append("p_TIPO_CRED_IND", "CR");
+//    data.append("p_USUA_ID", $.trim($('#ctl00_txtus').val()));
+//    data.append("p_FACGADI_FECHA_VENCIMIENTO", $.trim($('#txt_fec_vencimiento').val()));
+//    data.append("p_FACGADI_FECHA_PAGO_PROG", $.trim($('#txt_fec_pago').val()));
+//    data.append("p_TIPO_IND", "P");
+//    data.append("p_FACGADI_MONE_CODE", $("#hfmone_code").val());
+//    data.append("p_IMPORTE_PAGAR", $.trim(ReplaceTotal(",", "", $('#txt_importePagar').val()))); //DPORTA 21/01/2022
 
-    Bloquear("ventana");
+//    Bloquear("ventana");
 
-    $.ajax({
-        url: "vistas/CP/ajax/CPMAGAS.ASHX",
-        type: "post",
-        contentType: false,
-        data: data,
-        processData: false,
-        cache: false,
-        success: function (datos) {
-            Desbloquear("ventana");
-            if (datos != null && datos != "") {
+//    $.ajax({
+//        url: "vistas/CP/ajax/CPMAGAS.ASHX",
+//        type: "post",
+//        contentType: false,
+//        data: data,
+//        processData: false,
+//        cache: false,
+//        success: function (datos) {
+//            Desbloquear("ventana");
+//            if (datos != null && datos != "") {
 
 
-                //$("#aprobar").html("<i class='icon-trash'></i> Anular");
-                //$("#aprobar").attr("href", "javascript:Anular();");
-                //$("#aprobar").attr("class", "btn red");
-                $("#acciones_generales").remove()
-                $(".b").attr("disabled", true);
-                $("#aprob").slideDown()
-                $("#error").slideUp()
-                $("#anul").slideUp()
-                //  $("#rechazar").remove();
-                $("#estado").children().children().attr("style", "text-align: -webkit-center;font-size: large;font-family: sans-serif;font-weight: bold;")
-                $("#estado").children().children().html("<i class='icon-asterisk'></i>&nbsp;&nbsp;APROBADO")
+//                //$("#aprobar").html("<i class='icon-trash'></i> Anular");
+//                //$("#aprobar").attr("href", "javascript:Anular();");
+//                //$("#aprobar").attr("class", "btn red");
+//                $("#acciones_generales").remove()
+//                $(".b").attr("disabled", true);
+//                $("#aprob").slideDown()
+//                $("#error").slideUp()
+//                $("#anul").slideUp()
+//                //  $("#rechazar").remove();
+//                $("#estado").children().children().attr("style", "text-align: -webkit-center;font-size: large;font-family: sans-serif;font-weight: bold;")
+//                $("#estado").children().children().html("<i class='icon-asterisk'></i>&nbsp;&nbsp;APROBADO")
 
-            } else { noexito(); }
+//            } else { noexito(); }
 
-        },
-        error: function (msg) {
-            Desbloquear("ventana");
-            noexitoCustom("Error al Anular!")
-        }
-    });
+//        },
+//        error: function (msg) {
+//            Desbloquear("ventana");
+//            noexitoCustom("Error al Anular!")
+//        }
+//    });
 
-}
+//}
 
 // CALCULOS //DPORTA 17/01/2022
 
@@ -3969,14 +3981,23 @@ var Aprobar1 = function () {
             success: function (datos) {
                 Desbloquear("MuestraModalAceptar");
                 if (datos != null) {
-                    if (datos[0].ERROR != "X") {
+                    if (datos[0].ERROR != "X" && !datos[0].CODE_GENERADO.match(/^ERROR.*$/)) {
                         if (datos[0].CODE_GENERADO.length <= 8) {
                             $("#hfCodigo").val(datos[0].CODE_GENERADO);
 
                             $('#txt_serie_int').val(datos[0].SERIE_INT);
                             $('#txt_dcto_ref_int').val(datos[0].NUMERO_INT);
 
-                            CrearPagoDiverso1(); 
+                            //CrearPagoDiverso1(); 
+                            $("#MuestraModalAceptar").modal('hide')
+                            exito();
+                            $(".botones").hide();
+                            $(btn_actual).parent().parent().find(".btnrechazar").remove();
+                            $(btn_actual).remove();
+                            $(".botones").hide();
+
+                            oTableGST.fnDeleteRow(posicion);
+
                             //Para generar el asiento contable de manera automática.
                             //console.log(obj_actual);
                             if (prmtACON == "SI") {
@@ -3987,7 +4008,10 @@ var Aprobar1 = function () {
                     if (datos[0].ERROR == "X") {
                         $("#MuestraModalAceptar").modal('hide')
                         noexitoCustom("DISCULPA! La provision con el numero de documento ya ha sido registrada anteriormente en el sistema.")
-
+                    }
+                    if (datos[0].CODE_GENERADO.match(/^ERROR.*$/)) {
+                        $("#MuestraModalAceptar").modal('hide')
+                        noexitoCustom("Surgió un error inesperado. Intente nuevamente, por favor.")
                     }
                 }
 
@@ -4183,55 +4207,55 @@ let VerificaFechaPeriodo = function () {
     return continuar;
 }
 
-var CrearPagoDiverso1 = function () {
+//var CrearPagoDiverso1 = function () {
 
 
-    //console.log(obj_actual);
-    var data = new FormData();
+//    //console.log(obj_actual);
+//    var data = new FormData();
 
-    data.append("OPCION", "4");
-    data.append("p_FACGADI_MONE_CODE", obj_actual.MONE_CODE);
-    data.append("p_FACGADI_MONTO", obj_actual.MONTO);
-    data.append("p_FACGADI_USUA_ID", $.trim($('#ctl00_txtus').val()));
-    data.append("p_FACGADI_REF_CODE", obj_actual.CODIGO);
-    data.append("p_FACGADI_FECHA_VENCIMIENTO", $.trim($('#txt_fec_vencimiento').val()));
-    data.append("p_FACGADI_FECHA_PAGO_PROG", $("#txt_fec_actual").val());
-    data.append("p_FACGADI_FECHA_TRANSACCION", $("#txt_fec_actual").val());
-    data.append("p_PIDM", obj_actual.PIDM_BENEF);
-    data.append("p_FECHA_EMISION", $("#txt_fec_actual").val());
-    data.append("p_REF_DCTO_DESC", obj_actual.CONCEPTO + ' ' + obj_actual.SUBCONCEPTO);
-    data.append("p_REF_DCTO_NRO", $.trim($("#txt_serie").val()) + "-" + $.trim($("#txt_dcto_ref").val()));
-    data.append("p_COMC_CODE", obj_actual.CONCEPTO_CODE);
-    data.append("p_FACGADI_IMPORTE_PAGAR", obj_actual.IMPORTE_PAGAR);  //DPORTA 21/01/2022
+//    data.append("OPCION", "4");
+//    data.append("p_FACGADI_MONE_CODE", obj_actual.MONE_CODE);
+//    data.append("p_FACGADI_MONTO", obj_actual.MONTO);
+//    data.append("p_FACGADI_USUA_ID", $.trim($('#ctl00_txtus').val()));
+//    data.append("p_FACGADI_REF_CODE", obj_actual.CODIGO);
+//    data.append("p_FACGADI_FECHA_VENCIMIENTO", $.trim($('#txt_fec_vencimiento').val()));
+//    data.append("p_FACGADI_FECHA_PAGO_PROG", $("#txt_fec_actual").val());
+//    data.append("p_FACGADI_FECHA_TRANSACCION", $("#txt_fec_actual").val());
+//    data.append("p_PIDM", obj_actual.PIDM_BENEF);
+//    data.append("p_FECHA_EMISION", $("#txt_fec_actual").val());
+//    data.append("p_REF_DCTO_DESC", obj_actual.CONCEPTO + ' ' + obj_actual.SUBCONCEPTO);
+//    data.append("p_REF_DCTO_NRO", $.trim($("#txt_serie").val()) + "-" + $.trim($("#txt_dcto_ref").val()));
+//    data.append("p_COMC_CODE", obj_actual.CONCEPTO_CODE);
+//    data.append("p_FACGADI_IMPORTE_PAGAR", obj_actual.IMPORTE_PAGAR);  //DPORTA 21/01/2022
 
-    Bloquear("MuestraModalAceptar")
+//    Bloquear("MuestraModalAceptar")
 
-    $.ajax({
-        url: "vistas/CP/ajax/CPMAGAS.ASHX",
-        type: "post",
-        contentType: false,
-        data: data,
-        processData: false,
-        cache: false,
-        success: function (datos) {
-            Desbloquear("ventana");
-            if (datos != null && datos != "") {
+//    $.ajax({
+//        url: "vistas/CP/ajax/CPMAGAS.ASHX",
+//        type: "post",
+//        contentType: false,
+//        data: data,
+//        processData: false,
+//        cache: false,
+//        success: function (datos) {
+//            Desbloquear("ventana");
+//            if (datos != null && datos != "") {
 
-                CrearCredito1(datos);
-            } else { noexito(); }
+//                CrearCredito1(datos);
+//            } else { noexito(); }
 
-        },
-        error: function (msg) {
-            Desbloquear("MuestraModalAceptar");
-            noexitoCustom("Error al Registrar!")
-        }
-    });
-
-
+//        },
+//        error: function (msg) {
+//            Desbloquear("MuestraModalAceptar");
+//            noexitoCustom("Error al Registrar!")
+//        }
+//    });
 
 
 
-}
+
+
+//}
 
 var Anular1 = function () {
 
@@ -4285,56 +4309,56 @@ var Anular1 = function () {
 
 }
 
-var CrearCredito1 = function (cod) {
+//var CrearCredito1 = function (cod) {
 
-    var data = new FormData();
+//    var data = new FormData();
 
-    data.append("OPCION", "6");
-    data.append("p_CTLG_CODE", obj_actual.CTLG_CODE);
-    data.append("p_SCSL_CODE", obj_actual.SCSL_CODE);
-    data.append("p_COMC_CODE", cod);
-    data.append("p_FECHA_EMISION", $("#txt_fec_actual").val());
-    data.append("p_MONTO", obj_actual.MONTO);
-    data.append("p_TIPO_CRED_IND", "CR");
-    data.append("p_USUA_ID", $.trim($('#ctl00_txtus').val()));
-    data.append("p_FACGADI_FECHA_VENCIMIENTO", $("#txt_fec_actual").val());
-    data.append("p_FACGADI_FECHA_PAGO_PROG", $("#txt_fec_actual").val());
-    data.append("p_TIPO_IND", "P");
-    data.append("p_FACGADI_MONE_CODE", obj_actual.MONE_CODE);
-    data.append("p_IMPORTE_PAGAR", obj_actual.IMPORTE_PAGAR); //DPORTA 21/01/2022
+//    data.append("OPCION", "6");
+//    data.append("p_CTLG_CODE", obj_actual.CTLG_CODE);
+//    data.append("p_SCSL_CODE", obj_actual.SCSL_CODE);
+//    data.append("p_COMC_CODE", cod);
+//    data.append("p_FECHA_EMISION", $("#txt_fec_actual").val());
+//    data.append("p_MONTO", obj_actual.MONTO);
+//    data.append("p_TIPO_CRED_IND", "CR");
+//    data.append("p_USUA_ID", $.trim($('#ctl00_txtus').val()));
+//    data.append("p_FACGADI_FECHA_VENCIMIENTO", $("#txt_fec_actual").val());
+//    data.append("p_FACGADI_FECHA_PAGO_PROG", $("#txt_fec_actual").val());
+//    data.append("p_TIPO_IND", "P");
+//    data.append("p_FACGADI_MONE_CODE", obj_actual.MONE_CODE);
+//    data.append("p_IMPORTE_PAGAR", obj_actual.IMPORTE_PAGAR); //DPORTA 21/01/2022
 
-    Bloquear("MuestraModalAceptar")
+//    Bloquear("MuestraModalAceptar")
 
-    $.ajax({
-        url: "vistas/CP/ajax/CPMAGAS.ASHX",
-        type: "post",
-        contentType: false,
-        data: data,
-        processData: false,
-        cache: false,
-        success: function (datos) {
-            Desbloquear("MuestraModalAceptar");
-            if (datos != null && datos != "") {
-                $("#MuestraModalAceptar").modal('hide')
-                exito();
-                $(".botones").hide();
-                $(btn_actual).parent().parent().find(".btnrechazar").remove();
-                $(btn_actual).remove();
-                $(".botones").hide();
+//    $.ajax({
+//        url: "vistas/CP/ajax/CPMAGAS.ASHX",
+//        type: "post",
+//        contentType: false,
+//        data: data,
+//        processData: false,
+//        cache: false,
+//        success: function (datos) {
+//            Desbloquear("MuestraModalAceptar");
+//            if (datos != null && datos != "") {
+//                $("#MuestraModalAceptar").modal('hide')
+//                exito();
+//                $(".botones").hide();
+//                $(btn_actual).parent().parent().find(".btnrechazar").remove();
+//                $(btn_actual).remove();
+//                $(".botones").hide();
 
-                oTableGST.fnDeleteRow(posicion);
-                //$("#btn_filtrar").click();
+//                oTableGST.fnDeleteRow(posicion);
+//                //$("#btn_filtrar").click();
 
-            } else { noexito(); }
+//            } else { noexito(); }
 
-        },
-        error: function (msg) {
-            Desbloquear("MuestraModalAceptar");
-            noexitoCustom("Error al Anular!")
-        }
-    });
+//        },
+//        error: function (msg) {
+//            Desbloquear("MuestraModalAceptar");
+//            noexitoCustom("Error al Anular!")
+//        }
+//    });
 
-}
+//}
 
 //function VerificaExiste(p_pidm, p_dcto, p_serie, p_numero) {
 

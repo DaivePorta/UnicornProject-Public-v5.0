@@ -310,7 +310,7 @@ var NCMFAVO = function () {
 
 
                     } else {
-                        alertCustom('El sistema se ha actualizado, por favor cierre la sesion y vuela  a ingresar.')
+                        //alertCustom('El sistema se ha actualizado, por favor cierre la sesion y vuela  a ingresar.')
                     }
                 },
                 error: function (msg) {

@@ -538,7 +538,21 @@
             Throw (ex)
         End Try
     End Function
+    Public Function actualizar_doc_origen_NAMINSA(ByVal P_ISAC_CODE As String) As String
+        Try
+            Dim msg As String
+            Dim cmd As IDbCommand
+            cmd = cn.GetNewCommand("PFS_ACTUALIZAR_DOC_ORIGEN_NAMINSA", CommandType.StoredProcedure)
+            cmd.Parameters.Add(cn.GetNewParameter("@P_ISAC_CODE", P_ISAC_CODE, ParameterDirection.Input, 253))
+            cmd = cn.Ejecuta_parms(cmd)
+            msg = "OK"
 
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
     Public Function actualizar_detalle_dcto_almacen_MONTO_ME(ByVal P_ISAC_CODE As String, ByVal P_ITEM As String, ByVal P_MONTO_ME As String) As String
         Try
             Dim msg As String

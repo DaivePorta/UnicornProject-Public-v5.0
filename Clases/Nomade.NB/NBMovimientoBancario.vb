@@ -112,7 +112,7 @@
 
     End Function
 
-    Public Function ListarNroOperacionSinUsar(ByVal p_CUENTA_CODE As String, ByVal p_PIDM As String) As DataTable
+    Public Function ListarNroOperacionSinUsar(ByVal p_CUENTA_CODE As String, ByVal p_TIPO_OPERACION As String, ByVal p_PIDM As String) As DataTable
         Try
             Dim dt As DataTable
             Dim cmd As IDbCommand
@@ -120,6 +120,7 @@
 
             cmd = cn.GetNewCommand("SP_LISTAR_NRO_OPERACION_SIN_USAR", CommandType.StoredProcedure)
             cmd.Parameters.Add(cn.GetNewParameter("@p_CUENTA_CODE", p_CUENTA_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO_OPERACION", p_TIPO_OPERACION, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_PIDM", p_PIDM, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)

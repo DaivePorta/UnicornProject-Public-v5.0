@@ -123,6 +123,31 @@ Public Class BBComisionSistemaPension
             Throw (ex)
         End Try
     End Function
+    Public Function crearComisionSiguiente(ByVal p_FCOSIPE_USUA_ID As String, ByVal p_FCOSIPE_CTLG_CODE As String, ByVal p_FCOPERI_CODE As String) As String
+
+        Try
+            Dim msg As String
+
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_CREAR_COMISION_REPETIDA", CommandType.StoredProcedure)
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FCOSIPE_CODE", String.Empty, ParameterDirection.Output, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FCOSIPE_USUA_ID", p_FCOSIPE_USUA_ID, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FCOSIPE_CTLG_CODE", p_FCOSIPE_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FCOPERI_CODE", p_FCOPERI_CODE, ParameterDirection.Input, 253))
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RESP", String.Empty, ParameterDirection.Output, 253))
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg = cmd1.Parameters("@p_RESP").Value
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
     Public Function ActualizarComisionSistemaPension(
                                                ByVal p_FCOSIPE_CODE As String, ByVal p_FCOSIPE_COLUMNA As String,
                                                ByVal p_FCOSIPE_DATO As String, ByVal p_FCOSIPE_USUA_ID As String,
@@ -294,6 +319,31 @@ Public Class BBComisionSistemaPension
             Throw (ex)
         End Try
     End Function
+    Public Function crearConfiguracionRepetida(ByVal p_FCOPERI_CODE As String, ByVal p_FTCONFI_CTLG_CODE As String,
+                                               ByVal p_FTCONFI_USUA_ID As String) As String
+
+        Try
+            Dim msg As String
+
+            Dim cmd As IDbCommand
+            Dim cmd1 As IDbCommand
+
+            cmd = cn.GetNewCommand("SP_CREAR_CONFIGURACION_SISTEMA_PENSIONARIO_REPETIDO", CommandType.StoredProcedure)
+
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FCOPERI_CODE", p_FCOPERI_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FTCONFI_USUA_ID", p_FTCONFI_USUA_ID, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_FTCONFI_CTLG_CODE", p_FTCONFI_CTLG_CODE, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_RESP", String.Empty, ParameterDirection.Output, 253))
+
+            cmd1 = cn.Ejecuta_parms(cmd)
+            msg = cmd1.Parameters("@p_RESP").Value
+            Return msg
+
+        Catch ex As Exception
+            Throw (ex)
+        End Try
+    End Function
+
     Public Function ListarFechaHora() As String
         Try
             Dim cResultado As String = ""
@@ -365,13 +415,17 @@ Public Class BBComisionSistemaPension
                 cmd.Parameters.Add(cn.GetNewParameter("@p_CODE", p_CODE, ParameterDirection.Input, 253))
             End If
 
-            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO", p_TIPO, ParameterDirection.Input, 253))
+            'Se ha quitado el p_TIPO para que no haya más conflicto con el listado de comisiones
+            cmd.Parameters.Add(cn.GetNewParameter("@p_TIPO", Nothing, ParameterDirection.Input, 253))
 
-            If p_PERIODO = "" Then
-                cmd.Parameters.Add(cn.GetNewParameter("@p_PERIODO", Nothing, ParameterDirection.Input, 253))
-            Else
-                cmd.Parameters.Add(cn.GetNewParameter("@p_PERIODO", p_PERIODO.ToUpper, ParameterDirection.Input, 253))
-            End If
+            'If p_PERIODO = "" Then
+            '    cmd.Parameters.Add(cn.GetNewParameter("@p_PERIODO", Nothing, ParameterDirection.Input, 253))
+            'Else
+            '    cmd.Parameters.Add(cn.GetNewParameter("@p_PERIODO", p_PERIODO.ToUpper, ParameterDirection.Input, 253))
+            'End If
+
+            'El periodo hace que ciertos meses del 2023 hacia atrás escondan opciones importantes, por lo que se ha removido
+            cmd.Parameters.Add(cn.GetNewParameter("@p_PERIODO", Nothing, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 

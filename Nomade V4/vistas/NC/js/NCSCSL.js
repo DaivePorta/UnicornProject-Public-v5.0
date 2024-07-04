@@ -15,12 +15,13 @@
     var p_user = $('#ctl00_lblusuario').html();
     var p_prop = $('#txtpropietario').val();
     var p_codigo = $('#txtcodigo').val();
+    var p_pie_pagina_recibos = $('#chkPiePagina').is(':checked') ? 'S' : 'N';
 
     var bio_ind = $('#chkBiometrico').is(':checked') ? 'S' : 'N';
 
     if (vErrors(["txtdireccion", "txtsucursal", "txtcodsunat", "slcEmpresa", "txttelefono", "slcpais", "txtubigeo", "txtfechai", "slcEstablecimientos"])) {
         Bloquear("ventana");
-        $.post("vistas/NC/ajax/NCSCSL.ASHX", { flag: 2, codi: p_codigo, acti: p_acti, empresa: p_empresa, cod_est_sunat: p_COD_EST_SUNAT, sucursal: p_sucursal, dire: p_dire, estable: p_estable, telef: p_telef, pais: p_pais, ubigeo: p_ubigeo, URBAN: p_urban, fechai: p_fechai, fechat: p_fechat, user: p_user, propietario: p_prop, exonerado: p_exo, bio_ind: bio_ind },
+        $.post("vistas/NC/ajax/NCSCSL.ASHX", { flag: 2, codi: p_codigo, acti: p_acti, empresa: p_empresa, cod_est_sunat: p_COD_EST_SUNAT, sucursal: p_sucursal, dire: p_dire, estable: p_estable, telef: p_telef, pais: p_pais, ubigeo: p_ubigeo, URBAN: p_urban, fechai: p_fechai, fechat: p_fechat, user: p_user, propietario: p_prop, exonerado: p_exo, bio_ind: bio_ind, p_pie_pagina_recibos: p_pie_pagina_recibos },
             function (res) {
                 Desbloquear("ventana");
                 if (res.indexOf("error") == -1) {
@@ -57,13 +58,14 @@ function crear() {
     var p_fechat = $('#txtfechat').val();
     var p_user = $('#ctl00_lblusuario').html();
     var p_prop = $('#txtpropietario').val();
+    var p_pie_pagina_recibos = $('#chkPiePagina').is(':checked') ? 'S' : 'N';
 
     var bio_ind = $('#chkBiometrico').is(':checked') ? 'S' : 'N';
 
     if (vErrors(["txtdireccion", "txtsucursal", "txtcodsunat", "slcEmpresa", "txttelefono", "slcpais", "txtubigeo", "txtfechai", "slcEstablecimientos"])) {
 
         Bloquear("ventana");
-        $.post("vistas/NC/ajax/NCSCSL.ASHX", { flag: 1, acti: p_acti, empresa: p_empresa, cod_est_sunat: p_COD_EST_SUNAT, sucursal: p_sucursal, dire: p_dire, estable: p_estable, telef: p_telef, pais: p_pais, ubigeo: p_ubigeo, URBAN: p_urban, fechai: p_fechai, fechat: p_fechat, user: p_user, propietario: p_prop, exonerado: p_exo, bio_ind: bio_ind },
+        $.post("vistas/NC/ajax/NCSCSL.ASHX", { flag: 1, acti: p_acti, empresa: p_empresa, cod_est_sunat: p_COD_EST_SUNAT, sucursal: p_sucursal, dire: p_dire, estable: p_estable, telef: p_telef, pais: p_pais, ubigeo: p_ubigeo, URBAN: p_urban, fechai: p_fechai, fechat: p_fechat, user: p_user, propietario: p_prop, exonerado: p_exo, bio_ind: bio_ind, p_pie_pagina_recibos: p_pie_pagina_recibos },
             function (res) {
                 Desbloquear("ventana");
                 if (res.indexOf("error") == -1) {
@@ -379,6 +381,14 @@ var NCSCSL = function () {
                     } else {
                         $('#uniform-chkExo span').removeClass();
                         $('#chkExo').attr('checked', false);
+                    }
+
+                    if (datos[0].PIE_PAGINA_RECIBO == "SI") {
+                        $('#uniform-chkPiePagina span').removeClass().addClass("checked");
+                        $('#chkPiePagina').attr('checked', true);
+                    } else {
+                        $('#uniform-chkPiePagina span').removeClass();
+                        $('#chkPiePagina').attr('checked', false);
                     }
 
                     AD_Permissions();

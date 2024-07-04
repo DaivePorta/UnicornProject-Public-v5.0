@@ -13,7 +13,7 @@ Public Class NVMANTI : Implements IHttpHandler
 
     Dim p_IMGQR As String 'para el qr
 
-    Dim OPCION, USUARIO, CTLG_CODE, MONEDA_CODE, CODE_PARAMETRO, TIPO_DCTO, PROD_CODE, NUM_DCTO, p_CODE As String
+    Dim OPCION, USUARIO, CTLG_CODE, MONEDA_CODE, CODE_PARAMETRO, TIPO_DCTO, PROD_CODE, NUM_DCTO, p_CODE, p_NRO_OPERA As String
 
     Dim USUA_ID, PIDM, CTLG, SCSL, ALMC_CODE, SERIADO_IND, PRECIO_IND, CODIGO_CATEGORIA, TIPO_CAMBIO, p_FVBVTAC_SEQ_DOC, p_FVBVTAC_CODE, p_PLAZO As String
 
@@ -219,6 +219,7 @@ Public Class NVMANTI : Implements IHttpHandler
         p_VUELTO_ALTERNO = context.Request("p_VUELTO_ALTERNO")
 
         p_NCMOCONT_CODIGO = context.Request("p_NCMOCONT_CODIGO")
+        p_NRO_OPERA = context.Request("p_NRO_OPERA")
 
         Try
 
@@ -473,6 +474,10 @@ Public Class NVMANTI : Implements IHttpHandler
                     Else
                         res = Utilities.DataTableToJSON(oDT)
                     End If
+
+                Case "VERIFICAR_OPERACION" 'Verificar que la modificacion de un Anticipo u otra operacion sea aplicable
+                    context.Response.ContentType = "application/text; charset=utf-8"
+                    res = cAnticipo.verificarOperacionUsada(p_NRO_OPERA)
 
                 Case "GEN_ASIENTO" ' Suma fecha de emision más plazo de pago
 

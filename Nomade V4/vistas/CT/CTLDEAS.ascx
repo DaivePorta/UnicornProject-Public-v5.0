@@ -67,6 +67,7 @@
                 <h4><i class="icon-reorder"></i>DETALLE DE ASIENTOS CONTABLES</h4>
                 <div class="actions">
                     <%--<a class="btn black" onclick="javascript:imprimirListaDctosVenta();"><i class="icon-print"></i>&nbsp;Imprimir</a>--%>
+                    <a class="btn red" href="?f=CTLDEAS"><i class="icon-list"></i>&nbsp;Listar</a>
                 </div>
             </div>
 
@@ -135,13 +136,19 @@
                     <div class="span1">
                     </div>
                     <div class="span1">
-                        <div class="control-group span2">
+                        <div class="control-group">
                             <div class="controls">
                                 <a id="btnBuscarDoc" class="btn blue">BUSCAR</a>
                             </div>
                         </div>
                     </div>
-                    
+                    <%--<div class="span1">
+                        <div class="control-group">
+                            <div class="controls">                                
+                                <button type="button" class="btn black span10 tooltips refreshProcess" data-original-title="Ejecutar asientos pendientes."><i class="icon-cogs"></i></button>
+                            </div>
+                        </div>
+                    </div>--%>
                 </div>
                 <div class="row-fluid" style="margin-top: 10px;">
                     <div id="divDocumento">

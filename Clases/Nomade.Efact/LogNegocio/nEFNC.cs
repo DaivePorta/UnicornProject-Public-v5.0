@@ -696,9 +696,9 @@ namespace Nomade.Efact.LogNegocio
 
                     string d1 = oDR["DET1"].ToString(); // CODIGO DE UNIDAD DE MEDIDA POR ITEM
                     string d2 = oDR["DET2"].ToString(); // CANTIDAD POR ITEM
-                    if (n9 == "01" || n9 == "06"){
-                        d2 = oDR["DET2B"].ToString(); // CANTIDAD POR ITEM sumando los no despachados tbm
-                    }
+                    //if (n9 == "01" || n9 == "06"){
+                    //    d2 = oDR["DET2B"].ToString(); // CANTIDAD POR ITEM sumando los no despachados tbm
+                    //}
                     string d3 = oDR["DET3"].ToString(); // CODIGO PRODUCTO
                     string d4 = oDR["DET4"].ToString(); // CODIGO PRODUCTO SUNAT (-)
                     string d5 = oDR["DET5"].ToString(); // DESCRIPCION DE PRODUCTO

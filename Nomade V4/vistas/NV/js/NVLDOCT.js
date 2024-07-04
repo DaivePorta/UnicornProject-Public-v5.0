@@ -2228,7 +2228,8 @@ function obtenerCabeceraVenta(codigo, atendido) {
                                 } else if (aoCuentaAmort.length === 0) {
                                     $("#tblCaja").text("");
                                 } else {
-                                    $("#tblCaja").text("VARIOS PAGOS");
+                                    $("#tblCaja").text("CAJA Y BANCO");
+                                    $("#tblFopa").text("VARIOS PAGOS");
                                 }
                             }).done(function () { });
                     }

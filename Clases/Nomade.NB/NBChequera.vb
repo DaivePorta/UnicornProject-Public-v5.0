@@ -227,7 +227,7 @@
     End Function
 
     Public Function ListarMovimientosCuentasBancarias(ByVal p_CTLG_CODE As String, ByVal p_CHK_DETALLE As String, ByVal p_MONE_CODE As String, ByVal p_SCSL_CODE As String, ByVal p_CTA_BANCARIA As String,
-                                                      ByVal p_DESC_CTA_BANCARIA As String, ByVal p_DESDE As String, p_HASTA As String) As DataTable
+                                                      ByVal p_DESC_CTA_BANCARIA As String, ByVal p_DESDE As String, ByVal p_HASTA As String, ByVal p_CAJERO As String) As DataTable
 
         Try
             Dim dt As DataTable
@@ -242,6 +242,7 @@
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESC_CTA_BANCARIA", p_DESC_CTA_BANCARIA, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_DESDE", p_DESDE, ParameterDirection.Input, 253))
             cmd.Parameters.Add(cn.GetNewParameter("@p_HASTA", p_HASTA, ParameterDirection.Input, 253))
+            cmd.Parameters.Add(cn.GetNewParameter("@p_CAJERO", p_CAJERO, ParameterDirection.Input, 253))
 
             dt = cn.Consulta(cmd)
 

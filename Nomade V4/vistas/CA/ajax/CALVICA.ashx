@@ -45,7 +45,7 @@ Public Class CALVICA : Implements IHttpHandler
                     context.Response.ContentType = "application/json; charset=utf-8"
                     dt = ncEmpresa.ListarEmpresa(String.Empty, "A", HttpContext.Current.User.Identity.Name)
                     If Not (dt Is Nothing) Then
-                        dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
+                        'dt = SortDataTableColumn(dt, "DESCRIPCION", "ASC")
                         resb.Append("[")
                         For Each MiDataRow As DataRow In dt.Rows
                             resb.Append("{")

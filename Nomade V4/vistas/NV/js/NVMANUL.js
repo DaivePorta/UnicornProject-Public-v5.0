@@ -261,7 +261,7 @@
            if (datos != null) {
                $('#divDocumento').html(datos);                         
                $("#tblDocumento").dataTable({
-                   "order": [2, 'desc'],
+                   "order": [0, 'desc'],
                    "sDom": 'TC<"clear">lfrtip',
                    "sPaginationType": "full_numbers",
                    "scrollX": true,
@@ -737,6 +737,14 @@ var NVMANUL = function () {
         let sDevDespacho = ($("#chkDevDespacho").is(":checked") ? "S" : "N");
         let sMotivo = $("#cboMotivo").val();
 
+        let sEmpresa = $("#cboEmpresa").val();
+        let sEstablecimiento = $("#cboEstablecimiento").val();
+        let sSerieDoc = $("#hfSerieDoc").val();
+        let sNroDoc = $("#txtNroDocVenta").val();
+        let sPIDMCliente = $("#hfPIDM").val();
+        let sEstadoPago = $("#hfEstadoPago").val();
+        let sEstadoDespacho = $("#hfEstadoDespacho").val();
+        let sCodMoneda = $("#cbo_moneda").val();
 
         let sPrefijo = sCodVenta.substring(0, 2);
         let bEsAnticipo = (sPrefijo == "AP" ? true : false);
@@ -751,6 +759,14 @@ var NVMANUL = function () {
         data.append('DEVOLUCION_EFECTIVO', sDevEfectivo);
         data.append('DEVOLUCION_DESPACHO', sDevDespacho);
         data.append('MOTIVO_CODE', sMotivo);
+
+        data.append('CTLG_CODE', sEmpresa);
+        data.append('SCSL_CODE', sEstablecimiento);
+        data.append('DOCUMENTO', sSerieDoc + '-' + sNroDoc);
+        data.append('PIDM_CLIENTE', sPIDMCliente);
+        data.append('ESTADO_PAGO', sEstadoPago);
+        data.append('ESTADO_DESPACHO', sEstadoDespacho);
+        data.append('MONE_CODE', sCodMoneda);
 
         $.ajax({
             type: "POST",
@@ -791,7 +807,7 @@ var NVMANUL = function () {
                     infoCustom2("El documento tiene amortizaciones por Detracción, NO podrá anularlo.");
                 }
                 else {
-                    alertCustom("ERROR: " + response);
+                    noexitoCustom("Surgió un error inesperado. Intente nuevamente, por favor.");
                 }
             },
             error: function (msg) {
@@ -1046,12 +1062,14 @@ var NVMANUL = function () {
         $("#txtNroDctoCliente").val(aoVenta[0].CLIE_DCTO_NRO);
         $("#cboVendedor").select2("val", aoVenta[0].USVE_USUA_ID);
         $("#hfPIDM").val(aoVenta[0].CLIE_PIDM);
+        $("#hfEstadoPago").val(aoVenta[0].PAGADO_IND);
 
         $("#cboDocumentoVenta").select2("val", aoVenta[0].DCTO_CODE);
 
         $("#cboSerieDocVenta").empty();
         $("#cboSerieDocVenta").append('<option value="' + aoVenta[0].CODIGO + '" >' + aoVenta[0].DCTO_SERIE + '</option>');
         $("#cboSerieDocVenta").select2("val", aoVenta[0].CODIGO);
+        $("#hfSerieDoc").val(aoVenta[0].DCTO_SERIE);
         $("#txtNroDocVenta").val(aoVenta[0].DCTO_NRO);
         $("#txt_valor_cambio").val(aoVenta[0].VALOR_CAMBIO);
 
@@ -1111,15 +1129,18 @@ var NVMANUL = function () {
 
         if (aoVenta[0].ANULADO != "SI") {
             $("#chkDevEfectivo").prop("disabled", true);
-            let aoDocSaldoVta = fnGetSaldoDocVta(sCodVenta);
-            if (aoDocSaldoVta.length === 0) {
-                infoCustom("No se pudo obtener el saldo del Documento: " + sCodVenta);
-                return;
-            }
+            //let aoDocSaldoVta = fnGetSaldoDocVta(sCodVenta);
+            //if (aoDocSaldoVta.length === 0) {
+            //    infoCustom("No se pudo obtener el saldo del Documento: " + sCodVenta);
+            //    return;
+            //}
 
-            let nMontoAmortizado = aoDocSaldoVta[0].AMORT_TOTAL;
-            if (nMontoAmortizado > 0) {
+            //let nMontoAmortizado = aoDocSaldoVta[0].AMORT_TOTAL;
+            if (aoVenta[0].PAGADO_IND != 'N') {
                 $("#chkDevEfectivo").prop("disabled", false);
+            } else {
+                $('#chkDevEfectivo').prop('checked', false).parent().removeClass('checked');
+                $('#chkDevEfectivo').change();
             }
 
         }
